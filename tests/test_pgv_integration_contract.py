@@ -623,7 +623,7 @@ class TestCapability2S1Constellation:
             SatelliteData(id="s2", provider="copernicus", satellite="S1B"),
         ]
         with caplog.at_level(logging.WARNING, logger="pygeofetch"):
-            engine._warn_if_outdated_constellation(results)
+            engine._warn_if_outdated_constellation(results, None)
 
         # After July 2026 (today is July 2026), should warn
         from datetime import date
@@ -648,7 +648,7 @@ class TestCapability2S1Constellation:
             SatelliteData(id="s1", provider="copernicus", satellite="S1C"),
         ]
         with caplog.at_level(logging.WARNING, logger="pygeofetch"):
-            engine._warn_if_outdated_constellation(results)
+            engine._warn_if_outdated_constellation(results, None)
 
         constellation_warnings = [
             r
