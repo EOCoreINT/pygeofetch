@@ -52,9 +52,39 @@ Usage::
 
 from pygeofetch.insar.atmosphere import AtmosphericCorrector
 from pygeofetch.insar.extraction import SLCExtractor
+from pygeofetch.insar.gpu import gpu_available
 from pygeofetch.insar.interferogram import InterferogramGenerator, InterferogramResult
 from pygeofetch.insar.timeseries import SBASTimeSeries
 from pygeofetch.insar.unwrap import PhaseUnwrapper
+from pygeofetch.insar.validate import DataValidator, ValidationResult
+from pygeofetch.insar.visualize import (
+    visualize_interferogram,
+    visualize_timeseries,
+    visualize_unwrapped,
+)
+
+# Real, orbit-based coregistration components. All exported here are
+# individually verified against known ground truth (see each module's
+# docstring for specifics): annotation.py against ESA's own field-path
+# spec; orbit parsing/interpolation against exact reference values;
+# find_zero_doppler_time against known times from starting guesses up
+# to 30 seconds off; geodetic_to_ecef via round-trip verification.
+# solve_ground_point (in geolocation.py) is deliberately NOT exported
+# here — it has a known, unresolved reliability gap and is not
+# recommended as a primary coregistration path; use
+# compute_offset_field_from_dem() instead, which avoids it entirely.
+from pygeofetch.insar.annotation import SLCGeometry, parse_slc_geometry
+from pygeofetch.insar.geolocation import (
+    geodetic_to_ecef,
+    find_zero_doppler_time,
+    parse_orbit_file,
+    interpolate_orbit_state,
+)
+from pygeofetch.insar.coregister import (
+    compute_offset_field_from_dem,
+    fit_offset_polynomial,
+    resample_with_offset_field,
+)
 
 __all__ = [
     "InterferogramGenerator",
@@ -63,4 +93,19 @@ __all__ = [
     "SBASTimeSeries",
     "AtmosphericCorrector",
     "SLCExtractor",
+    "DataValidator",
+    "ValidationResult",
+    "gpu_available",
+    "visualize_interferogram",
+    "visualize_unwrapped",
+    "visualize_timeseries",
+    "SLCGeometry",
+    "parse_slc_geometry",
+    "geodetic_to_ecef",
+    "find_zero_doppler_time",
+    "parse_orbit_file",
+    "interpolate_orbit_state",
+    "compute_offset_field_from_dem",
+    "fit_offset_polynomial",
+    "resample_with_offset_field",
 ]

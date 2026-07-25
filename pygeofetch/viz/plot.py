@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from builtins import str
 import logging
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union,Dict, List
+import numpy as np
 
 logger = logging.getLogger("pygeofetch.viz.plot")
 
@@ -320,6 +322,158 @@ class Plotter:
 
         return self._save_or_show(fig, output)
 
+    
+    
+    def plot_terrain_summary(
+        self,
+        dem: Union[str, Path, np.ndarray],
+        hillshade: Optional[Union[str, Path, np.ndarray]] = None,
+        slope: Optional[Union[str, Path, np.ndarray]] = None,
+        diffs: Optional[Dict[str, Union[str, Path, np.ndarray]]] = None,
+        summit_points: Optional[Dict[str, Tuple[float, float]]] = None,
+        primary_source: str = "DEM",
+        steep_threshold: float = 30.0,
+        vmin_diff: float = -20.0,
+        vmax_diff: float = 20.0,
+        colormap_elevation: str = "terrain",
+        colormap_slope: str = "YlOrRd",
+        colormap_diff: str = "RdBu_r",
+        title: str = "Terrain Analysis Summary",
+        output: Optional[Union[str, Path]] = None,
+        figsize: Tuple[int, int] = (16, 13),
+        dpi: int = 150,
+    ) -> Any:
+        """
+        Plot a comprehensive 2x2 terrain summary:
+
+            [ Hillshade      | Elevation      ]
+            [ Slope          | Difference     ]
+
+        Args:
+            dem: DEM raster (path or array)
+            hillshade: Hillshade raster (optional, auto-generated if None)
+            slope: Slope raster (optional, auto-generated if None)
+            diffs: Dict of {label: raster} for difference maps
+            summit_points: Dict of {name: (lon, lat)} for summit markers
+            primary_source: Label for the primary DEM source
+            steep_threshold: Degrees threshold for steep slope percentage
+            vmin_diff, vmax_diff: Color range for difference maps
+            colormap_elevation, colormap_slope, colormap_diff: Colormaps
+            title: Figure title
+            output: Save path (shows inline if None)
+            figsize, dpi: Figure dimensions
+
+        Example::
+
+            from pygeofetch.viz import Plotter
+            pl = Plotter()
+
+            pl.plot_terrain_summary(
+                dem="dem.tif",
+                hillshade="hillshade.tif",
+                slope="slope.tif",
+                diffs={"copernicus": "copernicus_minus_aster.tif"},
+                summit_points={"Afadjato": (-0.45, 7.15), "Aduadu": (-0.44, 7.14)},
+                primary_source="ASTER",
+                output="summary.png",
+            )
+        """
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from matplotlib.colors import LightSource
+
+        plt = _require_matplotlib()
+
+        try:
+            import rasterio
+        except ImportError:
+            raise ImportError("rasterio required: pip install pygeofetch[geo]")
+
+        # ─── Helper: load raster ──────────────────────────────────────────────
+        def _load_raster(src):
+            if isinstance(src, (str, Path)):
+                with rasterio.open(src) as _s:
+                    arr = _s.read(1).astype(np.float32)
+                    nodata = _s.nodata
+                    if nodata is not None:
+                        arr = np.where(arr == nodata, np.nan, arr)
+                    extent = [_s.bounds.left, _s.bounds.right, _s.bounds.bottom, _s.bounds.top]
+                    return arr, extent
+            arr = np.asarray(src, dtype=np.float32)
+            return arr, None
+
+        # ─── Load DEM ──────────────────────────────────────────────────────────
+        dem_arr, dem_extent = _load_raster(dem)
+        if dem_extent is None:
+            raise ValueError("DEM extent could not be determined. Provide a GeoTIFF for the DEM.")
+
+        # ─── Hillshade ─────────────────────────────────────────────────────────
+        if hillshade is not None:
+            hillshade_arr, _ = _load_raster(hillshade)
+        else:
+            # Auto-generate hillshade
+            dem_filled = np.where(np.isfinite(dem_arr), dem_arr, np.nanmin(dem_arr))
+            ls = LightSource(azdeg=315, altdeg=45)
+            hillshade_arr = ls.hillshade(dem_filled, vert_exag=1.5)
+
+        # ─── Slope ─────────────────────────────────────────────────────────────
+        if slope is not None:
+            slope_arr, _ = _load_raster(slope)
+        else:
+            # Auto-generate slope
+            dem_filled = np.where(np.isfinite(dem_arr), dem_arr, np.nanmin(dem_arr))
+            grad_y, grad_x = np.gradient(dem_filled)
+            slope_arr = np.degrees(np.arctan(np.sqrt(grad_x**2 + grad_y**2)))
+
+        # ─── Steep percentage ──────────────────────────────────────────────────
+        steep_pct = 100 * np.sum((slope_arr > steep_threshold) & np.isfinite(slope_arr)) / np.sum(np.isfinite(slope_arr))
+
+        # ─── Load diff(s) ─────────────────────────────────────────────────────
+        diff_data = {}
+        if diffs:
+            for label, src in diffs.items():
+                arr, _ = _load_raster(src)
+                diff_data[label] = arr
+
+        # ─── Figure ────────────────────────────────────────────────────────────
+        fig, axes = plt.subplots(2, 2, figsize=figsize)
+        fig.suptitle(title, fontsize=16, y=1.0)
+
+        # ─── Panel 1: Hillshade ──────────────────────────────────────────────
+        axes[0, 0].imshow(hillshade_arr, cmap="gray", extent=dem_extent, aspect="auto")
+        axes[0, 0].set_title(f"Hillshade ({primary_source.upper()})", fontsize=13)
+        if summit_points:
+            for name, (lon, lat) in summit_points.items():
+                marker = "r^" if "Afadjato" in name else "b^" if "Aduadu" in name else "g^"
+                axes[0, 0].plot(lon, lat, marker, markersize=12, label=name)
+            axes[0, 0].legend(loc="upper right")
+
+        # ─── Panel 2: Elevation ──────────────────────────────────────────────
+        im1 = axes[0, 1].imshow(dem_arr, cmap=colormap_elevation, extent=dem_extent, aspect="auto")
+        axes[0, 1].set_title("Elevation (m)", fontsize=13)
+        plt.colorbar(im1, ax=axes[0, 1], fraction=0.04, pad=0.02)
+
+        # ─── Panel 3: Slope ──────────────────────────────────────────────────
+        im2 = axes[1, 0].imshow(slope_arr, cmap=colormap_slope, extent=dem_extent, aspect="auto", vmin=0, vmax=45)
+        axes[1, 0].set_title(f"Slope — {steep_pct:.1f}% exceeds {steep_threshold}°", fontsize=13)
+        plt.colorbar(im2, ax=axes[1, 0], fraction=0.04, pad=0.02)
+
+        # ─── Panel 4: Difference ──────────────────────────────────────────────
+        if diff_data:
+            first_label = list(diff_data.keys())[0]
+            first_arr = diff_data[first_label]
+            im3 = axes[1, 1].imshow(first_arr, cmap=colormap_diff, extent=dem_extent, aspect="auto", vmin=vmin_diff, vmax=vmax_diff)
+            axes[1, 1].set_title(f"{first_label.upper()} vs {primary_source.upper()} (m)", fontsize=13)
+            plt.colorbar(im3, ax=axes[1, 1], fraction=0.04, pad=0.02)
+        else:
+            axes[1, 1].axis("off")
+            axes[1, 1].set_title("No Difference Data", fontsize=13)
+
+        plt.tight_layout()
+
+        # ─── Save or show ────────────────────────────────────────────────────
+        return self._save_or_show(fig, output)
+
     def plot_raster(
         self,
         data: Union[str, Path, Any],
@@ -398,6 +552,232 @@ class Plotter:
         plt.tight_layout()
 
         return self._save_or_show(fig, output)
+    
+
+
+
+
+    def plot_multi_panel_comparison(
+        self,
+        panels: Dict[str, Union[str, Path, np.ndarray]],
+        panel_type: str = "continuous",
+        labels: Optional[List[str]] = None,
+        extent: Optional[Tuple[float, float, float, float]] = None,
+        colormap: str = "RdYlGn_r",
+        vmin: Optional[float] = None,
+        vmax: Optional[float] = None,
+        classification_colors: Optional[List[str]] = None,
+        classification_labels: Optional[Dict[int, str]] = None,
+        suptitle: str = "Multi-Panel Comparison",
+        colorbar_label: str = "Value",
+        output: Optional[Union[str, Path]] = None,
+        figsize: Tuple[int, int] = (20, 7),
+        dpi: int = 150,
+        show_percentages: bool = True,
+        cbar_fraction: float = 0.04,
+        panel_titles: Optional[List[str]] = None,
+        summary_text: Optional[str] = None,
+    ) -> Any:
+        """
+        Generalized multi-panel comparison plotter.
+
+        Supports:
+        - Continuous data (NDVI, NDBI, LST, etc.) with colorbar
+        - Categorical/classified data with legend
+        - Mixed types (e.g., continuous + classification)
+
+        Args:
+            panels: Ordered dict of {panel_title: raster_data}
+            panel_type: 'continuous', 'categorical', or 'mixed'
+            labels: List of panel labels (if not in dict keys)
+            extent: (min_lon, max_lon, min_lat, max_lat)
+            colormap: Default colormap for continuous panels
+            vmin, vmax: Value range for continuous panels
+            classification_colors: List of colors for categorical panels
+            classification_labels: Dict of {class_code: label}
+            suptitle: Overall figure title
+            colorbar_label: Label for continuous colorbar
+            output: Save path
+            figsize, dpi: Figure dimensions
+            show_percentages: Show class percentages in legend
+            cbar_fraction: Colorbar size fraction
+            panel_titles: Optional list of custom titles per panel
+            summary_text: Optional text to display (e.g., net change)
+
+        Example - Urban Expansion::
+
+            pl.plot_multi_panel_comparison(
+                panels={
+                    "2016": ndbi_2016,
+                    "2024": ndbi_2024,
+                    "Growth": growth_classified,
+                },
+                panel_type="mixed",
+                colormap="RdYlGn_r",
+                vmin=-0.3,
+                vmax=0.3,
+                classification_colors=["#2ecc71", "#f39c12", "#e74c3c"],
+                classification_labels={0: "No Growth", 1: "Low Growth", 2: "High Growth"},
+                suptitle="Accra (GAMA) Urban Expansion — 2016 to 2024",
+                summary_text="Net Urban Change: +2.3 pts",
+                output="comparison.png",
+            )
+
+        Example - NDVI Change::
+
+            pl.plot_multi_panel_comparison(
+                panels={
+                    "Baseline (2018)": ndvi_2018,
+                    "Recent (2024)": ndvi_2024,
+                    "Change": ndvi_change,
+                },
+                panel_type="continuous",
+                colormap="RdYlGn",
+                vmin=-1.0,
+                vmax=1.0,
+                suptitle="NDVI Change Detection — Obuasi Mining Area",
+                colorbar_label="NDVI",
+                output="ndvi_change.png",
+            )
+
+        Example - Classification Only::
+
+            pl.plot_multi_panel_comparison(
+                panels={
+                    "2016": classified_2016,
+                    "2024": classified_2024,
+                    "Change": classified_change,
+                },
+                panel_type="categorical",
+                classification_colors=["#2ecc71", "#f39c12", "#e74c3c"],
+                classification_labels={0: "Stable", 1: "Decline", 2: "Improvement"},
+                suptitle="Land Cover Change — 2016 to 2024",
+                output="land_cover_change.png",
+            )
+        """
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from matplotlib.colors import ListedColormap
+        from matplotlib.patches import Patch
+
+        plt = _require_matplotlib()
+
+        try:
+            import rasterio
+        except ImportError:
+            raise ImportError("rasterio required: pip install pygeofetch[geo]")
+
+        def _load_data(src):
+            if isinstance(src, (str, Path)):
+                with rasterio.open(src) as _s:
+                    arr = _s.read(1).astype(np.float32)
+                    nodata = _s.nodata
+                    if nodata is not None:
+                        arr = np.where(arr == nodata, np.nan, arr)
+                    return arr
+            return np.asarray(src, dtype=np.float32)
+
+        def _get_extent(src):
+            if isinstance(src, (str, Path)):
+                with rasterio.open(src) as _s:
+                    return [_s.bounds.left, _s.bounds.right, _s.bounds.bottom, _s.bounds.top]
+            return extent
+
+        # ─── Load all data ─────────────────────────────────────────────────────
+        loaded_panels = {}
+        for title, data in panels.items():
+            loaded_panels[title] = _load_data(data)
+
+        # ─── Determine extent ──────────────────────────────────────────────────
+        if extent is None:
+            for data in panels.values():
+                if isinstance(data, (str, Path)):
+                    ext = _get_extent(data)
+                    if ext is not None:
+                        extent = ext
+                        break
+
+        n_panels = len(loaded_panels)
+
+        # ─── Determine panel types ────────────────────────────────────────────
+        if panel_type == "mixed":
+            # Last panel is categorical, others are continuous
+            panel_modes = ["continuous"] * (n_panels - 1) + ["categorical"]
+        else:
+            panel_modes = [panel_type] * n_panels
+
+        # ─── Create figure ────────────────────────────────────────────────────
+        fig, axes = plt.subplots(1, n_panels, figsize=figsize)
+        if n_panels == 1:
+            axes = [axes]
+        fig.suptitle(suptitle, fontsize=16, y=1.02)
+
+        # ─── Plot each panel ──────────────────────────────────────────────────
+        panel_titles = panel_titles or list(loaded_panels.keys())
+
+        for idx, (title, arr) in enumerate(loaded_panels.items()):
+            mode = panel_modes[idx] if idx < len(panel_modes) else "continuous"
+            ax = axes[idx]
+
+            if mode == "categorical":
+                # Categorical panel
+                codes = sorted(np.unique(arr[~np.isnan(arr)]).astype(int))
+                if classification_colors is None:
+                    import matplotlib.cm as cm
+                    palette = cm.get_cmap("tab10")
+                    classification_colors = [
+                        palette(i / max(len(codes) - 1, 1)) for i in range(len(codes))
+                    ]
+                cmap = ListedColormap(classification_colors[:len(codes)])
+                im = ax.imshow(arr, cmap=cmap, extent=extent, aspect="auto")
+
+                if classification_labels:
+                    total = np.sum(~np.isnan(arr))
+                    legend_elements = []
+                    for c in codes:
+                        label = classification_labels.get(c, f"Class {c}")
+                        if show_percentages:
+                            pct = 100 * np.sum(arr == c) / total
+                            label = f"{label} ({pct:.1f}%)"
+                        color_idx = c if c < len(classification_colors) else c % len(classification_colors)
+                        legend_elements.append(
+                            Patch(facecolor=classification_colors[color_idx], label=label)
+                        )
+                    ax.legend(handles=legend_elements, loc="lower right", fontsize=10)
+
+                if panel_titles and idx < len(panel_titles):
+                    ax.set_title(panel_titles[idx], fontsize=13)
+
+            else:
+                # Continuous panel
+                im = ax.imshow(
+                    arr,
+                    cmap=colormap,
+                    vmin=vmin,
+                    vmax=vmax,
+                    extent=extent,
+                    aspect="auto",
+                )
+                cbar = plt.colorbar(im, ax=ax, fraction=cbar_fraction)
+                if colorbar_label and idx == n_panels - 1:
+                    cbar.set_label(colorbar_label, fontsize=10)
+
+                if panel_titles and idx < len(panel_titles):
+                    ax.set_title(panel_titles[idx], fontsize=13)
+                else:
+                    ax.set_title(title, fontsize=13)
+
+        # ─── Add summary text if provided ────────────────────────────────────
+        if summary_text:
+            fig.text(0.5, 0.01, summary_text, ha="center", fontsize=12, style="italic")
+
+        plt.tight_layout()
+
+        return self._save_or_show(fig, output)
+
+
+
+
 
     def plot_comparison(
         self,

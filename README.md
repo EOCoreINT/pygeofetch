@@ -331,6 +331,70 @@ pygeofetch proc-pipeline template change_detection
 
 ---
 
+
+### 🌐 InSAR Processing (`pygeofetch.insar`)
+
+A full Interferometric SAR chain for Sentinel-1 — search through SBAS time series inversion, pure Python, no external InSAR software required beyond `snaphu-py`'s bundled unwrapper.
+
+```bash
+pip install "pygeofetch[insar]"        # native SBAS inversion
+pip install "pygeofetch[insar-full]"   # + MintPy passthrough for advanced corrections
+```
+
+| Component | Description |
+|---|---|
+| `InterferogramGenerator` | Coregistration (real orbit-based, or shape-based fallback) + Enhanced Spectral Diversity (ESD) refinement for TOPS burst continuity + topographic phase removal |
+| `PhaseUnwrapper` | SNAPHU (Chen & Zebker 2001) via the official `snaphu-py` bindings — the same algorithm used by ASF, ISCE2/3, GAMMA, and SNAP |
+| `AtmosphericCorrector` | Elevation-correlated regression or ERA5 reanalysis-based tropospheric delay correction |
+| `SBASTimeSeries` | Small BAseline Subset displacement/velocity inversion (Berardino et al. 2002) |
+| `DataValidator` | SLC, coherence, and SBAS-network sanity checks, wired in at every real pipeline entry point |
+
+Real orbit-based coregistration computes genuine per-pixel offsets from actual satellite orbit state vectors and acquisition timing (not a shape-matching guess) — supply a DEM, both SAFE archives, and both `.EOF` orbit files, and it's used automatically; otherwise falls back cleanly to shape-based resampling.
+
+Every stage supports automatic visualization (`auto_visualize=True`) and optional GPU acceleration (`use_gpu=True`, CuPy) for coherence estimation and SBAS inversion on large scenes.
+
+See [`pygeofetch/insar/README.md`](pygeofetch/insar/README.md) for the full processing chain, verification methodology, and current limitations.
+
+
+```python
+# InSAR — search to SBAS time series
+from pygeofetch.insar import (
+    InterferogramGenerator, PhaseUnwrapper, AtmosphericCorrector,
+    SBASTimeSeries, DataValidator,
+)
+from pygeofetch.insar.timeseries import InterferogramPair
+from pygeofetch.core.orbits import fetch_orbit_file
+
+# Coregistration + interferogram formation (real orbit-based when a DEM,
+# both SAFE archives, and both orbit files are supplied; falls back to
+# shape-based resampling otherwise)
+gen = InterferogramGenerator(coherence_window=5, esd_enabled=True, use_gpu=False)
+result = gen.process_pair(
+    reference="slc_ref.tif", secondary="slc_sec.tif", dem="dem.tif",
+    reference_safe_zip="ref.SAFE.zip", secondary_safe_zip="sec.SAFE.zip",
+    reference_orbit_file=fetch_orbit_file("S1A_..._ref"),
+    secondary_orbit_file=fetch_orbit_file("S1A_..._sec"),
+)
+result.save("./output", auto_visualize=True)
+
+# Atmospheric correction + phase unwrapping
+atm = AtmosphericCorrector(method="elevation")
+corrected_phase = atm.correct(result.interferogram, dem="dem.tif")
+
+unwrapper = PhaseUnwrapper(cost_mode="defo", init_method="mcf")
+unwrapped, conncomp = unwrapper.unwrap(corrected_phase, result.coherence)
+
+# SBAS time series inversion across a network of interferograms
+pairs = [
+    InterferogramPair("2026-01-01", "2026-01-13", unwrapped, result.coherence),
+    # ... additional pairs forming a connected network
+]
+sbas = SBASTimeSeries(wavelength_m=0.05546576, reference_date="2026-01-01")
+ts_result = sbas.invert(pairs, reference_pixel=(10, 15))  # known-stable pixel
+ts_result.save("./timeseries", auto_visualize=True)
+print(f"Mean velocity: {ts_result.velocity.mean()*1000:.1f} mm/year")
+```
+
 ## 🖥️ Complete CLI Reference
 
 ```
@@ -517,3 +581,8 @@ pytest tests/unit/ -v
 pygeofetch is free and open source software, licensed under the [MIT License](LICENSE).
 
 © 2026 Samuel Appiah Kubi. Part of the **PyGeoVision** platform — [pygeofetch](https://github.com/appiahkubis14/pygeofetch) (data + processing)  complete Earth observation pipeline.
+
+
+
+
+

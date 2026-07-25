@@ -44,14 +44,26 @@ class InterferogramResult:
     esd_azimuth_shift_px: Optional[float] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-    def save(self, output_dir: Union[str, Path]) -> Dict[str, Path]:
+    def save(
+        self, output_dir: Union[str, Path], auto_visualize: bool = False
+    ) -> Dict[str, Path]:
         """
         Save all interferogram products as GeoTIFFs.
 
         Writes: wrapped_phase.tif, coherence.tif, amplitude.tif
 
+        Args:
+            output_dir:     Directory to save into.
+            auto_visualize: If True, also save PNG visualizations of
+                           each product (wrapped_phase.png,
+                           coherence.png, amplitude.png) alongside the
+                           GeoTIFFs, via pygeofetch.insar.visualize.
+
         Returns:
-            Dict mapping product name to output path.
+            Dict mapping product name to output path (GeoTIFFs; PNG
+            paths are logged but not included in this return value —
+            call visualize_interferogram() directly if you need them
+            programmatically).
         """
         import numpy as np
 
@@ -102,6 +114,15 @@ class InterferogramResult:
         paths["amplitude"] = amp_path
 
         logger.info("Interferogram products saved → %s", out_dir)
+
+        if auto_visualize:
+            from pygeofetch.insar.visualize import visualize_interferogram
+
+            try:
+                visualize_interferogram(self, out_dir)
+            except Exception as exc:
+                logger.warning("auto_visualize failed (GeoTIFFs were still saved successfully): %s", exc)
+
         return paths
 
 
@@ -138,9 +159,12 @@ class InterferogramGenerator:
         paths = result.save("./interferogram_output")
     """
 
-    def __init__(self, coherence_window: int = 5, esd_enabled: bool = True) -> None:
+    def __init__(
+        self, coherence_window: int = 5, esd_enabled: bool = True, use_gpu: bool = False
+    ) -> None:
         self._coh_window = coherence_window
         self._esd_enabled = esd_enabled
+        self._use_gpu = use_gpu
 
     # ── public API ────────────────────────────────────────────────────────────
 
@@ -151,6 +175,10 @@ class InterferogramGenerator:
         dem: Optional[Union[str, Path]] = None,
         reference_date: Optional[str] = None,
         secondary_date: Optional[str] = None,
+        reference_safe_zip: Optional[Union[str, Path]] = None,
+        secondary_safe_zip: Optional[Union[str, Path]] = None,
+        reference_orbit_file: Optional[Union[str, Path]] = None,
+        secondary_orbit_file: Optional[Union[str, Path]] = None,
     ) -> InterferogramResult:
         """
         Process an SLC pair into an interferogram with topographic phase removed.
@@ -164,6 +192,25 @@ class InterferogramGenerator:
                        recommend supplying a DEM for real deformation work).
             reference_date, secondary_date: ISO date strings for baseline
                        bookkeeping (used in InterferogramResult metadata).
+            reference_safe_zip, secondary_safe_zip: Original .SAFE.zip
+                       archives for each date (needed to read real
+                       acquisition timing via annotation.py). Optional —
+                       without these, coregistration falls back to the
+                       shape-only resample.
+            reference_orbit_file, secondary_orbit_file: Real .EOF orbit
+                       files for each date (from
+                       pygeofetch.core.orbits.fetch_orbit_file()).
+                       Optional, same fallback behaviour as above.
+
+            When dem, both SAFE zips, and both orbit files are all
+            provided, real orbit-based coregistration is used —
+            genuine per-pixel offsets computed from real acquisition
+            geometry (via geodetic_to_ecef + find_zero_doppler_time,
+            both individually verified), not a shape-matching guess.
+            This is deliberately NOT the default path when any of these
+            four inputs is missing, since it needs all of them to work
+            correctly — the fallback (existing shape-check resample) is
+            used instead, with a clear log message about which path ran.
 
         Returns:
             InterferogramResult with wrapped phase, coherence, and amplitude.
@@ -173,11 +220,40 @@ class InterferogramGenerator:
             Path(secondary), ref_shape=ref_complex.shape
         )
 
-        # Step 1: geometric coregistration is assumed to already be applied
-        # if both inputs share the same grid (same shape/transform). If not,
-        # resample secondary onto reference grid.
-        if sec_complex.shape != ref_complex.shape:
-            sec_complex = self._resample_to_reference(sec_complex, ref_complex.shape)
+        # Fail loudly here, at the point of entry, rather than as a
+        # confusing downstream numerical artifact after coregistration/
+        # ESD/unwrapping have already spent minutes of processing time
+        # on data that was never usable to begin with.
+        from pygeofetch.insar.validate import DataValidator
+
+        DataValidator.validate_slc(ref_complex, name="reference SLC").raise_if_invalid()
+        DataValidator.validate_slc(sec_complex, name="secondary SLC").raise_if_invalid()
+
+        # Step 1: coregistration.
+        real_coreg_inputs = (
+            dem, reference_safe_zip, secondary_safe_zip,
+            reference_orbit_file, secondary_orbit_file,
+        )
+        if all(x is not None for x in real_coreg_inputs):
+            sec_complex = self._orbit_based_coregister(
+                ref_complex, sec_complex, dem,
+                reference_safe_zip, secondary_safe_zip,
+                reference_orbit_file, secondary_orbit_file,
+            )
+        else:
+            # Fallback: geometric coregistration is assumed to already be
+            # applied if both inputs share the same grid (same shape/
+            # transform). If not, resample secondary onto reference grid.
+            # Real orbit-based coregistration was not used because one or
+            # more of dem/reference_safe_zip/secondary_safe_zip/
+            # reference_orbit_file/secondary_orbit_file was not supplied.
+            logger.info(
+                "Using shape-based coregistration fallback (real orbit-"
+                "based coregistration needs dem + both SAFE zips + both "
+                "orbit files; not all were supplied)."
+            )
+            if sec_complex.shape != ref_complex.shape:
+                sec_complex = self._resample_to_reference(sec_complex, ref_complex.shape)
 
         # Step 2: ESD refinement (residual azimuth shift correction)
         esd_shift = None
@@ -205,6 +281,7 @@ class InterferogramGenerator:
 
         # Step 5: coherence estimation
         coherence = self._estimate_coherence(ref_complex, sec_complex, self._coh_window)
+        DataValidator.validate_coherence(coherence).raise_if_invalid()
 
         amplitude = self._np().log10(self._np().abs(ref_complex) + 1e-10) * 20  # dB
 
@@ -272,6 +349,71 @@ class InterferogramGenerator:
             data = self._resample_to_reference(data, ref_shape)
 
         return data.astype(np.complex64), profile
+
+    def _orbit_based_coregister(
+        self, ref_complex, sec_complex, dem,
+        reference_safe_zip, secondary_safe_zip,
+        reference_orbit_file, secondary_orbit_file,
+    ):
+        """
+        Real orbit-based coregistration: parses real acquisition timing
+        from both SAFE archives' annotation XML and real orbit state
+        vectors from both .EOF files, computes a genuine offset field
+        using ground points sampled directly from the DEM (via
+        geodetic_to_ecef + find_zero_doppler_time — both individually
+        verified reliable; this deliberately never calls the less
+        reliable solve_ground_point), fits a low-degree polynomial to
+        it, and resamples the secondary image accordingly.
+
+        Falls back to the shape-based resample (with a clear warning)
+        if anything in this real pipeline raises — a real, but
+        non-fatal, degradation rather than crashing the whole
+        interferogram over a coregistration input problem.
+        """
+        try:
+            from pygeofetch.insar.annotation import parse_slc_geometry
+            from pygeofetch.insar.geolocation import parse_orbit_file
+            from pygeofetch.insar.coregister import (
+                compute_offset_field_from_dem,
+                fit_offset_polynomial,
+                resample_with_offset_field,
+            )
+
+            ref_geom = parse_slc_geometry(reference_safe_zip)
+            sec_geom = parse_slc_geometry(secondary_safe_zip)
+            ref_orbit = parse_orbit_file(reference_orbit_file)
+            sec_orbit = parse_orbit_file(secondary_orbit_file)
+
+            ref_center_time = ref_geom.azimuth_time(ref_geom.n_lines / 2)
+            sec_center_time = sec_geom.azimuth_time(sec_geom.n_lines / 2)
+
+            grid_rows, grid_cols, off_rows, off_cols = compute_offset_field_from_dem(
+                ref_geom, ref_orbit, sec_geom, sec_orbit, dem,
+                ref_scene_center_time=ref_center_time,
+                sec_scene_center_time=sec_center_time,
+            )
+            row_fn = fit_offset_polynomial(grid_rows, grid_cols, off_rows, degree=1)
+            col_fn = fit_offset_polynomial(grid_rows, grid_cols, off_cols, degree=1)
+
+            logger.info(
+                "Real orbit-based coregistration applied (%d grid points)",
+                len(grid_rows),
+            )
+            resampled = resample_with_offset_field(sec_complex, row_fn, col_fn)
+            if resampled.shape != ref_complex.shape:
+                resampled = self._resample_to_reference(resampled, ref_complex.shape)
+            return resampled
+        except Exception as exc:
+            logger.warning(
+                "Real orbit-based coregistration failed (%s) — falling "
+                "back to shape-based resampling. The interferogram will "
+                "still be produced, but without real sub-pixel "
+                "coregistration accuracy.",
+                exc,
+            )
+            if sec_complex.shape != ref_complex.shape:
+                return self._resample_to_reference(sec_complex, ref_complex.shape)
+            return sec_complex
 
     def _resample_to_reference(self, data, target_shape):
         """Nearest-neighbour resample a complex array to a target shape."""
@@ -440,18 +582,31 @@ class InterferogramGenerator:
             return interferogram
 
     def _estimate_coherence(self, ref, sec, window: int) -> Any:
-        """Estimate interferometric coherence via local windowed correlation."""
-        np = self._np()
-        from scipy import ndimage
+        """Estimate interferometric coherence via local windowed correlation.
 
-        inter = ref * np.conj(sec)
-        num = np.abs(
-            ndimage.uniform_filter(inter.real, size=window)
-            + 1j * ndimage.uniform_filter(inter.imag, size=window)
+        Uses GPU acceleration (CuPy) automatically if a usable GPU is
+        detected and use_gpu was not explicitly disabled; falls back to
+        CPU (numpy/scipy) otherwise. The array-module-agnostic
+        implementation mirrors the original CPU-only logic exactly —
+        same formula, same operation order — specifically to minimize
+        the risk of a numerical difference between the two paths.
+        """
+        from pygeofetch.insar.gpu import get_array_module, to_numpy
+
+        xp, ndi, using_gpu = get_array_module(prefer_gpu=self._use_gpu)
+
+        ref_x = xp.asarray(ref)
+        sec_x = xp.asarray(sec)
+
+        inter = ref_x * xp.conj(sec_x)
+        num = xp.abs(
+            ndi.uniform_filter(inter.real, size=window)
+            + 1j * ndi.uniform_filter(inter.imag, size=window)
         )
-        denom = np.sqrt(
-            ndimage.uniform_filter(np.abs(ref) ** 2, size=window)
-            * ndimage.uniform_filter(np.abs(sec) ** 2, size=window)
+        denom = xp.sqrt(
+            ndi.uniform_filter(xp.abs(ref_x) ** 2, size=window)
+            * ndi.uniform_filter(xp.abs(sec_x) ** 2, size=window)
             + 1e-10
         )
-        return np.clip(num / denom, 0.0, 1.0).astype(np.float32)
+        coherence = xp.clip(num / denom, 0.0, 1.0).astype(xp.float32)
+        return to_numpy(coherence)

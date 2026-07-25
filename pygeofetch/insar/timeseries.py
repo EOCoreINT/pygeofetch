@@ -52,9 +52,22 @@ class TimeSeriesResult:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
     def save(
-        self, output_dir: Union[str, Path], profile: Optional[dict] = None
+        self,
+        output_dir: Union[str, Path],
+        profile: Optional[dict] = None,
+        auto_visualize: bool = False,
     ) -> Dict[str, Path]:
-        """Save displacement time series and velocity as GeoTIFFs."""
+        """Save displacement time series and velocity as GeoTIFFs.
+
+        Args:
+            output_dir:     Directory to save into.
+            profile:        Optional rasterio-style profile for georeferencing.
+            auto_visualize: If True, also save PNG visualizations
+                           (velocity map, residual RMS map, and a
+                           composite per-date displacement grid)
+                           alongside the GeoTIFFs, via
+                           pygeofetch.insar.visualize.
+        """
         import numpy as np
 
         try:
@@ -102,6 +115,15 @@ class TimeSeriesResult:
         paths["residual_rms"] = rms_path
 
         logger.info("Time series products saved → %s", out_dir)
+
+        if auto_visualize:
+            from pygeofetch.insar.visualize import visualize_timeseries
+
+            try:
+                visualize_timeseries(self, out_dir)
+            except Exception as exc:
+                logger.warning("auto_visualize failed (GeoTIFFs were still saved successfully): %s", exc)
+
         return paths
 
 
@@ -141,9 +163,11 @@ class SBASTimeSeries:
         self,
         wavelength_m: float = SENTINEL1_WAVELENGTH_M,
         reference_date: Optional[str] = None,
+        use_gpu: bool = False,
     ) -> None:
         self._wavelength = wavelength_m
         self._reference_date = reference_date
+        self._use_gpu = use_gpu
 
     def invert(
         self,
@@ -199,6 +223,15 @@ class SBASTimeSeries:
             # Automatic selection (picks highest average coherence pixel)
             result = sbas.invert(pairs)
         """
+        from pygeofetch.insar.validate import DataValidator
+
+        all_dates = sorted({p.reference_date for p in pairs} | {p.secondary_date for p in pairs})
+        DataValidator.validate_sbas_network(pairs, all_dates).raise_if_invalid()
+        for p in pairs:
+            DataValidator.validate_coherence(
+                p.coherence, name=f"coherence ({p.reference_date}_{p.secondary_date})"
+            ).raise_if_invalid()
+
         pairs = self._reference_pairs(pairs, reference_pixel)
 
         if use_mintpy:
@@ -325,8 +358,22 @@ class SBASTimeSeries:
         # Pixel-wise weighted least squares (vectorised over rows for speed
         # where possible; fall back to per-pixel loop only where needed)
         ATA = A_reduced.T @ A_reduced
+
+        from pygeofetch.insar.gpu import get_array_module, to_numpy
+
+        xp, _, using_gpu = get_array_module(prefer_gpu=self._use_gpu)
+
         try:
-            ATA_inv = np.linalg.pinv(ATA)
+            if using_gpu:
+                # The matrix solve and the big (n_pairs, H*W) matmul are
+                # the real O(H*W) cost drivers for large scenes -- moved
+                # to GPU here, converted back to numpy at the end so the
+                # rest of this method (not GPU-aware) is unaffected.
+                A_reduced_x = xp.asarray(A_reduced)
+                ATA_x = xp.asarray(ATA)
+                ATA_inv = to_numpy(xp.linalg.pinv(ATA_x))
+            else:
+                ATA_inv = np.linalg.pinv(ATA)
         except np.linalg.LinAlgError:
             raise RuntimeError(
                 "SBAS design matrix is singular — the interferogram network "
@@ -340,7 +387,12 @@ class SBASTimeSeries:
         # matches the standard SBAS approach for well-connected, high-coherence
         # networks (Berardino et al. 2002, Section III).
         obs_flat = disp_stack.reshape(n_pairs, -1)  # (n_pairs, H*W)
-        est_flat = ATA_inv @ A_reduced.T @ obs_flat  # (n_dates-1, H*W)
+        if using_gpu:
+            obs_flat_x = xp.asarray(obs_flat)
+            ATA_inv_x = xp.asarray(ATA_inv)
+            est_flat = to_numpy(ATA_inv_x @ A_reduced_x.T @ obs_flat_x)
+        else:
+            est_flat = ATA_inv @ A_reduced.T @ obs_flat  # (n_dates-1, H*W)
 
         displacement[keep_cols, :, :] = est_flat.reshape(len(keep_cols), h, w)
         displacement[ref_col] = 0.0
