@@ -30,7 +30,7 @@ CLI::
     pygeofetch doctor
 """
 
-__version__ = "1.8.0"
+__version__ = "1.9.1"
 __author__ = "PyGeoFetch Contributors"
 __license__ = "MIT"
 

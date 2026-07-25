@@ -79,6 +79,7 @@ from pygeofetch.insar.geolocation import (
     find_zero_doppler_time,
     parse_orbit_file,
     interpolate_orbit_state,
+    los_to_vertical_displacement,
 )
 from pygeofetch.insar.coregister import (
     compute_offset_field_from_dem,
@@ -105,6 +106,7 @@ __all__ = [
     "find_zero_doppler_time",
     "parse_orbit_file",
     "interpolate_orbit_state",
+    "los_to_vertical_displacement",
     "compute_offset_field_from_dem",
     "fit_offset_polynomial",
     "resample_with_offset_field",

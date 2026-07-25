@@ -19,6 +19,7 @@ build/
 eggs/
 parts/
 var/
+*.pdf/
 sdist/
 develop-eggs/
 .installed.cfg

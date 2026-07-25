@@ -176,7 +176,7 @@ class PyGeoFetch:
         if _product.upper() == "SLC" and _effective:
             _effective = self._route_slc_providers(_effective)
         results = self.searcher.search(query, providers=_effective, use_cache=use_cache)
-        self._warn_if_outdated_constellation(results)
+        self._warn_if_outdated_constellation(results, query)
         return results
 
     def search_and_save(
@@ -217,19 +217,43 @@ class PyGeoFetch:
     }
     _GRD_ONLY = {"planetary_computer", "aws_earth", "element84"}
 
-    def _warn_if_outdated_constellation(self, results: list) -> None:
-        """Log a warning if results contain only decommissioned satellites after S1A decomm."""
-        from datetime import date
+    def _warn_if_outdated_constellation(self, results: list, query) -> None:
+        """Log a warning if results contain only decommissioned satellites
+        for a search whose OWN requested date range extends past S1A's
+        real decommissioning date — not just because today happens to be
+        past it. A search for genuine historical data (e.g. November
+        2024, well before S1A's actual 1 July 2026 end of mission) must
+        never trigger this, regardless of what today's date is; S1A
+        results from before decommissioning are completely legitimate."""
+        from datetime import date, datetime
 
         S1A_DECOM = date(2026, 7, 1)
-        if date.today() >= S1A_DECOM:
+
+        query_end = getattr(query, "end_date", None)
+        if query_end is None:
+            # No end date specified -- fall back to whether the search
+            # was actually run after decommissioning (the old behaviour,
+            # but only as a last resort when there's no query date to
+            # check against).
+            query_end_date = date.today()
+        elif isinstance(query_end, str):
+            query_end_date = datetime.fromisoformat(query_end.replace("Z", "")).date()
+        elif isinstance(query_end, datetime):
+            query_end_date = query_end.date()
+        elif isinstance(query_end, date):
+            query_end_date = query_end
+        else:
+            query_end_date = date.today()
+
+        if query_end_date >= S1A_DECOM:
             platforms = {getattr(r, "satellite", "") or "" for r in results}
             normalised = {_normalise_satellite_name(p) for p in platforms}
             if any("S1" in p for p in normalised):  # only check if S1 results
                 if not any(p in {"S1C", "S1D"} for p in normalised):
                     logger.warning(
-                        "Search returned only S1A/S1B results after Sentinel-1A "
-                        "decommissioning date. This may indicate a provider collection "
+                        "Search returned only S1A/S1B results for a date range "
+                        "extending past Sentinel-1A's real decommissioning date "
+                        "(1 July 2026). This may indicate a provider collection "
                         "routing issue. Check platform filter settings."
                     )
 
