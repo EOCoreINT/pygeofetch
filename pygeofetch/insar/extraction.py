@@ -189,14 +189,192 @@ class SLCExtractor:
             else output_dir / f"{zip_path.stem}_{self._pol}.tif"
         )
 
-        with zipfile.ZipFile(zip_path) as zf:
-            with zf.open(matched_member) as src_f, open(out_path, "wb") as dst_f:
-                dst_f.write(src_f.read())
+        cropped = self._crop_to_aoi(zip_path, matched_member, aoi_tuple, out_path)
+        if cropped is None:
+            logger.warning(
+                "Cropping %s to AOI failed — falling back to extracting the "
+                "full, uncropped sub-swath (this will be much larger and "
+                "slower for everything downstream).",
+                self._swath_label(matched_member),
+            )
+            with zipfile.ZipFile(zip_path) as zf:
+                with zf.open(matched_member) as src_f, open(out_path, "wb") as dst_f:
+                    dst_f.write(src_f.read())
+            self._tag_matched_swath(out_path, matched_member)
 
         logger.info(
             "Extracted %s -> %s", self._swath_label(matched_member), out_path.name
         )
         return out_path
+
+    def _tag_matched_swath(self, out_path: Path, member_name: str) -> None:
+        """Tag an already-written GeoTIFF with its matched sub-swath label,
+        for the fallback (raw-copy) extraction path, which doesn't go
+        through rasterio for its initial write the way _crop_to_aoi()
+        does. Failure here is non-fatal -- the file itself is still
+        correct, just missing this one piece of discoverable metadata,
+        so downstream code falls back to arbitrary-first-match behaviour
+        rather than losing the extraction entirely."""
+        try:
+            import rasterio
+
+            with rasterio.open(out_path, "r+") as dst:
+                dst.update_tags(matched_swath=self._swath_label(member_name).lower())
+        except Exception as exc:
+            logger.warning(
+                "Could not tag %s with its matched sub-swath: %s", out_path.name, exc
+            )
+
+    def _crop_to_aoi(
+        self,
+        zip_path: Path,
+        member_name: str,
+        aoi_tuple: Tuple[float, float, float, float],
+        out_path: Path,
+        margin_frac: float = 0.15,
+    ) -> Optional[Path]:
+        """
+        Crop a zipped Sentinel-1 measurement TIFF to the AOI, reading
+        directly from inside the zip (no full-file extraction) and
+        writing only the windowed AOI region.
+
+        Sentinel-1 SLC TIFFs are GCP-georeferenced, not a simple affine
+        transform, so an exact pixel window can't be computed directly.
+        This fits an approximate affine transform from the real embedded
+        GCPs (rasterio.transform.from_gcps — the standard technique for
+        this), then adds a safety margin around the computed window to
+        protect against that approximation's error rather than risk
+        cutting off the real AOI.
+
+        Args:
+            margin_frac: Fractional padding added to the computed window
+                       on each side (0.15 = 15%) — generous on purpose,
+                       since padding too much only costs a little extra
+                       size, while padding too little risks silently
+                       losing part of the real area of interest.
+
+        Returns:
+            out_path on success, None if cropping wasn't possible for
+            any reason (missing GCPs, unreadable TIFF, degenerate
+            transform) — callers should fall back to full extraction
+            rather than fail outright.
+        """
+        import rasterio
+        from rasterio.transform import from_gcps
+        from rasterio.windows import Window
+        from rasterio.crs import CRS
+
+        vsi_path = f"/vsizip/{zip_path}/{member_name}"
+        try:
+            with rasterio.open(vsi_path) as src:
+                gcps, _gcp_crs = src.gcps
+                if not gcps or len(gcps) < 4:
+                    logger.warning(
+                        "%s: too few GCPs (%d) to fit a reliable crop transform",
+                        member_name, len(gcps) if gcps else 0,
+                    )
+                    return None
+
+                approx_transform = from_gcps(gcps)
+
+                min_lon, min_lat, max_lon, max_lat = aoi_tuple
+                # Inverse-transform all 4 AOI corners and take the bounding
+                # box of the results, rather than rasterio.windows.from_bounds()
+                # -- that function assumes a standard north-up transform
+                # (row increases as latitude decreases) and raises "Bounds
+                # and transform are inconsistent" when it doesn't, which is
+                # exactly the orientation real ascending-pass Sentinel-1
+                # data has (confirmed directly against real product
+                # footprints). This corner-based approach makes no
+                # assumption about orientation at all.
+                inv_transform = ~approx_transform
+                corners = [
+                    (min_lon, min_lat), (min_lon, max_lat),
+                    (max_lon, min_lat), (max_lon, max_lat),
+                ]
+                cols, rows = [], []
+                for lon, lat in corners:
+                    col, row = inv_transform * (lon, lat)
+                    cols.append(col)
+                    rows.append(row)
+                window = Window(
+                    col_off=min(cols), row_off=min(rows),
+                    width=max(cols) - min(cols), height=max(rows) - min(rows),
+                )
+
+                # Safety margin: the GCP-fitted transform is only an
+                # approximation, so pad the window generously rather than
+                # risk cropping out part of the real AOI.
+                pad_w = max(window.width * margin_frac, 50)
+                pad_h = max(window.height * margin_frac, 50)
+                col_off = window.col_off - pad_w
+                row_off = window.row_off - pad_h
+                width = window.width + 2 * pad_w
+                height = window.height + 2 * pad_h
+
+                # Clamp to the actual raster extent -- the padded window
+                # can legitimately extend past the real data bounds.
+                col_off_clamped = max(0, col_off)
+                row_off_clamped = max(0, row_off)
+                width_clamped = min(width - (col_off_clamped - col_off), src.width - col_off_clamped)
+                height_clamped = min(height - (row_off_clamped - row_off), src.height - row_off_clamped)
+
+                if width_clamped <= 0 or height_clamped <= 0:
+                    logger.warning(
+                        "%s: computed crop window falls entirely outside the "
+                        "raster bounds -- GCP transform may be unreliable",
+                        member_name,
+                    )
+                    return None
+
+                read_window = Window(
+                    col_off_clamped, row_off_clamped, width_clamped, height_clamped
+                )
+                data = src.read(1, window=read_window)
+
+                if data.size == 0:
+                    return None
+
+                # Real, locally-accurate transform for the cropped region,
+                # derived from the same GCP-fit transform used to locate it.
+                crop_transform = rasterio.windows.transform(read_window, approx_transform)
+
+                out_path.parent.mkdir(parents=True, exist_ok=True)
+                with rasterio.open(
+                    out_path, "w", driver="GTiff",
+                    dtype=data.dtype, count=1,
+                    width=data.shape[1], height=data.shape[0],
+                    crs=CRS.from_epsg(4326), transform=crop_transform,
+                    compress="deflate",
+                ) as dst:
+                    dst.write(data, 1)
+                    # Record the crop's origin in the FULL, UNCROPPED
+                    # scene's pixel coordinates. Real orbit-based
+                    # coregistration computes offset fields using
+                    # annotation.py's real acquisition timing, which
+                    # describes the full, uncropped sub-swath -- without
+                    # this offset recorded, downstream code has no way to
+                    # know that local row/col 0,0 in this cropped file is
+                    # actually row/col crop_row_off,crop_col_off in the
+                    # scene the orbit math is expressed in, and would
+                    # silently evaluate the fitted offset polynomial at
+                    # the wrong coordinates.
+                    dst.update_tags(
+                        crop_row_off=str(row_off_clamped),
+                        crop_col_off=str(col_off_clamped),
+                        matched_swath=self._swath_label(member_name).lower(),
+                    )
+
+                logger.info(
+                    "Cropped %s: %dx%d -> %dx%d (%.1fx smaller)",
+                    self._swath_label(member_name), src.width, src.height,
+                    data.shape[1], data.shape[0],
+                    (src.width * src.height) / max(data.size, 1),
+                )
+                return out_path
+        except Exception as exc:
+            logger.warning("Could not crop %s to AOI: %s", member_name, exc)
+            return None
 
     def list_subswaths(self, zip_path: Union[str, Path]) -> List[str]:
         """

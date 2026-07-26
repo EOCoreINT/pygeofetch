@@ -74,6 +74,7 @@ class AtmosphericCorrector:
         dem: Union[str, Path],
         acquisition_datetime: Optional[str] = None,
         incidence_angle_deg: float = 38.0,
+        return_metadata: bool = False,
     ) -> Any:
         """
         Remove the tropospheric delay component from wrapped or unwrapped phase.
@@ -88,15 +89,33 @@ class AtmosphericCorrector:
             incidence_angle_deg:   Radar incidence angle for LOS projection
                                   of zenith delay (Sentinel-1 IW ≈ 30-46°,
                                   default 38° is the mid-swath average).
+            return_metadata:       If True, returns (phase, metadata) instead
+                                  of just phase. metadata includes
+                                  "correction_applied" (bool) and, for the
+                                  elevation method, "r_squared" (float) --
+                                  this is the only reliable way to know
+                                  whether a correction actually happened,
+                                  since the elevation method's internal R²
+                                  gate can legitimately skip correction
+                                  (returning the input unchanged) without
+                                  raising or otherwise signalling that in
+                                  the plain return value. Default False
+                                  preserves the original return type for
+                                  existing callers.
 
         Returns:
-            Corrected phase array, same shape and units as input.
+            Corrected phase array, same shape and units as input (or a
+            (phase, metadata) tuple if return_metadata=True).
         """
         if self._method == "era5":
-            return self._correct_era5(
+            result = self._correct_era5(
                 phase, dem, acquisition_datetime, incidence_angle_deg
             )
-        return self._correct_elevation(phase, dem)
+            metadata = {"correction_applied": True}
+        else:
+            result, metadata = self._correct_elevation(phase, dem)
+
+        return (result, metadata) if return_metadata else result
 
     # ── native elevation-correlated correction ────────────────────────────────
 
@@ -121,6 +140,12 @@ class AtmosphericCorrector:
         the phase variance (R² > 0.5); otherwise it is skipped and logged,
         since removing a low-confidence trend risks deleting real
         deformation signal rather than atmospheric noise.
+
+        Returns:
+            (phase_or_corrected, metadata) -- metadata always includes
+            "correction_applied" (bool) and, whenever the R² gate was
+            actually evaluated, "r_squared" (float), so callers can tell
+            a genuine correction apart from a same-shaped pass-through.
         """
         np = self._np()
         try:
@@ -145,7 +170,7 @@ class AtmosphericCorrector:
             logger.warning(
                 "Insufficient valid pixels for elevation correction — returning uncorrected"
             )
-            return phase
+            return phase, {"correction_applied": False, "reason": "insufficient_valid_pixels"}
 
         dem_v = dem_data[valid]
         phase_v = phase[valid]
@@ -164,7 +189,7 @@ class AtmosphericCorrector:
                 "correction to avoid absorbing real deformation signal.",
                 r_squared,
             )
-            return phase
+            return phase, {"correction_applied": False, "r_squared": float(r_squared)}
 
         tropo_phase = slope_rad_per_m * dem_data
         corrected = phase - tropo_phase
@@ -174,7 +199,7 @@ class AtmosphericCorrector:
             slope_rad_per_m,
             int(valid.sum()),
         )
-        return corrected.astype(np.float32)
+        return corrected.astype(np.float32), {"correction_applied": True, "r_squared": float(r_squared)}
 
     # ── ERA5/PyAPS-based correction ───────────────────────────────────────────
 

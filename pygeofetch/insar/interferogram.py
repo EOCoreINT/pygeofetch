@@ -239,6 +239,7 @@ class InterferogramGenerator:
                 ref_complex, sec_complex, dem,
                 reference_safe_zip, secondary_safe_zip,
                 reference_orbit_file, secondary_orbit_file,
+                reference, secondary,
             )
         else:
             # Fallback: geometric coregistration is assumed to already be
@@ -267,11 +268,20 @@ class InterferogramGenerator:
         interferogram = ref_complex * self._np().conj(sec_complex)
 
         # Step 4: remove topographic phase
+        topo_metadata = {"correction_applied": False}
         if dem is not None:
-            interferogram = self._remove_topographic_phase(
+            interferogram, topo_metadata = self._remove_topographic_phase(
                 interferogram, Path(dem), profile
             )
-            logger.info("Topographic phase removed using DEM: %s", Path(dem).name)
+            if topo_metadata["correction_applied"]:
+                logger.info("Topographic phase removed using DEM: %s", Path(dem).name)
+            else:
+                logger.info(
+                    "DEM supplied (%s) but topographic phase was NOT removed — "
+                    "see the reason logged above (R² gate, insufficient valid "
+                    "pixels, or an error). The interferogram was still produced.",
+                    Path(dem).name,
+                )
         else:
             logger.warning(
                 "No DEM provided — topographic phase NOT removed. "
@@ -296,7 +306,8 @@ class InterferogramGenerator:
             metadata={
                 "coherence_window": self._coh_window,
                 "esd_applied": self._esd_enabled and esd_shift is not None,
-                "topographic_phase_removed": dem is not None,
+                "topographic_phase_removed": topo_metadata["correction_applied"],
+                "topographic_phase_r_squared": topo_metadata.get("r_squared"),
             },
         )
 
@@ -354,6 +365,7 @@ class InterferogramGenerator:
         self, ref_complex, sec_complex, dem,
         reference_safe_zip, secondary_safe_zip,
         reference_orbit_file, secondary_orbit_file,
+        reference_extracted_path=None, secondary_extracted_path=None,
     ):
         """
         Real orbit-based coregistration: parses real acquisition timing
@@ -364,6 +376,15 @@ class InterferogramGenerator:
         verified reliable; this deliberately never calls the less
         reliable solve_ground_point), fits a low-degree polynomial to
         it, and resamples the secondary image accordingly.
+
+        reference_extracted_path/secondary_extracted_path (the actual
+        files ref_complex/sec_complex were read from) are used to read
+        back each file's real crop offset, if SLCExtractor cropped it to
+        an AOI — the offset field is fit on real, annotation-derived
+        FULL-SCENE coordinates, so a cropped array's local 0-based
+        coordinates need this correction before the fit can be evaluated
+        correctly; without it, the fit gets evaluated far outside the
+        region it was actually built from, silently.
 
         Falls back to the shape-based resample (with a clear warning)
         if anything in this real pipeline raises — a real, but
@@ -377,10 +398,20 @@ class InterferogramGenerator:
                 compute_offset_field_from_dem,
                 fit_offset_polynomial,
                 resample_with_offset_field,
+                read_crop_offset,
+                read_matched_swath,
             )
 
-            ref_geom = parse_slc_geometry(reference_safe_zip)
-            sec_geom = parse_slc_geometry(secondary_safe_zip)
+            ref_swath_hint = (
+                read_matched_swath(reference_extracted_path)
+                if reference_extracted_path is not None else None
+            )
+            sec_swath_hint = (
+                read_matched_swath(secondary_extracted_path)
+                if secondary_extracted_path is not None else None
+            )
+            ref_geom = parse_slc_geometry(reference_safe_zip, member_hint=ref_swath_hint)
+            sec_geom = parse_slc_geometry(secondary_safe_zip, member_hint=sec_swath_hint)
             ref_orbit = parse_orbit_file(reference_orbit_file)
             sec_orbit = parse_orbit_file(secondary_orbit_file)
 
@@ -395,11 +426,30 @@ class InterferogramGenerator:
             row_fn = fit_offset_polynomial(grid_rows, grid_cols, off_rows, degree=1)
             col_fn = fit_offset_polynomial(grid_rows, grid_cols, off_cols, degree=1)
 
+            ref_row_off, ref_col_off = (
+                read_crop_offset(reference_extracted_path)
+                if reference_extracted_path is not None else (0.0, 0.0)
+            )
+            sec_row_off, sec_col_off = (
+                read_crop_offset(secondary_extracted_path)
+                if secondary_extracted_path is not None else (0.0, 0.0)
+            )
+            if ref_row_off or ref_col_off or sec_row_off or sec_col_off:
+                logger.info(
+                    "Correcting for cropped extraction: reference offset "
+                    "(%.0f, %.0f), secondary offset (%.0f, %.0f)",
+                    ref_row_off, ref_col_off, sec_row_off, sec_col_off,
+                )
+
             logger.info(
                 "Real orbit-based coregistration applied (%d grid points)",
                 len(grid_rows),
             )
-            resampled = resample_with_offset_field(sec_complex, row_fn, col_fn)
+            resampled = resample_with_offset_field(
+                sec_complex, row_fn, col_fn,
+                ref_row_offset=ref_row_off, ref_col_offset=ref_col_off,
+                sec_row_offset=sec_row_off, sec_col_offset=sec_col_off,
+            )
             if resampled.shape != ref_complex.shape:
                 resampled = self._resample_to_reference(resampled, ref_complex.shape)
             return resampled
@@ -497,12 +547,20 @@ class InterferogramGenerator:
         genuine residual topographic phase (e.g. from an outdated DEM or
         large perpendicular baseline), supply precise baseline geometry
         via the SAR backend's calibrate/terrain_correct methods instead.
+
+        Returns:
+            (interferogram, metadata) -- metadata always includes
+            "correction_applied" (bool), so callers (specifically
+            process_pair()'s own metadata) can report what actually
+            happened rather than just whether a DEM was supplied as
+            input, which says nothing about whether the R² gate let the
+            correction through.
         """
         np = self._np()
         try:
             import rasterio
         except ImportError:
-            return interferogram
+            return interferogram, {"correction_applied": False, "reason": "rasterio_missing"}
 
         try:
             with rasterio.open(dem_path) as dem_src:
@@ -523,7 +581,7 @@ class InterferogramGenerator:
                 logger.warning(
                     "Insufficient valid DEM pixels for topo phase regression"
                 )
-                return interferogram
+                return interferogram, {"correction_applied": False, "reason": "insufficient_valid_pixels"}
 
             # Regress phase (wrapped — NOT 1D-unwrapped, since np.unwrap on an
             # arbitrary flattened 2D-masked sequence is not a valid unwrapping
@@ -561,7 +619,7 @@ class InterferogramGenerator:
                     "phase is present (e.g. accurate DEM, small baseline).",
                     r_squared,
                 )
-                return interferogram
+                return interferogram, {"correction_applied": False, "r_squared": float(r_squared)}
 
             slope_re, intercept_re = coeffs_re
             slope_im, intercept_im = coeffs_im
@@ -573,13 +631,13 @@ class InterferogramGenerator:
                 "Topographic phase regression R²=%.2f — correction applied", r_squared
             )
             corrected = interferogram * np.exp(-1j * topo_phase)
-            return corrected.astype(np.complex64)
+            return corrected.astype(np.complex64), {"correction_applied": True, "r_squared": float(r_squared)}
 
         except Exception as exc:
             logger.warning(
                 "Topographic phase removal failed: %s — returning uncorrected", exc
             )
-            return interferogram
+            return interferogram, {"correction_applied": False, "reason": str(exc)}
 
     def _estimate_coherence(self, ref, sec, window: int) -> Any:
         """Estimate interferometric coherence via local windowed correlation.

@@ -21,9 +21,47 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
 logger = logging.getLogger("pygeofetch.insar.coregister")
+
+
+def read_matched_swath(path: Union[str, Path]) -> Optional[str]:
+    """
+    Read back the matched sub-swath label (e.g. "iw3") recorded by
+    SLCExtractor.extract_scene(). Returns None if not present, so
+    callers can fall back to parse_slc_geometry()'s default (arbitrary
+    first-match) behaviour rather than fail outright.
+    """
+    import rasterio
+
+    try:
+        with rasterio.open(path) as src:
+            return src.tags().get("matched_swath") or None
+    except Exception:
+        return None
+
+
+def read_crop_offset(path: Union[str, Path]) -> Tuple[float, float]:
+    """
+    Read back the crop offset recorded by SLCExtractor._crop_to_aoi() -
+    the local array's origin in the original, uncropped scene's pixel
+    coordinates. Returns (0.0, 0.0) if the file wasn't cropped (either
+    it's the raw fallback extraction, or a file this metadata predates),
+    which is the correct default: no crop means local and full-scene
+    coordinates are already the same thing.
+    """
+    import rasterio
+
+    try:
+        with rasterio.open(path) as src:
+            tags = src.tags()
+            return (
+                float(tags.get("crop_row_off", 0.0)),
+                float(tags.get("crop_col_off", 0.0)),
+            )
+    except Exception:
+        return (0.0, 0.0)
 
 
 def compute_offset_field_from_dem(
@@ -294,7 +332,11 @@ def fit_offset_polynomial(grid_rows, grid_cols, offsets, degree: int = 1):
     return evaluate
 
 
-def resample_with_offset_field(data, row_offset_fn, col_offset_fn):
+def resample_with_offset_field(
+    data, row_offset_fn, col_offset_fn,
+    ref_row_offset: float = 0.0, ref_col_offset: float = 0.0,
+    sec_row_offset: float = 0.0, sec_col_offset: float = 0.0,
+):
     """
     Resample a complex array using a real, per-pixel offset field
     (from fit_offset_polynomial), rather than a naive shape-only zoom.
@@ -303,7 +345,24 @@ def resample_with_offset_field(data, row_offset_fn, col_offset_fn):
         data:           Complex array to resample (the secondary SLC).
         row_offset_fn, col_offset_fn: Callables from fit_offset_polynomial(),
                        giving the real (secondary - reference) offset
-                       at any (row, col) in the reference grid.
+                       at any (row, col) expressed in REFERENCE
+                       full-scene coordinates (that's what
+                       compute_offset_field_from_dem() fits them on).
+        ref_row_offset, ref_col_offset: The reference array's origin in
+                       full-scene coordinates (from read_crop_offset()
+                       on the reference file, if cropped) -- needed to
+                       correctly evaluate the offset functions, since
+                       they were fit on full-scene coordinates, not the
+                       reference crop's local 0-based ones.
+        sec_row_offset, sec_col_offset: The secondary array's (this
+                       function's `data`) origin in full-scene
+                       coordinates -- needed to convert the computed
+                       full-scene secondary sample position back into
+                       `data`'s own local coordinates for indexing,
+                       since the secondary crop can have a different
+                       offset than the reference crop.
+                       All four default to 0 for already-full-scene
+                       (uncropped) data.
 
     Returns:
         The resampled complex array, on the reference image's grid.
@@ -314,8 +373,26 @@ def resample_with_offset_field(data, row_offset_fn, col_offset_fn):
     h, w = data.shape
     row_idx, col_idx = np.mgrid[0:h, 0:w].astype(np.float64)
 
-    sample_rows = row_idx + row_offset_fn(row_idx, col_idx)
-    sample_cols = col_idx + col_offset_fn(row_idx, col_idx)
+    # row_idx/col_idx are the reference grid's local (0-based) coordinates.
+    # Convert to full-scene coordinates to correctly evaluate the fitted
+    # offset functions, which were built on real annotation-derived
+    # full-scene coordinates, not any particular crop's local ones.
+    ref_global_row = row_idx + ref_row_offset
+    ref_global_col = col_idx + ref_col_offset
+
+    offset_row = row_offset_fn(ref_global_row, ref_global_col)
+    offset_col = col_offset_fn(ref_global_row, ref_global_col)
+
+    # Where this pixel's secondary counterpart is, in full-scene coordinates
+    sec_global_row = ref_global_row + offset_row
+    sec_global_col = ref_global_col + offset_col
+
+    # Convert to the SECONDARY array's own local coordinates for actually
+    # indexing into `data` -- the secondary crop can have a different
+    # offset than the reference crop, so this is not the same subtraction
+    # as ref_row_offset/ref_col_offset above.
+    sample_rows = sec_global_row - sec_row_offset
+    sample_cols = sec_global_col - sec_col_offset
 
     real = map_coordinates(data.real, [sample_rows, sample_cols], order=1, mode="constant", cval=0.0)
     imag = map_coordinates(data.imag, [sample_rows, sample_cols], order=1, mode="constant", cval=0.0)

@@ -355,45 +355,136 @@ Every stage supports automatic visualization (`auto_visualize=True`) and optiona
 
 See [`pygeofetch/insar/README.md`](pygeofetch/insar/README.md) for the full processing chain, verification methodology, and current limitations.
 
-
 ```python
-# InSAR — search to SBAS time series
-from pygeofetch.insar import (
-    InterferogramGenerator, PhaseUnwrapper, AtmosphericCorrector,
-    SBASTimeSeries, DataValidator,
-)
-from pygeofetch.insar.timeseries import InterferogramPair
-from pygeofetch.core.orbits import fetch_orbit_file
-
-# Coregistration + interferogram formation (real orbit-based when a DEM,
-# both SAFE archives, and both orbit files are supplied; falls back to
-# shape-based resampling otherwise)
-gen = InterferogramGenerator(coherence_window=5, esd_enabled=True, use_gpu=False)
+from pygeofetch.insar import InterferogramGenerator
+ 
+gen = InterferogramGenerator(use_gpu=False)
 result = gen.process_pair(
-    reference="slc_ref.tif", secondary="slc_sec.tif", dem="dem.tif",
-    reference_safe_zip="ref.SAFE.zip", secondary_safe_zip="sec.SAFE.zip",
-    reference_orbit_file=fetch_orbit_file("S1A_..._ref"),
-    secondary_orbit_file=fetch_orbit_file("S1A_..._sec"),
+    reference="slc_ref.tif",
+    secondary="slc_sec.tif",
+    dem="dem.tif",
+    reference_safe_zip="S1A_..._ref.SAFE.zip",
+    secondary_safe_zip="S1A_..._sec.SAFE.zip",
+    reference_orbit_file="ref.EOF",
+    secondary_orbit_file="sec.EOF",
 )
 result.save("./output", auto_visualize=True)
-
-# Atmospheric correction + phase unwrapping
+```
+ 
+### Without the new orbit-based inputs (falls back safely)
+ 
+```python
+result = gen.process_pair(reference="slc_ref.tif", secondary="slc_sec.tif", dem="dem.tif")
+# Logs: "Using shape-based coregistration fallback ..."
+```
+ 
+### Full chain, search to SBAS
+ 
+```python
+from pathlib import Path
+import numpy as np
+from pygeofetch import PyGeoFetch
+from pygeofetch.models.search_query import SearchQuery, BoundingBox
+from pygeofetch.models.download_task import DownloadOptions
+from pygeofetch.processing.preprocessor import Preprocessor
+from pygeofetch.core.orbits import fetch_orbit_file
+from pygeofetch.insar import (
+    SLCExtractor, InterferogramGenerator, AtmosphericCorrector,
+    PhaseUnwrapper, SBASTimeSeries, DataValidator, multilook,
+)
+from pygeofetch.insar.timeseries import InterferogramPair
+ 
+client = PyGeoFetch()
+client.add_credentials("copernicus", username="you@example.com", password="...")
+client.add_credentials("opentopography", api_key="...")
+ 
+aoi = BoundingBox(min_lon=-1.75, max_lon=-1.63, min_lat=6.15, max_lat=6.24)
+output_dir = Path("./insar_output")
+ 
+# Search — real geometry/bbox filtering, not the dead geometry_geojson= field
+scenes = {}
+for start, end in [("2026-01-01", "2026-01-08"), ("2026-01-13", "2026-01-20")]:
+    results = client.search(
+        SearchQuery(bbox=aoi, start_date=start, end_date=end,
+                    product_type="SLC", polarisation="VV", max_results=1),
+        providers=["copernicus"],
+    )
+    if results:
+        scenes[str(results[0].datetime.date())] = results[0]
+ 
+# Download
+downloads = {
+    label: client.download([scene], destination=output_dir / "raw" / label,
+                            options=DownloadOptions(resume=True))[0]
+    for label, scene in scenes.items()
+}
+ 
+# Real orbit files — use the real product name, not the catalog ID
+orbits = {
+    label: fetch_orbit_file(
+        product_name=scene.properties.get("name", scene.id),
+        output_dir=str(output_dir / "orbits"), orbit_type="precise",
+    )
+    for label, scene in scenes.items()
+}
+ 
+# Real DEM, clipped to the AOI
+dem_result = client.download(
+    client.search(SearchQuery(bbox=aoi), providers=["opentopography"])[:1],
+    destination=output_dir / "dem",
+)[0]
+dem_path = Preprocessor().clip(dem_result.output_path, bbox=aoi,
+                                output=str(output_dir / "dem" / "clipped.tif")).output_path
+ 
+# AOI-cropped extraction (not the full sub-swath)
+extractor = SLCExtractor(polarisation="VV")
+slcs = {
+    label: extractor.extract_scene(dl.output_path, aoi=aoi,
+                                    output_dir=output_dir / "slc" / label, label=label)
+    for label, dl in downloads.items()
+}
+dates = sorted(slcs)
+ 
+# Interferogram formation — real orbit-based coregistration when all four
+# inputs are available; falls back to shape-based resampling otherwise
+gen = InterferogramGenerator(coherence_window=5, esd_enabled=True, use_gpu=False)
+d1, d2 = dates[0], dates[1]
+result = gen.process_pair(
+    reference=slcs[d1], secondary=slcs[d2], dem=dem_path,
+    reference_date=d1, secondary_date=d2,
+    reference_safe_zip=downloads[d1].output_path, secondary_safe_zip=downloads[d2].output_path,
+    reference_orbit_file=orbits[d1], secondary_orbit_file=orbits[d2],
+)
+result.save(output_dir / "interferograms", auto_visualize=True)
+ 
+# Atmospheric correction — return_metadata=True to know what actually happened
 atm = AtmosphericCorrector(method="elevation")
-corrected_phase = atm.correct(result.interferogram, dem="dem.tif")
-
+corrected_phase, atm_meta = atm.correct(
+    np.angle(result.interferogram), dem=dem_path, return_metadata=True
+)
+ 
+# Unwrapping — multilook first; wrapped_phase must be explicit (True for
+# phase, False for coherence — never guessed from dtype)
+phase_ml = multilook(corrected_phase, 4, 1, wrapped_phase=True)
+coherence_ml = multilook(result.coherence, 4, 1, wrapped_phase=False)
 unwrapper = PhaseUnwrapper(cost_mode="defo", init_method="mcf")
-unwrapped, conncomp = unwrapper.unwrap(corrected_phase, result.coherence)
-
-# SBAS time series inversion across a network of interferograms
-pairs = [
-    InterferogramPair("2026-01-01", "2026-01-13", unwrapped, result.coherence),
-    # ... additional pairs forming a connected network
-]
-sbas = SBASTimeSeries(wavelength_m=0.05546576, reference_date="2026-01-01")
-ts_result = sbas.invert(pairs, reference_pixel=(10, 15))  # known-stable pixel
-ts_result.save("./timeseries", auto_visualize=True)
+unwrapped, conncomp = unwrapper.unwrap(phase_ml, coherence_ml, nlooks=4.0)
+ 
+# SBAS inversion
+pairs = [InterferogramPair(d1, d2, unwrapped, coherence_ml)]
+network_check = DataValidator.validate_sbas_network(pairs, dates)
+sbas = SBASTimeSeries(wavelength_m=0.05546576, reference_date=dates[0], use_gpu=False)
+ts_result = sbas.invert(pairs, reference_pixel=(0, 0))
+ts_result.save(output_dir / "timeseries", auto_visualize=True)
 print(f"Mean velocity: {ts_result.velocity.mean()*1000:.1f} mm/year")
 ```
+ 
+<!-- A real, runnable two-date example — extend the search date list and repeat
+the interferogram/unwrapping steps per consecutive pair for a full SBAS
+network. See `23_accra_urban_deformation_sbas.ipynb` for the complete,
+real, multi-date worked version of this exact chain. -->
+ 
+---
 
 ## 🖥️ Complete CLI Reference
 

@@ -44,6 +44,102 @@ def _require_snaphu():
         )
 
 
+def multilook(
+    data: Any,
+    looks_azimuth: int = 4,
+    looks_range: int = 1,
+    wrapped_phase: Optional[bool] = None,
+) -> Any:
+    """
+    Average an array down by the given factor in each dimension before
+    unwrapping — reduces both pixel count and phase noise, the standard
+    technique for improving unwrapping reliability on low-coherence data
+    (Eineder 1999; cited directly in ESA's InSAR processing tutorial,
+    TM-19: "In cases of low coherence (say 0.1), the number of looks to
+    be averaged should increase up to 100").
+
+    Args:
+        data:            2D array to multilook. Complex (interferogram),
+                        or real-valued (coherence, wrapped phase,
+                        unwrapped phase, or any other raster).
+        looks_azimuth:   Averaging factor along axis 0.
+        looks_range:     Averaging factor along axis 1.
+        wrapped_phase:   Required for real-valued input, not optional or
+                        defaulted — dtype alone cannot tell wrapped phase
+                        apart from coherence or unwrapped phase, and
+                        guessing wrong is not a small error:
+
+                        - wrapped_phase=True: circular (complex-exponential)
+                          averaging. Correct for phase bounded to
+                          [-pi, pi) — plain arithmetic averaging would be
+                          biased wherever a look-window straddles the
+                          wrap boundary (e.g. averaging -3.1 and +3.1 rad
+                          arithmetically gives ~0, when the true circular
+                          average is near +-pi).
+                        - wrapped_phase=False: plain arithmetic averaging.
+                          Correct for coherence (bounded [0,1], not an
+                          angle at all) and for unwrapped phase (an
+                          unbounded real value). Verified directly:
+                          circular-averaging real unwrapped phase of
+                          ~45 rad silently collapses it to ~1.3 rad,
+                          destroying the very thing unwrapping produced.
+
+                        Complex input (interferograms) ignores this
+                        parameter entirely and always averages directly
+                        as complex numbers — unambiguous, no real/wrapped
+                        distinction applies.
+
+    Returns:
+        The multilooked array, same dtype family as the input.
+
+    Raises:
+        ValueError: if `data` is real-valued and `wrapped_phase` was not
+            explicitly specified — a real, deliberate refusal to guess,
+            not an oversight. Silent dtype-based guessing was the
+            original design of this function before this exact failure
+            mode was found and fixed.
+
+    Example::
+
+        # A real interferogram (complex) -- unambiguous
+        igram_ml = multilook(interferogram, looks_azimuth=4, looks_range=1)
+
+        # Wrapped phase -- must say so explicitly
+        phase_ml = multilook(wrapped_phase_rad, 4, 1, wrapped_phase=True)
+
+        # Coherence -- must say so explicitly (plain averaging)
+        coherence_ml = multilook(coherence, 4, 1, wrapped_phase=False)
+    """
+    import numpy as np
+
+    h, w = data.shape
+    h_ml = (h // looks_azimuth) * looks_azimuth
+    w_ml = (w // looks_range) * looks_range
+    trimmed = data[:h_ml, :w_ml]
+    reshaped_shape = (h_ml // looks_azimuth, looks_azimuth, w_ml // looks_range, looks_range)
+
+    if np.iscomplexobj(trimmed):
+        return trimmed.reshape(reshaped_shape).mean(axis=(1, 3))
+
+    if wrapped_phase is None:
+        raise ValueError(
+            "multilook() received real-valued input but wrapped_phase was "
+            "not specified. This is required, not optional: dtype alone "
+            "cannot distinguish wrapped phase (needs circular averaging) "
+            "from coherence or unwrapped phase (needs plain arithmetic "
+            "averaging), and guessing wrong silently corrupts the data "
+            "rather than raising an error. Pass wrapped_phase=True for "
+            "wrapped phase in radians, or wrapped_phase=False for "
+            "coherence, unwrapped phase, or any other real-valued raster."
+        )
+
+    if wrapped_phase:
+        reshaped = np.exp(1j * trimmed).reshape(reshaped_shape)
+        return np.angle(reshaped.mean(axis=(1, 3)))
+    else:
+        return trimmed.reshape(reshaped_shape).mean(axis=(1, 3))
+
+
 class PhaseUnwrapper:
     """
     Phase unwrapping via SNAPHU (Statistical-cost, Network-flow Algorithm).
@@ -96,6 +192,8 @@ class PhaseUnwrapper:
         coherence: Any,
         nlooks: float = 1.0,
         mask: Optional[Any] = None,
+        min_conncomp_frac: float = 0.01,
+        min_region_size: int = 100,
     ) -> Tuple[Any, Any]:
         """
         Unwrap a wrapped interferogram phase.
@@ -109,6 +207,25 @@ class PhaseUnwrapper:
                            during interferogram formation.
             mask:          Optional boolean array — True = valid, False = masked out
                            (e.g. water bodies, layover/shadow regions).
+            min_conncomp_frac: Minimum size of a connected component, as a
+                           fraction of total pixels, for SNAPHU to mark it
+                           reliable (conncomp != 0). snaphu-py's own
+                           default (0.01 = 1% of the whole scene) can
+                           discard genuinely valid, internally-consistent
+                           regions when the real coherent area is small
+                           relative to the full scene — confirmed
+                           directly: a real low-coherence scene with a
+                           small but real coherent patch reported 100%
+                           unreliable at the default, purely because that
+                           real patch fell under the 1%-of-scene pixel
+                           threshold, not because nothing was actually
+                           unwrappable. Lower this (e.g. 0.001-0.005) for
+                           scenes with small AOIs or patchy real coherence.
+            min_region_size: Minimum absolute pixel count for the same
+                           reliability decision — snaphu-py's own default
+                           is 100. Works alongside min_conncomp_frac (the
+                           less restrictive of the two typically governs
+                           on a small scene).
 
         Returns:
             (unwrapped_phase, conncomp) — both same shape as input.
@@ -150,6 +267,8 @@ class PhaseUnwrapper:
                 nlooks=nlooks,
                 cost=self._cost_mode,
                 init=self._init_method,
+                min_conncomp_frac=min_conncomp_frac,
+                min_region_size=min_region_size,
             )
         except Exception as exc:
             raise RuntimeError(

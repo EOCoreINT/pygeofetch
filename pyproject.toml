@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygeofetch"
-version = "1.9.1"
+version = "1.9.2"
 description = "Universal satellite data pipeline + geospatial processing platform"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -97,8 +97,8 @@ viz = [
     "whitebox>=2.3.0",
     "whiteboxgui>=2.3.0",
     "geemap>=0.28.0",
-    "osmnx>=1.9.1",
-    "contextily>=1.9.1",
+    "osmnx>=1.9.2",
+    "contextily>=1.9.2",
     "xyzservices>=2023.10.0",
     "mapclassify>=2.5.0",
     "geoplot>=0.5.0",

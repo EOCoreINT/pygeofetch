@@ -15,6 +15,19 @@ MPC-0392):
     /product/imageAnnotation/imageInformation/azimuthTimeInterval
     /product/imageAnnotation/imageInformation/slantRangeTime
     /product/generalAnnotation/productInformation/rangeSamplingRate
+
+Dimension field paths confirmed separately, against ESA's Sentinel-1
+Product Specification (MPC-0240), which documents renaming
+numberOfAzimuthLines -> numberOfLines and numberOfRangeSamples ->
+numberOfSamples:
+
+    /product/imageAnnotation/imageInformation/numberOfLines
+    /product/imageAnnotation/imageInformation/numberOfSamples
+
+("numberOfColumns" is not a real field in this schema at all -- an
+earlier, unverified assumption here that only surfaced against real
+Sentinel-1 data, since synthetic tests built on the same assumption
+couldn't have caught their own premise being wrong.)
 """
 
 from __future__ import annotations
@@ -103,6 +116,17 @@ def parse_slc_geometry(
             n for n in zf.namelist()
             if "/annotation/" in n and n.lower().endswith(".xml")
             and "/calibration/" not in n.lower()
+            # Exclude RFI (radio frequency interference) report files --
+            # confirmed real, present in Sentinel-1 products since IPF
+            # 3.40, living in this same annotation tree. Their filenames
+            # are prefixed "rfi-" (not the satellite-platform prefix
+            # "s1a-"/"s1b-" real per-swath annotation files use), and
+            # critically can ALSO contain "-slc-" for SLC products
+            # (confirmed by testing: an earlier "-slc-" based filter was
+            # insufficient for exactly this reason), so the prefix is
+            # the only reliable differentiator, not substring content.
+            and not Path(n).name.lower().startswith("rfi-")
+            and "/rfi/" not in n.lower()
         ]
         if member_hint:
             filtered = [n for n in candidates if member_hint.lower() in n.lower()]
@@ -142,7 +166,14 @@ def parse_slc_geometry(
             get_text(".//generalAnnotation/productInformation/rangeSamplingRate")
         ),
         n_lines=int(get_text(".//imageAnnotation/imageInformation/numberOfLines")),
-        n_columns=int(get_text(".//imageAnnotation/imageInformation/numberOfColumns")),
+        # Real field name confirmed against ESA's own Product
+        # Specification (MPC-0240): "Renamed numberOfRangeSamples to
+        # numberOfSamples". "numberOfColumns" was never a real field in
+        # this schema at all -- an incorrect assumption in earlier
+        # research here, caught only against real Sentinel-1 data,
+        # since the synthetic tests built on that same assumption
+        # couldn't have caught their own premise being wrong.
+        n_columns=int(get_text(".//imageAnnotation/imageInformation/numberOfSamples")),
     )
 
     logger.info(
