@@ -1,9 +1,9 @@
 # Changelog
 
 All notable changes to PyGeoFetch are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.9.2/).
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.9.3/).
 
-## [1.9.2] — 2026-07-12
+## [1.9.3] — 2026-07-12
 
 ### Added
 - Federated search across 22+ satellite data providers

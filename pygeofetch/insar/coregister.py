@@ -371,32 +371,58 @@ def resample_with_offset_field(
     from scipy.ndimage import map_coordinates
 
     h, w = data.shape
-    row_idx, col_idx = np.mgrid[0:h, 0:w].astype(np.float64)
+    out_real = np.empty((h, w), dtype=np.float32)
+    out_imag = np.empty((h, w), dtype=np.float32)
+    data_real = data.real
+    data_imag = data.imag
 
-    # row_idx/col_idx are the reference grid's local (0-based) coordinates.
-    # Convert to full-scene coordinates to correctly evaluate the fitted
-    # offset functions, which were built on real annotation-derived
-    # full-scene coordinates, not any particular crop's local ones.
-    ref_global_row = row_idx + ref_row_offset
-    ref_global_col = col_idx + ref_col_offset
+    # Process in row chunks rather than building ~10 full-resolution
+    # float64 intermediate arrays (row_idx, col_idx, ref_global_row/col,
+    # offset_row/col, sec_global_row/col, sample_rows/cols) all at once.
+    # Confirmed real: at float64 this scales to several GB for large
+    # crops (a 5000x15000 crop needs ~6GB in intermediates alone), which
+    # is a genuine, reproducible OOM risk, not a theoretical one -- the
+    # crash this was built to fix happened silently (bypassing this
+    # function's own try/except in the caller, meaning it was a hard
+    # memory/native failure, not a normal Python exception). float32 is
+    # more than sufficient precision for sub-pixel offset resampling and
+    # halves the footprint on its own; chunking bounds peak memory to
+    # one row-block regardless of total crop size.
+    chunk_rows = max(1, min(h, 2000))
+    for row_start in range(0, h, chunk_rows):
+        row_end = min(row_start + chunk_rows, h)
+        row_idx, col_idx = np.mgrid[row_start:row_end, 0:w].astype(np.float32)
 
-    offset_row = row_offset_fn(ref_global_row, ref_global_col)
-    offset_col = col_offset_fn(ref_global_row, ref_global_col)
+        # row_idx/col_idx are the reference grid's local (0-based)
+        # coordinates. Convert to full-scene coordinates to correctly
+        # evaluate the fitted offset functions, which were built on real
+        # annotation-derived full-scene coordinates, not any particular
+        # crop's local ones.
+        ref_global_row = row_idx + ref_row_offset
+        ref_global_col = col_idx + ref_col_offset
 
-    # Where this pixel's secondary counterpart is, in full-scene coordinates
-    sec_global_row = ref_global_row + offset_row
-    sec_global_col = ref_global_col + offset_col
+        offset_row = row_offset_fn(ref_global_row, ref_global_col)
+        offset_col = col_offset_fn(ref_global_row, ref_global_col)
 
-    # Convert to the SECONDARY array's own local coordinates for actually
-    # indexing into `data` -- the secondary crop can have a different
-    # offset than the reference crop, so this is not the same subtraction
-    # as ref_row_offset/ref_col_offset above.
-    sample_rows = sec_global_row - sec_row_offset
-    sample_cols = sec_global_col - sec_col_offset
+        # Where this pixel's secondary counterpart is, in full-scene coordinates
+        sec_global_row = ref_global_row + offset_row
+        sec_global_col = ref_global_col + offset_col
 
-    real = map_coordinates(data.real, [sample_rows, sample_cols], order=1, mode="constant", cval=0.0)
-    imag = map_coordinates(data.imag, [sample_rows, sample_cols], order=1, mode="constant", cval=0.0)
-    return (real + 1j * imag).astype(np.complex64)
+        # Convert to the SECONDARY array's own local coordinates for
+        # actually indexing into `data` -- the secondary crop can have a
+        # different offset than the reference crop, so this is not the
+        # same subtraction as ref_row_offset/ref_col_offset above.
+        sample_rows = sec_global_row - sec_row_offset
+        sample_cols = sec_global_col - sec_col_offset
+
+        out_real[row_start:row_end] = map_coordinates(
+            data_real, [sample_rows, sample_cols], order=1, mode="constant", cval=0.0
+        )
+        out_imag[row_start:row_end] = map_coordinates(
+            data_imag, [sample_rows, sample_cols], order=1, mode="constant", cval=0.0
+        )
+
+    return (out_real + 1j * out_imag).astype(np.complex64)
 
 
 def _interpolate(orbit, t):

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygeofetch"
-version = "1.9.2"
+version = "1.9.3"
 description = "Universal satellite data pipeline + geospatial processing platform"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -97,17 +97,36 @@ viz = [
     "whitebox>=2.3.0",
     "whiteboxgui>=2.3.0",
     "geemap>=0.28.0",
-    "osmnx>=1.9.2",
-    "contextily>=1.9.2",
+    "osmnx>=1.9.3",
+    "contextily>=1.9.3",
     "xyzservices>=2023.10.0",
     "mapclassify>=2.5.0",
     "geoplot>=0.5.0",
     "mplleaflet>=0.0.5",
     "branca>=0.6.0",
     "plotly-geo>=1.0.0",
-    "keplergl>=0.3.0",
     "streamlit>=1.28.0",
     "pyvista",
+]
+
+# Tier 6b: Kepler.gl 3D map visualization — isolated from the main viz extra.
+# keplergl's latest stable release (0.3.7) ships no wheel and pulls in a
+# hardcoded pyarrow~=16.0.0 build dependency inside its own setup.py, a
+# pyarrow version with no Windows wheel for Python 3.13. Building it from
+# source fails there with "ModuleNotFoundError: No module named
+# 'pkg_resources'" (pyarrow 16.0.0's legacy setup.py-based build is
+# incompatible with pip's modern isolated build environment). This is a
+# real, confirmed, reproducible failure in keplergl's own packaging, not
+# something fixable by re-pinning keplergl from pygeofetch's side — the
+# only newer release is 0.4.0rc1, a pre-release, not appropriate as a
+# default dependency for a Production/Stable-classified package.
+# Kept fully optional and explicitly opt-in so `pip install pygeofetch[viz]`
+# and `pygeofetch[full]`/`pygeofetch[all]` install cleanly everywhere;
+# install `pygeofetch[viz-3d]` specifically if you need kepler.gl maps and
+# your platform can build it (Linux/macOS, or Windows with a pinned working
+# pyarrow already installed).
+viz-3d = [
+    "keplergl>=0.3.0",
 ]
 
 # Cloud providers
@@ -147,7 +166,8 @@ insar-full = [
     "pyaps3>=0.3",
 ]
 
-# Everything
+# Everything that reliably installs across platforms — keplergl is
+# deliberately excluded (see viz-3d above); add it explicitly if you need it.
 full = [
     "pygeofetch[geo,processor,providers,sar,viz,cloud,notebook,schedule]",
 ]
@@ -158,10 +178,10 @@ all = ["pygeofetch[full]"]
 pygeofetch = "pygeofetch.cli.main:cli"
 
 [project.urls]
-Homepage      = "https://github.com/pygeofetch/pygeofetch"
-Documentation = "https://pygeofetch.readthedocs.io"
-Repository    = "https://github.com/pygeofetch/pygeofetch"
-"Bug Tracker" = "https://github.com/pygeofetch/pygeofetch/issues"
+Homepage      = "https://github.com/EOCoreINT"
+Documentation = "https://github.com/appiahkubis14/pygeofetch-docs"
+Repository    = "https://github.com/EOCoreINT/pygeofetch"
+"Bug Tracker" = "https://github.com/EOCoreINT/pygeofetch/issues"
 
 [tool.setuptools.packages.find]
 where   = ["."]
