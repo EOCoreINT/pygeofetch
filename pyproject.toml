@@ -162,8 +162,6 @@ dev = [
 insar-full = [
     "snaphu>=0.1",
     "scipy>=1.12",
-    "mintpy>=1.5",      # <- almost certainly this one
-    "pyaps3>=0.3",
 ]
 
 # Everything that reliably installs across platforms — keplergl is
