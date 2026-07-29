@@ -248,9 +248,12 @@ class PhaseUnwrapper:
             igram = np.exp(1j * interferogram).astype(np.complex64)
 
         corr = np.clip(coherence, 0.0, 1.0).astype(np.float32)
+        
 
         if mask is not None:
-            corr = np.where(mask, corr, 0.0).astype(np.float32)
+            corr = np.where(mask, corr, 0).astype(np.float32)
+
+        corr = np.nan_to_num(corr,nan=0,posinf=0,neginf=0)
 
         logger.info(
             "Unwrapping %s pixels (cost=%s, init=%s, nlooks=%.1f)",
@@ -269,6 +272,7 @@ class PhaseUnwrapper:
                 init=self._init_method,
                 min_conncomp_frac=min_conncomp_frac,
                 min_region_size=min_region_size,
+                
             )
         except Exception as exc:
             raise RuntimeError(

@@ -73,6 +73,7 @@ def compute_offset_field_from_dem(
     ref_scene_center_time,
     sec_scene_center_time,
     grid_points: int = 7,
+    sample_bounds: Optional[Tuple[float, float, float, float]] = None,
 ):
     """
     Compute a real, orbit-based offset field using ground points sampled
@@ -99,6 +100,20 @@ def compute_offset_field_from_dem(
                        roughly right (confirmed robust to a 30-second-
                        off starting guess in testing).
         grid_points:   Sample grid resolution per axis.
+        sample_bounds: Optional (min_lon, min_lat, max_lon, max_lat) to
+                       restrict DEM sampling to the geographic area
+                       actually covered by the crop being processed —
+                       e.g. the extracted SLC's own real bounds. Without
+                       this, grid points are sampled across the DEM's
+                       FULL extent regardless of how much of it the
+                       current pair's crop actually covers, which for a
+                       DEM spanning a much larger region than a single
+                       date's crop (confirmed real case: a full
+                       administrative-region DEM vs a single sub-swath
+                       crop covering a fraction of it) means most points
+                       silently fall outside the real SLC extent and get
+                       dropped, leaving a small, spatially-clustered set
+                       of usable points and a poorly-conditioned fit.
 
     Returns:
         (grid_rows, grid_cols, offset_rows, offset_cols) — same shape
@@ -119,11 +134,33 @@ def compute_offset_field_from_dem(
         transform = src.transform
         dem_h, dem_w = dem.shape
 
-    dem_row_samples = [int(r) for r in _linspace(0, dem_h - 1, grid_points)]
-    dem_col_samples = [int(c) for c in _linspace(0, dem_w - 1, grid_points)]
+        if sample_bounds is not None:
+            min_lon, min_lat, max_lon, max_lat = sample_bounds
+            # Convert the geographic bounds to DEM pixel row/col bounds,
+            # then clamp to the DEM's own real extent.
+            inv = ~transform
+            c1, r1 = inv * (min_lon, max_lat)
+            c2, r2 = inv * (max_lon, min_lat)
+            row_lo = max(0, min(int(r1), int(r2)))
+            row_hi = min(dem_h - 1, max(int(r1), int(r2)))
+            col_lo = max(0, min(int(c1), int(c2)))
+            col_hi = min(dem_w - 1, max(int(c1), int(c2)))
+            if row_hi <= row_lo or col_hi <= col_lo:
+                logger.warning(
+                    "compute_offset_field_from_dem: sample_bounds do not "
+                    "overlap the DEM extent — falling back to sampling the "
+                    "full DEM."
+                )
+                row_lo, row_hi, col_lo, col_hi = 0, dem_h - 1, 0, dem_w - 1
+        else:
+            row_lo, row_hi, col_lo, col_hi = 0, dem_h - 1, 0, dem_w - 1
+
+    dem_row_samples = [int(r) for r in _linspace(row_lo, row_hi, grid_points)]
+    dem_col_samples = [int(c) for c in _linspace(col_lo, col_hi, grid_points)]
 
     grid_rows, grid_cols, offset_rows, offset_cols = [], [], [], []
     n_failed = 0
+    n_out_of_bounds = 0
     n_total = 0
 
     for dem_row in dem_row_samples:
@@ -156,6 +193,7 @@ def compute_offset_field_from_dem(
                 sec_col = sec_geometry.col_for_range_time(range_sec_time)
 
                 if not (0 <= ref_row < ref_geometry.n_lines and 0 <= ref_col < ref_geometry.n_columns):
+                    n_out_of_bounds += 1
                     continue  # this DEM point falls outside the actual SLC extent
 
                 grid_rows.append(ref_row)
@@ -178,10 +216,19 @@ def compute_offset_field_from_dem(
             "the actual SLC extent — check the DEM covers the scene."
         )
 
-    logger.info(
-        "DEM-driven offset field: %d/%d points solved successfully",
-        len(grid_rows), n_total,
-    )
+    if n_out_of_bounds > 0:
+        logger.info(
+            "DEM-driven offset field: %d/%d points solved successfully "
+            "(%d fell outside the actual SLC extent%s, %d raised a real error)",
+            len(grid_rows), n_total, n_out_of_bounds,
+            " -- consider passing sample_bounds" if sample_bounds is None else "",
+            n_failed,
+        )
+    else:
+        logger.info(
+            "DEM-driven offset field: %d/%d points solved successfully",
+            len(grid_rows), n_total,
+        )
     return grid_rows, grid_cols, offset_rows, offset_cols
 
 

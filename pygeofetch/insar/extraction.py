@@ -111,6 +111,7 @@ class SLCExtractor:
         aoi: "BoundingBox",
         output_dir: Union[str, Path],
         label: str = "",
+        resume: bool = False,
     ) -> Optional[Path]:
         """
         Find the sub-swath covering the AOI in one SLC archive and extract it.
@@ -121,6 +122,16 @@ class SLCExtractor:
             output_dir: Where to write the extracted flat GeoTIFF.
             label:      Used to build the output filename
                        (f"{label}_{polarisation}.tif").
+            resume:     If True and the expected output file already exists
+                       AND opens as a genuine, valid raster, skip extraction
+                       entirely and return that existing path. A corrupted
+                       or partially-written file at that path always
+                       triggers a fresh extraction regardless of this flag
+                       — resume never means "tolerate a broken file", the
+                       same contract already established and tested for
+                       AdaptiveDownloader's own resume parameter. Default
+                       False preserves the original always-extract
+                       behaviour for existing callers.
 
         Returns:
             Path to the extracted GeoTIFF, or None if no sub-swath in this
@@ -130,6 +141,29 @@ class SLCExtractor:
         zip_path = Path(zip_path)
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
+
+        if resume:
+            expected_path = (
+                output_dir / f"{label}_{self._pol}.tif"
+                if label
+                else output_dir / f"{zip_path.stem}_{self._pol}.tif"
+            )
+            if expected_path.exists():
+                try:
+                    import rasterio
+
+                    with rasterio.open(expected_path) as src:
+                        if src.width > 0 and src.height > 0:
+                            logger.info(
+                                "Resume: %s already extracted and valid (%dx%d) — skipping",
+                                expected_path.name, src.width, src.height,
+                            )
+                            return expected_path
+                except Exception as exc:
+                    logger.warning(
+                        "Resume: %s exists but failed to open (%s) — re-extracting",
+                        expected_path.name, exc,
+                    )
 
         if not zip_path.exists():
             logger.error("Archive not found: %s", zip_path)
