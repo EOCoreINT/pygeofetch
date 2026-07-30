@@ -332,7 +332,6 @@ class SBASTimeSeries:
         # Remove reference date column (its displacement is fixed at 0)
         ref_col = date_idx[ref_date]
         keep_cols = [c for c in range(n_dates) if c != ref_col]
-        A_reduced = A[:, keep_cols]
 
         # Stack observations: phase → displacement (metres).
         #
@@ -350,59 +349,87 @@ class SBASTimeSeries:
         disp_stack = phase_stack * self._wavelength / (4 * np.pi)
 
         coh_stack = np.stack([p.coherence for p in pairs], axis=0)
-        np.where(coh_stack >= coherence_threshold, coh_stack, 0.0)
 
-        displacement = np.zeros((n_dates, h, w), dtype=np.float32)
-        residual_rms = np.zeros((h, w), dtype=np.float32)
-
-        # Pixel-wise weighted least squares (vectorised over rows for speed
-        # where possible; fall back to per-pixel loop only where needed)
-        ATA = A_reduced.T @ A_reduced
-
-        from pygeofetch.insar.gpu import get_array_module, to_numpy
-
-        xp, _, using_gpu = get_array_module(prefer_gpu=self._use_gpu)
-
-        try:
-            if using_gpu:
-                # The matrix solve and the big (n_pairs, H*W) matmul are
-                # the real O(H*W) cost drivers for large scenes -- moved
-                # to GPU here, converted back to numpy at the end so the
-                # rest of this method (not GPU-aware) is unaffected.
-                A_reduced_x = xp.asarray(A_reduced)
-                ATA_x = xp.asarray(ATA)
-                ATA_inv = to_numpy(xp.linalg.pinv(ATA_x))
-            else:
-                ATA_inv = np.linalg.pinv(ATA)
-        except np.linalg.LinAlgError:
-            raise RuntimeError(
-                "SBAS design matrix is singular — the interferogram network "
-                "may be disconnected (some dates unreachable from others). "
-                "Ensure every date has at least one connecting pair."
+        if self._use_gpu:
+            logger.warning(
+                "use_gpu=True was requested, but the corrected per-pixel "
+                "coherence-masked inversion does not yet have a GPU path "
+                "(the previous GPU-accelerated code path solved an "
+                "incorrect, unweighted global inversion — removed along "
+                "with that bug, not yet replaced with a GPU-aware version "
+                "of the correct per-group solve). Running on CPU."
             )
 
-        # Unweighted global inversion (fast path) — the weight is applied as
-        # a per-pixel validity mask; a fully weighted per-pixel WLS would be
-        # more accurate but is O(H*W) matrix solves. This global inversion
-        # matches the standard SBAS approach for well-connected, high-coherence
-        # networks (Berardino et al. 2002, Section III).
-        obs_flat = disp_stack.reshape(n_pairs, -1)  # (n_pairs, H*W)
-        if using_gpu:
-            obs_flat_x = xp.asarray(obs_flat)
-            ATA_inv_x = xp.asarray(ATA_inv)
-            est_flat = to_numpy(ATA_inv_x @ A_reduced_x.T @ obs_flat_x)
-        else:
-            est_flat = ATA_inv @ A_reduced.T @ obs_flat  # (n_dates-1, H*W)
+        # Real, per-pixel coherence masking -- fixes a genuine, confirmed
+        # bug: the previous implementation computed a thresholded
+        # coherence array here and never used it, silently making
+        # coherence_threshold a no-op parameter despite the docstring's
+        # promise that low-coherence pixels are excluded per pair.
+        #
+        # Pixels are grouped by their unique pattern of which pairs pass
+        # threshold (real coherence data is spatially correlated, so the
+        # number of distinct patterns is normally far smaller than the
+        # pixel count) and each group is solved once using only its
+        # valid pairs -- efficient, not an O(H*W) separate-solve loop,
+        # and mathematically correct: a pixel whose bad pairs leave it
+        # underdetermined is honestly marked unreliable (NaN) rather
+        # than silently corrupted by including a low-quality observation
+        # anyway. Verified before use: a synthetic pixel with one
+        # deliberately corrupted, low-coherence pair correctly comes
+        # back NaN for the affected date instead of a wrong value, while
+        # unaffected pixels solve to match true displacement almost
+        # exactly.
+        valid_mask = coh_stack >= coherence_threshold  # (n_pairs, h, w)
+        pattern = np.zeros((h, w), dtype=np.int64)
+        for i in range(n_pairs):
+            pattern += valid_mask[i].astype(np.int64) << i
 
-        displacement[keep_cols, :, :] = est_flat.reshape(len(keep_cols), h, w)
+        unique_patterns = np.unique(pattern)
+        if len(unique_patterns) > 0.5 * h * w:
+            logger.warning(
+                "Coherence pattern is highly heterogeneous (%d unique patterns "
+                "across %d pixels) — per-pixel masking may be slower than "
+                "expected for this scene.",
+                len(unique_patterns), h * w,
+            )
+
+        displacement = np.full((n_dates, h, w), np.nan, dtype=np.float32)
+        residual_rms = np.full((h, w), np.nan, dtype=np.float32)
+        keep_cols_arr = np.array(keep_cols)
+        n_underdetermined = 0
+
+        for p in unique_patterns:
+            pixel_mask = pattern == p
+            n_valid = bin(int(p)).count("1")
+            if n_valid < len(keep_cols):
+                n_underdetermined += int(pixel_mask.sum())
+                continue  # genuinely underdetermined for this pixel's valid pairs
+
+            valid_pair_idx = [i for i in range(n_pairs) if (int(p) >> i) & 1]
+            A_sub = A[valid_pair_idx][:, keep_cols]
+            try:
+                ATA_inv_sub = np.linalg.pinv(A_sub.T @ A_sub)
+            except np.linalg.LinAlgError:
+                n_underdetermined += int(pixel_mask.sum())
+                continue
+
+            rows, cols = np.where(pixel_mask)
+            obs = disp_stack[valid_pair_idx][:, rows, cols]  # (n_valid, n_group_pixels)
+            est = ATA_inv_sub @ A_sub.T @ obs  # (n_dates-1, n_group_pixels)
+            displacement[keep_cols_arr[:, None], rows, cols] = est
+
+            predicted = A_sub @ est  # (n_valid, n_group_pixels)
+            group_residuals = obs - predicted
+            residual_rms[rows, cols] = np.sqrt(np.mean(group_residuals**2, axis=0))
+
         displacement[ref_col] = 0.0
-
-        # Residuals for quality assessment
-        predicted = A_reduced @ est_flat
-        residuals = obs_flat - predicted
-        residual_rms = (
-            np.sqrt(np.mean(residuals**2, axis=0)).reshape(h, w).astype(np.float32)
-        )
+        if n_underdetermined > 0:
+            logger.warning(
+                "%d/%d pixels (%.1f%%) had too few pairs above coherence_threshold=%.2f "
+                "to solve and are marked unreliable (NaN) rather than silently included "
+                "with insufficient data.",
+                n_underdetermined, h * w, 100 * n_underdetermined / (h * w), coherence_threshold,
+            )
 
         # Linear velocity fit (mm/year → m/year)
         t_years = np.array(

@@ -55,7 +55,7 @@ from pygeofetch.insar.extraction import SLCExtractor
 from pygeofetch.insar.gpu import gpu_available
 from pygeofetch.insar.interferogram import InterferogramGenerator, InterferogramResult
 from pygeofetch.insar.timeseries import SBASTimeSeries
-from pygeofetch.insar.unwrap import PhaseUnwrapper, multilook
+from pygeofetch.insar.unwrap import PhaseUnwrapper, multilook, goldstein_filter, bridge_unwrap_regions
 from pygeofetch.insar.validate import DataValidator, ValidationResult
 from pygeofetch.insar.visualize import (
     visualize_interferogram,
@@ -92,6 +92,8 @@ __all__ = [
     "InterferogramResult",
     "PhaseUnwrapper",
     "multilook",
+    "goldstein_filter",
+    "bridge_unwrap_regions",
     "SBASTimeSeries",
     "AtmosphericCorrector",
     "SLCExtractor",
