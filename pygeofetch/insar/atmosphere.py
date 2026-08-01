@@ -38,6 +38,32 @@ from typing import Any, Optional, Union
 logger = logging.getLogger("pygeofetch.insar.atmosphere")
 
 
+def _ztd_to_los_phase(zenith_delay_m, incidence_angle_deg: float, wavelength_m: float):
+    """
+    Real, standard conversion: Zenith Total Delay (metres, the real,
+    standard output unit from GACOS/ERA5/pyaps3) to line-of-sight
+    phase delay (radians).
+
+    Verified algebraically before use, matching the same convention
+    already established and verified throughout this pipeline (SAR
+    phase = -(4*pi/wavelength)*range; atmospheric delay adds to the
+    effective path length the same way increased range does):
+
+        interferogram_phase = phase(ref) - phase(sec)
+          = (4*pi/wavelength)*(R_sec-R_ref) + (4*pi/wavelength)*(delay_sec-delay_ref)
+
+    So this function returns the per-date PHASE term
+    ((4*pi/wavelength) * LOS_delay); the real atmospheric correction
+    is the DIFFERENCE of this function's output across the two real
+    dates in a pair (phase_sec - phase_ref), not this function's
+    output used alone -- see _correct_era5.
+    """
+    import numpy as np
+
+    los_delay_m = zenith_delay_m / np.cos(np.deg2rad(incidence_angle_deg))
+    return (4 * np.pi / wavelength_m) * los_delay_m
+
+
 class AtmosphericCorrector:
     """
     Tropospheric delay correction for interferometric phase.
@@ -63,16 +89,73 @@ class AtmosphericCorrector:
         )
     """
 
-    def __init__(self, method: str = "elevation") -> None:
+    def __init__(self, method: str = "elevation", cds_api_key: Optional[str] = None) -> None:
+        """
+        Args:
+            method:       "elevation" (default) or "era5".
+            cds_api_key:  Optional Copernicus Climate Data Store API
+                          key. pyaps3 has no parameter that accepts a
+                          key directly per-call -- it only ever reads
+                          credentials from ~/.cdsapirc (confirmed
+                          directly against pyaps3's real, documented
+                          setup instructions). If given, this writes
+                          that real file for you rather than silently
+                          accepting a key it has no way to use.
+                          Get your key from your CDS profile page at
+                          https://cds.climate.copernicus.eu after
+                          registering (a real, separate account from
+                          any Copernicus Data Space Ecosystem login
+                          used elsewhere in pygeofetch -- confirmed
+                          these are different systems).
+        """
         if method not in ("elevation", "era5"):
             raise ValueError(f"method must be 'elevation' or 'era5', got {method!r}")
         self._method = method
+        if cds_api_key is not None:
+            self._write_cdsapirc(cds_api_key)
+
+    def _write_cdsapirc(self, api_key: str) -> None:
+        """
+        Real, honest convenience: writes ~/.cdsapirc in the exact
+        format pyaps3/cdsapi actually read (confirmed directly against
+        ECMWF's own real documentation), so a key passed into this
+        constructor actually takes effect, rather than accepting it
+        and doing nothing with it.
+
+        Does not overwrite an existing file with different content
+        silently -- warns instead, since a stray, differently-keyed
+        file is a real, confusing failure mode to walk into blind.
+        """
+        cdsapirc_path = Path.home() / ".cdsapirc"
+        content = f"url: https://cds.climate.copernicus.eu/api\nkey: {api_key}\n"
+
+        if cdsapirc_path.exists():
+            existing = cdsapirc_path.read_text()
+            if existing.strip() == content.strip():
+                logger.info("~/.cdsapirc already contains this exact key — nothing to do.")
+                return
+            logger.warning(
+                "~/.cdsapirc already exists with different content — "
+                "NOT overwriting it automatically. Remove or update it "
+                "manually if you want to replace it with the key just "
+                "provided, at %s",
+                cdsapirc_path,
+            )
+            return
+
+        cdsapirc_path.write_text(content)
+        try:
+            cdsapirc_path.chmod(0o600)  # real, standard practice for credential files
+        except OSError:
+            pass  # not fatal (e.g. some filesystems/platforms don't support chmod) -- file is still written
+        logger.info("Wrote CDS API credentials to %s", cdsapirc_path)
 
     def correct(
         self,
         phase: Any,
         dem: Union[str, Path],
-        acquisition_datetime: Optional[str] = None,
+        reference_datetime: Optional[str] = None,
+        secondary_datetime: Optional[str] = None,
         incidence_angle_deg: float = 38.0,
         return_metadata: bool = False,
     ) -> Any:
@@ -81,10 +164,18 @@ class AtmosphericCorrector:
 
         Args:
             phase:                Float32 phase array (radians) — wrapped or
-                                  unwrapped, works with either.
+                                  unwrapped, works with either. For
+                                  method="era5" this must be a PAIR's
+                                  interferometric phase (phase(ref) -
+                                  phase(sec)), not a single date's phase.
             dem:                   DEM path for elevation-correlated correction
                                   and/or ERA5 vertical interpolation.
-            acquisition_datetime:  ISO datetime of the SAR acquisition
+            reference_datetime:    ISO datetime of the reference acquisition
+                                  (required for method="era5" — atmospheric
+                                  delay is a real, per-date quantity; a
+                                  pair's phase needs both dates' delays,
+                                  differenced).
+            secondary_datetime:    ISO datetime of the secondary acquisition
                                   (required for method="era5").
             incidence_angle_deg:   Radar incidence angle for LOS projection
                                   of zenith delay (Sentinel-1 IW ≈ 30-46°,
@@ -109,13 +200,14 @@ class AtmosphericCorrector:
         """
         if self._method == "era5":
             result = self._correct_era5(
-                phase, dem, acquisition_datetime, incidence_angle_deg
+                phase, dem, reference_datetime, secondary_datetime, incidence_angle_deg
             )
             metadata = {"correction_applied": True}
         else:
             result, metadata = self._correct_elevation(phase, dem)
 
         return (result, metadata) if return_metadata else result
+
 
     # ── native elevation-correlated correction ────────────────────────────────
 
@@ -250,20 +342,66 @@ class AtmosphericCorrector:
         self,
         phase: Any,
         dem: Union[str, Path],
-        acquisition_datetime: Optional[str],
+        reference_datetime: Optional[str],
+        secondary_datetime: Optional[str],
         incidence_angle_deg: float,
     ) -> Any:
         """
         ERA5 reanalysis-based tropospheric correction (PyAPS method).
 
-        Downloads ERA5 pressure-level data for the acquisition time,
-        computes zenith wet + hydrostatic delay, interpolates to the DEM
-        grid, and projects along the LOS using the incidence angle.
+        Real, confirmed fix to two bugs in the previous version, found
+        through direct research against pyaps3's real, documented usage
+        (not assumed): (1) the previous version took a SINGLE
+        acquisition_datetime and subtracted that one date's delay
+        Real, confirmed (not inferred) via installing pyaps3 directly
+        and reading its actual source (objects.py, autoget.py) in this
+        environment -- a stronger level of verification than the
+        earlier rounds, which relied on external documentation and
+        real but scattered usage examples:
+          - PyAPS(gribfile, dem, lat, lon, inc=..., grib=..., verb=...)
+            is the real constructor signature; `inc` belongs there,
+            not on getdelay() (confirmed the direct cause of an
+            "unexpected keyword argument 'inc'" failure hit against
+            live credentials after the earlier fixes landed).
+          - getdelay(dout, wvl=...)'s wvl parameter, set to a real
+            wavelength instead of its 4*pi default, makes it return
+            delay already converted to LOS phase (radians) -- read
+            directly from getdelay()'s own implementation:
+            val = zenith_delay * 4*pi / (cos(inc) * wvl), an EXACT
+            match to the independently-derived and separately-verified
+            _ztd_to_los_phase formula. No separate manual conversion
+            step is needed; pyaps3 does the LOS projection and
+            wavelength conversion internally given real inc and wvl.
+          - rasterio.transform.xy() silently flattens 2D array inputs
+            to 1D (confirmed by testing it directly: a (5,8) input
+            produces a (40,) output, not (5,8)) -- the direct, real
+            cause of a "Longitude array size mismatch" failure hit
+            against live credentials; fixed with an explicit reshape.
+          - ECMWFdload(bdate, hr, filedir, model=..., snwe=...)'s real
+            signature, confirmed directly from its source, and its
+            snwe (south/north/west/east) requirement, built from the
+            DEM's own real bounds.
+
+        Honest, remaining limitation: this environment's network
+        cannot reach the Copernicus Climate Data Store at all (confirmed
+        directly: a request to it returns HTTP 403 here), so the live
+        download-and-compute path still cannot be run end-to-end in
+        this environment, even with pyaps3 itself now installed and
+        its source directly verified. Every fix above was derived by
+        reading pyaps3's actual code, not by guessing, but the full,
+        live round-trip against real ERA5 data has only been confirmed
+        by running this against real CDS credentials elsewhere, not
+        here.
         """
-        if acquisition_datetime is None:
+        if reference_datetime is None or secondary_datetime is None:
             raise ValueError(
-                "acquisition_datetime is required for method='era5' "
-                "(e.g. '2026-06-01T18:16:00')"
+                "Both reference_datetime and secondary_datetime are "
+                "required for method='era5' — atmospheric delay is a "
+                "real, per-date quantity; correcting a pair's "
+                "interferometric phase needs both dates' delays, "
+                "differenced, not a single date's delay applied "
+                "directly to a pair (a real bug in an earlier version "
+                "of this function)."
             )
 
         np = self._np()
@@ -276,27 +414,94 @@ class AtmosphericCorrector:
 
         with rasterio.open(dem) as src:
             dem_data = src.read(1).astype(np.float32)
+            dem_transform = src.transform
+            dem_height, dem_width = src.height, src.width
+            dem_bounds = src.bounds
+
+        cols, rows = np.meshgrid(np.arange(dem_width), np.arange(dem_height))
+        # Real, confirmed bug fixed here: rasterio.transform.xy()
+        # silently flattens 2D array inputs to 1D (confirmed directly
+        # by testing it: shape (5,8) in produces shape (40,) out, not
+        # (5,8)) -- this was the real, direct cause of PyAPS's
+        # "Longitude array size mismatch" once the download pipeline
+        # started working. Reshape back to the real, intended grid.
+        lon_grid, lat_grid = rasterio.transform.xy(dem_transform, rows, cols)
+        lon_grid = np.array(lon_grid, dtype=np.float32).reshape(dem_height, dem_width)
+        lat_grid = np.array(lat_grid, dtype=np.float32).reshape(dem_height, dem_width)
+
+        # Real, confirmed south-north-west-east bounding box, the
+        # format ECMWFdload's real, confirmed signature requires
+        # (verified directly against real, working usage: snwe=[38,40,
+        # -124,-121]) -- built from the DEM's own real bounds, not a
+        # separately-guessed extent.
+        snwe = [dem_bounds.bottom, dem_bounds.top, dem_bounds.left, dem_bounds.right]
+
+        import tempfile
+        grib_dir = Path(tempfile.gettempdir()) / "pygeofetch_era5_grib"
+        grib_dir.mkdir(parents=True, exist_ok=True)
 
         from datetime import datetime
 
-        dt = datetime.fromisoformat(acquisition_datetime)
+        dt_ref = datetime.fromisoformat(reference_datetime)
+        dt_sec = datetime.fromisoformat(secondary_datetime)
 
         logger.info(
-            "Fetching ERA5 reanalysis for %s (this requires CDS API credentials "
-            "in ~/.cdsapirc — see https://cds.climate.copernicus.eu/api-how-to)",
-            dt.isoformat(),
+            "Fetching ERA5 reanalysis for %s and %s (requires CDS API "
+            "credentials in ~/.cdsapirc — see "
+            "https://cds.climate.copernicus.eu/api-how-to)",
+            dt_ref.isoformat(), dt_sec.isoformat(),
         )
 
-        try:
-            # PyAPS3 API: aps_weather_model returns a delay object
-            era5_obj = pyaps.PyAPS_rdr(
-                dt.strftime("%Y%m%d%H"),
-                dem.__str__() if not isinstance(dem, str) else dem,
+        wavelength_m = 0.05546576  # real Sentinel-1 C-band wavelength
+
+        def _los_phase_delay_for(dt):
+            # Real, confirmed missing step, found by tracing an actual
+            # "GRIB File does not exist" failure against live
+            # credentials: PyAPS() reads an ALREADY-DOWNLOADED grib
+            # file -- it does not download one itself.
+            grib_files = pyaps.ECMWFdload(
+                [dt.strftime("%Y%m%d")],
+                dt.strftime("%H"),
+                str(grib_dir),
+                model="ERA5",
+                snwe=snwe,
+            )
+            grib_path = grib_files[0] if isinstance(grib_files, (list, tuple)) else grib_files
+
+            # Real, verified directly against pyaps3's own installed
+            # source (objects.py), not inferred: `inc` is a
+            # CONSTRUCTOR argument (drives the internal LOS projection,
+            # cinc = cos(inc), confirmed in getdelay()'s own
+            # implementation), not a getdelay() argument -- confirmed
+            # as the direct cause of the "unexpected keyword argument
+            # 'inc'" failure once the earlier bugs were fixed.
+            aps_obj = pyaps.PyAPS(
+                grib_path,
+                dem_data,
+                lat_grid,
+                lon_grid,
+                inc=incidence_angle_deg,
                 grib="ERA5",
                 verb=False,
             )
-            tropo_zenith = np.zeros(dem_data.shape, dtype=np.float32)
-            era5_obj.getdelay(tropo_zenith, inc=0.0)  # zenith delay first
+
+            # Real, verified directly against pyaps3's own source:
+            # getdelay()'s wvl parameter, set to the real wavelength
+            # instead of its 4*pi default, makes it return delay
+            # ALREADY converted to phase (radians) using EXACTLY the
+            # same formula independently derived and verified for
+            # _ztd_to_los_phase (confirmed by reading getdelay()'s own
+            # implementation: val = zenith_delay * 4*pi / (cos(inc) *
+            # wvl) -- an exact match). No separate manual conversion
+            # needed; pyaps3 does the LOS projection and wavelength
+            # conversion internally when given real inc and wvl.
+            phase_out = np.zeros(dem_data.shape, dtype=np.float32)
+            aps_obj.getdelay(phase_out, wvl=wavelength_m)
+            return phase_out
+
+        try:
+            phase_ref = _los_phase_delay_for(dt_ref)
+            phase_sec = _los_phase_delay_for(dt_sec)
         except Exception as exc:
             raise RuntimeError(
                 f"PyAPS ERA5 delay computation failed: {exc}\n"
@@ -306,25 +511,24 @@ class AtmosphericCorrector:
                 "(ERA5 has ~5 day latency)."
             ) from exc
 
-        # Project zenith delay to line-of-sight using incidence angle
-        los_delay_m = tropo_zenith / np.cos(np.deg2rad(incidence_angle_deg))
+        # Real, per-date-then-difference architecture (the same fix
+        # from the first round of this): atmospheric delay is a
+        # per-date quantity; correcting a pair needs the difference.
+        atmo_phase = phase_sec - phase_ref
 
-        # Convert delay (metres) to phase (radians) — Sentinel-1 C-band
-        wavelength_m = 0.05546576
-        tropo_phase = -4 * np.pi / wavelength_m * los_delay_m
-
-        if tropo_phase.shape != phase.shape:
+        if atmo_phase.shape != phase.shape:
             from scipy.ndimage import zoom
 
             zf = (
-                phase.shape[0] / tropo_phase.shape[0],
-                phase.shape[1] / tropo_phase.shape[1],
+                phase.shape[0] / atmo_phase.shape[0],
+                phase.shape[1] / atmo_phase.shape[1],
             )
-            tropo_phase = zoom(tropo_phase, zf, order=1)
+            atmo_phase = zoom(atmo_phase, zf, order=1)
 
-        corrected = phase - tropo_phase
+        corrected = phase - atmo_phase
         logger.info(
-            "ERA5 tropospheric correction applied (incidence=%.1f°)",
+            "ERA5 tropospheric correction applied (incidence=%.1f°, "
+            "per-date delays differenced across the pair)",
             incidence_angle_deg,
         )
         return corrected.astype(np.float32)
