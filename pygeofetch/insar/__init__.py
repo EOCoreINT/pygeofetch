@@ -56,6 +56,13 @@ from pygeofetch.insar.gpu import gpu_available
 from pygeofetch.insar.interferogram import InterferogramGenerator, InterferogramResult
 from pygeofetch.insar.timeseries import SBASTimeSeries
 from pygeofetch.insar.unwrap import PhaseUnwrapper, multilook, goldstein_filter, bridge_unwrap_regions
+from pygeofetch.insar.synthetic import (
+    okada_surface_deformation,
+    displacement_to_los,
+    spatially_correlated_field,
+    generate_synthetic_interferogram,
+    SyntheticInterferogramResult,
+)
 from pygeofetch.insar.validate import DataValidator, ValidationResult
 from pygeofetch.insar.visualize import (
     visualize_interferogram,
@@ -73,7 +80,14 @@ from pygeofetch.insar.visualize import (
 # here — it has a known, unresolved reliability gap and is not
 # recommended as a primary coregistration path; use
 # compute_offset_field_from_dem() instead, which avoids it entirely.
-from pygeofetch.insar.annotation import SLCGeometry, parse_slc_geometry
+from pygeofetch.insar.annotation import SLCGeometry, parse_slc_geometry, BurstInfo, SwathTiming, parse_burst_info
+from pygeofetch.insar.deburst import compute_burst_row_ranges, deburst_array
+from pygeofetch.insar.flatearth import compute_flat_earth_phase
+from pygeofetch.insar.esd import (
+    compute_overlap_row_ranges,
+    estimate_esd_shift_per_burst_overlap,
+    SENTINEL1_IW_DELTA_F_OVL_HZ,
+)
 from pygeofetch.insar.geolocation import (
     geodetic_to_ecef,
     find_zero_doppler_time,
@@ -94,6 +108,11 @@ __all__ = [
     "multilook",
     "goldstein_filter",
     "bridge_unwrap_regions",
+    "okada_surface_deformation",
+    "displacement_to_los",
+    "spatially_correlated_field",
+    "generate_synthetic_interferogram",
+    "SyntheticInterferogramResult",
     "SBASTimeSeries",
     "AtmosphericCorrector",
     "SLCExtractor",
@@ -105,6 +124,15 @@ __all__ = [
     "visualize_timeseries",
     "SLCGeometry",
     "parse_slc_geometry",
+    "BurstInfo",
+    "SwathTiming",
+    "parse_burst_info",
+    "compute_burst_row_ranges",
+    "deburst_array",
+    "compute_overlap_row_ranges",
+    "estimate_esd_shift_per_burst_overlap",
+    "SENTINEL1_IW_DELTA_F_OVL_HZ",
+    "compute_flat_earth_phase",
     "geodetic_to_ecef",
     "find_zero_doppler_time",
     "parse_orbit_file",

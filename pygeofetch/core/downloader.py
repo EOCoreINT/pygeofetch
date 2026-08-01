@@ -1155,25 +1155,32 @@ class AdaptiveDownloader:
 
     def _has_identity_transform(self, path) -> bool:
         """
-        Detect a reprojection that produced an identity (garbage) transform.
+        Detect a reprojection that produced pixel-space garbage instead
+        of a real, metre-scale transform.
 
-        Returns True if the file has pixel_width=1, pixel_height=1,
-        origin=(0,0) in a projected (metre-unit) CRS — which indicates
-        the warp produced no real geographic transformation.
+        Real, confirmed gap this fix closes: the original version
+        required origin to be EXACTLY (0, 0), but a real reproduction of
+        the underlying bug (GCP-only source, src.crs=None, see
+        _reproject_with_validation's docstring) produced a transform
+        with origin (0, 200), not (0, 0) — the Y-axis flip convention in
+        rasterio's warp math shifts the origin by the image height, so a
+        fixed-origin check misses this real, observed variant entirely.
+        The real, reliable signal isn't the origin, it's the pixel size:
+        any projected (metre-unit) CRS with a pixel edge under ~1 metre
+        is never real satellite imagery (Sentinel-1/2 native resolution
+        is 10m+; even the highest-resolution commercial sensors are
+        sub-metre but not ~1.0 exactly) — it's the unmistakable signature
+        of pixel-space coordinates mistakenly tagged with a metre CRS.
         """
         try:
             import rasterio
 
             with rasterio.open(str(path)) as src:
                 t = src.transform
-                return (
-                    abs(t.a) == 1.0
-                    and abs(t.e) == 1.0
-                    and t.c == 0.0
-                    and t.f == 0.0
-                    and src.crs is not None
-                    and src.crs.is_projected
-                )
+                if src.crs is None or not src.crs.is_projected:
+                    return False
+                pixel_size = max(abs(t.a), abs(t.e))
+                return pixel_size <= 1.0
         except Exception:
             return False
 
@@ -1200,9 +1207,46 @@ class AdaptiveDownloader:
                 src_width = src.width
                 src_height = src.height
 
-                dst_transform, dst_width, dst_height = calculate_default_transform(
-                    src_crs, target_crs, src_width, src_height, *src.bounds
-                )
+                # Real, confirmed bug fixed here: Sentinel-1 GRD products
+                # (and other raw SAR delivery formats) are commonly
+                # georeferenced via ground control points only, not a
+                # direct CRS + affine transform -- rasterio correctly
+                # reports src.crs=None and src.transform=identity for
+                # these, confirmed directly. calculate_default_transform()
+                # does NOT error on src_crs=None, it silently treats the
+                # pixel-space bounds as if they were real coordinates,
+                # producing a transform that's still pixel-scale (e.g.
+                # pixel size ~1.0) but tagged with a real, valid target
+                # CRS -- exactly the "CRS tag correct, transform garbage"
+                # symptom this whole fix addresses. Using the GCPs
+                # directly (verified: produces a real, physically
+                # plausible metre-scale transform instead) is the actual
+                # fix, not a fallback.
+                src_gcps = None
+                if src_crs is None and src.gcps[0]:
+                    src_gcps, gcps_crs = src.gcps
+                    src_crs = gcps_crs
+                    logger.info(
+                        "%s has no direct CRS/transform, using its %d "
+                        "ground control points for reprojection instead "
+                        "(common for raw SAR/GRD delivery).",
+                        source_path.name, len(src_gcps),
+                    )
+                elif src_crs is None:
+                    raise RuntimeError(
+                        f"{source_path.name} has no CRS, no transform, and "
+                        f"no GCPs — genuinely no georeferencing information "
+                        f"to reproject from."
+                    )
+
+                if src_gcps is not None:
+                    dst_transform, dst_width, dst_height = calculate_default_transform(
+                        src_crs, target_crs, src_width, src_height, gcps=src_gcps
+                    )
+                else:
+                    dst_transform, dst_width, dst_height = calculate_default_transform(
+                        src_crs, target_crs, src_width, src_height, *src.bounds
+                    )
                 kwargs = src.meta.copy()
                 kwargs.update(
                     {
@@ -1214,15 +1258,26 @@ class AdaptiveDownloader:
                 )
                 with rasterio.open(str(target_path), "w", **kwargs) as dst:
                     for band_idx in range(1, src.count + 1):
-                        reproject(
-                            source=rasterio.band(src, band_idx),
-                            destination=rasterio.band(dst, band_idx),
-                            src_transform=src_transform,
-                            src_crs=src_crs,
-                            dst_transform=dst_transform,
-                            dst_crs=target_crs,
-                            resampling=RS.bilinear,
-                        )
+                        if src_gcps is not None:
+                            reproject(
+                                source=rasterio.band(src, band_idx),
+                                destination=rasterio.band(dst, band_idx),
+                                src_crs=src_crs,
+                                gcps=src_gcps,
+                                dst_transform=dst_transform,
+                                dst_crs=target_crs,
+                                resampling=RS.bilinear,
+                            )
+                        else:
+                            reproject(
+                                source=rasterio.band(src, band_idx),
+                                destination=rasterio.band(dst, band_idx),
+                                src_transform=src_transform,
+                                src_crs=src_crs,
+                                dst_transform=dst_transform,
+                                dst_crs=target_crs,
+                                resampling=RS.bilinear,
+                            )
         except Exception as exc:
             # Surface the REAL underlying error (GDAL's own message is
             # normally far more specific than a generic wrapper like

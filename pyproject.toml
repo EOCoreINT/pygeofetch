@@ -39,6 +39,7 @@ dependencies = [
     "anyio>=4.2",
     "numpy>=1.26",
     "tqdm>=4.66",
+    "okada-wrapper"
 ]
 
 [project.optional-dependencies]

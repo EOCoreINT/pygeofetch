@@ -203,7 +203,10 @@ class AWSEarthProvider(AbstractBaseProvider):
             if not asset.href or not asset.href.startswith("http"):
                 continue
 
-            filename = asset.href.split("/")[-1] or f"{data.id}_{key}.tif"
+            # Real, confirmed bug fix -- see element84.py for the full
+            # explanation. Scene disambiguation is now unconditional.
+            raw_name = asset.href.split("/")[-1] or f"{key}.tif"
+            filename = f"{data.id}_{raw_name}"
             output_file = destination / filename
 
             if output_file.exists() and not options.overwrite:

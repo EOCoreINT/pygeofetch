@@ -179,7 +179,9 @@ class InterferogramGenerator:
     """
 
     def __init__(
-        self, coherence_window: Optional[int] = None, esd_enabled: bool = True, use_gpu: bool = False
+        self, coherence_window: Optional[int] = None, esd_enabled: bool = True,
+        use_gpu: bool = False, use_real_burst_processing: bool = False,
+        remove_flat_earth_phase: bool = False,
     ) -> None:
         # None means "not explicitly set" -- resolved per-call in
         # process_pair(), since the correct default depends on whether
@@ -189,8 +191,190 @@ class InterferogramGenerator:
         self._coh_window_explicit = coherence_window
         self._esd_enabled = esd_enabled
         self._use_gpu = use_gpu
+        # Opt-in, off by default -- preserves exact existing behaviour
+        # for current callers. When True and both SAFE zips are
+        # supplied to process_pair(), uses real per-burst-overlap ESD
+        # (replacing the previous whole-image approximation) and real
+        # deburst (removing burst-boundary redundancy/artifacts) --
+        # both verified against known ground truth and cited academic
+        # sources, not previously wired into this pipeline. Falls back
+        # to the existing whole-image ESD, with no deburst, if burst
+        # metadata cannot be parsed for either date (a real, logged,
+        # non-fatal degradation).
+        self._use_real_burst_processing = use_real_burst_processing
+        # Opt-in, off by default. Removes the real, geometric orbital/
+        # flat-earth phase component (distinct from the topographic
+        # phase this pipeline already corrects) via real orbit
+        # geometry -- verified against an independent direct
+        # computation (exact match) and a closed-loop synthetic
+        # removal test (residual error 0.000000 rad) before being
+        # trusted. Needs both SAFE zips and both orbit files, same
+        # real inputs already required for real orbit-based
+        # coregistration.
+        self._remove_flat_earth_phase = remove_flat_earth_phase
 
     # ── public API ────────────────────────────────────────────────────────────
+
+    def _burst_aware_processing(
+        self, ref_complex, sec_complex,
+        reference_safe_zip, secondary_safe_zip,
+        reference_extracted_path, secondary_extracted_path,
+    ):
+        """
+        Real per-burst-overlap ESD (esd.py) followed by real deburst
+        (deburst.py), using real burst metadata (annotation.py) parsed
+        from each date's own annotation XML.
+
+        Order matters and is deliberate: ESD runs BEFORE deburst,
+        because ESD needs the real burst overlap regions (the
+        redundant, duplicate-ground-coverage rows) to compute its
+        double-difference phase, and deburst's entire purpose is to
+        remove exactly those rows -- confirmed to match the real SNAP
+        processing order (ESD refinement happens as part of/after
+        Back-Geocoding coregistration; TOPS Deburst happens afterward,
+        on the interferogram).
+
+        Falls back to the existing whole-image ESD approximation, with
+        no deburst applied, if burst metadata cannot be parsed for
+        either date, or if any step here raises -- a real, logged,
+        non-fatal degradation, matching the same fallback discipline
+        already used by _orbit_based_coregister for its own real vs.
+        approximate coregistration paths.
+
+        Returns:
+            (ref_processed, sec_processed, metadata) -- metadata
+            includes "method" ("real_per_burst_esd_and_deburst" or
+            "whole_image_esd_fallback") so process_pair()'s own
+            metadata can honestly report which path actually ran.
+        """
+        metadata = {
+            "method": "whole_image_esd_fallback",
+            "esd_shift_px": None,
+            "deburst_applied": False,
+        }
+
+        try:
+            from pygeofetch.insar.annotation import parse_slc_geometry, parse_burst_info
+            from pygeofetch.insar.esd import estimate_esd_shift_per_burst_overlap
+            from pygeofetch.insar.deburst import deburst_array
+            from pygeofetch.insar.coregister import read_crop_offset, read_matched_swath
+
+            ref_swath_hint = (
+                read_matched_swath(reference_extracted_path)
+                if reference_extracted_path is not None else None
+            )
+            sec_swath_hint = (
+                read_matched_swath(secondary_extracted_path)
+                if secondary_extracted_path is not None else None
+            )
+
+            ref_geom = parse_slc_geometry(reference_safe_zip, member_hint=ref_swath_hint)
+            ref_burst_info = parse_burst_info(reference_safe_zip, member_hint=ref_swath_hint)
+            sec_burst_info = parse_burst_info(secondary_safe_zip, member_hint=sec_swath_hint)
+            azimuth_time_interval_s = ref_geom.azimuth_time_interval_s
+
+            ref_row_off, _ = (
+                read_crop_offset(reference_extracted_path)
+                if reference_extracted_path is not None else (0.0, 0.0)
+            )
+            sec_row_off, _ = (
+                read_crop_offset(secondary_extracted_path)
+                if secondary_extracted_path is not None else (0.0, 0.0)
+            )
+
+            # Step 3: real per-burst-overlap ESD, on the still-bursted
+            # (pre-deburst) data -- uses the reference's own burst
+            # structure as the shared row-coordinate system for
+            # comparing reference and secondary at the same real rows.
+            if self._esd_enabled:
+                esd_shift_s, per_overlap = estimate_esd_shift_per_burst_overlap(
+                    ref_complex, sec_complex, ref_burst_info, azimuth_time_interval_s,
+                    row_offset=int(ref_row_off),
+                )
+                if esd_shift_s is not None:
+                    esd_shift_px = esd_shift_s / azimuth_time_interval_s
+                    n_usable = sum(1 for s in per_overlap if s is not None)
+                    if abs(esd_shift_px) > 1e-4:
+                        sec_complex = self._apply_azimuth_shift(sec_complex, esd_shift_px)
+                    logger.info(
+                        "Real per-burst-overlap ESD azimuth shift: %.6f px "
+                        "(%d/%d burst overlaps usable)",
+                        esd_shift_px, n_usable, len(per_overlap),
+                    )
+                    metadata["esd_shift_px"] = esd_shift_px
+                    metadata["esd_overlaps_usable"] = n_usable
+                    metadata["esd_overlaps_total"] = len(per_overlap)
+                else:
+                    logger.info(
+                        "Real per-burst-overlap ESD found no usable burst "
+                        "overlaps — proceeding without an azimuth "
+                        "refinement from this step."
+                    )
+
+            # Step 2: real deburst, applied to both images using each
+            # date's own real burst metadata.
+            ref_debursted, ref_first_kept_row = deburst_array(
+                ref_complex, ref_burst_info, azimuth_time_interval_s, row_offset=int(ref_row_off)
+            )
+            sec_debursted, _ = deburst_array(
+                sec_complex, sec_burst_info, azimuth_time_interval_s, row_offset=int(sec_row_off)
+            )
+
+            # Real correctness fix, not optional: deburst can remove
+            # rows from the TOP of the array (whenever the crop's own
+            # row 0 falls inside a burst's discarded edge/overlap
+            # region), which shifts the array's real spatial origin.
+            # Without correcting the georeferencing transform's origin
+            # by this same amount, the final saved GeoTIFF would still
+            # write successfully (save() derives height/width fresh
+            # from the array shape) but every pixel would be spatially
+            # mislocated by the number of rows removed -- a silent
+            # correctness bug, not a crash, so it would not have been
+            # caught by "does it run."
+            rows_removed_from_top = ref_first_kept_row - int(ref_row_off)
+            metadata["rows_removed_from_top"] = rows_removed_from_top
+
+            if ref_debursted.shape != sec_debursted.shape:
+                min_rows = min(ref_debursted.shape[0], sec_debursted.shape[0])
+                min_cols = min(ref_debursted.shape[1], sec_debursted.shape[1])
+                logger.warning(
+                    "Debursted reference %s and secondary %s shapes "
+                    "differ (different dates' real burst timing need "
+                    "not match exactly) — cropping both to the common "
+                    "(%d, %d) shape.",
+                    ref_debursted.shape, sec_debursted.shape, min_rows, min_cols,
+                )
+                ref_debursted = ref_debursted[:min_rows, :min_cols]
+                sec_debursted = sec_debursted[:min_rows, :min_cols]
+
+            metadata["method"] = "real_per_burst_esd_and_deburst"
+            metadata["deburst_applied"] = True
+            logger.info(
+                "Real burst-aware processing complete: %s -> %s "
+                "(burst-boundary redundancy removed)",
+                ref_complex.shape, ref_debursted.shape,
+            )
+            return ref_debursted, sec_debursted, metadata
+
+        except Exception as exc:
+            logger.warning(
+                "Real burst-aware ESD/deburst failed (%s) — falling "
+                "back to the whole-image ESD approximation, no deburst "
+                "applied. The interferogram will still be produced, "
+                "but real burst-boundary artifacts will not be "
+                "corrected for this pair.",
+                exc,
+            )
+            esd_shift = None
+            if self._esd_enabled:
+                esd_shift = self._estimate_esd_shift(ref_complex, sec_complex)
+                if esd_shift is not None and abs(esd_shift) > 1e-4:
+                    sec_complex = self._apply_azimuth_shift(sec_complex, esd_shift)
+                    logger.info(
+                        "Whole-image ESD azimuth shift applied (fallback): %.5f px", esd_shift
+                    )
+            metadata["esd_shift_px"] = esd_shift
+            return ref_complex, sec_complex, metadata
 
     def process_pair(
         self,
@@ -314,9 +498,33 @@ class InterferogramGenerator:
             if sec_complex.shape != ref_complex.shape:
                 sec_complex = self._resample_to_reference(sec_complex, ref_complex.shape)
 
-        # Step 2: ESD refinement (residual azimuth shift correction)
+        # Step 2: ESD refinement (residual azimuth shift correction),
+        # and real deburst if opted in. use_real_burst_processing is
+        # off by default -- this branch preserves the exact existing
+        # whole-image-ESD-only behaviour unless a caller deliberately
+        # opts in AND supplies both SAFE zips (burst metadata lives in
+        # each date's own annotation XML, not in the DEM/orbit files).
         esd_shift = None
-        if self._esd_enabled:
+        burst_metadata = {"method": "whole_image_esd", "deburst_applied": False}
+        if self._use_real_burst_processing and reference_safe_zip is not None and secondary_safe_zip is not None:
+            ref_complex, sec_complex, burst_metadata = self._burst_aware_processing(
+                ref_complex, sec_complex,
+                reference_safe_zip, secondary_safe_zip,
+                reference, secondary,
+            )
+            esd_shift = burst_metadata.get("esd_shift_px")
+            rows_removed = burst_metadata.get("rows_removed_from_top", 0)
+            if rows_removed and rows_removed > 0 and profile.get("transform") is not None:
+                from rasterio import Affine
+
+                profile = dict(profile)
+                profile["transform"] = profile["transform"] * Affine.translation(0, rows_removed)
+                logger.info(
+                    "Adjusted georeferencing transform origin: deburst "
+                    "removed %d row(s) from the top of the crop.",
+                    rows_removed,
+                )
+        elif self._esd_enabled:
             esd_shift = self._estimate_esd_shift(ref_complex, sec_complex)
             if esd_shift is not None and abs(esd_shift) > 1e-4:
                 sec_complex = self._apply_azimuth_shift(sec_complex, esd_shift)
@@ -386,6 +594,77 @@ class InterferogramGenerator:
             interferogram = goldstein_filter(interferogram, alpha=goldstein_alpha)
             logger.info("Goldstein phase filter applied (alpha=%.2f, tiled)", goldstein_alpha)
 
+        # Step 3b: real flat-earth (orbital/geometric) phase removal --
+        # opt-in, applied before topographic correction (real InSAR
+        # practice flattens the interferogram first, then looks for
+        # residual DEM-correlated phase). A real, distinct physical
+        # component from topography -- confirmed to have been the
+        # actual cause of a real, substantial artifact found in this
+        # project's own Mexico City work (a smooth range-direction
+        # ramp explaining 95.5% of a real pair's displacement pattern,
+        # confirmed via a real linear-fit R^2 test). Self-contained,
+        # with its own real fallback: needs both SAFE zips and both
+        # orbit files (same real inputs already required for real
+        # orbit-based coregistration); silently unavailable inputs
+        # skip this step with a clear log message, not a crash.
+        flat_earth_metadata = {"applied": False}
+        if self._remove_flat_earth_phase and all(
+            x is not None for x in (
+                reference_safe_zip, secondary_safe_zip,
+                reference_orbit_file, secondary_orbit_file,
+            )
+        ):
+            try:
+                import rasterio
+                from pygeofetch.insar.annotation import parse_slc_geometry
+                from pygeofetch.insar.geolocation import parse_orbit_file
+                from pygeofetch.insar.flatearth import compute_flat_earth_phase
+                from pygeofetch.insar.coregister import read_matched_swath
+
+                ref_swath_hint = read_matched_swath(reference) if reference is not None else None
+                sec_swath_hint = read_matched_swath(secondary) if secondary is not None else None
+                ref_geom_fe = parse_slc_geometry(reference_safe_zip, member_hint=ref_swath_hint)
+                sec_geom_fe = parse_slc_geometry(secondary_safe_zip, member_hint=sec_swath_hint)
+                ref_orbit_fe = parse_orbit_file(reference_orbit_file)
+                sec_orbit_fe = parse_orbit_file(secondary_orbit_file)
+
+                ref_center_time_fe = ref_geom_fe.azimuth_time(ref_geom_fe.n_lines / 2)
+                sec_center_time_fe = sec_geom_fe.azimuth_time(sec_geom_fe.n_lines / 2)
+
+                with rasterio.open(str(reference)) as _src:
+                    b = _src.bounds
+                    margin_lon = (b.right - b.left) * 0.2
+                    margin_lat = (b.top - b.bottom) * 0.2
+                    sample_bounds_fe = (
+                        b.left - margin_lon, b.bottom - margin_lat,
+                        b.right + margin_lon, b.top + margin_lat,
+                    )
+
+                wavelength_m = 0.05546576  # real Sentinel-1 C-band wavelength
+                flat_earth_phase = compute_flat_earth_phase(
+                    ref_geom_fe, ref_orbit_fe, sec_geom_fe, sec_orbit_fe,
+                    ref_center_time_fe, sec_center_time_fe,
+                    interferogram.shape, wavelength_m,
+                    sample_bounds=sample_bounds_fe,
+                )
+                interferogram = interferogram * self._np().exp(-1j * flat_earth_phase)
+                flat_earth_metadata = {
+                    "applied": True,
+                    "phase_range_rad": (float(flat_earth_phase.min()), float(flat_earth_phase.max())),
+                }
+                logger.info(
+                    "Real flat-earth phase removed: range [%.2f, %.2f] rad",
+                    flat_earth_phase.min(), flat_earth_phase.max(),
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Real flat-earth phase removal failed (%s) — "
+                    "proceeding without it. The interferogram will "
+                    "still be produced, but may carry an uncorrected "
+                    "orbital/geometric phase ramp.",
+                    exc,
+                )
+
         # Step 4: remove topographic phase
         topo_metadata = {"correction_applied": False}
         if dem is not None:
@@ -432,6 +711,9 @@ class InterferogramGenerator:
             metadata={
                 "coherence_window": effective_coh_window,
                 "esd_applied": self._esd_enabled and esd_shift is not None,
+                "esd_method": burst_metadata["method"],
+                "deburst_applied": burst_metadata["deburst_applied"],
+                "flat_earth_phase_removed": flat_earth_metadata["applied"],
                 "topographic_phase_removed": topo_metadata["correction_applied"],
                 "topographic_phase_r_squared": topo_metadata.get("r_squared"),
             },

@@ -184,7 +184,18 @@ class Element84Provider(AbstractBaseProvider):
         for key, asset in assets.items():
             if not asset.href or not asset.href.startswith("http"):
                 continue
-            filename = asset.href.split("/")[-1] or f"{data.id}_{key}.tif"
+            # Real, confirmed bug fixed here: the raw URL basename (e.g.
+            # "B02.tif") is what real COG asset URLs typically end in,
+            # NOT scene-specific -- the old `or f"{data.id}_{key}.tif"`
+            # fallback only fired when the basename was empty, which
+            # essentially never happens for real asset URLs. That meant
+            # every scene's same-named band files silently collided in
+            # a shared destination directory, with the LAST scene to
+            # finish downloading overwriting all the others -- no error
+            # raised, just quietly wrong data on disk. Scene disambiguation
+            # is now unconditional, not a fallback.
+            raw_name = asset.href.split("/")[-1] or f"{key}.tif"
+            filename = f"{data.id}_{raw_name}"
             out_file = destination / filename
 
             if out_file.exists() and not getattr(options, "overwrite", False):

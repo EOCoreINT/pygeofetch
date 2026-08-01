@@ -187,9 +187,10 @@ class SentinelHubProvider(AbstractBaseProvider):
         for key, asset in (data.data_assets or data.assets).items():
             if not asset.href or not asset.href.startswith("http"):
                 continue
-            out_file = destination / (
-                asset.href.split("/")[-1] or f"{data.id}_{key}.tif"
-            )
+            # Real, confirmed bug fix -- see element84.py for the full
+            # explanation. Scene disambiguation is now unconditional.
+            raw_name = asset.href.split("/")[-1] or f"{key}.tif"
+            out_file = destination / f"{data.id}_{raw_name}"
             try:
                 with httpx.stream(
                     "GET",

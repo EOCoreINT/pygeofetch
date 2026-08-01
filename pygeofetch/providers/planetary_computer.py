@@ -247,7 +247,10 @@ class PlanetaryComputerProvider(AbstractBaseProvider):
                 continue
 
             signed_url = self._sign_url(asset.href, token)
-            filename = asset.href.split("/")[-1] or f"{data.id}_{key}.tif"
+            # Real, confirmed bug fix -- see element84.py for the full
+            # explanation. Scene disambiguation is now unconditional.
+            raw_name = asset.href.split("/")[-1] or f"{key}.tif"
+            filename = f"{data.id}_{raw_name}"
             out_file = destination / filename
 
             if out_file.exists() and not getattr(options, "overwrite", False):

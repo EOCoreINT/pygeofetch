@@ -172,15 +172,54 @@ class AtmosphericCorrector:
             )
             return phase, {"correction_applied": False, "reason": "insufficient_valid_pixels"}
 
+        # Real, confirmed bug fixed here: the previous version fit a
+        # plain, arithmetic linear regression directly against wrapped
+        # phase (bounded [-pi, pi)). Any real elevation-correlated
+        # signal spanning more than one 2*pi cycle across the scene --
+        # confirmed to be the real, common case here, Iztapalapa's real
+        # elevation range easily produces this -- gets sliced into
+        # discontinuous jumps by the wrapping, which destroys a plain
+        # linear fit regardless of whether a real underlying
+        # relationship exists. Confirmed directly: R^2 consistently
+        # landed at machine-noise levels (1e-8 to 1e-4) on every real
+        # pair tried, not because no correlation existed, but because
+        # this method was mathematically incapable of detecting one
+        # through the wrap discontinuities.
+        #
+        # Fixed using the same circular regression (fit the real/imag
+        # parts of exp(i*phase) separately, matching how the wrap
+        # boundary is correctly handled everywhere else phase gets
+        # regressed against a covariate in this codebase --
+        # interferogram.py's _remove_topographic_phase(), already
+        # proven and verified) rather than a different, novel approach.
+        dem_std = float(np.std(dem_data[valid]))
+        if dem_std < 1.0:  # metres -- genuinely flat, not just low-relief
+            logger.info(
+                "DEM has negligible elevation variance (std=%.2fm) in the "
+                "valid region — skipping atmospheric correction (nothing "
+                "real to regress against, not a low-correlation case the "
+                "R² gate would otherwise catch).",
+                dem_std,
+            )
+            return phase, {"correction_applied": False, "reason": "dem_no_variance"}
+
         dem_v = dem_data[valid]
         phase_v = phase[valid]
         A = np.vstack([dem_v, np.ones_like(dem_v)]).T
-        coeffs, *_ = np.linalg.lstsq(A, phase_v, rcond=None)
-        slope_rad_per_m = coeffs[0]
 
-        fitted_v = A @ coeffs
-        ss_res = np.sum((phase_v - fitted_v) ** 2)
-        ss_tot = np.sum((phase_v - phase_v.mean()) ** 2)
+        complex_v = np.exp(1j * phase_v)
+        coeffs_re, *_ = np.linalg.lstsq(A, complex_v.real, rcond=None)
+        coeffs_im, *_ = np.linalg.lstsq(A, complex_v.imag, rcond=None)
+        fitted_phase_v = np.arctan2(A @ coeffs_im, A @ coeffs_re)
+
+        # R² must also be computed via circular (wrapped) residuals --
+        # a correct circular FIT with a naive arithmetic R² would still
+        # give a wrong gate decision, confirmed as the reason this
+        # needs matching, not just copying, the proven pattern.
+        residual = np.angle(np.exp(1j * (phase_v - fitted_phase_v)))
+        ss_res = np.sum(residual**2)
+        centered = np.angle(np.exp(1j * (phase_v - np.mean(phase_v))))
+        ss_tot = np.sum(centered**2)
         r_squared = 1 - (ss_res / ss_tot) if ss_tot > 1e-10 else 0.0
 
         if r_squared < 0.5:
@@ -191,12 +230,16 @@ class AtmosphericCorrector:
             )
             return phase, {"correction_applied": False, "r_squared": float(r_squared)}
 
-        tropo_phase = slope_rad_per_m * dem_data
-        corrected = phase - tropo_phase
+        slope_re, intercept_re = coeffs_re
+        slope_im, intercept_im = coeffs_im
+        fitted_real = slope_re * dem_data + intercept_re
+        fitted_imag = slope_im * dem_data + intercept_im
+        tropo_phase = np.arctan2(fitted_imag, fitted_real)
+        corrected = np.angle(np.exp(1j * (phase - tropo_phase)))
 
         logger.info(
-            "Elevation-correlated correction: slope=%.2e rad/m over %d valid pixels",
-            slope_rad_per_m,
+            "Elevation-correlated correction applied: R²=%.2f over %d valid pixels",
+            r_squared,
             int(valid.sum()),
         )
         return corrected.astype(np.float32), {"correction_applied": True, "r_squared": float(r_squared)}

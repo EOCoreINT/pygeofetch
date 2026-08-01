@@ -147,6 +147,7 @@ def bridge_unwrap_regions(
     conncomp,
     bridge_radius: int = 50,
     min_region_size: int = 100,
+    reference_pixel=None,
 ):
     """
     Bridging unwrapping-error correction (Yunjun, Fattahi & Amelung 2019,
@@ -196,6 +197,21 @@ def bridge_unwrap_regions(
         min_region_size: Regions smaller than this (in pixels) are
                        excluded from bridging -- too small to trust a
                        median estimate from, left as unreliable.
+        reference_pixel: Optional (row, col). If given, the region
+                       CONTAINING this pixel is used as the reference
+                       (offset 0) instead of always defaulting to the
+                       largest region. Matters for multi-pair use (e.g.
+                       SBAS): bridging each pair independently with the
+                       default (largest-region) reference can anchor
+                       different pairs to genuinely different real
+                       locations, since "largest region" isn't
+                       necessarily the same region pair to pair —
+                       confirmed directly: the same pixel's bridged
+                       value varied by tens of radians across pairs
+                       without this, corrupting the downstream joint
+                       inversion even though each pair was individually
+                       correctly bridged. Pass the SAME reference_pixel
+                       used for SBAS's own referencing to fix this.
 
     Returns:
         (corrected_phase, offsets_applied) -- corrected_phase is the
@@ -216,7 +232,19 @@ def bridge_unwrap_regions(
         return unwrapped_phase.copy(), {}
 
     valid_labels.sort(key=lambda lbl: region_sizes[lbl], reverse=True)
-    reference_label = valid_labels[0]
+    if reference_pixel is not None:
+        rp_row, rp_col = reference_pixel
+        rp_label = int(conncomp[rp_row, rp_col])
+        if rp_label == 0 or rp_label not in valid_labels:
+            raise ValueError(
+                f"reference_pixel {reference_pixel} is not part of any "
+                f"valid (reliable, large-enough) region — cannot anchor "
+                f"bridging there. Pick a pixel with conncomp != 0 in a "
+                f"region at least min_region_size={min_region_size} pixels."
+            )
+        reference_label = rp_label
+    else:
+        reference_label = valid_labels[0]
 
     corrected = np.array(unwrapped_phase, dtype=np.float64, copy=True)
     resolved_points = {reference_label: np.column_stack(np.where(conncomp == reference_label))}
