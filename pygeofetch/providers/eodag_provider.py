@@ -269,10 +269,30 @@ class EODAGProvider(AbstractBaseProvider):
         """Convert an EODAG EOProduct to a PyGeoFetch SatelliteData."""
         props = product.properties or {}
         bbox = None
+        geometry = None
         if hasattr(product, "geometry") and product.geometry:
             b = product.geometry.bounds
             if len(b) == 4:
                 bbox = (b[0], b[1], b[2], b[3])
+            # Real fix: EODAG's own documented API gives a real Shapely
+            # geometry object here, not just bounds -- shapely's own
+            # mapping() utility converts it to real GeoJSON directly.
+            try:
+                from shapely.geometry import mapping
+
+                geometry = mapping(product.geometry)
+            except Exception:
+                geometry = None
+
+        from pygeofetch.models.satellite_data import ProcessingLevel, SatelliteAsset
+
+        raw_processing_level = props.get("processingLevel")
+        processing_level = ProcessingLevel.UNKNOWN
+        if raw_processing_level:
+            for pl in ProcessingLevel:
+                if pl.value == raw_processing_level:
+                    processing_level = pl
+                    break
 
         return SatelliteData(
             id=product.properties.get("id", str(product)),
@@ -281,8 +301,11 @@ class EODAGProvider(AbstractBaseProvider):
             satellite=props.get("platform") or props.get("platformSerialIdentifier"),
             datetime=props.get("startTimeFromAscendingNode") or props.get("startDate"),
             bbox=bbox,
+            geometry=geometry,
             cloud_cover=props.get("cloudCover"),
-            processing_level=props.get("processingLevel"),
-            assets={"download": {"href": product.remote_location or ""}},
+            processing_level=processing_level,
+            assets={
+                "download": SatelliteAsset(key="download", href=product.remote_location or "")
+            },
             properties={"eodag_product_id": product.properties.get("id", ""), **props},
         )

@@ -184,6 +184,78 @@ def parse_slc_geometry(
     return geometry
 
 
+def parse_chirp_bandwidth(safe_zip_path: Union[str, Path], member_hint: Optional[str] = None) -> float:
+    """
+    Real, per-product chirp bandwidth (Hz), read directly from a real
+    Sentinel-1 SAFE archive's own annotation XML -- not approximated
+    from general documentation, which showed real ambiguity across
+    sources (56.5 MHz commonly cited, but ESA's own system overview
+    table lists different values, likely varying per IW sub-swath,
+    without a clear, confident way to map table columns to swaths).
+
+    Real, confirmed XML field names and formula: verified directly
+    against ISCE (JPL/Caltech's own, established, widely-used
+    open-source InSAR processing software)'s real Sentinel1.py parser,
+    which reads exactly these two fields and computes bandwidth as
+    their product -- standard, real chirp radar physics (bandwidth =
+    ramp rate * pulse duration), not an assumption made here.
+
+    Raises:
+        ValueError if the annotation XML or required fields are
+        missing -- surfaced clearly rather than falling back to an
+        approximate, possibly-wrong default value.
+    """
+    import xml.etree.ElementTree as ET
+
+    with zipfile.ZipFile(safe_zip_path) as zf:
+        candidates = [
+            n for n in zf.namelist()
+            if "/annotation/" in n and n.lower().endswith(".xml")
+            and "/calibration/" not in n.lower()
+            and not Path(n).name.lower().startswith("rfi-")
+            and "/rfi/" not in n.lower()
+        ]
+        if member_hint:
+            filtered = [n for n in candidates if member_hint.lower() in n.lower()]
+            if filtered:
+                candidates = filtered
+        if not candidates:
+            raise ValueError(
+                f"{safe_zip_path}: no annotation XML found — cannot "
+                f"read real chirp bandwidth."
+            )
+        with zf.open(candidates[0]) as f:
+            root = ET.parse(f).getroot()
+
+    def get_text(path: str) -> str:
+        elem = root.find(path)
+        if elem is None or elem.text is None:
+            raise ValueError(
+                f"{safe_zip_path}: required chirp field missing: {path} "
+                f"(real field path confirmed against ISCE's own parser — "
+                f"if this is missing, the product's annotation schema may "
+                f"differ from what was verified)."
+            )
+        return elem.text
+
+    pulse_length_s = float(get_text(
+        ".//generalAnnotation/downlinkInformationList/downlinkInformation/"
+        "downlinkValues/txPulseLength"
+    ))
+    ramp_rate_hz_per_s = float(get_text(
+        ".//generalAnnotation/downlinkInformationList/downlinkInformation/"
+        "downlinkValues/txPulseRampRate"
+    ))
+    bandwidth_hz = abs(ramp_rate_hz_per_s * pulse_length_s)
+
+    logger.info(
+        "Parsed real chirp bandwidth from %s: %.2f MHz (pulse length=%.2f us, ramp rate=%.4f MHz/us)",
+        Path(safe_zip_path).name, bandwidth_hz / 1e6,
+        pulse_length_s * 1e6, ramp_rate_hz_per_s / 1e12,
+    )
+    return bandwidth_hz
+
+
 @dataclass
 class BurstInfo:
     """

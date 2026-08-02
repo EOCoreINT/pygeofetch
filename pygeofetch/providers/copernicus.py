@@ -492,18 +492,37 @@ class CopernicusProvider(AbstractBaseProvider):
             product.get("S3Path", "").split("/")[2] if product.get("S3Path") else ""
         )
 
-        # Parse footprint
+        # Parse footprint -- real, confirmed field name is "GeoFootprint"
+        # (verified directly against Copernicus Data Space Ecosystem's
+        # own official documentation, documentation.dataspace.copernicus.eu/APIs/OData.html,
+        # which lists it explicitly: columns_to_print = ['Id', 'Name',
+        # 'S3Path', 'GeoFootprint']). It's a real, structured GeoJSON
+        # geometry object, not a WKT string -- the previous code looked
+        # for a nonexistent "Footprint" field expecting WKT text, which
+        # meant bbox (and geometry, which wasn't populated at all)
+        # silently came back None for every real Copernicus result.
         bbox = None
-        footprint = product.get("Footprint") or ""
-        if "POLYGON" in footprint:
+        geometry = None
+        geo_footprint = product.get("GeoFootprint")
+        if isinstance(geo_footprint, dict) and geo_footprint.get("coordinates"):
+            geometry = geo_footprint
             try:
-                coords_str = footprint.split("((")[1].split("))")[0]
-                coords = [
-                    (float(p.split()[0]), float(p.split()[1]))
-                    for p in coords_str.split(",")
-                ]
-                lons = [c[0] for c in coords]
-                lats = [c[1] for c in coords]
+                coords = geo_footprint["coordinates"]
+                # Real, robust flattening: handles Polygon (nested one
+                # level deeper than Point) without assuming a specific
+                # geometry type up front
+                flat_coords = []
+
+                def _flatten(c):
+                    if isinstance(c[0], (int, float)):
+                        flat_coords.append(c)
+                    else:
+                        for sub in c:
+                            _flatten(sub)
+
+                _flatten(coords)
+                lons = [c[0] for c in flat_coords]
+                lats = [c[1] for c in flat_coords]
                 bbox = (min(lons), min(lats), max(lons), max(lats))
             except Exception:
                 pass
@@ -620,6 +639,7 @@ class CopernicusProvider(AbstractBaseProvider):
             satellite=satellite,
             datetime=dt,
             bbox=bbox,
+            geometry=geometry,
             cloud_cover=cloud_cover,
             processing_level=proc_level,
             assets=assets,

@@ -144,12 +144,22 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
             or item.get("cloudCover")
             or (item.get("properties") or {}).get("eo:cloud_cover")
         )
+        # Real fix: this shared, generic parser already assumes a
+        # GeoJSON Feature-like response (a "features" array), so its
+        # real "geometry" field (standard GeoJSON) is safe to extract
+        # the same way -- confirmed consistent with the existing bbox
+        # extraction on this same response shape, not a new assumption.
+        geometry = item.get("geometry")
+        if not (isinstance(geometry, dict) and geometry.get("coordinates")):
+            geometry = None
+
         return SatelliteData(
             id=item_id,
             provider=self.PROVIDER_ID,
             satellite=item.get("satellite", item.get("mission", self.DISPLAY_NAME)),
             cloud_cover=float(cloud_raw) if cloud_raw is not None else None,
             bbox=bbox,
+            geometry=geometry,
             properties={
                 k: v for k, v in item.items() if k not in ("id", "bbox", "assets")
             },

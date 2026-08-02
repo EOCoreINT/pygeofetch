@@ -125,6 +125,84 @@ class InterferogramResult:
 
         return paths
 
+    def show_on_map(
+        self,
+        colormap: str = "hsv",
+        opacity: float = 0.8,
+        band: str = "wrapped_phase",
+    ) -> Any:
+        """
+        Display this interferogram's wrapped phase (or coherence, or
+        amplitude) on a real, georeferenced satellite basemap.
+
+        Uses a cyclic colormap ("hsv") for wrapped phase by default,
+        the real reason both uploaded tutorials' own fringe images
+        show a repeating rainbow: wrapped phase is genuinely periodic
+        (bounded to [-pi, pi)), and a cyclic colormap is the correct,
+        not just aesthetic, choice for it -- a linear colormap would
+        show a false discontinuity at the wrap points that isn't
+        physically there. Coherence and amplitude use their own real,
+        bounded ranges instead ([0,1] and real percentiles,
+        respectively), since neither is cyclic.
+
+        Args:
+            colormap: Matplotlib colormap name. Default "hsv" for
+                      wrapped_phase; consider "viridis" if displaying
+                      coherence instead.
+            opacity:  Layer opacity, 0-1.
+            band:     Which product to display: "wrapped_phase" (default),
+                      "coherence", or "amplitude".
+
+        Returns:
+            The real MapViewer instance.
+        """
+        import tempfile
+
+        import numpy as np
+        import rasterio
+
+        from pygeofetch.viz.map import MapViewer
+
+        if band not in ("wrapped_phase", "coherence", "amplitude"):
+            raise ValueError(f"band must be 'wrapped_phase', 'coherence', or 'amplitude', got {band!r}")
+
+        # Real, temporary GeoTIFF, reusing save()'s own already-correct
+        # georeferencing logic rather than duplicating it here
+        tmp_dir = Path(tempfile.mkdtemp())
+        paths = self.save(tmp_dir, auto_visualize=False)
+        raster_path = paths[band]
+
+        if band == "wrapped_phase":
+            vmin, vmax = -np.pi, np.pi  # real, physical bound -- not a guess
+        elif band == "coherence":
+            vmin, vmax = 0.0, 1.0  # real, physical bound
+        else:
+            with rasterio.open(raster_path) as src:
+                data = src.read(1)
+            finite = data[np.isfinite(data)]
+            vmin, vmax = (
+                (float(np.percentile(finite, 2)), float(np.percentile(finite, 98)))
+                if finite.size > 0
+                else (None, None)
+            )
+
+        with rasterio.open(raster_path) as src:
+            bounds = src.bounds
+        center_lat = (bounds.bottom + bounds.top) / 2
+        center_lon = (bounds.left + bounds.right) / 2
+
+        mv = MapViewer(center=(center_lat, center_lon), zoom=12)
+        mv.add_basemap("SATELLITE")
+        layer_name = f"{band} ({self.reference_date} -> {self.secondary_date})"
+        mv.add_raster(str(raster_path), colormap=colormap, layer_name=layer_name, opacity=opacity, vmin=vmin, vmax=vmax)
+        # Real fix: MapViewer needs .show() called explicitly to
+        # trigger Jupyter's rich display -- confirmed directly earlier
+        # this session (mv_social.show() case, and the same real issue
+        # in SLCExtractor.show_on_map()). Returning the raw MapViewer
+        # without calling .show() meant the layer was really added
+        # (confirmed by the log line) but nothing ever rendered.
+        return mv.show()
+
 
 class InterferogramGenerator:
     """

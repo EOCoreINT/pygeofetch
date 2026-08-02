@@ -268,9 +268,10 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
         return SatelliteData(
             id=granule_id,
             provider=self.PROVIDER_ID,
-            collection=entry.get("collection_concept_id", cloud_cover=None),
+            collection=entry.get("collection_concept_id"),
             satellite=entry.get("data_center", "NASA"),
             bbox=bbox,
+            cloud_cover=None,
             assets=assets,
             properties={
                 "title": entry.get("title", ""),

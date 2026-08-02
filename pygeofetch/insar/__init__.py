@@ -83,6 +83,8 @@ from pygeofetch.insar.visualize import (
 from pygeofetch.insar.annotation import SLCGeometry, parse_slc_geometry, BurstInfo, SwathTiming, parse_burst_info
 from pygeofetch.insar.deburst import compute_burst_row_ranges, deburst_array
 from pygeofetch.insar.flatearth import compute_flat_earth_phase
+from pygeofetch.insar.workflow import InSARProject
+from pygeofetch.insar.ionosphere import IonosphericCorrector, parse_ionex
 from pygeofetch.insar.esd import (
     compute_overlap_row_ranges,
     estimate_esd_shift_per_burst_overlap,
@@ -133,6 +135,9 @@ __all__ = [
     "estimate_esd_shift_per_burst_overlap",
     "SENTINEL1_IW_DELTA_F_OVL_HZ",
     "compute_flat_earth_phase",
+    "IonosphericCorrector",
+    "parse_ionex",
+    "InSARProject",
     "geodetic_to_ecef",
     "find_zero_doppler_time",
     "parse_orbit_file",

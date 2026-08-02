@@ -201,12 +201,20 @@ class TerraboticsProvider(AbstractBaseProvider):
             key = f"asset_{len(assets)}"
             assets[key] = SatelliteAsset(key=key, href=link, roles=["data"])
 
+        # Real fix: this parser already assumes a GeoJSON-like item
+        # structure (bbox as a top-level field), so its real
+        # "geometry" field is safe to extract the same way.
+        geometry = item.get("geometry")
+        if not (isinstance(geometry, dict) and geometry.get("coordinates")):
+            geometry = None
+
         return SatelliteData(
             id=item.get("id", item.get("scene_id", "")),
             provider=self.PROVIDER_ID,
             satellite=item.get("satellite", item.get("sensor", "")),
             cloud_cover=item.get("cloud_cover"),
             bbox=bbox,
+            geometry=geometry,
             assets=assets,
             properties={
                 k: v

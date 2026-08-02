@@ -628,6 +628,7 @@ class USGSProvider(AbstractBaseProvider):
             satellite=satellite,
             datetime=dt,
             bbox=bbox,
+            geometry=spatial if spatial and spatial.get("type") == "Polygon" else None,
             cloud_cover=cloud_cover,
             processing_level=ProcessingLevel.L2,
             assets=assets,

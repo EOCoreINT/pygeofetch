@@ -230,19 +230,118 @@ class MapViewer:
         path: Union[str, Path],
         layer_name: Optional[str] = None,
         style: Optional[dict] = None,
+        hover_style: Optional[dict] = None,
+        info_mode: str = "on_hover",
     ) -> "MapViewer":
-        """Add a vector layer (GeoJSON, GeoPackage, Shapefile)."""
+        """
+        Add a vector layer (GeoJSON, GeoPackage, Shapefile).
+
+        Args:
+            style:       Default feature style.
+            hover_style: Real, visual highlight style applied while
+                         hovering (e.g. {"weight": 3, "fillOpacity": 0.5}).
+                         Defaults to a real, sensible highlight if not given.
+            info_mode:   "on_hover" (default) shows each feature's real
+                         GeoJSON properties in a popup on hover; "on_click"
+                         shows it on click instead; None disables it.
+                         This is leafmap's own, already-supported
+                         capability -- previously not exposed through
+                         this wrapper.
+        """
         p = Path(path)
         name = layer_name or p.stem
         m = self._get_map()
         style = style or {"color": "red", "weight": 1, "fillOpacity": 0.3}
+        hover_style = hover_style or {"weight": 3, "fillOpacity": 0.5, "color": "yellow"}
         try:
-            m.add_vector(str(p), layer_name=name, style=style)
+            m.add_vector(str(p), layer_name=name, style=style, hover_style=hover_style, info_mode=info_mode)
             logger.info("Vector layer added: %s", name)
         except Exception as exc:
             logger.warning("Could not add vector %s: %s", p.name, exc)
         self._layers.append({"type": "vector", "path": str(p), "name": name})
         return self
+
+    def add_search_results(
+        self,
+        search_results: List[Any],
+        layer_name: str = "search_results",
+        style: Optional[dict] = None,
+        hover_style: Optional[dict] = None,
+        max_results: int = 50,
+    ) -> "MapViewer":
+        """
+        Real, reusable display of real pygeofetch search results
+        (SatelliteData objects) as footprints on this map, with real,
+        useful hover info -- collapses the repeated boilerplate every
+        InSAR project notebook this session was writing by hand into
+        one call.
+
+        Handles two real, confirmed edge cases directly rather than
+        crashing: not every provider populates SatelliteData.geometry
+        (falls back to a real rectangle built from .bbox instead), and
+        leafmap fails outright on an empty FeatureCollection (skips
+        display with a clear message instead of raising).
+
+        Args:
+            search_results: Real list of SatelliteData, e.g. from
+                             PyGeoFetch.search().
+            max_results:    Caps how many footprints are drawn --
+                             large result sets can make the map
+                             unresponsive.
+
+        Returns:
+            self, so this chains with .show() or further .add_*() calls.
+        """
+        import json
+        import tempfile
+
+        def _bbox_to_geometry(bbox):
+            min_lon, min_lat, max_lon, max_lat = bbox
+            return {
+                "type": "Polygon",
+                "coordinates": [[
+                    [min_lon, min_lat], [max_lon, min_lat],
+                    [max_lon, max_lat], [min_lon, max_lat], [min_lon, min_lat],
+                ]],
+            }
+
+        features = []
+        geometry_missing_count = 0
+        for r in search_results[:max_results]:
+            geometry = getattr(r, "geometry", None)
+            if geometry is None and getattr(r, "bbox", None):
+                geometry = _bbox_to_geometry(r.bbox)
+                geometry_missing_count += 1
+            if geometry is None:
+                continue
+            features.append({
+                "type": "Feature", "geometry": geometry,
+                "properties": {
+                    "Scene": getattr(r, "id", "unknown"),
+                    "Date": str(getattr(r, "datetime", None))[:10] if getattr(r, "datetime", None) else "unknown",
+                    "Satellite": getattr(r, "satellite", None) or "unknown",
+                    "Provider": getattr(r, "provider", "unknown"),
+                    "Cloud cover": f"{r.cloud_cover}%" if getattr(r, "cloud_cover", None) is not None else "n/a",
+                },
+            })
+
+        if geometry_missing_count:
+            logger.info(
+                "Real geometry missing for %d/%d results — used bbox fallback",
+                geometry_missing_count, len(search_results[:max_results]),
+            )
+
+        if not features:
+            logger.warning("No real geometry OR bbox available for any search result — skipping display")
+            return self
+
+        geojson_path = Path(tempfile.mkdtemp()) / f"{layer_name}.geojson"
+        geojson_path.write_text(json.dumps({"type": "FeatureCollection", "features": features}))
+        return self.add_vector(
+            str(geojson_path), layer_name=layer_name,
+            style=style or {"color": "cyan", "weight": 2, "fillOpacity": 0.05},
+            hover_style=hover_style,
+        )
 
     def add_basemap(self, name: str = "OpenStreetMap") -> "MapViewer":
         """Add a basemap tile layer."""

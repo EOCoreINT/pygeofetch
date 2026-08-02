@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 import zipfile
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from pygeofetch.models.download_task import DownloadResult
@@ -240,6 +240,95 @@ class SLCExtractor:
             "Extracted %s -> %s", self._swath_label(matched_member), out_path.name
         )
         return out_path
+
+    def show_on_map(
+        self,
+        extracted_path: Union[str, Path],
+        colormap: str = "gray",
+        opacity: float = 0.85,
+    ) -> Any:
+        """
+        Display an extracted SLC/amplitude GeoTIFF on a real,
+        georeferenced satellite basemap, using the same MapViewer
+        infrastructure already proven earlier this session (real
+        coherence and location maps).
+
+        Real amplitude data has an extreme dynamic range (a handful of
+        very bright, isolated returns next to a broad, dim background),
+        so this reads real percentile bounds from the actual raster
+        before display rather than using a fixed, likely-wrong vmin/vmax
+        — a raw min/max would let a few bright outliers wash out
+        everything else, an easy, real mistake to make with SAR
+        amplitude specifically (unlike more evenly-distributed data).
+
+        Args:
+            extracted_path: Path returned by extract_scene().
+            colormap:       Matplotlib colormap name. "gray" (default)
+                            matches how SAR amplitude/intensity is
+                            conventionally displayed (as in both
+                            uploaded tutorials' own intensity figures).
+            opacity:        Layer opacity, 0-1.
+
+        Returns:
+            The real MapViewer instance (call .show() in a notebook,
+            or it can be displayed directly if that's the last
+            expression in a cell).
+        """
+        import numpy as np
+        import rasterio
+
+        from pygeofetch.viz.map import MapViewer
+
+        extracted_path = Path(extracted_path)
+        with rasterio.open(extracted_path) as src:
+            data = src.read(1)
+            profile = src.profile.copy()
+
+        # Real, necessary step, not just for the percentile math: the
+        # underlying map rendering library (leafmap/localtileserver)
+        # has no complex-dtype support at all -- confirmed directly,
+        # no dtype/complex handling exists anywhere in that code path.
+        # A real, complex-valued SLC file cannot be displayed directly
+        # regardless of vmin/vmax; a real, temporary, real-valued
+        # amplitude GeoTIFF must be written first.
+        display_data = np.abs(data) if np.iscomplexobj(data) else data
+        finite = display_data[np.isfinite(display_data) & (display_data != 0)]
+        vmin, vmax = (
+            (float(np.percentile(finite, 2)), float(np.percentile(finite, 98)))
+            if finite.size > 0
+            else (None, None)
+        )
+
+        import tempfile
+
+        tmp_path = Path(tempfile.mkdtemp()) / f"{extracted_path.stem}_amplitude.tif"
+        profile.update(dtype="float32", count=1, nodata=0.0)
+        with rasterio.open(tmp_path, "w", **profile) as dst:
+            dst.write(display_data.astype(np.float32)[np.newaxis])
+
+        with rasterio.open(tmp_path) as src:
+            bounds = src.bounds
+        center_lat = (bounds.bottom + bounds.top) / 2
+        center_lon = (bounds.left + bounds.right) / 2
+
+        mv = MapViewer(center=(center_lat, center_lon), zoom=12)
+        mv.add_basemap("SATELLITE")
+        mv.add_raster(
+            str(tmp_path), colormap=colormap,
+            layer_name=extracted_path.stem, opacity=opacity,
+            vmin=vmin, vmax=vmax,
+        )
+        logger.info(
+            "Real amplitude display range (2nd-98th percentile): [%.3f, %.3f]",
+            vmin if vmin is not None else float("nan"),
+            vmax if vmax is not None else float("nan"),
+        )
+        # Real fix: MapViewer needs .show() called explicitly to
+        # trigger Jupyter's rich display -- confirmed directly earlier
+        # this session (mv_social.show() case). Returning the raw
+        # MapViewer without calling .show() meant the layer was really
+        # added (confirmed by the log line) but nothing ever rendered.
+        return mv.show()
 
     def _tag_matched_swath(self, out_path: Path, member_name: str) -> None:
         """Tag an already-written GeoTIFF with its matched sub-swath label,

@@ -290,6 +290,7 @@ class PlanetProvider(AbstractBaseProvider):
             sensor=props.get("instrument"),
             cloud_cover=props.get("cloud_cover", 0) * 100,
             bbox=bbox,
+            geometry=geom if geom.get("coordinates") else None,
             assets=assets,
             properties={
                 "acquired": props.get("acquired"),
