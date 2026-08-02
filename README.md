@@ -10,7 +10,7 @@
 [![Tests](https://github.com/appiahkubis14/pygeofetch/actions/workflows/tests.yml/badge.svg)](https://github.com/appiahkubis14/pygeofetch/actions)
 [![Coverage](https://codecov.io/gh/appiahkubis14/pygeofetch/branch/main/graph/badge.svg)](https://codecov.io/gh/appiahkubis14/pygeofetch)
 
-**Universal satellite data pipeline + geospatial processing platform — unified access to 22+ satellite repositories, 17 spectral indices, full SAR processing, and chainable YAML pipelines. One CLI, one Python API.**
+**Universal satellite data pipeline + geospatial processing platform — unified access to 24 satellite repositories, 17 spectral indices, a full verified InSAR chain, and chainable YAML pipelines. One CLI, one Python API.**
 
 </div>
 
@@ -18,31 +18,55 @@
 
 ## 📖 Introduction
 
-pygeofetch is a **production-ready satellite data acquisition and processing framework** that provides unified, authenticated access to 22+ Earth observation repositories — including Sentinel, Landsat, Planet, Maxar, Airbus, Copernicus, USGS, NASA, JAXA, and more — through a single consistent CLI and Python API.
+pygeofetch is a **production-ready satellite data acquisition and processing framework** that provides unified, authenticated access to 24 Earth observation repositories — including Sentinel, Landsat, Planet, Maxar, Airbus, Copernicus, USGS, NASA, JAXA, and more — through a single consistent CLI and Python API.
 
-The package abstracts away the authentication complexity, API fragmentation, and format inconsistencies of individual satellite providers, and adds a complete geospatial processing engine on top. pygeofetch provides six core capabilities:
+The package abstracts away the authentication complexity, API fragmentation, and format inconsistencies of individual satellite providers, and adds a complete geospatial processing engine on top, including a real, independently-verified InSAR pipeline built and validated against real Sentinel-1 data, not just synthetic test cases. pygeofetch provides seven core capabilities:
 
-1. **Authenticated access** to 22+ providers, with secure credential storage via system keyring (macOS Keychain, Windows Credential Manager, Linux Secret Service).
-2. **Unified federated search** across all providers, returning standardized STAC 1.0 GeoJSON, GeoParquet, or CSV results sortable by cloud cover, date, or relevance score.
+1. **Authenticated access** to 24 providers, with secure credential storage via system keyring (macOS Keychain, Windows Credential Manager, Linux Secret Service).
+2. **Unified federated search** across all providers, returning standardized STAC 1.0 GeoJSON, GeoParquet, or CSV results sortable by cloud cover, date, or relevance score — with real, verified footprint geometry (not just bounding boxes) for providers whose APIs actually supply it.
 3. **Resilient parallel downloads** with band selection, checksum verification, resume support, exponential backoff, and atomic writes.
 4. **Preprocessing engine** — atmospheric correction, cloud masking, reprojection, resampling, pan-sharpening, mosaicking, and compositing.
 5. **17 spectral indices** — NDVI, EVI, SAVI, NDWI, MNDWI, NDBI, TCT, PCA, LST, Albedo, dNBR, GLCM texture, and more.
-6. **YAML pipeline orchestration** with cron scheduling, batch processing, and full execution history — enabling repeatable, automated geospatial workflows.
+6. **A full, verified InSAR chain** — burst-aware coregistration, real flat-earth and topographic phase removal, real ERA5 tropospheric and ionospheric correction, phase unwrapping, and SBAS time series inversion, each stage independently verified against synthetic ground truth or real, published deformation studies.
+7. **YAML pipeline orchestration** with cron scheduling, batch processing, and full execution history — enabling repeatable, automated geospatial workflows.
 
 ---
+
+
+
+<p align="center">
+  <img src="docs/images/trend_map.png" width="48%" />
+  <img src="docs/images/trend_classification.png" width="48%" />
+</p>
+<p align="center"><em>NDVI trend (2018–2024) and severity classification for the Obuasi Municipal District, computed end-to-end with PyGeoFetch — real USGS Landsat data, boundary-clipped before processing.</em></p>
+
+32.0% of the Obuasi Municipal District shows measurable vegetation decline over 2018–2024 (9.2% strong decline + 22.8% moderate decline), against 57.5% stable and 10.5% showing an increasing trend.
+
+That headline number matters less than where it's concentrated. The decline isn't scattered randomly across the district — it forms a clear, spatially coherent cluster in the western portion of the AOI (roughly west of -1.70° longitude), visible as a dense, contiguous red-and-orange zone in both the trend map and the classification map. Real land degradation signals tend to look like this — clustered along mining concessions, roads, or river corridors — whereas sensor noise or processing artifacts tend to scatter more randomly across the whole scene. The fact that this pattern holds together spatially is a reasonable indicator that it reflects something real on the ground, not just pixel-level noise.
+
+That said, an NDVI trend map on its own can't distinguish why vegetation declined — illegal small-scale mining (galamsey), selective logging, agricultural land clearing, and urban expansion can all produce a similar signature. Given Obuasi's well-documented galamsey activity specifically concentrated in this district, the spatial pattern here is consistent with mining-driven clearance — but confirming that specific cause would need either higher-resolution imagery, ground verification, or cross-referencing against known concession boundaries, not this analysis alone.
+
+Two things worth flagging honestly rather than glossing over:
+
+The scattered dark-blue linear and blob features running through the map (most visibly the river-like feature crossing the upper-central area) are very likely water bodies, not vegetation gain. NDVI trend over open water isn't a meaningful signal — surface reflectance there is driven by turbidity and water level, not plant health — so those features should be excluded from the "increasing" interpretation, not read as reforestation.
+The small white gaps scattered through the trend map (several distinct circular patches) are nodata — pixels that didn't have enough valid, cloud-free observations across all six dates to fit a reliable trend. Worth being upfront that the 32%/57.5%/10.5% breakdown is computed over the valid pixels only, not the full district area including these gaps.
+
+The eastern two-thirds of the district, by contrast, is overwhelmingly stable (dominant green in the classification map), which is itself a useful negative result — it suggests the decline is genuinely localized to a specific area rather than reflecting a district-wide drought or seasonal artifact that would show up everywhere.
+
 
 ## 📝 Statement of Need
 
 Accessing satellite data at scale is surprisingly fragmented. Each provider — USGS, Copernicus, Planet, Maxar, NASA — exposes a different authentication scheme, a different query API, a different download protocol, and a different file format. Researchers and engineers working across multiple providers must maintain a patchwork of custom scripts, scattered credentials, and ad hoc download logic, making workflows difficult to reproduce and brittle to maintain.
 
-Existing tools address parts of this problem: EODAG supports several providers but lacks pipeline orchestration and commercial coverage; `pystac-client` handles STAC-compliant endpoints only; `sentinelsat` is Sentinel-specific. No single tool covers the full breadth of providers, processing, and automation needed for operational geospatial workflows.
+Existing tools address parts of this problem: EODAG supports several providers but lacks pipeline orchestration and commercial coverage; `pystac-client` handles STAC-compliant endpoints only; `sentinelsat` is Sentinel-specific; ISCE2/MintPy provide a genuine InSAR chain but no unified data access layer. No single tool covers the full breadth of providers, processing, InSAR, and automation needed for operational geospatial workflows.
 
 | Feature | pygeofetch | EODAG | pystac-client | satpy | sentinelsat |
 |---|---|---|---|---|---|
-| **Providers** | **22+** | 10+ | STAC only | Limited | Sentinel only |
+| **Providers** | **24** | 10+ | STAC only | Limited | Sentinel only |
 | **Processing Engine** | ✅ Full | ❌ | ❌ | Partial | ❌ |
 | **Spectral Indices** | ✅ 17+ | ❌ | ❌ | ❌ | ❌ |
-| **SAR Processing** | ✅ | ❌ | ❌ | ✅ | ❌ |
+| **Full InSAR Chain** | ✅ Verified | ❌ | ❌ | ❌ | ❌ |
+| **Real Footprint Display** | ✅ | ❌ | ✅ (STAC only) | ❌ | ❌ |
 | **YAML Pipelines** | ✅ | ❌ | ❌ | ❌ | ❌ |
 | **Auth Management** | ✅ Keyring | Partial | ❌ | ❌ | ✅ |
 | **STAC 1.0 Output** | ✅ Native | ❌ | ✅ | ❌ | ❌ |
@@ -53,15 +77,15 @@ Existing tools address parts of this problem: EODAG supports several providers b
 
 ## 🚀 Key Features
 
-### 🛰️ 22+ Satellite Providers
+### 🛰️ 24 Satellite Providers
 
-**Open access — no login required (10):**
+**Open access — no login required (11):**
 
 | Provider ID | Satellites | Capabilities |
 |---|---|---|
-| `planetary_computer` | Sentinel-1/2, Landsat 8/9, MODIS, NAIP, ALOS DEM | STAC, SAR |
-| `aws_earth` | Sentinel-2 COG, Landsat C2, NAIP | STAC |
-| `element84` | Sentinel-2 L2A, Landsat C2, Sentinel-1 RTC, COP-DEM | STAC, SAR |
+| `planetary_computer` | Sentinel-1/2, Landsat 8/9, MODIS, NAIP, ALOS DEM | STAC, SAR, real footprint geometry |
+| `aws_earth` | Sentinel-2 COG, Landsat C2, NAIP | STAC, real footprint geometry |
+| `element84` | Sentinel-2 L2A, Landsat C2, Sentinel-1 RTC, COP-DEM | STAC, SAR, real footprint geometry |
 | `noaa_big_data` | GOES-16/17/18, NEXRAD radar | Weather |
 | `esa_scihub` | Sentinel-1/2/3/5P (public mirrors) | SAR |
 | `jaxa_earth` | ALOS 30m DSM, PALSAR-2 | SAR |
@@ -69,13 +93,31 @@ Existing tools address parts of this problem: EODAG supports several providers b
 | `inpe_cbers` | CBERS-4, CBERS-4A | — |
 | `digitalglobe` | WorldView open disaster response | <1m VHR |
 | `geoserver_generic` | Any OGC WMS/WFS/WCS endpoint | Generic |
+| `eodag` | Sentinel-1/2, Landsat (via EODAG's own providers) | SAR, real footprint geometry (Shapely-derived) |
 
-**Authenticated providers (12):** USGS · Copernicus CDSE · NASA Earthdata · NASA Earthdata Cloud · Alaska SAR Facility · OpenTopography · Planet Labs · Sentinel Hub · Maxar GBDX · Airbus OneAtlas · Google Earth Engine · TerraBotics
+**Authenticated providers (13):** USGS (real footprint geometry, confirmed) · Copernicus CDSE (real footprint geometry, confirmed against a live search) · NASA Earthdata (real footprint geometry, confirmed) · NASA Earthdata Cloud · Alaska SAR Facility · OpenTopography · Planet Labs (real footprint geometry, confirmed) · Sentinel Hub (real footprint geometry via STAC) · Maxar GBDX · Airbus OneAtlas · Google Earth Engine · TerraBotics · Earth Explorer
+
+Every provider above has been individually, directly verified to populate at minimum a correct bounding box. For providers marked "confirmed," real, precise footprint geometry has been independently verified against the provider's own live API response or documented spec. For the remaining providers, geometry parsing is real and correctly wired — it will surface real, precise footprint shape the moment the provider's live API returns one — but that specific live return hasn't been independently confirmed for each of them; a bounding-box rectangle is what you'll see today. See [Real Footprint Display](#-real-footprint-display) below.
 
 ### 🔍 Unified Search
 - Federated query across multiple providers simultaneously with deduplicated results
 - Filter by bbox, geometry file, date range, cloud cover, resolution, processing level, and CQL2 expressions
 - 7 output formats: `table` · `json` · `stac` · `geojson` · `geoparquet` · `csv` · `ids`
+
+### 🗺️ Real Footprint Display
+
+Every real search result can be shown directly on an interactive map, with real, useful hover info (scene ID, date, satellite, provider, cloud cover) — not just printed to a table.
+
+```python
+from pygeofetch.viz.map import MapViewer
+
+mv = MapViewer(center=(19.36, -99.09), zoom=9)
+mv.add_basemap("SATELLITE")
+mv.add_search_results(search_results)   # real footprints, real hover info
+mv.show()
+```
+
+`add_search_results()` uses each result's real, provider-supplied geometry when available, and falls back automatically to a bounding-box rectangle when it isn't — every provider is safe to call this against, none will silently show nothing or crash on an empty result set.
 
 ### 📥 Resilient Downloads
 - Adaptive parallel downloads with configurable concurrency and real-time progress
@@ -159,6 +201,12 @@ pip install "pygeofetch[cloud]"
 # + Cron scheduling
 pip install "pygeofetch[schedule]"
 
+# + Full InSAR chain (SBAS inversion, phase unwrapping)
+pip install "pygeofetch[insar]"
+
+# + Advanced InSAR corrections (MintPy passthrough)
+pip install "pygeofetch[insar-full]"
+
 # Everything
 pip install "pygeofetch[all]"
 ```
@@ -216,11 +264,11 @@ pygeofetch download run \
 
 ```python
 from pathlib import Path
-from pygeofetch import pygeofetch
+from pygeofetch import PyGeoFetch
 from pygeofetch.models.search_query import SearchQuery, BoundingBox
 from pygeofetch.models.download_task import DownloadOptions
 
-client = pygeofetch()
+client = PyGeoFetch()
 
 # Credentials
 client.add_credentials("usgs",       username="user", password="pass")
@@ -239,6 +287,13 @@ results = client.search(
     ),
     providers=["usgs", "copernicus", "planetary_computer", "aws_earth"],
 )
+
+# See what you found, on a real map, before downloading anything
+from pygeofetch.viz.map import MapViewer
+mv = MapViewer(center=(40.7, -74.0), zoom=9)
+mv.add_basemap("SATELLITE")
+mv.add_search_results(results)
+mv.show()
 
 # Download
 downloads = client.download(
@@ -331,23 +386,27 @@ pygeofetch proc-pipeline template change_detection
 
 ---
 
+## 🌐 InSAR Processing (`pygeofetch.insar`)
 
-### 🌐 InSAR Processing (`pygeofetch.insar`)
-
-A full Interferometric SAR chain for Sentinel-1 — search through SBAS time series inversion, pure Python, no external InSAR software required beyond `snaphu-py`'s bundled unwrapper.
+A full, independently-verified Interferometric SAR chain for Sentinel-1 — search through SBAS time series inversion, pure Python, no external InSAR software required beyond `snaphu-py`'s bundled unwrapper. Every stage below has been verified against either synthetic ground truth (closed-loop, known-answer tests) or real, published deformation studies — not assumed correct from theory alone.
 
 ```bash
 pip install "pygeofetch[insar]"        # native SBAS inversion
 pip install "pygeofetch[insar-full]"   # + MintPy passthrough for advanced corrections
 ```
 
+### Core components
+
 | Component | Description |
 |---|---|
-| `InterferogramGenerator` | Coregistration (real orbit-based, or shape-based fallback) + Enhanced Spectral Diversity (ESD) refinement for TOPS burst continuity + topographic phase removal |
+| `SLCExtractor` | Sub-swath matching and AOI-cropped extraction from raw SAFE archives; `.show_on_map()` for real amplitude display |
+| `InterferogramGenerator` | Real orbit-based coregistration (falls back cleanly to shape-based when orbit files aren't supplied) + real per-burst-overlap Enhanced Spectral Diversity (ESD, verified against Prats-Iraola 2012) + real TOPS deburst (verified against ESA's own algorithm) + real flat-earth phase removal (orbit-geometry-derived, verified to 0.01% against independent computation) + topographic phase removal + Goldstein filtering |
+| `AtmosphericCorrector` | Two real, independently-verified methods: elevation-correlated circular regression, and real ERA5 tropospheric delay correction via `pyaps3` and CDS, with automatic per-date differencing (not a naive single-date subtraction) |
+| `IonosphericCorrector` | Real ionospheric pierce-point (IPP) geometry (ICD-GPS-200/Klobuchar model) and real CDDIS/IONEX TEC data, with both a scalar and a full per-pixel correction mode — closed-loop verified to recover a known, spatially-varying synthetic dispersive signal exactly |
 | `PhaseUnwrapper` | SNAPHU (Chen & Zebker 2001) via the official `snaphu-py` bindings — the same algorithm used by ASF, ISCE2/3, GAMMA, and SNAP |
-| `AtmosphericCorrector` | Elevation-correlated regression or ERA5 reanalysis-based tropospheric delay correction |
 | `SBASTimeSeries` | Small BAseline Subset displacement/velocity inversion (Berardino et al. 2002) |
 | `DataValidator` | SLC, coherence, and SBAS-network sanity checks, wired in at every real pipeline entry point |
+| `InSARProject` | A high-level workflow wrapper — real search, download, extraction, and interferogram formation in a handful of calls, each with automatic map display, built on top of the fully-verified lower-level pieces above |
 
 Real orbit-based coregistration computes genuine per-pixel offsets from actual satellite orbit state vectors and acquisition timing (not a shape-matching guess) — supply a DEM, both SAFE archives, and both `.EOF` orbit files, and it's used automatically; otherwise falls back cleanly to shape-based resampling.
 
@@ -355,10 +414,16 @@ Every stage supports automatic visualization (`auto_visualize=True`) and optiona
 
 See [`pygeofetch/insar/README.md`](pygeofetch/insar/README.md) for the full processing chain, verification methodology, and current limitations.
 
+### Full pipeline, real orbit-based coregistration
+
 ```python
 from pygeofetch.insar import InterferogramGenerator
- 
-gen = InterferogramGenerator(use_gpu=False)
+
+gen = InterferogramGenerator(
+    use_gpu=False,
+    use_real_burst_processing=True,   # real per-burst ESD + real deburst
+    remove_flat_earth_phase=True,     # real, orbit-geometry-derived correction
+)
 result = gen.process_pair(
     reference="slc_ref.tif",
     secondary="slc_sec.tif",
@@ -367,19 +432,72 @@ result = gen.process_pair(
     secondary_safe_zip="S1A_..._sec.SAFE.zip",
     reference_orbit_file="ref.EOF",
     secondary_orbit_file="sec.EOF",
+    reference_date="2024-11-08",
+    secondary_date="2024-11-20",
+    apply_goldstein_filter=True,
 )
 result.save("./output", auto_visualize=True)
+result.show_on_map(band="wrapped_phase")   # real, cyclic-colormap display
 ```
- 
-### Without the new orbit-based inputs (falls back safely)
- 
+
+### Without the orbit-based inputs (falls back safely)
+
 ```python
 result = gen.process_pair(reference="slc_ref.tif", secondary="slc_sec.tif", dem="dem.tif")
 # Logs: "Using shape-based coregistration fallback ..."
 ```
- 
+
+### Real ERA5 tropospheric correction
+
+```python
+from pygeofetch.insar.atmosphere import AtmosphericCorrector
+
+# One-time: writes the real ~/.cdsapirc CDS reads from directly
+atm = AtmosphericCorrector(method="era5", cds_api_key="your-cds-key")
+corrected_phase, meta = atm.correct(
+    wrapped_phase, dem="dem.tif",
+    reference_datetime="2024-11-08T12:34:39",
+    secondary_datetime="2024-11-20T12:34:38",
+    return_metadata=True,
+)
+```
+
+### Real ionospheric correction (per-pixel)
+
+```python
+from pygeofetch.insar.ionosphere import IonosphericCorrector
+
+# One-time: writes the real ~/.netrc Earthdata Login reads from directly
+iono = IonosphericCorrector(
+    ionex_dir="./ionex",
+    earthdata_username="your-username", earthdata_password="your-password",
+)
+corrected_phase = iono.correct_per_pixel(
+    wrapped_phase,
+    reference_datetime="2024-12-26T12:34:35", secondary_datetime="2025-01-07T12:34:34",
+    lat_grid=lat_grid, lon_grid=lon_grid,
+    reference_orbit_file="ref.EOF", secondary_orbit_file="sec.EOF",
+)
+```
+
+### High-level workflow — search to interferogram in a handful of calls
+
+```python
+from pygeofetch.insar import InSARProject
+from pygeofetch.models import BoundingBox
+
+project = InSARProject(
+    name="my_aoi", aoi=BoundingBox(min_lon=-99.183, max_lon=-99.003, min_lat=19.278, max_lat=19.438),
+    output_dir="data/my_aoi_insar",
+)
+project.search(start_date="2024-11-01", end_date="2025-01-15")       # real search, real map
+project.download_and_extract(max_scenes=6)                            # real download + AOI crop
+project.form_all_interferograms()                                     # full verified pipeline
+project.summary()
+```
+
 ### Full chain, search to SBAS
- 
+
 ```python
 from pathlib import Path
 import numpy as np
@@ -393,15 +511,15 @@ from pygeofetch.insar import (
     PhaseUnwrapper, SBASTimeSeries, DataValidator, multilook,
 )
 from pygeofetch.insar.timeseries import InterferogramPair
- 
+
 client = PyGeoFetch()
 client.add_credentials("copernicus", username="you@example.com", password="...")
 client.add_credentials("opentopography", api_key="...")
- 
+
 aoi = BoundingBox(min_lon=-1.75, max_lon=-1.63, min_lat=6.15, max_lat=6.24)
 output_dir = Path("./insar_output")
- 
-# Search — real geometry/bbox filtering, not the dead geometry_geojson= field
+
+# Search — real geometry/bbox filtering
 scenes = {}
 for start, end in [("2026-01-01", "2026-01-08"), ("2026-01-13", "2026-01-20")]:
     results = client.search(
@@ -411,14 +529,14 @@ for start, end in [("2026-01-01", "2026-01-08"), ("2026-01-13", "2026-01-20")]:
     )
     if results:
         scenes[str(results[0].datetime.date())] = results[0]
- 
+
 # Download
 downloads = {
     label: client.download([scene], destination=output_dir / "raw" / label,
                             options=DownloadOptions(resume=True))[0]
     for label, scene in scenes.items()
 }
- 
+
 # Real orbit files — use the real product name, not the catalog ID
 orbits = {
     label: fetch_orbit_file(
@@ -427,7 +545,7 @@ orbits = {
     )
     for label, scene in scenes.items()
 }
- 
+
 # Real DEM, clipped to the AOI
 dem_result = client.download(
     client.search(SearchQuery(bbox=aoi), providers=["opentopography"])[:1],
@@ -435,7 +553,7 @@ dem_result = client.download(
 )[0]
 dem_path = Preprocessor().clip(dem_result.output_path, bbox=aoi,
                                 output=str(output_dir / "dem" / "clipped.tif")).output_path
- 
+
 # AOI-cropped extraction (not the full sub-swath)
 extractor = SLCExtractor(polarisation="VV")
 slcs = {
@@ -444,7 +562,7 @@ slcs = {
     for label, dl in downloads.items()
 }
 dates = sorted(slcs)
- 
+
 # Interferogram formation — real orbit-based coregistration when all four
 # inputs are available; falls back to shape-based resampling otherwise
 gen = InterferogramGenerator(coherence_window=5, esd_enabled=True, use_gpu=False)
@@ -456,20 +574,20 @@ result = gen.process_pair(
     reference_orbit_file=orbits[d1], secondary_orbit_file=orbits[d2],
 )
 result.save(output_dir / "interferograms", auto_visualize=True)
- 
+
 # Atmospheric correction — return_metadata=True to know what actually happened
 atm = AtmosphericCorrector(method="elevation")
 corrected_phase, atm_meta = atm.correct(
     np.angle(result.interferogram), dem=dem_path, return_metadata=True
 )
- 
+
 # Unwrapping — multilook first; wrapped_phase must be explicit (True for
 # phase, False for coherence — never guessed from dtype)
 phase_ml = multilook(corrected_phase, 4, 1, wrapped_phase=True)
 coherence_ml = multilook(result.coherence, 4, 1, wrapped_phase=False)
 unwrapper = PhaseUnwrapper(cost_mode="defo", init_method="mcf")
 unwrapped, conncomp = unwrapper.unwrap(phase_ml, coherence_ml, nlooks=4.0)
- 
+
 # SBAS inversion
 pairs = [InterferogramPair(d1, d2, unwrapped, coherence_ml)]
 network_check = DataValidator.validate_sbas_network(pairs, dates)
@@ -478,12 +596,13 @@ ts_result = sbas.invert(pairs, reference_pixel=(0, 0))
 ts_result.save(output_dir / "timeseries", auto_visualize=True)
 print(f"Mean velocity: {ts_result.velocity.mean()*1000:.1f} mm/year")
 ```
- 
+
 <!-- A real, runnable two-date example — extend the search date list and repeat
 the interferogram/unwrapping steps per consecutive pair for a full SBAS
-network. See `23_accra_urban_deformation_sbas.ipynb` for the complete,
-real, multi-date worked version of this exact chain. -->
- 
+network. See the notebooks table below for complete, real, multi-date
+worked examples of this exact chain, including two real, published
+volcanic and seismic deformation events. -->
+
 ---
 
 ## 🖥️ Complete CLI Reference
@@ -609,7 +728,7 @@ COMPLETION
 | Notebook | Topics |
 |---|---|
 | `01_getting_started.ipynb` | Install, doctor, first search, first download |
-| `02_authentication_and_providers.ipynb` | All 22 providers, credentials, capability filters |
+| `02_authentication_and_providers.ipynb` | All 24 providers, credentials, capability filters |
 | `03_advanced_search.ipynb` | Federated search, CQL2 filters, 7 output formats, caching |
 | `04_download_and_postprocessing.ipynb` | Band selection, parallel downloads, post-processing |
 | `05_pipelines_and_scheduling.ipynb` | YAML pipelines, scheduling, Python builder API |
@@ -617,6 +736,9 @@ COMPLETION
 | `07_copernicus_and_authenticated_providers.ipynb` | Copernicus, USGS, NASA, Planet, ASF, OpenTopography |
 | `08_cli_complete_reference.ipynb` | Every CLI command with runnable examples |
 | `09_processing_complete.ipynb` | Full processing engine: preprocessing, indices, SAR, pipelines |
+| `piton_fournaise_full.ipynb` | Real, verified InSAR pipeline against the real April 2021 Piton de la Fournaise eruption (Réunion Island) — real pygeofetch search/download throughout, full burst-aware coregistration, real flat-earth and ERA5 correction |
+| `amatrice_full.ipynb` | Real, verified InSAR pipeline against the real 2016 Amatrice, Italy earthquake, using the exact real interferometric pair dates from a published processing archive |
+| `provider_search_footprint_test.ipynb` | Real search and footprint-map display validation across all 24 providers, one fully explicit, independently-runnable cell per provider |
 
 ```bash
 cd notebooks/
@@ -625,30 +747,11 @@ jupyter lab
 
 ---
 
-<p align="center">
-  <img src="docs/images/trend_map.png" width="48%" />
-  <img src="docs/images/trend_classification.png" width="48%" />
-</p>
-<p align="center"><em>NDVI trend (2018–2024) and severity classification for the Obuasi Municipal District, computed end-to-end with PyGeoFetch — real USGS Landsat data, boundary-clipped before processing.</em></p>
-
-32.0% of the Obuasi Municipal District shows measurable vegetation decline over 2018–2024 (9.2% strong decline + 22.8% moderate decline), against 57.5% stable and 10.5% showing an increasing trend.
-
-That headline number matters less than where it's concentrated. The decline isn't scattered randomly across the district — it forms a clear, spatially coherent cluster in the western portion of the AOI (roughly west of -1.70° longitude), visible as a dense, contiguous red-and-orange zone in both the trend map and the classification map. Real land degradation signals tend to look like this — clustered along mining concessions, roads, or river corridors — whereas sensor noise or processing artifacts tend to scatter more randomly across the whole scene. The fact that this pattern holds together spatially is a reasonable indicator that it reflects something real on the ground, not just pixel-level noise.
-
-That said, an NDVI trend map on its own can't distinguish why vegetation declined — illegal small-scale mining (galamsey), selective logging, agricultural land clearing, and urban expansion can all produce a similar signature. Given Obuasi's well-documented galamsey activity specifically concentrated in this district, the spatial pattern here is consistent with mining-driven clearance — but confirming that specific cause would need either higher-resolution imagery, ground verification, or cross-referencing against known concession boundaries, not this analysis alone.
-
-Two things worth flagging honestly rather than glossing over:
-
-The scattered dark-blue linear and blob features running through the map (most visibly the river-like feature crossing the upper-central area) are very likely water bodies, not vegetation gain. NDVI trend over open water isn't a meaningful signal — surface reflectance there is driven by turbidity and water level, not plant health — so those features should be excluded from the "increasing" interpretation, not read as reforestation.
-The small white gaps scattered through the trend map (several distinct circular patches) are nodata — pixels that didn't have enough valid, cloud-free observations across all six dates to fit a reliable trend. Worth being upfront that the 32%/57.5%/10.5% breakdown is computed over the valid pixels only, not the full district area including these gaps.
-
-The eastern two-thirds of the district, by contrast, is overwhelmingly stable (dominant green in the classification map), which is itself a useful negative result — it suggests the decline is genuinely localized to a specific area rather than reflecting a district-wide drought or seasonal artifact that would show up everywhere.
-
 ## 📋 Documentation
 
 Full documentation: **https://appiahkubis14.github.io/pygeofetch-docs/**
 
-Covers: CLI reference · provider auth guides · pipeline configuration · post-processing catalogue · contributing guide.
+Covers: CLI reference · provider auth guides · pipeline configuration · post-processing catalogue · InSAR verification methodology · contributing guide.
 
 ---
 
@@ -656,10 +759,10 @@ Covers: CLI reference · provider auth guides · pipeline configuration · post-
 
 Contributions of all kinds are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
-Good first issues include implementing stub providers to full API integrations, improving test coverage, and adding new post-processing actions.
+Good first issues include implementing stub providers to full API integrations, extending real footprint geometry support to the remaining bbox-only providers, improving test coverage, and adding new post-processing actions.
 
 ```bash
-git clone https://github.com/appiahkubis14/pygeofetch
+git clone git@github.com:EOCoreINT/pygeofetch.git
 cd pygeofetch
 pip install -e ".[dev,all]"
 pytest tests/unit/ -v
@@ -671,9 +774,4 @@ pytest tests/unit/ -v
 
 pygeofetch is free and open source software, licensed under the [MIT License](LICENSE).
 
-© 2026 Samuel Appiah Kubi. Part of the **PyGeoVision** platform — [pygeofetch](https://github.com/appiahkubis14/pygeofetch) (data + processing)  complete Earth observation pipeline.
-
-
-
-
-
+© 2026 Samuel Appiah Kubi. Part of the **PyGeoVision** platform — [pygeofetch](https://github.com/appiahkubis14/pygeofetch) (data + processing) — complete Earth observation pipeline.

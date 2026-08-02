@@ -11,9 +11,9 @@ documentation improvements, and test coverage.
 ### 1. Fork and clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/pygeofetch
+git clone git@github.com:EOCoreINT/pygeofetch.git
 cd pygeofetch
-git remote add upstream https://github.com/yourorg/pygeofetch
+git remote add upstream git@github.com:EOCoreINT/pygeofetch.git
 ```
 
 ### 2. Set up development environment
@@ -87,12 +87,55 @@ In `pygeofetch/providers/__init__.py`, add your provider to the `PROVIDER_REGIST
 
 Also add it to `PROVIDER_INFO` with metadata, and to `FREE_PROVIDERS` if it requires no auth.
 
-### 3. Write tests
+### 3. Populate real geometry, not just bbox
+
+**A real, systematic issue was found and fixed across the provider layer**:
+18 of 24 existing providers were populating `SatelliteData.bbox` but never
+`SatelliteData.geometry` — even when their own real API responses already
+carried the real, precise footprint shape needed to build it. A rectangular
+bbox is always an approximation; if your provider's real search response
+includes an actual polygon/footprint field, populate `geometry` with it
+directly, not just its bounding box:
+
+```python
+return SatelliteData(
+    id=item_id,
+    provider=self.PROVIDER_ID,
+    bbox=bbox,
+    geometry=item.get("geometry"),  # real, precise footprint — don't skip this
+    ...
+)
+```
+
+If the provider genuinely has no footprint field (some APIs only ever
+return a bbox), leave `geometry=None` — `MapViewer.add_search_results()`
+already falls back to a bbox-derived rectangle automatically, so this is
+safe to omit when there's truly nothing better available. What isn't safe
+is silently discarding a real, precise footprint the API already gave you.
+
+**Verify the real field name and structure against the provider's own live
+API response or official documentation — never guess.** Two real,
+representative examples from this project's own history: a Copernicus fix
+that had to correct a guessed field name (`Footprint`, a WKT string that
+never existed) against the real, current field (`GeoFootprint`, a
+structured GeoJSON object, confirmed only by checking Copernicus's actual
+API documentation directly); and a NASA Earthdata fix that added support
+for a real, confirmed `polygons` field that had simply never been read at
+all, found only by checking two independent, real working examples of the
+live API response. Both bugs would have been caught immediately by testing
+against a real or format-accurate response instead of assuming a
+reasonable-sounding field name.
+
+### 4. Write tests
 
 Add tests in `tests/unit/test_providers.py` and an integration test with VCR
-cassettes in `tests/integration/`.
+cassettes in `tests/integration/`. If your provider parses `geometry`, add
+a real or format-accurate test case confirming it's actually extracted —
+`tests/unit/test_provider_geometry_audit.py` is a real, working reference
+for this pattern, including how to test the graceful fallback when a
+result has no geometry at all.
 
-### 4. Document
+### 5. Document
 
 Add a row to the provider table in `README.md` and create a doc page at
 `docs/providers/my_provider.md` with authentication instructions.
