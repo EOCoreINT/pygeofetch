@@ -117,6 +117,10 @@ mv.add_search_results(search_results)   # real footprints, real hover info
 mv.show()
 ```
 
+<p align="center">
+  <img src="docs/images/search.png" width="48%" />
+</p>
+
 `add_search_results()` uses each result's real, provider-supplied geometry when available, and falls back automatically to a bounding-box rectangle when it isn't — every provider is safe to call this against, none will silently show nothing or crash on an empty result set.
 
 ### 📥 Resilient Downloads
