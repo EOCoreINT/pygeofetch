@@ -1,9 +1,9 @@
 # Changelog
 
 All notable changes to PyGeoFetch are documented here.
-Format follows [Keep a Changelog](https://keepachangelog.com/en/1.9.4/).
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.9.5/).
 
-## [1.9.4] — 2026-07-29
+## [1.9.5] — 2026-07-29
 
 ### Added
 - Major SNAPHU unwrapping improvements for urban InSAR applications
@@ -51,7 +51,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.9.4/).
 
 ### Migration Guide
 ```python
-# Before (v1.9.4)
+# Before (v1.9.5)
 unwrapper = PhaseUnwrapper(cost_mode="defo", init_method="mcf")
 unwrapped = unwrapper.unwrap(phase, coherence, nlooks=2.0)
 
@@ -72,7 +72,7 @@ unwrapped = unwrapper.unwrap(
 
 ---
 
-## [1.9.4] — 2026-07-12
+## [1.9.5] — 2026-07-12
 
 ### Added
 - Federated search across 22+ satellite data providers
@@ -188,8 +188,8 @@ unwrapped = unwrapper.unwrap(
 
 | Version | Date | Key Changes |
 |---------|------------|-------------|
-| **1.9.4** | 2026-07-29 | SNAPHU unwrapping fixes, 87.1% reliable pixels |
-| **1.9.4** | 2026-07-12 | 22 providers, 17 indices, Sentinel-1C/D |
+| **1.9.5** | 2026-07-29 | SNAPHU unwrapping fixes, 87.1% reliable pixels |
+| **1.9.5** | 2026-07-12 | 22 providers, 17 indices, Sentinel-1C/D |
 | **1.9.2** | 2026-06-15 | Batch processing, parallel downloads |
 | **1.9.1** | 2026-05-20 | 3D terrain, SNAPHU integration, time series |
 | **1.9.0** | 2026-04-25 | Initial public release |
