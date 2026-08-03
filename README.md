@@ -35,8 +35,8 @@ The package abstracts away the authentication complexity, API fragmentation, and
 
 
 <p align="center">
-  <img src="docs/images/trend_map.png" width="48%" />
-  <img src="docs/images/trend_classification.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/main/docs/images/trend_map.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/main/docs/images/trend_classification.png" width="48%" />
 </p>
 <p align="center"><em>NDVI trend (2018–2024) and severity classification for the Obuasi Municipal District, computed end-to-end with PyGeoFetch — real USGS Landsat data, boundary-clipped before processing.</em></p>
 
@@ -118,7 +118,7 @@ mv.show()
 ```
 
 <p align="center">
-  <img src="docs/images/search.png" width="100%" />
+  <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/main/docs/images/search.png" width="100%" />
 </p>
 
 `add_search_results()` uses each result's real, provider-supplied geometry when available, and falls back automatically to a bounding-box rectangle when it isn't — every provider is safe to call this against, none will silently show nothing or crash on an empty result set.
