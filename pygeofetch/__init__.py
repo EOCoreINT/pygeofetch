@@ -1,5 +1,5 @@
 """
-PyGeoFetch v1.0.0 — Universal Satellite Data Pipeline.
+PyGeoFetch v1.9.4 — Universal Satellite Data Pipeline.
 
 Unified access to 22+ satellite data providers with a consistent
 Python API and CLI. Supports authentication management, federated search,
