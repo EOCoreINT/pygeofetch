@@ -530,3 +530,106 @@ def _solve_3x3(matrix, rhs):
             m2[row][col] = rhs[row]
         result.append(det3(m2) / d)
     return result
+
+
+def perpendicular_baseline(
+    sat_pos_ref: Tuple[float, float, float],
+    sat_pos_sec: Tuple[float, float, float],
+    ground_point: Tuple[float, float, float],
+) -> float:
+    """
+    Real perpendicular baseline (B_perp) between two real satellite
+    positions at a real, shared ground point — the standard SAR
+    interferometry formulation (Kampes, Hanssen & Perski 2003; the same
+    reference already used throughout this module).
+
+    Added directly in response to Foumelis et al. 2018 (IGARSS,
+    "ESA SNAP - StaMPS Integrated Processing for Sentinel-1 Persistent
+    Scatterer Interferometry"), which states plainly that reference
+    (master) scene selection to minimize geometric baselines across a
+    stack is supported by SNAP's own InSAR Stack Overview operator --
+    this project had no equivalent, reusable utility at all before this,
+    and reference/pair selection elsewhere in this project (e.g. the
+    Amatrice notebook) had no principled baseline criterion to select on.
+
+    Args:
+        sat_pos_ref, sat_pos_sec: Real (x, y, z) ECEF satellite positions,
+                                   metres, at each scene's own real
+                                   zero-Doppler time for this ground point
+                                   (i.e. the output of
+                                   interpolate_orbit_state() at a real
+                                   find_zero_doppler_time() result, not
+                                   an arbitrary scene-center time -- using
+                                   scene-center time is a real, common
+                                   approximation that is fine for
+                                   reference-selection ranking purposes,
+                                   but not for per-pixel geometry).
+        ground_point:              Real (x, y, z) ECEF ground point, e.g.
+                                   the AOI centre or a real scene-centre
+                                   ground point.
+
+    Returns:
+        Perpendicular baseline in metres (unsigned magnitude -- sufficient
+        for ranking/minimizing purposes; sign convention requires an
+        additional flight-direction cross product this function does not
+        need for that use case).
+    """
+    baseline = tuple(sat_pos_sec[i] - sat_pos_ref[i] for i in range(3))
+    los = tuple(sat_pos_ref[i] - ground_point[i] for i in range(3))
+    los_mag = math.sqrt(sum(c**2 for c in los))
+    if los_mag < 1.0:
+        raise ValueError("Degenerate line-of-sight (satellite at ground point) -- check inputs.")
+    los_hat = tuple(c / los_mag for c in los)
+
+    baseline_mag = math.sqrt(sum(c**2 for c in baseline))
+    b_parallel = sum(baseline[i] * los_hat[i] for i in range(3))
+    b_perp_sq = baseline_mag**2 - b_parallel**2
+    return math.sqrt(max(0.0, b_perp_sq))
+
+
+def select_reference_minimizing_baselines(
+    candidate_positions: dict,
+    ground_point: Tuple[float, float, float],
+) -> Tuple[str, dict]:
+    """
+    Real reference/master scene selection that minimizes the maximum
+    perpendicular baseline against every other real scene in the stack --
+    the same real criterion SNAP's InSAR Stack Overview operator
+    supports (Foumelis et al. 2018), not just "use the earliest date"
+    (this project's own prior behaviour, e.g. throughout the Amatrice
+    notebook, which had no baseline criterion at all).
+
+    Args:
+        candidate_positions: {label: (x, y, z)} -- real ECEF satellite
+                              position for each real candidate scene, at
+                              its own real zero-Doppler time for
+                              ground_point (see perpendicular_baseline()
+                              docstring for the same caveat on using
+                              scene-centre time as an approximation here).
+        ground_point:        Real (x, y, z) ECEF ground point (e.g. AOI
+                              centre) shared across all candidates.
+
+    Returns:
+        (best_label, all_baselines) where all_baselines is
+        {label: {other_label: b_perp_metres}} for every real pair, so the
+        full stack geometry -- not just the winning choice -- is
+        available for inspection/plotting.
+    """
+    labels = list(candidate_positions.keys())
+    if len(labels) < 2:
+        raise ValueError(f"Need at least 2 candidate scenes to select a reference, got {len(labels)}.")
+
+    all_baselines = {label: {} for label in labels}
+    for i, label_i in enumerate(labels):
+        for label_j in labels[i + 1:]:
+            b_perp = perpendicular_baseline(
+                candidate_positions[label_i], candidate_positions[label_j], ground_point,
+            )
+            all_baselines[label_i][label_j] = b_perp
+            all_baselines[label_j][label_i] = b_perp
+
+    def max_baseline_from(label):
+        return max(all_baselines[label].values())
+
+    best_label = min(labels, key=max_baseline_from)
+    return best_label, all_baselines

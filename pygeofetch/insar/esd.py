@@ -172,6 +172,20 @@ def estimate_esd_shift_per_burst_overlap(
     overlaps = compute_overlap_row_ranges(swath_timing, azimuth_time_interval_s)
     lines_per_burst = swath_timing.lines_per_burst
     per_overlap_shifts: List[Optional[float]] = []
+    # Real, confirmed diagnostic gap fixed here: the two real, genuinely
+    # different reasons an overlap gets skipped (it fell entirely outside
+    # the given, possibly-cropped arrays -- an AOI/cropping issue -- vs.
+    # it was inside the arrays but below coherence_threshold -- a real
+    # decorrelation issue, e.g. vegetated/mountainous terrain) were
+    # previously indistinguishable from the outside: individual reasons
+    # were only logged at DEBUG level, and the final summary warning
+    # collapsed both into one "outside the given arrays, or were below
+    # coherence_threshold" message. That ambiguity is exactly what made
+    # it impossible to tell, from a normal INFO-level log, whether a
+    # given real run's ESD failure was fixable by widening the AOI or
+    # was a genuine reflection of the terrain -- tracked explicitly here
+    # instead of guessed at after the fact.
+    skip_reasons: List[str] = []
 
     for i, ((bw_start, bw_end), (fw_start, fw_end)) in enumerate(overlaps):
         bw_full_scene_start = i * lines_per_burst - row_offset + bw_start
@@ -184,11 +198,13 @@ def estimate_esd_shift_per_burst_overlap(
 
         if bw_clip_start >= bw_clip_end or fw_clip_start >= fw_clip_end:
             per_overlap_shifts.append(None)
+            skip_reasons.append("outside_array_bounds")
             continue  # this overlap falls entirely outside the real, given (possibly cropped) arrays
 
         n_common = min(bw_clip_end - bw_clip_start, fw_clip_end - fw_clip_start)
         if n_common < 1:
             per_overlap_shifts.append(None)
+            skip_reasons.append("outside_array_bounds")
             continue
 
         ref_bw = ref_complex[bw_clip_start:bw_clip_start + n_common]
@@ -256,19 +272,45 @@ def estimate_esd_shift_per_burst_overlap(
                 i, i + 1, 100 * valid.mean(), coherence_threshold,
             )
             per_overlap_shifts.append(None)
+            skip_reasons.append(f"low_coherence({100 * valid.mean():.0f}%)")
             continue
 
         double_diff = igram_fw * np.conj(igram_bw)
         mean_phase = np.angle(np.mean(double_diff[valid]))
         shift_s = mean_phase / (2 * np.pi * delta_f_ovl_hz)
         per_overlap_shifts.append(float(shift_s))
+        skip_reasons.append("used")
 
     valid_shifts = [s for s in per_overlap_shifts if s is not None]
     if not valid_shifts:
+        # Real, surfaced breakdown, not the previous ambiguous message --
+        # tells the caller directly whether every real overlap failed
+        # because none existed within the (possibly cropped) arrays at
+        # all (an AOI/cropping problem, fixable by widening the crop) or
+        # because they existed but were genuinely below the coherence
+        # threshold (a real decorrelation problem in the data itself,
+        # not fixable by widening anything).
+        n_outside = skip_reasons.count("outside_array_bounds")
+        n_low_coh = sum(1 for r in skip_reasons if r.startswith("low_coherence"))
         logger.warning(
             "Real per-burst-overlap ESD found no usable burst overlaps "
-            "(all fell outside the given arrays, or were below "
-            "coherence_threshold) — no shift estimate available."
+            "out of %d total: %d fell outside the given (possibly "
+            "cropped) arrays, %d were below coherence_threshold=%.2f. "
+            "%s",
+            len(overlaps), n_outside, n_low_coh, coherence_threshold,
+            (
+                "Every overlap fell outside the array -- try widening the "
+                "AOI/crop, since none were even tested for coherence."
+                if n_outside == len(overlaps) and len(overlaps) > 0
+                else (
+                    "Every real, in-bounds overlap was tested and found "
+                    "genuinely below the coherence threshold -- this "
+                    "reflects real decorrelation in the data, not "
+                    "something a larger AOI would fix."
+                    if n_low_coh == len(overlaps) and len(overlaps) > 0
+                    else "A mix of both -- see the per-overlap detail at DEBUG level."
+                )
+            ),
         )
         return None, per_overlap_shifts
 

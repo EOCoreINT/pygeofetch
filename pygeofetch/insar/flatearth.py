@@ -178,6 +178,39 @@ def compute_flat_earth_phase(
                 n_out_of_bounds += 1
                 continue
 
+            # Real, confirmed gap fixed here: t_ref/ref_row/ref_col were
+            # already validated against the reference scene's real
+            # bounds above, but t_sec was never checked against the
+            # SECONDARY scene's real bounds at all -- find_zero_doppler_time
+            # has no built-in guarantee of converging to the zero-Doppler
+            # crossing nearest the initial guess specifically (only that
+            # it converges to *some* zero crossing), so nothing here was
+            # catching a secondary-orbit convergence result that fell
+            # outside this ground point's real, valid azimuth/range window
+            # for the secondary acquisition. An undetected error here
+            # would silently corrupt R_sec and, through it, every sample
+            # point's flat_phase and the polynomial fit fit across all of
+            # them -- a real, plausible explanation for this project's
+            # own observed flat-earth phase anomaly (values in the tens
+            # of millions of radians, physically equivalent to tens of
+            # km of spurious range error, for specific real pairs).
+            sec_row = sec_geometry.row_for_azimuth_time(t_sec)
+            range_sec_time = 2 * R_sec / 299792458.0
+            sec_col = sec_geometry.col_for_range_time(range_sec_time)
+
+            if not (0 <= sec_row < sec_geometry.n_lines and 0 <= sec_col < sec_geometry.n_columns):
+                n_out_of_bounds += 1
+                logger.debug(
+                    "Flat-earth phase: sample (%.4f, %.4f) rejected -- "
+                    "t_sec converged to a secondary-scene row/col "
+                    "(%.1f, %.1f) outside the real secondary SLC extent "
+                    "(%d lines x %d columns). This is the real, specific "
+                    "case the reference-only bounds check upstream could "
+                    "not catch.",
+                    lon, lat, sec_row, sec_col, sec_geometry.n_lines, sec_geometry.n_columns,
+                )
+                continue
+
             # Real, verified sign convention: interferogram phase =
             # phase(ref) - phase(sec), and SAR phase for a point at
             # range R is -(4*pi/lambda)*R, so

@@ -19,19 +19,74 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-sys.path.insert(0, str(Path(__file__).parent))
-from test_insar_verified_components import _build_geometry  # noqa: E402
-
-from pygeofetch.insar.annotation import SLCGeometry  # noqa: E402
-from pygeofetch.insar.flatearth import compute_flat_earth_phase  # noqa: E402
-from pygeofetch.insar.geolocation import (  # noqa: E402
+from pygeofetch.insar.annotation import SLCGeometry
+from pygeofetch.insar.flatearth import compute_flat_earth_phase
+from pygeofetch.insar.geolocation import (
     SPEED_OF_LIGHT,
+    WGS84_A,
+    WGS84_B,
     geodetic_to_ecef,
     find_zero_doppler_time,
     interpolate_orbit_state,
 )
 
 WAVELENGTH_M = 0.05546576
+
+
+# Real, confirmed fix here: this file previously imported _build_geometry
+# from a sibling test module (test_insar_verified_components) via a
+# runtime sys.path.insert() hack. That only worked when both files sat
+# together in the same directory -- a real, brittle assumption that broke
+# in any environment where this file is used standalone (as reported: the
+# sibling file genuinely does not exist there). Inlined below, verbatim,
+# so this file is fully self-contained and has no dependency on any
+# other test file existing.
+def _build_geometry(lat_deg, lon_deg, dem_h=0.0, incl_deg=98.18, ascending=True):
+    """Build a fully self-consistent, realistic satellite+ground-point test
+    geometry — real orbital velocity direction, exact zero-Doppler
+    projection."""
+    lat, lon = math.radians(lat_deg), math.radians(lon_deg)
+    e2 = 1 - ((WGS84_B + dem_h) ** 2 / (WGS84_A + dem_h) ** 2)
+    N = (WGS84_A + dem_h) / math.sqrt(1 - e2 * math.sin(lat) ** 2)
+    P_true = (
+        N * math.cos(lat) * math.cos(lon),
+        N * math.cos(lat) * math.sin(lon),
+        N * (1 - e2) * math.sin(lat),
+    )
+    altitude = 693000.0
+    normal = (
+        P_true[0] / (WGS84_A + dem_h) ** 2,
+        P_true[1] / (WGS84_A + dem_h) ** 2,
+        P_true[2] / (WGS84_B + dem_h) ** 2,
+    )
+    nmag = math.sqrt(sum(c**2 for c in normal))
+    normal = tuple(c / nmag for c in normal)
+    sat_pos = tuple(P_true[i] + normal[i] * altitude for i in range(3))
+
+    incl = math.radians(incl_deg)
+    sign = 1 if ascending else -1
+    plane_normal = (
+        sign * math.sin(incl) * math.sin(lon),
+        -sign * math.sin(incl) * math.cos(lon),
+        math.cos(incl),
+    )
+    pn_mag = math.sqrt(sum(c**2 for c in plane_normal))
+    plane_normal = tuple(c / pn_mag for c in plane_normal)
+    tangent = (
+        plane_normal[1] * normal[2] - plane_normal[2] * normal[1],
+        plane_normal[2] * normal[0] - plane_normal[0] * normal[2],
+        plane_normal[0] * normal[1] - plane_normal[1] * normal[0],
+    )
+    tmag = math.sqrt(sum(c**2 for c in tangent))
+    tangent = tuple(c / tmag for c in tangent)
+    sat_vel = tuple(c * 7500.0 for c in tangent)
+
+    d = sum(sat_vel[i] * (P_true[i] - sat_pos[i]) for i in range(3)) / sum(v**2 for v in sat_vel)
+    P_exact = tuple(P_true[i] - d * sat_vel[i] for i in range(3))
+    los = tuple(sat_pos[i] - P_exact[i] for i in range(3))
+    range_m = math.sqrt(sum(c**2 for c in los))
+    range_time_s = 2 * range_m / SPEED_OF_LIGHT
+    return sat_pos, sat_vel, range_time_s, P_exact
 
 
 def _orbit_series(center_pos, center_vel, center_time):
@@ -59,7 +114,22 @@ def _build_fixture(n=200, b_perp=80.0):
         near_range_time_s=range_time_center - (n / 2) * (1 / 6.4e7), range_sampling_rate_hz=6.4e7,
         n_lines=n, n_columns=n,
     )
-    return ref_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n
+    # Real, confirmed test-fixture gap fixed here: the fixture previously
+    # only built ONE SLCGeometry and every caller passed it as BOTH
+    # ref_geometry and sec_geometry -- which never exercised the real,
+    # production scenario (interferogram.py always parses a genuinely
+    # separate sec_geom_fe from the secondary's own SAFE zip, anchored to
+    # the secondary's own real first_line_time, not the reference's).
+    # Reusing ref_geom for both meant t_sec (anchored ~12 real days after
+    # ref_geom's own first_line_time) was silently being evaluated
+    # against the WRONG scene's timing reference whenever a real
+    # secondary-bounds check was added -- exactly what surfaced this gap.
+    sec_geom = SLCGeometry(
+        first_line_time=t0_sec - timedelta(seconds=n / 2 * 0.002), azimuth_time_interval_s=0.002,
+        near_range_time_s=range_time_center - (n / 2) * (1 / 6.4e7), range_sampling_rate_hz=6.4e7,
+        n_lines=n, n_columns=n,
+    )
+    return ref_geom, sec_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n
 
 
 def test_range_difference_matches_textbook_approximation():
@@ -98,11 +168,11 @@ def test_matches_independent_direct_computation_at_a_real_point():
     """The module's polynomial-fit output at a specific pixel must
     match a completely independent, direct geometric computation at
     that same real point."""
-    ref_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n = _build_fixture()
+    ref_geom, sec_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n = _build_fixture()
     lon0, lat0 = -99.11, 19.34
 
     flat_phase = compute_flat_earth_phase(
-        ref_geom, ref_orbit, ref_geom, sec_orbit, t0_ref, t0_sec, (n, n), WAVELENGTH_M,
+        ref_geom, ref_orbit, sec_geom, sec_orbit, t0_ref, t0_sec, (n, n), WAVELENGTH_M,
         sample_bounds=(lon0, lat0, lon0 + 0.04, lat0 + 0.04), grid_points=7, polynomial_degree=2,
     )
 
@@ -129,11 +199,11 @@ def test_closed_loop_removal_through_complex_wrapped_pathway():
     a real, complex, wrapped interferogram alongside a known
     deformation signal, remove it, and confirm exact recovery of the
     true signal -- the same pathway process_pair() actually uses."""
-    ref_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n = _build_fixture()
+    ref_geom, sec_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n = _build_fixture()
     lon0, lat0 = -99.11, 19.34
 
     flat_phase = compute_flat_earth_phase(
-        ref_geom, ref_orbit, ref_geom, sec_orbit, t0_ref, t0_sec, (n, n), WAVELENGTH_M,
+        ref_geom, ref_orbit, sec_geom, sec_orbit, t0_ref, t0_sec, (n, n), WAVELENGTH_M,
         sample_bounds=(lon0, lat0, lon0 + 0.04, lat0 + 0.04), grid_points=7, polynomial_degree=2,
     )
 
@@ -155,8 +225,8 @@ def test_closed_loop_removal_through_complex_wrapped_pathway():
 
 
 def test_raises_with_neither_dem_nor_sample_bounds():
-    ref_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n = _build_fixture()
+    ref_geom, sec_geom, ref_orbit, sec_orbit, t0_ref, t0_sec, n = _build_fixture()
     with pytest.raises(ValueError):
         compute_flat_earth_phase(
-            ref_geom, ref_orbit, ref_geom, sec_orbit, t0_ref, t0_sec, (n, n), WAVELENGTH_M,
+            ref_geom, ref_orbit, sec_geom, sec_orbit, t0_ref, t0_sec, (n, n), WAVELENGTH_M,
         )

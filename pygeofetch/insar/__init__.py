@@ -85,6 +85,7 @@ from pygeofetch.insar.deburst import compute_burst_row_ranges, deburst_array
 from pygeofetch.insar.flatearth import compute_flat_earth_phase
 from pygeofetch.insar.workflow import InSARProject
 from pygeofetch.insar.ionosphere import IonosphericCorrector, parse_ionex
+from pygeofetch.insar.stack_selection import select_consistent_geometry
 from pygeofetch.insar.esd import (
     compute_overlap_row_ranges,
     estimate_esd_shift_per_burst_overlap,
@@ -146,4 +147,5 @@ __all__ = [
     "compute_offset_field_from_dem",
     "fit_offset_polynomial",
     "resample_with_offset_field",
+    "select_consistent_geometry",
 ]

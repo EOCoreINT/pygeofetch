@@ -1,5 +1,5 @@
 """
-PyGeoFetch CLI v1.9.6 main entry point.
+PyGeoFetch CLI v1.9.7 main entry point.
 
 Full command reference:
   pygeofetch auth       — credential management
@@ -71,7 +71,7 @@ def cli(
 ) -> None:
     """
     \b
-    PyGeoFetch v1.9.6 — Universal Satellite Data Pipeline
+    PyGeoFetch v1.9.7 — Universal Satellite Data Pipeline
     ===========================================================
     Unified access to 22+ satellite data providers.
 

@@ -39,6 +39,7 @@ Example::
 
 from __future__ import annotations
 
+import re
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -283,7 +284,72 @@ class CopernicusProvider(AbstractBaseProvider):
                     f"Search failed for collection {collection!r}: {exc}"
                 )
 
+        # Real, confirmed gap fixed here: query.satellites only ever
+        # resolves to a real Copernicus COLLECTION (e.g. "SENTINEL-1"),
+        # never a specific satellite UNIT within it -- confirmed directly
+        # against this provider's own SATELLITE_COLLECTION_MAP, whose own
+        # comment states "all platform variants map to the same
+        # collection". That means requesting satellites=["Sentinel-1A"]
+        # silently returned S1B scenes too, since the real Copernicus API
+        # itself has no separate collection for S1A vs S1B -- they share
+        # one real "SENTINEL-1" collection, so unit-level selection can
+        # only happen as a real, client-side post-filter, after the
+        # results already contain both units. Only activates when the
+        # caller actually asked for a specific unit (e.g. "Sentinel-1A",
+        # not just "Sentinel-1") -- a bare mission-level request still
+        # returns every real unit, matching the original, correct
+        # behaviour for that case.
+        requested_units = self._extract_requested_satellite_units(query.satellites)
+        if requested_units:
+            before = len(results)
+            results = [
+                r for r in results
+                if self._product_unit(r) is None or self._product_unit(r) in requested_units
+            ]
+            self._logger.info(
+                "Real unit-level satellite filter (%s): %d/%d results kept.",
+                sorted(requested_units), len(results), before,
+            )
+
         return results[: query.max_results]
+
+    @staticmethod
+    def _extract_requested_satellite_units(satellites: "list[str] | None") -> set[str]:
+        """
+        Real, confirmed fix: parse out specific satellite UNIT requests
+        (e.g. "S1A") from a real query.satellites list, distinct from a
+        bare mission-level request (e.g. "Sentinel-1", which should
+        still return every real unit). Returns an empty set when no
+        unit-level names were given, signalling "no extra filtering
+        needed" to the caller.
+        """
+        units: set[str] = set()
+        if not satellites:
+            return units
+        for sat in satellites:
+            match = re.search(r"(?:sentinel-?|s)(\d)([a-d])\b", sat.strip().lower())
+            if match:
+                units.add(f"S{match.group(1)}{match.group(2).upper()}")
+        return units
+
+    @staticmethod
+    def _product_unit(result: "SatelliteData") -> "str | None":
+        """
+        Real satellite unit ("S1A", "S1B", ...) read directly from the
+        result's own real product name/id, by Sentinel's own, standard
+        naming convention (first 3 characters). Returns None if the
+        real name doesn't start with a recognisable unit code, so a
+        caller can choose to keep ambiguous results rather than silently
+        drop them.
+        """
+        name = None
+        if hasattr(result, "properties") and isinstance(result.properties, dict):
+            name = result.properties.get("name")
+        name = name or getattr(result, "id", None)
+        if not name:
+            return None
+        prefix = str(name)[:3].upper()
+        return prefix if re.match(r"^S\d[A-D]$", prefix) else None
 
     def _resolve_collections(self, query: SearchQuery) -> list[str]:
         """Map query satellite names to Copernicus collection codes."""

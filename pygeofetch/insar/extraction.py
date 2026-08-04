@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 import zipfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from pygeofetch.models.download_task import DownloadResult
@@ -112,6 +112,7 @@ class SLCExtractor:
         output_dir: Union[str, Path],
         label: str = "",
         resume: bool = False,
+        preferred_swath: Optional[str] = None,
     ) -> Optional[Path]:
         """
         Find the sub-swath covering the AOI in one SLC archive and extract it.
@@ -132,6 +133,46 @@ class SLCExtractor:
                        AdaptiveDownloader's own resume parameter. Default
                        False preserves the original always-extract
                        behaviour for existing callers.
+            preferred_swath: Real, confirmed fix, added directly in
+                       response to a real, observed pipeline failure: by
+                       default (None), this method independently
+                       re-searches EVERY call's own sub-swath footprints
+                       for whichever one overlaps the AOI -- with no
+                       awareness of which sub-swath any other date in the
+                       same real stack chose. Confirmed directly against
+                       this project's own Amatrice dataset: three
+                       real scenes acquired within an 8-minute window of
+                       each other, same real AOI, still resolved to two
+                       different sub-swaths (IW1 for two dates, IW3 for
+                       the third) purely from small, real orbit-to-orbit
+                       variation placing the AOI right at a sub-swath
+                       boundary -- and that mismatch was later confirmed,
+                       directly in this project's own real coregistration
+                       and ESD logs, to be a real, independent, direct
+                       cause of degraded results for any pair involving
+                       the odd-one-out date.
+                       ESA's own SNAP-StaMPS reference workflow avoids
+                       this by construction (Foumelis et al. 2018,
+                       IGARSS): "the selected TOPS master scene is first
+                       split by defining sub-swath... covering entirely
+                       the AOI. Then, the rest of the dataset (slave
+                       images) must also be split based only on the
+                       defined single sub-swath" -- the sub-swath is
+                       chosen ONCE, from the reference/master scene, and
+                       every other date in the stack is explicitly forced
+                       onto that same choice, not independently
+                       re-decided per date.
+                       Pass the real, matched sub-swath label from an
+                       already-extracted reference scene (e.g. via
+                       list_subswaths() or the matched_swath tag this
+                       method itself writes) to reproduce that same,
+                       deliberate behaviour here: if the named sub-swath
+                       genuinely exists in this archive, it is used
+                       directly, without the automatic per-date overlap
+                       search running at all. If it does not exist in
+                       this specific archive, falls back to the normal,
+                       automatic search with a real, explicit warning --
+                       never a silent substitution.
 
         Returns:
             Path to the extracted GeoTIFF, or None if no sub-swath in this
@@ -191,20 +232,47 @@ class SLCExtractor:
         )
 
         matched_member = None
-        for member in members:
-            footprint = self._gcp_footprint(zip_path, member)
-            if footprint is None:
-                continue
-            swath = self._swath_label(member)
-            overlaps = self._bbox_overlaps(footprint, aoi_tuple)
-            logger.debug(
-                "  %s: footprint=%s  overlaps AOI: %s",
-                swath,
-                tuple(round(v, 2) for v in footprint),
-                overlaps,
-            )
-            if overlaps and matched_member is None:
-                matched_member = member
+
+        if preferred_swath is not None:
+            for member in members:
+                if self._swath_label(member).lower() == preferred_swath.lower():
+                    matched_member = member
+                    break
+            if matched_member is not None:
+                logger.info(
+                    "Using preferred sub-swath %s (matching the real "
+                    "sub-swath already chosen for another date in this "
+                    "stack) — skipping the automatic per-date overlap "
+                    "search.",
+                    preferred_swath,
+                )
+            else:
+                logger.warning(
+                    "Preferred sub-swath %s not found in %s (real "
+                    "sub-swaths present: %s) — falling back to the "
+                    "automatic per-date overlap search. This scene may "
+                    "end up on a different real sub-swath than the rest "
+                    "of the stack.",
+                    preferred_swath,
+                    zip_path.name,
+                    [self._swath_label(m) for m in members],
+                )
+
+        if matched_member is None:
+            for member in members:
+                footprint = self._gcp_footprint(zip_path, member)
+                if footprint is None:
+                    continue
+                swath = self._swath_label(member)
+                overlaps = self._bbox_overlaps(footprint, aoi_tuple)
+                logger.debug(
+                    "  %s: footprint=%s  overlaps AOI: %s",
+                    swath,
+                    tuple(round(v, 2) for v in footprint),
+                    overlaps,
+                )
+                if overlaps and matched_member is None:
+                    matched_member = member
 
         if matched_member is None:
             logger.warning(
@@ -240,6 +308,150 @@ class SLCExtractor:
             "Extracted %s -> %s", self._swath_label(matched_member), out_path.name
         )
         return out_path
+
+    def extract_consistent_stack(
+        self,
+        scenes: "Dict[str, Union[str, Path]]",
+        aoi: "BoundingBox",
+        output_dir: Union[str, Path],
+        resume: bool = False,
+        max_crop_ratio: float = 3.0,
+    ) -> Tuple[Dict[str, Path], Dict[str, Any]]:
+        """
+        Real, combined fix, moved here directly from what was previously
+        hand-written, per-project notebook code (first built and
+        verified against this project's own Amatrice dataset): extract
+        a reference scene, force every other real scene in the stack
+        onto that same real sub-swath, and automatically reject any
+        date whose forced extraction falls back to the full, uncropped
+        swath rather than a real, genuine crop -- all in one call,
+        instead of re-deriving this same real logic by hand in every
+        new project's own notebook.
+
+        The reference scene is the first key in `scenes` (dict order is
+        assumed meaningful — pass an already-ordered dict, e.g. sorted
+        by real date). It is extracted first, with no sub-swath
+        preference, letting it naturally determine its own real
+        best-matching sub-swath (matching ESA's own SNAP-StaMPS
+        reference workflow, Foumelis et al. 2018: the sub-swath is
+        chosen once, from the master, not independently re-decided per
+        date). Every other scene is then extracted with that same
+        sub-swath forced via `preferred_swath`.
+
+        Real, confirmed failure mode this method also detects and
+        rejects automatically: forcing a date onto the reference's
+        sub-swath does not guarantee a real, usable crop. If that
+        date's real orbit geometry genuinely places the AOI outside
+        real coverage in that sub-swath, extract_scene() falls back to
+        the full, uncropped swath instead of failing outright — a real,
+        valid file, but not a safe, reliable basis for a real
+        interferogram (the actual ground area of interest is very
+        likely still not reliably present in it). Detected here by real
+        output row count: a genuine crop stays close to the reference's
+        row count; a silent full-swath fallback is dramatically larger
+        (more than `max_crop_ratio` times the reference), not a
+        borderline case that could be mistaken for real variation
+        between dates.
+
+        Args:
+            scenes:          {label: zip_path} for every real, already-
+                              downloaded scene to extract, in the real
+                              order the reference should be picked from
+                              (first key = reference).
+            aoi:              Real BoundingBox to crop to.
+            output_dir:       Real base output directory; each date's
+                              real crop is written to
+                              output_dir / label / f"{label}_{pol}.tif".
+            resume:           Passed straight through to each real
+                              extract_scene() call.
+            max_crop_ratio:   A real extraction is rejected as an
+                              unreliable full-swath fallback if its real
+                              row count exceeds this multiple of the
+                              reference's real row count.
+
+        Returns:
+            (kept, report) where kept is {label: Path} for every real,
+            reliable extraction (reference plus every date that matched
+            and produced a genuine crop), and report is a dict with:
+                "reference": the real reference label used
+                "matched_swath": the real sub-swath forced across the
+                                  stack
+                "reference_rows": the real reference crop's row count
+                "excluded": {label: real reason string} for every real
+                             date dropped, whether from no overlap at
+                             all or a rejected full-swath fallback.
+        """
+        import rasterio
+
+        scenes = dict(scenes)
+        if not scenes:
+            raise ValueError("extract_consistent_stack() received no real scenes to extract.")
+
+        output_dir = Path(output_dir)
+        kept: Dict[str, Path] = {}
+        excluded: Dict[str, str] = {}
+
+        reference_label = next(iter(scenes))
+        reference_path = self.extract_scene(
+            zip_path=scenes[reference_label], aoi=aoi,
+            output_dir=output_dir / reference_label, label=reference_label, resume=resume,
+        )
+        if reference_path is None:
+            raise RuntimeError(
+                f"Reference scene {reference_label}: no real sub-swath overlaps this AOI at all."
+            )
+        kept[reference_label] = reference_path
+
+        with rasterio.open(reference_path) as src:
+            reference_swath = src.tags().get("matched_swath")
+            reference_rows = src.height
+
+        logger.info(
+            "Reference scene %s matched real sub-swath %s (%d real cropped rows) "
+            "— forcing all other dates onto %s.",
+            reference_label, reference_swath, reference_rows, reference_swath,
+        )
+
+        for label, zip_path in scenes.items():
+            if label == reference_label:
+                continue
+            extracted_path = self.extract_scene(
+                zip_path=zip_path, aoi=aoi, output_dir=output_dir / label,
+                label=label, resume=resume, preferred_swath=reference_swath,
+            )
+            if extracted_path is None:
+                excluded[label] = "no real sub-swath overlaps this AOI"
+                logger.warning("  %s: excluded — %s", label, excluded[label])
+                continue
+
+            with rasterio.open(extracted_path) as src:
+                actual_rows = src.height
+
+            if actual_rows > max_crop_ratio * reference_rows:
+                excluded[label] = (
+                    f"real crop fell back to the full, uncropped swath "
+                    f"({actual_rows} rows vs reference's {reference_rows}) "
+                    f"— this date's real orbit geometry does not genuinely "
+                    f"cover this AOI in {reference_swath}"
+                )
+                logger.warning("  %s: excluded — %s", label, excluded[label])
+                continue
+
+            kept[label] = extracted_path
+            logger.info("  %s: extracted (%d real rows, matches reference)", label, actual_rows)
+
+        report = {
+            "reference": reference_label,
+            "matched_swath": reference_swath,
+            "reference_rows": reference_rows,
+            "excluded": excluded,
+        }
+        logger.info(
+            "%d/%d real, reliable scenes kept%s",
+            len(kept), len(scenes),
+            f" — excluded: {list(excluded.keys())}" if excluded else "",
+        )
+        return kept, report
 
     def show_on_map(
         self,

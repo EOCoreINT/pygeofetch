@@ -17,7 +17,7 @@ error()   { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
 
 echo ""
 echo -e "${CYAN}╔══════════════════════════════════════╗${NC}"
-echo -e "${CYAN}║   PyGeoFetch v1.9.6 Setup       ║${NC}"
+echo -e "${CYAN}║   PyGeoFetch v1.9.7 Setup       ║${NC}"
 echo -e "${CYAN}╚══════════════════════════════════════╝${NC}"
 echo ""
 

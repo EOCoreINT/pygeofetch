@@ -19,6 +19,7 @@ build/
 eggs/
 parts/
 var/
+*.ipynb/
 *.pdf/
 sdist/
 develop-eggs/
