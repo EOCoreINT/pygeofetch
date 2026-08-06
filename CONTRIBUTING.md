@@ -194,7 +194,7 @@ Please open an issue with:
 ## Security Issues
 
 Do **not** open public issues for security vulnerabilities.
-Please email `security@example.com` with details.
+Please email `info@eocoreint.com` with details.
 
 ---
 
