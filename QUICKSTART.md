@@ -14,7 +14,7 @@
 
 ```bash
 # Extract the archive
-tar -xzf pygeofetch-1.9.7.tar.gz
+tar -xzf pygeofetch-2.4.0.tar.gz
 cd pygeofetch
 
 # Create a virtual environment (recommended)

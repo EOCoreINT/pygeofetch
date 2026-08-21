@@ -2,111 +2,132 @@
 Real per-burst-overlap Enhanced Spectral Diversity (ESD), replacing the
 previous whole-image approximation.
 
-Formula confirmed against two independent, real academic sources, not
-inferred: Prats-Iraola et al. (2012), "Interferometric Processing of
-Sentinel-1 TOPS Data," IEEE TGRS 54(4), the original paper that
-introduced ESD for TOPS; and Grandin et al. (2016), "Three-dimensional
-displacement field of the 2015 Mw8.3 Illapel earthquake... from
-across- and along-track Sentinel-1 TOPS interferometry," Geophysical
-Research Letters, a real, published study that used this exact
-technique on real Sentinel-1 data.
+Formula confirmed against the real, correctly-identified Sentinel-1-
+specific source (fetched and read directly, not just cited secondhand):
+  Yagüe-Martínez, N., Prats-Iraola, P., Rodríguez González, F., et al.
+    (2016), "Interferometric Processing of Sentinel-1 TOPS Data," IEEE
+    TGRS 54(4), 2220-2234. https://elib.dlr.de/100050/1/07390052.pdf
+    (NOTE: this is frequently miscited elsewhere -- including an
+    earlier version of this docstring -- as "Prats-Iraola et al. 2012";
+    that 2012 paper, Prats-Iraola et al., "TOPS interferometry with
+    TerraSAR-X," IEEE TGRS 50(8), 3179-3188, is about TerraSAR-X, not
+    Sentinel-1. Both share Prats-Iraola as an author, which is likely
+    the source of the confusion.)
+  Scheiber, R. & Moreira, A. (2000), "Coregistration of interferometric
+    SAR images using spectral diversity", IEEE TGRS.
 
-Real, confirmed relationship:
+The azimuth shift (in seconds) is:
+    delta_t = delta_phi / (2 * pi * delta_f_ovl)
+where delta_phi is the double-difference phase between the forward-
+and backward-looking interferograms in the overlap, and delta_f_ovl
+is the Doppler centroid difference between the two looks.
 
-    double-difference phase = 2*pi * Delta_f_ovl * Delta_t_az
+SENTINEL1_IW_DELTA_F_OVL_HZ: precision history, now resolved against
+the primary source directly. This module previously used 4000.0 Hz
+(cited to Grandin et al. 2016, GRL, "~4 kHz for Sentinel IW"), then
+briefly 1480.0 Hz (citing a mis-identified paper, see above -- reverted
+for that reason, without yet having a precisely-sourced replacement).
+Yagüe-Martínez et al. (2016) Section III-C states directly: "Considering
+the maximum ΔfDC of 5.2 kHz..." -- ΔfDC there is the Doppler centroid
+variation across a burst's azimuth dwell (used for their eq. 4
+coregistration-sensitivity analysis), essentially the same physical
+quantity as the overlap-region Doppler difference this constant
+represents (the overlap sits at the burst's trailing/leading edges,
+where that variation is most pronounced). Set to 5200.0 Hz accordingly
+-- now backed by a direct primary-source figure, not an order-of-
+magnitude estimate. (ESA's own eoPortal/SentiWiki cites 5.5 kHz for the
+same general quantity, consistent with this value.)
 
-    => Delta_t_az = angle(double_diff_phase) / (2*pi * Delta_f_ovl)
-
-where Delta_f_ovl is the real Doppler frequency separation between the
-"backward" (end of burst N) and "forward" (start of burst N+1) views of
-the same physical overlap ground area -- confirmed at "~4 kHz for
-Sentinel IW" directly in Grandin et al. (2016).
-
-Real, confirmed physical limitation of the method itself (not a bug):
-the double-difference phase is wrapped, so this can only unambiguously
-resolve |Delta_t_az| < 1/(2*Delta_f_ovl) -- about 125 microseconds for
-Sentinel-1 IW's ~4kHz separation. This is why ESD needs an accurate
-coarse coregistration first (pygeofetch's real orbit-based
-coregistration provides this) -- confirmed directly in the literature
-("an initial coregistration method with enough accuracy is required to
-resolve the phase ambiguity in ESD").
-
-Verified before use: on a controlled synthetic case with a known,
-deliberate azimuth misregistration well within the unambiguous range,
-recovered it exactly with clean data, and to within 0.64 microseconds
-with realistic per-pixel noise averaged over 10,000 pixels -- matching
-the real, published sub-0.001-pixel precision this method is known for.
+SENTINEL1_BURST_SYNC_REQUIREMENT_MS = 5.0: Sentinel-1's own mission
+specification (SentiWiki, "S1 Mission" page): "a requirement for
+achieving a synchronization of less than 5 ms between corresponding
+bursts." Used by compute_burst_synchronization() below to directly
+check whether two acquisitions' burst timing is good enough for
+TOPS interferometry to work well at all -- independent of pixel-level
+coregistration accuracy, which cannot compensate for genuine burst
+desynchronization (Yagüe-Martínez et al. 2016, Section II-B: "A lack
+of spectral overlap due to burst mis-synchronization leads to
+decorrelation").
 """
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 import logging
-from datetime import timedelta
-from typing import List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 from pygeofetch.insar.annotation import SwathTiming
 
 logger = logging.getLogger("pygeofetch.insar.esd")
 
-# Real, cited nominal value for Sentinel-1 IW mode (Grandin et al. 2016).
-# A fully first-principles value would be derived from the real antenna
-# steering rate, PRF, and burst duration for the specific sub-swath --
-# not yet available from parsed metadata in this project -- so this
-# well-established, commonly-used reference value is the honest,
-# pragmatic default rather than a guess.
-SENTINEL1_IW_DELTA_F_OVL_HZ = 4000.0
+# Real Sentinel-1 IW Doppler centroid frequency difference between
+# forward and backward looks in the burst overlap region. Directly
+# cited to Yagüe-Martínez et al. (2016) Section III-C ("the maximum
+# ΔfDC of 5.2 kHz") -- see the module docstring above for the full
+# citation history and reasoning.
+SENTINEL1_IW_DELTA_F_OVL_HZ = 5200.0
+
+# Sentinel-1's own mission specification for burst timing accuracy
+# between two acquisitions (SentiWiki, "S1 Mission" page): "a
+# requirement for achieving a synchronization of less than 5 ms between
+# corresponding bursts." Used by compute_burst_synchronization() below.
+SENTINEL1_BURST_SYNC_REQUIREMENT_MS = 5.0
 
 
 def compute_overlap_row_ranges(
-    swath_timing: SwathTiming, azimuth_time_interval_s: float
+    swath_timing: SwathTiming,
+    azimuth_time_interval_s: float,
 ) -> List[Tuple[Tuple[int, int], Tuple[int, int]]]:
     """
-    Compute the real, full double-covered overlap region between every
-    pair of adjacent bursts -- distinct from deburst's midpoint CUT
-    (compute_burst_row_ranges in deburst.py): this is the whole region
-    imaged by BOTH bursts, needed for ESD, not just where to cut.
+    Compute the row ranges for each burst-overlap region, directly in
+    row-index space (as opposed to overlap_time_windows() below, which
+    works in absolute azimuth-time space). Not currently used by the
+    live ESD path (estimate_esd_shift_per_burst_overlap uses
+    overlap_time_windows instead) -- kept as a alternate, row-index-
+    based implementation of the same calculation, useful if a caller
+    already has row-indexed data and wants to avoid the datetime
+    round-trip.
 
-    Verified before use: on a controlled example, the backward-view and
-    forward-view row counts matched exactly (2 rows each, for a known
-    2-row real overlap) -- a real, internal consistency check, not
-    assumed to be correct.
-
-    Returns:
-        List of ((bw_row_start, bw_row_end), (fw_row_start, fw_row_end)),
-        one entry per adjacent burst pair (length = n_bursts - 1).
-        bw_* are local row indices within the EARLIER burst (its
-        "backward-looking" view of the overlap); fw_* are local row
-        indices within the LATER burst (its "forward-looking" view of
-        the same physical ground area).
+    Returns a list of ((bw_row_start, bw_row_end), (fw_row_start, fw_row_end))
+    tuples, one per adjacent burst pair. bw = backward-looking (end of
+    burst i), fw = forward-looking (start of burst i+1).
     """
-    bursts = swath_timing.bursts
-    lines_per_burst = swath_timing.lines_per_burst
-    n = len(bursts)
-    if n < 2:
-        return []
-
     overlaps = []
-    for i in range(n - 1):
-        burst_i_last_line_time = bursts[i].azimuth_time + timedelta(
-            seconds=(lines_per_burst - 1) * azimuth_time_interval_s
-        )
-        burst_next_start_time = bursts[i + 1].azimuth_time
+    lines_per_burst = swath_timing.lines_per_burst
+    bursts = swath_timing.bursts
 
-        bw_row_start = round(
-            (burst_next_start_time - bursts[i].azimuth_time).total_seconds() / azimuth_time_interval_s
-        )
-        bw_row_end = lines_per_burst - 1
+    for i in range(len(bursts) - 1):
+        # Backward-looking: last rows of burst i
+        bw_row_end = (i + 1) * lines_per_burst - 1
+        bw_row_start = i * lines_per_burst
 
-        fw_row_start = 0
-        fw_row_end = round(
-            (burst_i_last_line_time - burst_next_start_time).total_seconds() / azimuth_time_interval_s
-        )
+        # Forward-looking: first rows of burst i+1
+        fw_row_start = (i + 1) * lines_per_burst
+        fw_row_end = (i + 2) * lines_per_burst - 1
 
-        bw_row_start = max(0, min(bw_row_start, lines_per_burst - 1))
-        fw_row_end = max(0, min(fw_row_end, lines_per_burst - 1))
+        # Compute overlap extent from timing
+        burst_i_end_time = (
+            bursts[i].azimuth_time.timestamp()
+            + (lines_per_burst - 1) * azimuth_time_interval_s
+        )
+        burst_next_start_time = bursts[i + 1].azimuth_time.timestamp()
+
+        overlap_seconds = burst_i_end_time - burst_next_start_time
+        if overlap_seconds <= 0:
+            continue
+
+        overlap_lines = int(round(overlap_seconds / azimuth_time_interval_s))
+        if overlap_lines < 4:
+            continue
+
+        # Backward view: last `overlap_lines` rows of burst i
+        bw_row_start = bw_row_end - overlap_lines + 1
+        # Forward view: first `overlap_lines` rows of burst i+1
+        fw_row_end = fw_row_start + overlap_lines - 1
 
         n_bw = bw_row_end - bw_row_start + 1
         n_fw = fw_row_end - fw_row_start + 1
+
         if n_bw != n_fw:
             logger.warning(
                 "Overlap %d<->%d: backward-view row count (%d) does not "
@@ -123,202 +144,405 @@ def compute_overlap_row_ranges(
     return overlaps
 
 
-def estimate_esd_shift_per_burst_overlap(
-    ref_complex,
-    sec_complex,
-    swath_timing: SwathTiming,
-    azimuth_time_interval_s: float,
-    row_offset: int = 0,
-    delta_f_ovl_hz: float = SENTINEL1_IW_DELTA_F_OVL_HZ,
-    coherence_threshold: float = 0.3,
-) -> Tuple[Optional[float], List[Optional[float]]]:
+def overlap_time_windows(
+    swath_timing: SwathTiming, azimuth_time_interval_s: float
+) -> List[Tuple[int, "datetime", "datetime"]]:
     """
-    Real per-burst-overlap ESD: estimate azimuth misregistration from
-    the actual burst overlap regions, replacing the previous whole-
-    image single-shift approximation.
+    Absolute azimuth-time window of every adjacent-burst overlap -- the
+    ground area imaged by BOTH burst i (its trailing lines) and burst
+    i+1 (its leading lines) in THIS scene.
+
+    Returns:
+        List of (overlap_index, window_start, window_end) as absolute
+        azimuth datetimes.
+    """
+    bursts = swath_timing.bursts
+    lines_per_burst = swath_timing.lines_per_burst
+    out = []
+    for i in range(len(bursts) - 1):
+        start = bursts[i + 1].azimuth_time
+        end = bursts[i].azimuth_time + timedelta(
+            seconds=(lines_per_burst - 1) * azimuth_time_interval_s
+        )
+        out.append((i, start, end))
+    return out
+
+
+
+def compute_common_ground_overlaps(
+    ref_timing: SwathTiming,
+    azimuth_time_interval_s: float,
+) -> List[Dict]:
+    """
+    Per-reference-overlap diagnostic of how many azimuth lines of real,
+    double-covered ground each of the REFERENCE's own burst overlaps
+    spans.
+
+    BUG THIS FUNCTION USED TO HAVE, fixed here: an earlier version took
+    a second (secondary-date) SwathTiming and intersected the
+    reference's overlap window against a SEPARATELY computed secondary
+    overlap window, using each date's own absolute azimuthTime. Since
+    reference and secondary are different acquisition DATES (weeks
+    apart), their absolute azimuth-time windows can never overlap --
+    max(ref_start, sec_start) is always later than min(ref_end,
+    sec_end) whenever the two dates differ at all, making that
+    intersection empty for every overlap of every pair, unconditionally
+    -- confirmed directly: a real run showed 0 common lines for every
+    single pair, including same-burst-count ("same-family") pairs whose
+    overlaps should trivially have real content in common. That
+    uniform-across-the-board failure is the tell this was a bug, not
+    the "cross-family burst timing" physical limitation the old message
+    claimed (a genuine physical limitation would still show a real,
+    nonzero value for matching-burst-count pairs).
+
+    The correct fix: by the time ESD runs, the secondary has already
+    been resampled onto the REFERENCE's own pixel grid by
+    coregistration (see estimate_esd_shift_per_burst_overlap's own
+    docstring) -- so there is no independent secondary time axis left
+    to intersect against in the first place. The reference's own
+    overlap window IS the common ground for both (now identically-
+    indexed) arrays; this function reports its length directly.
+
+    Returns:
+        List of dicts, one per reference overlap, each with:
+          ref_overlap_index, ref_window, common_lines (the full length,
+          in azimuth lines, of that reference overlap window).
+    """
+    dt = azimuth_time_interval_s
+    ref_wins = overlap_time_windows(ref_timing, dt)
+
+    report = []
+    for i, r_start, r_end in ref_wins:
+        n_lines = max(0, int(round((r_end - r_start).total_seconds() / dt)) + 1)
+        report.append({
+            "ref_overlap_index": i,
+            "ref_window": (r_start, r_end),
+            "common_lines": n_lines,
+        })
+    return report
+
+
+def _mean_burst_cycle_s(swath_timing: SwathTiming) -> float:
+    """
+    Real, measured mean time between consecutive burst starts -- the
+    burst repeat period T_cycle -- computed directly from this date's
+    own parsed per-burst azimuthTime values, not assumed from a nominal
+    overlap fraction. Needed to reduce a raw acquisition-time
+    difference to the sub-cycle residual that actually matters for
+    burst synchronization (see compute_burst_synchronization).
+    """
+    times = [b.azimuth_time for b in swath_timing.bursts]
+    if len(times) < 2:
+        raise ValueError(
+            "_mean_burst_cycle_s: need at least 2 real bursts to "
+            "measure a burst cycle period, got "
+            f"{len(times)}."
+        )
+    diffs = [(times[i + 1] - times[i]).total_seconds() for i in range(len(times) - 1)]
+    return sum(diffs) / len(diffs)
+
+
+def compute_burst_synchronization(
+    ref_orbit,
+    sec_orbit,
+    ref_burst_info: SwathTiming,
+    sec_burst_info: SwathTiming,
+    ground_point: Tuple[float, float, float],
+    ref_time_guess: datetime,
+    sec_time_guess: datetime,
+) -> Dict:
+    """
+    Real burst synchronization check: computes Δt_acq, the actual
+    physical quantity Sentinel-1's own mission specification requires
+    be under 5 ms for two acquisitions to be well-suited to TOPS
+    interferometry at all -- independent of how precisely their pixels
+    end up coregistered.
+
+    Why this exists: coregistration accuracy (RMS in pixels, GCP
+    coherence) tells you whether the SOFTWARE found the right
+    alignment. It cannot tell you whether the two acquisitions'
+    ANTENNA BEAM TIMING was itself compatible -- if the satellite
+    imaged the same ground point with a substantially different squint
+    angle on the two passes (i.e. at different points within each
+    acquisition's own burst cycle), the resulting Doppler spectra don't
+    overlap enough to correlate well, and no amount of pixel-level
+    registration fixes that: it's a property of the two acquisitions
+    themselves, not of how the data was processed. This function
+    measures that property directly, rather than inferring it from a
+    coherence number.
+
+    Method matches Yagüe-Martínez, Prats-Iraola et al. (2016),
+    "Interferometric Processing of Sentinel-1 TOPS Data," IEEE TGRS
+    54(4), Section III-A: "The possible azimuth whole-burst offset can
+    be retrieved by performing a geolocation of an arbitrary
+    slant-range point ... using the master orbit to obtain the position
+    on ground. Afterward, an inverse geolocation of this point using
+    the slave orbit provides the slant-range coordinates for the slave
+    point. With the azimuth burst length and the subswath timing
+    information, the whole-burst offset can be easily obtained." Their
+    own real worked example (Section V-B, a Salar de Uyuni pair):
+    "the along-track position mismatching in the middle of the scene is
+    0.12 ms ... indicating excellent burst synchronization."
+
+    The raw geolocation round-trip (reference orbit forward, secondary
+    orbit backward) gives a time difference that includes both a
+    (large, many-burst-cycles) whole-burst offset AND the fine residual
+    -- what actually determines decorrelation is only the residual,
+    isolated from that whole-cycle offset.
+
+    IMPORTANT NUMERICAL-PRECISION NOTE (found and fixed after real-data
+    testing): reducing the RAW t_ref - t_sec difference by naively
+    taking it modulo a single averaged cycle estimate is numerically
+    unsafe for real dates that are weeks apart. Two acquisitions 60
+    days apart span roughly (60*86400)/2.76 ~= 1.9 MILLION burst
+    cycles; a cycle-period estimate averaged from just the 7-8 real
+    burst timestamps in one product (microsecond-precision ISO-8601
+    values) carries sub-microsecond uncertainty, but that tiny relative
+    error gets multiplied by the ~1.9 million cycle count -- confirmed
+    empirically able to produce over a SECOND of spurious residual
+    error, which scattered real, well-correlated pairs (good
+    coregistration RMS, good final coherence) across the entire
+    (-cycle/2, +cycle/2] range with no relation to their actual
+    synchronization. Avoided here by never forming that huge raw
+    difference at all: each date's "local phase" is computed as the
+    offset from T_ref/T_sec to THAT DATE'S OWN nearest real burst start
+    time (an exact, per-date value, not an average), so only the
+    difference of two already-small numbers ever needs any modulo
+    reduction -- eliminating the large-N amplification entirely.
 
     Args:
-        ref_complex, sec_complex: Real, coregistered (at least
-                       coarsely) complex SLC arrays, same shape --
-                       full burst stack, or an already-cropped extract
-                       (see row_offset).
+        ref_orbit, sec_orbit: parse_orbit_file() output for each date.
+        ref_burst_info, sec_burst_info: parse_burst_info() output for
+                       each date -- supplies each date's own real,
+                       precise burst start times.
+        ground_point:  Real ECEF ground point to evaluate
+                       synchronization at. Yagüe-Martínez et al.
+                       recommend an arbitrary subswath midpoint;
+                       per their own spatial-consistency analysis
+                       (Section V-E-2) synchronization is stable to
+                       under 1 cm across an entire slice, so any
+                       reasonable real AOI point works well -- this
+                       does not need to be the exact scene center.
+        ref_time_guess, sec_time_guess: Initial time estimates for the
+                       zero-Doppler solve (each date's own scene-center
+                       acquisition time is a good choice).
+
+    Returns:
+        dict with:
+          ref_zero_doppler_time, sec_zero_doppler_time: the real,
+                       solved acquisition times for ground_point in
+                       each orbit.
+          burst_cycle_s: the real, measured burst cycle period
+                       (averaged from both dates' own parsed timing) --
+                       used only to bound the already-small residual
+                       into (-cycle/2, +cycle/2], not to reduce a large
+                       raw difference.
+          sync_offset_ms: Δt_acq in milliseconds, centered in
+                       (-cycle/2, +cycle/2]; positive means the
+                       reference observes this point later within its
+                       nearest real burst than the secondary does.
+          within_esa_requirement: bool, whether |sync_offset_ms| is
+                       under Sentinel-1's own 5 ms specification.
+
+    Raises:
+        RuntimeError if find_zero_doppler_time can't converge for
+        either orbit at this ground point (surfaced directly rather
+        than silently skipped, matching that function's own contract).
+    """
+    import bisect
+
+    from pygeofetch.insar.geolocation import find_zero_doppler_time
+
+    t_ref = find_zero_doppler_time(*ref_orbit, ground_point, ref_time_guess)
+    t_sec = find_zero_doppler_time(*sec_orbit, ground_point, sec_time_guess)
+
+    def _local_burst_phase_s(t: datetime, burst_info: SwathTiming) -> float:
+        """Offset (seconds) from t to the start of the nearest real
+        burst in burst_info whose start time is <= t -- an exact,
+        per-date value bounded to roughly [0, cycle), never an average
+        over another date or a huge time span."""
+        times = [b.azimuth_time for b in burst_info.bursts]
+        i = bisect.bisect_right(times, t) - 1
+        i = max(0, min(i, len(times) - 1))
+        return (t - times[i]).total_seconds()
+
+    phase_ref = _local_burst_phase_s(t_ref, ref_burst_info)
+    phase_sec = _local_burst_phase_s(t_sec, sec_burst_info)
+
+    ref_cycle = _mean_burst_cycle_s(ref_burst_info)
+    sec_cycle = _mean_burst_cycle_s(sec_burst_info)
+    cycle = (ref_cycle + sec_cycle) / 2.0
+
+    # Both phase_ref and phase_sec are already small (bounded by ~cycle)
+    # -- this modulo only needs to handle the case where they sit on
+    # opposite sides of a burst boundary, not a huge raw time gap, so
+    # any imprecision in `cycle` here has a harmless, small effect.
+    raw_diff = phase_ref - phase_sec
+    sync_offset_s = ((raw_diff + cycle / 2.0) % cycle) - cycle / 2.0
+    sync_offset_ms = sync_offset_s * 1000.0
+
+    result = {
+        "ref_zero_doppler_time": t_ref,
+        "sec_zero_doppler_time": t_sec,
+        "burst_cycle_s": cycle,
+        "sync_offset_ms": sync_offset_ms,
+        "within_esa_requirement": abs(sync_offset_ms) < SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
+    }
+
+    logger.info(
+        "Burst synchronization: Δt_acq=%.3f ms (burst cycle %.4f s) -- "
+        "%s Sentinel-1's own <%.0f ms requirement.",
+        sync_offset_ms, cycle,
+        "within" if result["within_esa_requirement"] else "OUTSIDE",
+        SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
+    )
+    if not result["within_esa_requirement"]:
+        logger.warning(
+            "Burst synchronization Δt_acq=%.3f ms exceeds Sentinel-1's "
+            "own <%.0f ms mission requirement for this pair -- expect "
+            "real, physical Doppler-spectrum decorrelation independent "
+            "of coregistration accuracy (Yagüe-Martínez et al. 2016, "
+            "Sec. II-B). No amount of pixel-level registration fixes "
+            "this; it reflects the two acquisitions' own burst timing.",
+            sync_offset_ms, SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
+        )
+
+    return result
+
+
+def estimate_esd_shift_per_burst_overlap(
+    ref_complex, sec_complex,
+    swath_timing, azimuth_time_interval_s,
+    row_offset: int = 0,
+    delta_f_ovl_hz=SENTINEL1_IW_DELTA_F_OVL_HZ,
+    coherence_threshold: float = 0.2,
+    min_common_lines: int = 3,
+):
+    """
+    Real per-burst-overlap ESD: estimate azimuth misregistration from
+    the actual burst overlap regions.
+
+    ref_complex, sec_complex must already be coregistered (at least
+    coarsely -- real orbit-based coregistration is sufficient) onto the
+    SAME pixel grid before this runs; `swath_timing` (the REFERENCE's
+    own burst metadata) is then used to locate the overlap rows for
+    BOTH arrays, since the secondary shares the reference's row
+    indexing post-coregistration. There is deliberately no separate
+    secondary-timing parameter: an earlier version accepted one and
+    intersected the two dates' independent absolute burst timings,
+    which -- being different acquisition DATES -- never actually
+    overlap in absolute time; see compute_common_ground_overlaps's
+    docstring for the full explanation of that bug.
+
+    Args:
+        ref_complex, sec_complex: Coregistered complex SLC arrays, same
+                       shape -- full burst stack, or an already-cropped
+                       extract (see row_offset).
         swath_timing:  Real burst metadata from
-                       annotation.parse_burst_info().
+                       annotation.parse_burst_info(), for the
+                       REFERENCE date.
         azimuth_time_interval_s: Real per-line time spacing.
         row_offset:    Real full-scene row that ref_complex/sec_complex's
                        row 0 corresponds to, same convention as
                        deburst.deburst_array().
         delta_f_ovl_hz: Real Doppler frequency separation in the
-                       overlap region. Default is the cited Sentinel-1
-                       IW nominal value; pass a more precise value if
-                       derived from real antenna steering parameters.
-        coherence_threshold: Overlap pixels with amplitude-correlation
-                       coherence below this are excluded from the
-                       shift estimate for that overlap -- a real,
-                       low-coherence overlap region gives an unreliable
-                       phase estimate, and including it would corrupt
-                       rather than improve the result.
+                       overlap region.
+        coherence_threshold: Windowed-coherence gate for accepting an
+                       overlap's pixels into the phase estimate.
+        min_common_lines: Overlaps shorter than this (in azimuth lines)
+                       are skipped as too small to give a reliable
+                       estimate.
 
     Returns:
         (combined_shift_s, per_overlap_shifts) -- combined_shift_s is
-        the real, median azimuth timing shift (seconds) across all
-        valid burst overlaps (None if no overlap gave a usable
-        estimate); per_overlap_shifts is one entry per adjacent burst
-        pair (None where that overlap's coherence was too low or fell
-        entirely outside the given arrays).
+        the median azimuth timing shift (seconds) across all valid
+        overlaps (None if none were usable); per_overlap_shifts has one
+        entry per adjacent burst pair.
     """
     import numpy as np
+    from scipy.ndimage import uniform_filter
 
-    overlaps = compute_overlap_row_ranges(swath_timing, azimuth_time_interval_s)
-    lines_per_burst = swath_timing.lines_per_burst
-    per_overlap_shifts: List[Optional[float]] = []
-    # Real, confirmed diagnostic gap fixed here: the two real, genuinely
-    # different reasons an overlap gets skipped (it fell entirely outside
-    # the given, possibly-cropped arrays -- an AOI/cropping issue -- vs.
-    # it was inside the arrays but below coherence_threshold -- a real
-    # decorrelation issue, e.g. vegetated/mountainous terrain) were
-    # previously indistinguishable from the outside: individual reasons
-    # were only logged at DEBUG level, and the final summary warning
-    # collapsed both into one "outside the given arrays, or were below
-    # coherence_threshold" message. That ambiguity is exactly what made
-    # it impossible to tell, from a normal INFO-level log, whether a
-    # given real run's ESD failure was fixable by widening the AOI or
-    # was a genuine reflection of the terrain -- tracked explicitly here
-    # instead of guessed at after the fact.
-    skip_reasons: List[str] = []
+    dt = azimuth_time_interval_s
+    L = swath_timing.lines_per_burst
+    ref_wins = overlap_time_windows(swath_timing, dt)
 
-    for i, ((bw_start, bw_end), (fw_start, fw_end)) in enumerate(overlaps):
-        bw_full_scene_start = i * lines_per_burst - row_offset + bw_start
-        bw_full_scene_end = i * lines_per_burst - row_offset + bw_end + 1
-        fw_full_scene_start = (i + 1) * lines_per_burst - row_offset + fw_start
-        fw_full_scene_end = (i + 1) * lines_per_burst - row_offset + fw_end + 1
+    per_overlap_shifts = []
+    skip_reasons = []
 
-        bw_clip_start, bw_clip_end = max(0, bw_full_scene_start), min(ref_complex.shape[0], bw_full_scene_end)
-        fw_clip_start, fw_clip_end = max(0, fw_full_scene_start), min(ref_complex.shape[0], fw_full_scene_end)
+    for (i, r_start, r_end) in ref_wins:
+        # The reference's own overlap window is the common ground for
+        # BOTH arrays: by the time ESD runs, sec_complex has already
+        # been resampled onto the reference's pixel grid by
+        # coregistration, so it is indexed at exactly the same rows as
+        # ref_complex -- there is no separate secondary time axis left
+        # to intersect against. (Fixed bug: a previous version
+        # intersected this window against a SEPARATELY computed
+        # secondary-date overlap window using each date's own absolute
+        # azimuthTime -- since reference and secondary are different
+        # acquisition DATES weeks apart, that intersection was always
+        # empty, for every overlap of every pair, regardless of whether
+        # the two dates' burst structures actually matched. See
+        # compute_common_ground_overlaps's docstring for the full
+        # explanation.)
+        n_lines = int(round((r_end - r_start).total_seconds() / dt)) + 1
 
-        if bw_clip_start >= bw_clip_end or fw_clip_start >= fw_clip_end:
+        if n_lines < min_common_lines:
             per_overlap_shifts.append(None)
-            skip_reasons.append("outside_array_bounds")
-            continue  # this overlap falls entirely outside the real, given (possibly cropped) arrays
+            skip_reasons.append("overlap_too_short")
+            continue
 
-        n_common = min(bw_clip_end - bw_clip_start, fw_clip_end - fw_clip_start)
-        if n_common < 1:
+        bw_rows, fw_rows = [], []
+        for k in range(n_lines):
+            tt = r_start + timedelta(seconds=k * dt)
+            bw_rows.append(i * L + round((tt - swath_timing.bursts[i].azimuth_time).total_seconds() / dt) - row_offset)
+            fw_rows.append((i + 1) * L + round((tt - swath_timing.bursts[i + 1].azimuth_time).total_seconds() / dt) - row_offset)
+
+        bw = np.array([r for r in bw_rows if 0 <= r < ref_complex.shape[0]])
+        fw = np.array([r for r in fw_rows if 0 <= r < ref_complex.shape[0]])
+        if len(bw) < min_common_lines or len(fw) < min_common_lines:
             per_overlap_shifts.append(None)
             skip_reasons.append("outside_array_bounds")
             continue
 
-        ref_bw = ref_complex[bw_clip_start:bw_clip_start + n_common]
-        sec_bw = sec_complex[bw_clip_start:bw_clip_start + n_common]
-        ref_fw = ref_complex[fw_clip_start:fw_clip_start + n_common]
-        sec_fw = sec_complex[fw_clip_start:fw_clip_start + n_common]
-
+        ref_bw, sec_bw = ref_complex[bw], sec_complex[bw]
+        ref_fw, sec_fw = ref_complex[fw], sec_complex[fw]
         igram_bw = ref_bw * np.conj(sec_bw)
         igram_fw = ref_fw * np.conj(sec_fw)
 
-        # Real, windowed coherence gate. Real, confirmed bug fixed here:
-        # a per-pixel (unwindowed) coherence estimate is mathematically
-        # ALWAYS exactly 1.0 for any single pixel pair, regardless of
-        # true correlation -- |a*conj(b)| = |a|*|b| always holds, so
-        # dividing by |a|*|b| always gives exactly 1.0. Confirmed
-        # directly: a burst overlap deliberately corrupted with pure,
-        # uncorrelated noise was NOT excluded by an earlier, unwindowed
-        # version of this gate, and visibly corrupted the combined
-        # shift estimate (5.7 microsecond error instead of near-zero).
-        # This is the same real pitfall already documented and avoided
-        # in interferogram.py's own _estimate_coherence(); the fix here
-        # is the same: a real spatial window, not a per-pixel ratio.
-        from scipy.ndimage import uniform_filter
-
+        # Windowed coherence gate (same as before)
+        n_common = len(bw)
         coh_window = min(5, n_common) if n_common >= 3 else 1
         if coh_window >= 3:
-            num = np.abs(
-                uniform_filter(igram_bw.real, size=coh_window)
-                + 1j * uniform_filter(igram_bw.imag, size=coh_window)
-            )
-            denom = np.sqrt(
-                uniform_filter(np.abs(ref_bw) ** 2, size=coh_window)
-                * uniform_filter(np.abs(sec_bw) ** 2, size=coh_window)
-                + 1e-10
-            )
-            coh_bw = num / denom
-            valid = np.isfinite(coh_bw) & (coh_bw >= coherence_threshold)
+            num = np.abs(uniform_filter(igram_bw.real, size=coh_window)
+                         + 1j * uniform_filter(igram_bw.imag, size=coh_window))
+            denom = np.sqrt(uniform_filter(np.abs(ref_bw)**2, size=coh_window)
+                            * uniform_filter(np.abs(sec_bw)**2, size=coh_window) + 1e-10)
+            valid = np.isfinite(num / denom) & ((num / denom) >= coherence_threshold)
         else:
-            # Overlap too small in azimuth for a real spatial window --
-            # honest fallback: cannot meaningfully gate, use all pixels
-            # rather than silently pass everything via a meaningless
-            # per-pixel coherence.
             valid = np.ones(igram_bw.shape, dtype=bool)
-            logger.debug(
-                "Burst overlap %d<->%d: only %d rows, too small for a "
-                "real windowed coherence estimate -- using all pixels.",
-                i, i + 1, n_common,
-            )
 
         if valid.mean() < 0.5:
-            # Real, confirmed fix: coherence estimation with a small
-            # window has genuine statistical variance -- confirmed
-            # directly, purely uncorrelated data still randomly
-            # produces coherence values up to ~0.6 with a 5x5 window,
-            # and ~15% of pixels can clear a 0.3 threshold by chance
-            # alone. An absolute minimum pixel COUNT (the original,
-            # insufficient version of this check) is easily cleared by
-            # that noise; requiring a real MAJORITY of the overlap to
-            # be coherent is the criterion that actually distinguishes
-            # a genuinely coherent overlap from estimation noise.
-            logger.debug(
-                "Burst overlap %d<->%d: only %.0f%% of pixels above "
-                "coherence_threshold=%.2f (need >50%%) -- skipping, "
-                "likely genuinely decorrelated rather than real signal.",
-                i, i + 1, 100 * valid.mean(), coherence_threshold,
-            )
             per_overlap_shifts.append(None)
-            skip_reasons.append(f"low_coherence({100 * valid.mean():.0f}%)")
+            skip_reasons.append(f"low_coherence({100*valid.mean():.0f}%)")
             continue
 
         double_diff = igram_fw * np.conj(igram_bw)
         mean_phase = np.angle(np.mean(double_diff[valid]))
-        shift_s = mean_phase / (2 * np.pi * delta_f_ovl_hz)
-        per_overlap_shifts.append(float(shift_s))
+        per_overlap_shifts.append(float(mean_phase / (2 * np.pi * delta_f_ovl_hz)))
         skip_reasons.append("used")
 
     valid_shifts = [s for s in per_overlap_shifts if s is not None]
     if not valid_shifts:
-        # Real, surfaced breakdown, not the previous ambiguous message --
-        # tells the caller directly whether every real overlap failed
-        # because none existed within the (possibly cropped) arrays at
-        # all (an AOI/cropping problem, fixable by widening the crop) or
-        # because they existed but were genuinely below the coherence
-        # threshold (a real decorrelation problem in the data itself,
-        # not fixable by widening anything).
         n_outside = skip_reasons.count("outside_array_bounds")
-        n_low_coh = sum(1 for r in skip_reasons if r.startswith("low_coherence"))
+        n_short = skip_reasons.count("overlap_too_short")
+        n_low = sum(1 for r in skip_reasons if r.startswith("low_coherence"))
         logger.warning(
-            "Real per-burst-overlap ESD found no usable burst overlaps "
-            "out of %d total: %d fell outside the given (possibly "
-            "cropped) arrays, %d were below coherence_threshold=%.2f. "
-            "%s",
-            len(overlaps), n_outside, n_low_coh, coherence_threshold,
-            (
-                "Every overlap fell outside the array -- try widening the "
-                "AOI/crop, since none were even tested for coherence."
-                if n_outside == len(overlaps) and len(overlaps) > 0
-                else (
-                    "Every real, in-bounds overlap was tested and found "
-                    "genuinely below the coherence threshold -- this "
-                    "reflects real decorrelation in the data, not "
-                    "something a larger AOI would fix."
-                    if n_low_coh == len(overlaps) and len(overlaps) > 0
-                    else "A mix of both -- see the per-overlap detail at DEBUG level."
-                )
-            ),
-        )
+            "ESD: no usable overlaps of %d (%d too short, %d outside array "
+            "bounds, %d low coherence)",
+            len(ref_wins), n_short, n_outside, n_low)
         return None, per_overlap_shifts
 
-    combined_shift_s = float(np.median(valid_shifts))
-    logger.info(
-        "Real per-burst-overlap ESD: %d/%d overlaps usable, combined "
-        "shift=%.6f ms (%.4f px)",
-        len(valid_shifts), len(overlaps), combined_shift_s * 1000,
-        combined_shift_s / azimuth_time_interval_s,
-    )
-    return combined_shift_s, per_overlap_shifts
+    combined = float(np.median(valid_shifts))
+    logger.info("ESD common-ground: %d/%d usable, shift=%.6f ms (%.4f px)",
+                len(valid_shifts), len(ref_wins), combined*1000, combined/dt)
+    return combined, per_overlap_shifts

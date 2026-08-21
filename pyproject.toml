@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygeofetch"
-version = "1.9.7"
+version = "2.6.0"
 description = "Universal satellite data pipeline + geospatial processing platform"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -39,8 +39,6 @@ dependencies = [
     "anyio>=4.2",
     "numpy>=1.26",
     "tqdm>=4.66",
-    "okada-wrapper",
-    "unlzw3",
 ]
 
 [project.optional-dependencies]
@@ -90,19 +88,19 @@ viz = [
     "ipysheet>=0.6.0",
     "ipyleaflet>=0.17.0",
     "ipywidgets>=8.0.0",
-    "ipyevents>=2.0.0",
+    "ipyevents>=2.0.2",
     "ipyfilechooser>=0.6.0",
     "sidecar>=0.6.0",
     "bokeh>=3.0.0",
     "seaborn>=0.12.0",
     "plotly>=5.14.0",
-    "whitebox>=2.3.0",
-    "whiteboxgui>=2.3.0",
+    "whitebox>=2.4.0",
+    "whiteboxgui>=2.4.0",
     "geemap>=0.28.0",
     "osmnx>=1.9.4",
     "contextily>=1.9.4",
     "xyzservices>=2023.10.0",
-    "mapclassify>=2.5.0",
+    "mapclassify>=2.6.0",
     "geoplot>=0.5.0",
     "mplleaflet>=0.0.5",
     "branca>=0.6.0",
@@ -178,8 +176,8 @@ all = ["pygeofetch[full]"]
 pygeofetch = "pygeofetch.cli.main:cli"
 
 [project.urls]
-Homepage      = "https://github.com/EOCoreINT"
-Documentation = "https://github.com/appiahkubis14/pygeofetch-docs"
+Homepage      = "https://www.eocoreint.com/"
+Documentation = "https://appiahkubis14.github.io/pygeofetch-docs/"
 Repository    = "https://github.com/EOCoreINT/pygeofetch"
 "Bug Tracker" = "https://github.com/EOCoreINT/pygeofetch/issues"
 

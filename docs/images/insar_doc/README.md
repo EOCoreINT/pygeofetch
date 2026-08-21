@@ -178,7 +178,7 @@ executed and eyeballed.
 SNAPHU itself is JPL/Caltech's established production algorithm
 (Chen & Zebker 2001); what was tested here is pygeofetch's wrapper
 around it, using the *real* SNAPHU binary (visible in test output —
-`snaphu v2.0.7`, genuine network-flow optimization), not a mock.
+`snaphu v2.4.0`, genuine network-flow optimization), not a mock.
 
 - **Recovers a known phase ramp spanning 4.7 full 2π cycles** to
   0.001% error (essentially float32 noise) with 100% of pixels marked

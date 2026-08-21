@@ -53,11 +53,23 @@ def visualize_interferogram(
     if getattr(result, "reference_date", None) and getattr(result, "secondary_date", None):
         label = f" ({result.reference_date} → {result.secondary_date})"
 
+    # Colormap: "hsv" -- a real, full-hue-cycling colormap, chosen to
+    # match the conventional InSAR "rainbow fringe" appearance produced
+    # by SNAP, ISCE, GAMMA, and GMTSAR (and virtually every InSAR
+    # tutorial/paper figure). A prior version used matplotlib's
+    # "twilight" here -- also a genuinely CYCLIC colormap (value at -pi
+    # matches value at +pi, so no false discontinuity), but visually a
+    # muted, low-saturation dark-blue-purple/white/orange gradient, NOT
+    # a saturated hue cycle. Measured directly: twilight's saturation
+    # stays under 0.4 throughout the cycle; hsv is fully saturated
+    # (1.0) at every point. Both are mathematically valid cyclic
+    # choices, but only one matches the field's actual visual
+    # convention.
     wrapped_phase = np.angle(result.interferogram)
     paths["wrapped_phase"] = pl.plot_raster(
         wrapped_phase,
         title=f"Wrapped Interferometric Phase{label}",
-        colormap="twilight",
+        colormap="hsv",
         vmin=-np.pi,
         vmax=np.pi,
         colorbar_label="Phase (radians)",
@@ -210,7 +222,7 @@ def visualize_timeseries(
     axes = np.atleast_1d(axes).ravel()
     disp_vmax = float(np.nanpercentile(np.abs(result.displacement), 98))
     for ax, idx in zip(axes, indices):
-        im = ax.imshow(result.displacement[idx], cmap="RdBu_r", vmin=-disp_vmax, vmax=disp_vmax)
+        im = ax.imshow(result.displacement[idx], cmap="RdBu_r", vmin=-disp_vmax, vmax=disp_vmax,aspect="auto")
         ax.set_title(result.dates[idx], fontsize=11)
         plt.colorbar(im, ax=ax, fraction=0.046)
     for ax in axes[len(indices):]:

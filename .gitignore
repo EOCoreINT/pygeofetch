@@ -25,6 +25,8 @@ sdist/
 develop-eggs/
 .installed.cfg
 lib/
+config/
+books/
 lib64/
 wheels/
 share/python-wheels/
@@ -32,7 +34,9 @@ MANIFEST
 *.whl
 *.tar.gz
 *.zip
-
+sum_me/
+test_topo/
+*.ipynb/
 # ── Virtual Environments ──────────────────────────────────────────────────────
 .venv/
 venv/

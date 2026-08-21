@@ -1153,4 +1153,4 @@ class TestFinalEngineSmoke:
 
 # ── Contract footer ───────────────────────────────────────────────────────────
 # PyGeoVision integration contract: ALL TESTS MUST PASS
-# Contract version: PyGeoVision v2.0.9 / PyGeoFetch patch July 2026
+# Contract version: PyGeoVision v2.4.0 / PyGeoFetch patch July 2026
