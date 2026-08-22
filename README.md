@@ -230,7 +230,7 @@ Run `pygeofetch --help` or any subcommand with `--help` for the complete, curren
 
 ---
 
-## 📚 Notebooks
+<!-- ## 📚 Notebooks
 
 | Notebook | Topics |
 |---|---|
@@ -250,7 +250,7 @@ Run `pygeofetch --help` or any subcommand with `--help` for the complete, curren
 
 ```bash
 cd notebooks/ && jupyter lab
-```
+``` -->
 
 ---
 
