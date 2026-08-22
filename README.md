@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- <img src="" alt="pygeofetch Logo" width="200"/> -->
-<img src="icon/pygeofetch_logo.png" alt="PyGeoFetch Logo" width="80">
+<img src="icon/pygeofetch_logo.png" alt="PyGeoFetch Logo" width="150">
 
 <!-- # pygeofetch 🛰️ -->
 
