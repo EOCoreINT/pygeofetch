@@ -3,7 +3,7 @@
 <!-- <img src="" alt="pygeofetch Logo" width="200"/> -->
 ![Software Logo](icon/2.png)
 
-# pygeofetch 🛰️
+<!-- # pygeofetch 🛰️ -->
 
 [![PyPI version](https://badge.fury.io/py/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)
@@ -19,7 +19,7 @@
 
 ## 📖 Introduction
 
-pygeofetch is a **production-ready satellite data acquisition and processing framework** that provides unified, authenticated access to 24 Earth observation repositories — including Sentinel, Landsat, Planet, Maxar, Airbus, Copernicus, USGS, NASA, JAXA, and more — through a single consistent CLI and Python API.
+🛰️ pygeofetch is a **production-ready satellite data acquisition and processing framework** that provides unified, authenticated access to 24 Earth observation repositories — including Sentinel, Landsat, Planet, Maxar, Airbus, Copernicus, USGS, NASA, JAXA, and more — through a single consistent CLI and Python API.
 
 The package abstracts away the authentication complexity, API fragmentation, and format inconsistencies of individual satellite providers, and adds a complete geospatial processing engine on top, including a real, independently-verified InSAR pipeline built and validated against real Sentinel-1 data, not just synthetic test cases. pygeofetch provides seven core capabilities:
 
