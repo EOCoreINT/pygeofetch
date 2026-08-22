@@ -69,7 +69,7 @@ providers = [
 ]
 
 # Tier 5: SAR processing (lightweight)
-sar = [
+insar = [
     "sarxarray>=0.1",
     "scipy>=1.12",
 ]

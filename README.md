@@ -1,6 +1,7 @@
 <div align="center">
 
-<!-- <img src="https://appiahkubis14.github.io/portfolio/logo/samuel_logo_dark.svg" alt="pygeofetch Logo" width="200"/> -->
+<!-- <img src="" alt="pygeofetch Logo" width="200"/> -->
+![Software Logo](icon/logo.png)
 
 # pygeofetch 🛰️
 
