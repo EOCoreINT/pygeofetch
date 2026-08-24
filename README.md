@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22086780.svg)](https://doi.org/10.5281/zenodo.22086780)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22087230.svg)](https://doi.org/10.5281/zenodo.22087230)
 [![Tests](https://github.com/appiahkubis14/pygeofetch/actions/workflows/tests.yml/badge.svg)](https://github.com/appiahkubis14/pygeofetch/actions)
 [![Coverage](https://codecov.io/gh/appiahkubis14/pygeofetch/branch/main/graph/badge.svg)](https://codecov.io/gh/appiahkubis14/pygeofetch)
 
@@ -245,8 +245,8 @@ If you use PyGeoFetch in your research or operational work, please cite it using
   year         = {2026},
   publisher    = {Zenodo},
   version      = {2.6.2},
-  doi          = {10.5281/zenodo.22086780},
-  url          = {https://doi.org/10.5281/zenodo.22086780}
+  doi          = {10.5281/zenodo.22087230},
+  url          = {https://doi.org/10.5281/zenodo.22087230}
 }
 ```
 
