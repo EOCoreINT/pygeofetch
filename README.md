@@ -78,7 +78,7 @@ Every provider has been directly verified to return at minimum a correct boundin
 pip install pygeofetch                 # core — free providers work immediately
 pip install "pygeofetch[geo]"          # + rasterio, geopandas, shapely
 pip install "pygeofetch[insar]"        # + native SBAS inversion, phase unwrapping
-pip install "pygeofetch[insar-full]"   # + MintPy passthrough for advanced corrections
+pip install "pygeofetch[insar-full]"   # + For Linux Users
 pip install "pygeofetch[all]"          # everything
 ```
 
