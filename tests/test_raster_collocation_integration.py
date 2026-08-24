@@ -24,7 +24,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, "/home/claude/work")
+# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import numpy as np
 import rasterio

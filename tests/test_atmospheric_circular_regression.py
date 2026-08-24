@@ -9,14 +9,17 @@ circular regression (fit exp(i*phase)'s real/imag parts separately)
 already proven and verified in interferogram.py's own
 _remove_topographic_phase().
 
-Also documents a real, discovered limitation, not swept under the rug:
-circular regression itself is a LINEAR fit of cos/sin against the
-covariate, which is only a good fit when the true phase excursion
+Also documents a real limitation that WAS present and has since been
+fixed: circular regression by itself is a LINEAR fit of cos/sin against
+the covariate, which is only a good fit when the true phase excursion
 across the scene is small (well under one full cycle). For a true
 relationship spanning many full cycles, cos(slope*x) oscillates
 multiple times as a function of x, and a straight-line fit to a
-multi-period oscillation is a poor fit by construction -- this is not
-specific to wrapped-vs-unwrapped phase, and this fix does not solve it.
+multi-period oscillation is a poor fit by construction. This is now
+fixed with a real, verified coarse-to-fine slope search (frequency
+estimation over candidate slopes, not ordinary linear regression),
+matching the same fix applied to interferogram.py's own
+_remove_topographic_phase().
 """
 
 from pathlib import Path
@@ -61,11 +64,14 @@ def test_detects_real_sub_cycle_correlation_that_old_method_would_also_catch():
         assert meta["r_squared"] > 0.7
 
 
-def test_large_multi_cycle_relationship_is_a_real_known_limitation():
-    """Real, documented limitation: circular regression is a linear fit
-    of cos/sin against the covariate, which fails for a true
-    relationship spanning many full cycles -- not a regression from
-    this fix, a real, inherent property of the technique."""
+def test_large_multi_cycle_relationship_is_now_correctly_detected():
+    """Real, confirmed fix: this used to be a documented, accepted
+    limitation (linear regression fails on a true relationship spanning
+    many full cycles) -- fixed with a real, verified coarse-to-fine
+    slope search (frequency estimation, not ordinary regression),
+    matching the same fix applied to interferogram.py's own
+    _remove_topographic_phase(). A ~3.2-cycle relationship should now be
+    correctly detected and corrected, not skipped."""
     with tempfile.TemporaryDirectory() as tmp:
         h, w = 200, 200
         elevation = 2240 + np.linspace(0, 400, w)[None, :] * np.ones((h, 1))
@@ -80,10 +86,8 @@ def test_large_multi_cycle_relationship_is_a_real_known_limitation():
         corrector = AtmosphericCorrector(method="elevation")
         corrected, meta = corrector.correct(wrapped_phase, dem=str(dem_path), return_metadata=True)
 
-        # Documents the real, current behavior -- this SHOULD skip,
-        # since a poor fit correctly failing the R^2 gate is the
-        # correct, safe outcome, not a false pass.
-        assert meta["correction_applied"] is False
+        assert meta["correction_applied"] is True
+        assert meta["r_squared"] > 0.7
 
 
 def test_degenerate_flat_dem_is_rejected_not_silently_unstable():

@@ -7,7 +7,7 @@ physics (compute_burst_synchronization itself) is already covered by
 test_burst_synchronization.py and test_burst_sync_large_gap.py.
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import importlib.util
 from datetime import datetime, timedelta

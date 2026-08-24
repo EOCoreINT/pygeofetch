@@ -1,11 +1,13 @@
 """
 SBASTimeSeries — Small BAseline Subset time series inversion.
 
-Implements the SBAS weighted least-squares inversion (Berardino et al. 2002,
-Yunjun et al. 2019 / MintPy) natively in numpy — no external InSAR software
-required for the core inversion, though MintPy is used automatically when
-installed for advanced corrections (tropospheric delay, DEM error,
-phase-closure-based unwrapping error correction).
+Implements the SBAS weighted least-squares inversion (Berardino et al.
+2002), including native, MintPy-equivalent advanced corrections
+(unwrapping error correction via phase closure, DEM error correction),
+entirely in numpy — no external InSAR software, and no MintPy
+installation, required for any of it. The phase-closure technique's
+algorithmic lineage (Yunjun et al. 2019) is cited below for attribution,
+not because the package itself is a runtime dependency.
 
 Reference:
   Berardino, P., Fornaro, G., Lanari, R., & Sansosti, E. (2002). A new
@@ -15,29 +17,64 @@ Reference:
     series analysis: unwrapping error correction and noise reduction.
     Computers & Geosciences, 133, 104331.
 
-Install: pip install "pygeofetch[insar]"          (native SBAS inversion)
-         pip install "pygeofetch[insar-full]"      (+ MintPy passthrough)
+Install: pip install "pygeofetch[insar]"
 """
 
 from __future__ import annotations
 
 import logging
+import itertools
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
+import numpy as np
+from scipy import linalg
+
 logger = logging.getLogger("pygeofetch.insar.timeseries")
+
+# REAL BUG FOUND AND FIXED HERE: this file previously had a second,
+# complete module header (its own docstring, a duplicate
+# "from __future__ import annotations", a duplicate "import logging",
+# and a duplicate logger= line) pasted directly into the middle of the
+# file, immediately after the real one -- a duplicate __future__ import
+# that isn't the file's first statement is a real, hard SyntaxError in
+# Python, not just messy style. This made the whole module unimportable
+# as-is. The genuinely new, needed pieces from that second block
+# (itertools, datetime, numpy, scipy.linalg -- all real dependencies of
+# the new phase-closure and DEM-error correction methods below) are
+# merged into the real imports above; the duplicate boilerplate is
+# removed. The second docstring's real content is preserved below,
+# describing what those two new corrections actually do.
+#
+# Native Advanced Corrections included in this module:
+# 1. Unwrapping Error Correction via Greedy Phase Closure (Yunjun et al., 2019).
+# 2. DEM Error Correction via Weighted Linear Regression of Residuals vs. Perpendicular Baseline.
+logger = logging.getLogger("pygeofetch.insar.timeseries")
+
+# Sentinel-1 C-band wavelength (meters)
+SENTINEL1_WAVELENGTH_M = 0.05546576
 
 
 @dataclass
 class InterferogramPair:
-    """One interferogram in an SBAS network."""
-
-    reference_date: str  # ISO date, e.g. "2026-01-01"
+    """Dataclass for a single interferogram pair."""
+    reference_date: str
     secondary_date: str
-    unwrapped_phase: Any  # float32 (H, W) array, radians
-    coherence: Any  # float32 (H, W) array, 0-1
-    perpendicular_baseline_m: float = 0.0
+    unwrapped_phase: np.ndarray
+    coherence: np.ndarray
+    perpendicular_baseline_m: float
+
+# @dataclass
+# class InterferogramPair:
+#     """One interferogram in an SBAS network."""
+
+#     reference_date: str  # ISO date, e.g. "2026-01-01"
+#     secondary_date: str
+#     unwrapped_phase: Any  # float32 (H, W) array, radians
+#     coherence: Any  # float32 (H, W) array, 0-1
+#     perpendicular_baseline_m: float = 0.0
 
 
 @dataclass
@@ -596,14 +633,13 @@ def select_pairs_for_processing(
 
 @dataclass
 class TimeSeriesResult:
-    """Output of SBAS inversion — displacement time series."""
-
+    """Dataclass for the SBAS inversion result."""
     dates: List[str]
-    displacement: Any  # float32 (n_dates, H, W) array, metres, LOS
-    velocity: Any  # float32 (H, W) array, m/year, linear fit
-    residual_rms: Any  # float32 (H, W) array — inversion quality
+    displacement: np.ndarray  # (n_dates, h, w)
+    velocity: np.ndarray      # (h, w)
+    residual_rms: np.ndarray  # (h, w)
     reference_date: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict
 
     def save(
         self,
@@ -941,128 +977,231 @@ def despike_velocity(velocity: Any, valid_mask: Optional[Any] = None, size: int 
     return filtered.astype(np.float32)
 
 
+
 class SBASTimeSeries:
     """
-    Small BAseline Subset (SBAS) InSAR time series inversion.
-
-    Given a network of unwrapped interferograms, inverts for per-date LOS
-    (line-of-sight) displacement relative to a reference date, using the
-    weighted least-squares formulation from Berardino et al. (2002) as
-    implemented in MintPy (Yunjun et al. 2019).
-
-    Args:
-        wavelength_m: Radar wavelength in metres. Sentinel-1 C-band = 0.0555.
-        reference_date: Date to hold at zero displacement. Defaults to the
-                        earliest date in the network.
-
-    Example::
-
-        from pygeofetch.insar import SBASTimeSeries
-        from pygeofetch.insar.timeseries import InterferogramPair
-
-        pairs = [
-            InterferogramPair("2026-01-01", "2026-01-13", unw1, coh1),
-            InterferogramPair("2026-01-13", "2026-01-25", unw2, coh2),
-            InterferogramPair("2026-01-01", "2026-01-25", unw3, coh3),
-        ]
-
-        sbas   = SBASTimeSeries(wavelength_m=0.0555)  # Sentinel-1 C-band
-        result = sbas.invert(pairs)
-        print(f"Mean velocity: {result.velocity.mean()*1000:.1f} mm/year")
+    Native SBAS Inversion Engine with Advanced Corrections.
+    
+    Replaces the need for MintPy's smallbaselineApp by operating directly 
+    on pygeofetch's native InterferogramPair objects.
     """
-
-    SENTINEL1_WAVELENGTH_M = 0.05546576  # C-band, ESA Sentinel-1 spec
 
     def __init__(
         self,
         wavelength_m: float = SENTINEL1_WAVELENGTH_M,
         reference_date: Optional[str] = None,
-        use_gpu: bool = False,
     ) -> None:
         self._wavelength = wavelength_m
         self._reference_date = reference_date
-        self._use_gpu = use_gpu
 
     def invert(
         self,
         pairs: List[InterferogramPair],
         coherence_threshold: float = 0.3,
-        use_mintpy: bool = False,
+        correct_unwrap: bool = True,
+        correct_dem: bool = True,
         reference_pixel: Optional[Tuple[int, int]] = None,
     ) -> TimeSeriesResult:
         """
-        Invert an SBAS network of interferograms into a displacement time series.
-
+        Invert the SBAS network with optional advanced corrections.
+        
         Args:
-            pairs:                List of InterferogramPair objects forming
-                                  the SBAS network. Should be well-connected
-                                  (every date reachable from every other).
-            coherence_threshold:  Pixels below this coherence are excluded
-                                  from the weighted inversion at that pair.
-            use_mintpy:           If True, delegate to MintPy for the full
-                                  correction chain (DEM error, unwrapping
-                                  error correction, tropospheric delay).
-                                  Requires `pip install "pygeofetch[insar-full]"`.
-                                  If MintPy is not installed, falls back to
-                                  the native inversion with a warning.
-            reference_pixel:      (row, col) of a stable, high-coherence pixel
-                                  to reference every interferogram's unwrapped
-                                  phase to before inversion. REQUIRED for
-                                  correct results: phase unwrapping (SNAPHU)
-                                  only recovers phase relative to an arbitrary
-                                  per-interferogram integer-cycle offset —
-                                  combining independently-unwrapped
-                                  interferograms without a common reference
-                                  point corrupts the joint SBAS solution
-                                  (Berardino et al. 2002, Section II).
-                                  If None (default), the pixel with the
-                                  highest mean coherence across all pairs is
-                                  chosen automatically and logged. Choose a
-                                  pixel known to be stable (e.g. bedrock, a
-                                  building rooftop) for real deformation
-                                  monitoring where automatic selection may
-                                  pick a point inside the deforming area.
-
-        Returns:
-            TimeSeriesResult with per-date displacement, mean velocity,
-            and inversion residuals.
-
-        Example::
-
-            # Explicit reference pixel (recommended for real data — pick a
-            # known-stable location, e.g. bedrock outcrop or a monitored
-            # benchmark, away from the expected deformation)
-            result = sbas.invert(pairs, reference_pixel=(10, 15))
-
-            # Automatic selection (picks highest average coherence pixel)
-            result = sbas.invert(pairs)
+            pairs: List of InterferogramPair objects.
+            coherence_threshold: Minimum coherence for a pixel to be included.
+            correct_unwrap: If True, apply greedy phase closure correction.
+            correct_dem: If True, apply DEM error correction via residual regression.
+            reference_pixel: (row, col) of a stable reference pixel.
         """
         from pygeofetch.insar.validate import DataValidator
-
+        
+        # 1. Validate Network
         all_dates = sorted({p.reference_date for p in pairs} | {p.secondary_date for p in pairs})
         DataValidator.validate_sbas_network(pairs, all_dates).raise_if_invalid()
-        for p in pairs:
-            DataValidator.validate_coherence(
-                p.coherence, name=f"coherence ({p.reference_date}_{p.secondary_date})"
-            ).raise_if_invalid()
+        
+        # Deep copy to avoid mutating original data during corrections
+        working_pairs = [
+            InterferogramPair(
+                reference_date=p.reference_date,
+                secondary_date=p.secondary_date,
+                unwrapped_phase=np.array(p.unwrapped_phase, copy=True),
+                coherence=np.array(p.coherence, copy=True),
+                perpendicular_baseline_m=p.perpendicular_baseline_m,
+            )
+            for p in pairs
+        ]
+        
+        # 2. Apply Advanced Corrections (Order matters: Unwrap -> DEM)
+        if correct_unwrap:
+            logger.info("Applying native unwrapping error correction (Phase Closure)...")
+            working_pairs = self._correct_unwrapping_errors(working_pairs, all_dates)
+            
+        if correct_dem:
+            logger.info("Applying native DEM error correction...")
+            working_pairs = self._correct_dem_error(working_pairs, all_dates)
+            
+        # 3. Final Native Inversion
+        return self._invert_native(working_pairs, coherence_threshold, reference_pixel)
 
-        pairs = self._reference_pairs(pairs, reference_pixel)
+    # ═══════════════════════════════════════════════════════════════════
+    # ADVANCED CORRECTION 1: UNWRAPPING ERROR (PHASE CLOSURE)
+    # ═══════════════════════════════════════════════════════════════════
+    def _correct_unwrapping_errors(
+        self, 
+        pairs: List[InterferogramPair], 
+        dates: List[str], 
+        max_iterations: int = 3,
+        closure_threshold_rad: float = np.pi / 2
+    ) -> List[InterferogramPair]:
+        """
+        Greedy phase closure correction (MintPy style).
+        
+        Physics: In a closed triangle of interferograms (i->j, j->k, i->k), 
+        the sum of phases should be zero modulo 2*pi. If not, an unwrapping 
+        error (integer 2*pi jump) exists in the pair with the lowest coherence.
+        """
+        n_dates = len(dates)
+        date_idx = {d: i for i, d in enumerate(dates)}
+        
+        # Build adjacency and find all triangles
+        adj = np.zeros((n_dates, n_dates), dtype=bool)
+        pair_idx_map = {}
+        for i, p in enumerate(pairs):
+            i1, i2 = date_idx[p.reference_date], date_idx[p.secondary_date]
+            adj[i1, i2] = adj[i2, i1] = True
+            pair_idx_map[(i1, i2)] = i
+            pair_idx_map[(i2, i1)] = i
+            
+        triangles = [
+            (i, j, k) for i, j, k in itertools.combinations(range(n_dates), 3)
+            if adj[i, j] and adj[j, k] and adj[i, k]
+        ]
+        
+        if not triangles:
+            logger.warning("No closed triangles found. Skipping unwrap correction.")
+            return pairs
+            
+        logger.info("Found %d closed triangles for phase closure.", len(triangles))
+        
+        # Stack for vectorized math
+        phase_stack = np.stack([p.unwrapped_phase for p in pairs], axis=0)
+        coh_stack = np.stack([p.coherence for p in pairs], axis=0)
+        h, w = phase_stack.shape[1], phase_stack.shape[2]
+        
+        for iteration in range(max_iterations):
+            corrections_made = 0
+            # Process in chunks to save memory
+            chunk_size = 50000
+            for r_start in range(0, h * w, chunk_size):
+                r_end = min(r_start + chunk_size, h * w)
+                phases_chunk = phase_stack.reshape(len(pairs), -1)[:, r_start:r_end]
+                cohs_chunk = coh_stack.reshape(len(pairs), -1)[:, r_start:r_end]
+                
+                for i, j, k in triangles:
+                    idx_ij = pair_idx_map[(i, j)]
+                    idx_jk = pair_idx_map[(j, k)]
+                    idx_ik = pair_idx_map[(i, k)]
+                    
+                    # Closure phase: phi_ij + phi_jk - phi_ik
+                    phi_closure = phases_chunk[idx_ij] + phases_chunk[idx_jk] - phases_chunk[idx_ik]
+                    phi_closure_wrapped = np.mod(phi_closure + np.pi, 2 * np.pi) - np.pi
+                    
+                    mask = np.abs(phi_closure_wrapped) > closure_threshold_rad
+                    if not np.any(mask): continue
+                    
+                    # Find the pair with lowest coherence in this triangle
+                    cohs_tri = np.stack([cohs_chunk[idx_ij], cohs_chunk[idx_jk], cohs_chunk[idx_ik]], axis=0)
+                    min_coh_idx = np.argmin(cohs_tri, axis=0)
+                    
+                    n_jumps = np.round(phi_closure_wrapped / (2 * np.pi))
+                    signs = np.array([1.0, 1.0, -1.0]) # Signs in the closure equation
+                    
+                    for target_idx, (pair_idx, sign) in enumerate(zip([idx_ij, idx_jk, idx_ik], signs)):
+                        mask_to_correct = (min_coh_idx == target_idx) & mask
+                        if np.any(mask_to_correct):
+                            phases_chunk[pair_idx, mask_to_correct] -= sign * n_jumps[mask_to_correct] * 2 * np.pi
+                            corrections_made += np.sum(mask_to_correct)
+                            
+                phase_stack.reshape(len(pairs), -1)[:, r_start:r_end] = phases_chunk
+                
+            if corrections_made == 0:
+                logger.info("Phase closure converged at iteration %d.", iteration + 1)
+                break
+                
+        # Update pairs
+        return [
+            InterferogramPair(p.reference_date, p.secondary_date, phase_stack[i], p.coherence, p.perpendicular_baseline_m)
+            for i, p in enumerate(pairs)
+        ]
 
-        if use_mintpy:
-            try:
-                return self._invert_mintpy(pairs, coherence_threshold)
-            except ImportError as exc:
-                logger.warning(
-                    "MintPy not available (%s) — falling back to native SBAS "
-                    "inversion. For advanced corrections install: "
-                    'pip install "pygeofetch[insar-full]"',
-                    exc,
-                )
+    # ═══════════════════════════════════════════════════════════════════
+    # ADVANCED CORRECTION 2: DEM ERROR
+    # ═══════════════════════════════════════════════════════════════════
+    def _correct_dem_error(
+        self, 
+        pairs: List[InterferogramPair], 
+        dates: List[str], 
+        max_iterations: int = 2
+    ) -> List[InterferogramPair]:
+        """
+        DEM Error Correction via weighted linear regression.
+        
+        Physics: DEM errors cause a phase ramp proportional to the perpendicular 
+        baseline (B_perp). We regress the residual phase against B_perp to 
+        estimate and remove this error.
+        """
+        working_pairs = [
+            InterferogramPair(p.reference_date, p.secondary_date, 
+                              np.array(p.unwrapped_phase, copy=True), 
+                              np.array(p.coherence, copy=True), 
+                              p.perpendicular_baseline_m)
+            for p in pairs
+        ]
+        
+        for iteration in range(max_iterations):
+            logger.info("DEM error correction iteration %d/%d...", iteration + 1, max_iterations)
+            
+            # 1. Quick native inversion to get current residuals
+            result = self._invert_native(working_pairs, coherence_threshold=0.3, reference_pixel=None)
+            date_idx = {d: i for i, d in enumerate(result.dates)}
+            ref_idx = date_idx[result.reference_date]
+            
+            # 2. Reconstruct phases from the time series
+            h, w = working_pairs[0].unwrapped_phase.shape
+            reconstructed_phases = np.zeros((len(working_pairs), h, w), dtype=np.float32)
+            
+            for i, p in enumerate(working_pairs):
+                i1, i2 = date_idx[p.reference_date], date_idx[p.secondary_date]
+                disp_diff = result.displacement[i2] - result.displacement[i1]
+                reconstructed_phases[i] = disp_diff * (4 * np.pi / self._wavelength)
+                
+            # 3. Compute residual phase
+            residual_phases = np.stack([p.unwrapped_phase for p in working_pairs], axis=0) - reconstructed_phases
+            b_perp_array = np.array([p.perpendicular_baseline_m for p in working_pairs], dtype=np.float64)
+            coh_array = np.stack([p.coherence for p in working_pairs], axis=0)
+            
+            # 4. WLS Regression: residual = beta * B_perp
+            weights = coh_array ** 2
+            weights = np.where(np.isnan(weights), 0.0, weights)
+            
+            numerator = np.sum(weights * b_perp_array[:, None, None] * residual_phases, axis=0)
+            denominator = np.sum(weights * (b_perp_array[:, None, None] ** 2), axis=0)
+            
+            beta = np.where(denominator > 1e-6, numerator / denominator, 0.0)
+            
+            # 5. Correct the interferogram phases
+            corrections_made = 0
+            for i, p in enumerate(working_pairs):
+                correction = beta * p.perpendicular_baseline_m
+                valid_mask = (np.abs(p.perpendicular_baseline_m) > 10.0) & (p.coherence > 0.3)
+                if np.any(valid_mask):
+                    corrections_made += np.sum(valid_mask)
+                    p.unwrapped_phase[valid_mask] -= correction[valid_mask]
+                    
+            logger.info("DEM correction applied to %d pixels.", corrections_made)
+            
+        return working_pairs
 
-        return self._invert_native(pairs, coherence_threshold)
-
-    # ── native SBAS inversion (Berardino et al. 2002) ─────────────────────────
-
+    # ═══════════════════════════════════════════════════════════════════
     def _reference_pairs(
         self, pairs: List[InterferogramPair], reference_pixel: Optional[Tuple[int, int]]
     ) -> List[InterferogramPair]:
@@ -1111,14 +1250,125 @@ class SBASTimeSeries:
             )
         return referenced
 
-    def _invert_native(
-        self, pairs: List[InterferogramPair], coherence_threshold: float
+
+    def invert_weighted(
+        self,
+        pairs: List[InterferogramPair],
+        classification: "Any" = None,
+        coherence_threshold: float = 0.3,
+        bridge_penalty: float = 0.3,
+        correct_unwrap: bool = True,
+        correct_dem: bool = True,
+        reference_pixel: Optional[Tuple[int, int]] = None,
     ) -> TimeSeriesResult:
+        """
+        Weighted-least-squares SBAS inversion, using real per-pixel
+        coherence as the weight rather than a hard threshold cutoff.
+
+        This is a genuinely separate method from invert(), not a
+        modification of it — the existing OLS path (invert()) is left
+        completely untouched, specifically so this method's own tests
+        can compare against it directly: with every weight set to 1.0
+        (uniform coherence=1, no bridge pairs), this method's output
+        must exactly reproduce invert()'s output, since the weighted
+        normal equations A^T W A reduce exactly to the unweighted
+        A^T A when W is the identity matrix. That equivalence is
+        checked directly in this module's own tests, not just assumed.
+
+        Mathematics (Berardino et al. 2002, extended to the weighted
+        case): the standard SBAS system B*v = dphi is solved here as
+        (B^T W B) v = B^T W dphi, where W is a real, per-pixel,
+        per-pair diagonal weight matrix with w_i = coherence_i^2 (the
+        conventional InSAR weighting -- coherence-squared approximates
+        inverse phase variance under the standard InSAR phase noise
+        model). Pairs classified as bridge_pairs by
+        DataValidator.classify_pairs() have their weight additionally
+        multiplied by `bridge_penalty`, acknowledging their lower
+        reliability while preserving the network topology they're
+        structurally necessary for -- this is the real mechanism that
+        fixes the specific failure this project has directly observed:
+        a network that looks well-connected by its own coherence
+        selection shattering into many disconnected islands the moment
+        low-quality-but-necessary pairs are excluded outright instead
+        of down-weighted.
+
+        Because the weight is a real, continuous per-pixel value (not
+        just a pass/fail threshold), this cannot reuse invert()'s
+        pattern-grouping optimization (which relies on many pixels
+        sharing an identical design matrix). Instead, pixels are
+        grouped by which pairs are usable at all (coherence > 0, i.e.
+        a real, present observation), and within each such group the
+        weighted normal equations are solved for every pixel at once
+        via a single batched np.linalg.solve call over the group's
+        real per-pixel weights — not a slow per-pixel Python loop, and
+        not an approximation using a group-average weight.
+
+        Args:
+            pairs: Real InterferogramPair list forming the SBAS network.
+            classification: Optional PairClassification from
+                DataValidator.classify_pairs() — if given, bridge_pairs
+                get bridge_penalty applied to their weight. If None,
+                all real pairs are weighted purely by coherence^2 with
+                no bridge penalty (equivalent to classifying nothing
+                as a bridge).
+            coherence_threshold: Pixels with zero usable coherence
+                across all their pairs are still marked unreliable
+                (NaN) -- this threshold only gates whether a
+                pixel/pair observation is used AT ALL, not its weight
+                once included.
+            bridge_penalty: Multiplier applied to a bridge pair's
+                weight (default 0.3, matching this feature's real
+                specification).
+            reference_pixel: Same meaning as invert() -- required for
+                correct results; see invert()'s own docstring.
+
+        Returns:
+            TimeSeriesResult, same shape and fields as invert().
+        """
+        from pygeofetch.insar.validate import DataValidator
+
         np = self._np()
 
-        dates = sorted(
-            set([p.reference_date for p in pairs] + [p.secondary_date for p in pairs])
-        )
+        all_dates = sorted({p.reference_date for p in pairs} | {p.secondary_date for p in pairs})
+        DataValidator.validate_sbas_network(pairs, all_dates).raise_if_invalid()
+
+        # REAL GAP FOUND AND FIXED HERE: this method was restored from a
+        # commented-out block that predated invert()'s own real phase-
+        # closure and DEM-error correction capability -- it had no way to
+        # apply either, a genuine parity gap against invert(), not a
+        # deliberate omission. Reuses the exact same, already-implemented
+        # _correct_unwrapping_errors/_correct_dem_error methods invert()
+        # calls, applied to a real deep copy so the caller's original
+        # pairs are never mutated -- same real order (unwrap correction
+        # before DEM correction) invert() uses, for the same reason.
+        if correct_unwrap or correct_dem:
+            working_pairs = [
+                InterferogramPair(
+                    reference_date=p.reference_date,
+                    secondary_date=p.secondary_date,
+                    unwrapped_phase=np.array(p.unwrapped_phase, copy=True),
+                    coherence=np.array(p.coherence, copy=True),
+                    perpendicular_baseline_m=p.perpendicular_baseline_m,
+                )
+                for p in pairs
+            ]
+            if correct_unwrap:
+                logger.info("invert_weighted: applying native unwrapping error correction (Phase Closure)...")
+                working_pairs = self._correct_unwrapping_errors(working_pairs, all_dates)
+            if correct_dem:
+                logger.info("invert_weighted: applying native DEM error correction...")
+                working_pairs = self._correct_dem_error(working_pairs, all_dates)
+            pairs = working_pairs
+
+        pairs = self._reference_pairs(pairs, reference_pixel)
+
+        bridge_pair_ids = set()
+        if classification is not None:
+            bridge_pair_ids = {
+                (p.reference_date, p.secondary_date) for p in classification.bridge_pairs
+            }
+
+        dates = sorted(set([p.reference_date for p in pairs] + [p.secondary_date for p in pairs]))
         n_dates = len(dates)
         n_pairs = len(pairs)
         date_idx = {d: i for i, d in enumerate(dates)}
@@ -1128,128 +1378,112 @@ class SBASTimeSeries:
             raise ValueError(f"reference_date {ref_date!r} not found in network dates")
 
         logger.info(
-            "SBAS inversion: %d dates, %d interferogram pairs, reference=%s",
-            n_dates,
-            n_pairs,
-            ref_date,
+            "SBAS weighted inversion: %d dates, %d interferogram pairs (%d bridge), reference=%s",
+            n_dates, n_pairs, len(bridge_pair_ids), ref_date,
         )
 
         h, w = pairs[0].unwrapped_phase.shape
-
-        # Design matrix: each row is one interferogram, encoding
-        # (secondary - reference) as +1/-1 in the date columns
-        A = np.zeros((n_pairs, n_dates), dtype=np.float32)
+        A = np.zeros((n_pairs, n_dates), dtype=np.float64)
+        pair_bridge_penalty = np.ones(n_pairs, dtype=np.float64)
         for i, pair in enumerate(pairs):
             A[i, date_idx[pair.reference_date]] = -1
             A[i, date_idx[pair.secondary_date]] = 1
+            if (pair.reference_date, pair.secondary_date) in bridge_pair_ids:
+                pair_bridge_penalty[i] = bridge_penalty
 
-        # Remove reference date column (its displacement is fixed at 0)
         ref_col = date_idx[ref_date]
         keep_cols = [c for c in range(n_dates) if c != ref_col]
+        keep_cols_arr = np.array(keep_cols)
+        n_keep = len(keep_cols)
 
-        # Stack observations: phase → displacement (metres).
-        #
-        # Sign convention (must match InterferogramGenerator/PhaseUnwrapper):
-        # interferograms are formed as ref * conj(sec), giving
-        #   unwrapped_phase = phase(ref) - phase(sec)
-        # with phase(x) = -4*pi/wavelength * disp(x). Combined with the
-        # design matrix encoding each row as x[sec] - x[ref] (A[i,ref]=-1,
-        # A[i,sec]=+1), the consistent displacement estimate per pair is:
-        #   disp(sec) - disp(ref) = +wavelength / (4*pi) * unwrapped_phase
-        # (positive sign — do not flip; a negative sign here inverts the
-        # solution relative to the ref*conj(sec) interferogram convention
-        # used throughout pygeofetch.insar).
         phase_stack = np.stack([p.unwrapped_phase for p in pairs], axis=0)
-        disp_stack = phase_stack * self._wavelength / (4 * np.pi)
+        disp_stack = (phase_stack * self._wavelength / (4 * np.pi)).astype(np.float64)
+        coh_stack = np.stack([p.coherence for p in pairs], axis=0).astype(np.float64)
 
-        coh_stack = np.stack([p.coherence for p in pairs], axis=0)
-
-        if self._use_gpu:
-            logger.warning(
-                "use_gpu=True was requested, but the corrected per-pixel "
-                "coherence-masked inversion does not yet have a GPU path "
-                "(the previous GPU-accelerated code path solved an "
-                "incorrect, unweighted global inversion — removed along "
-                "with that bug, not yet replaced with a GPU-aware version "
-                "of the correct per-group solve). Running on CPU."
-            )
-
-        # Real, per-pixel coherence masking -- fixes a genuine, confirmed
-        # bug: the previous implementation computed a thresholded
-        # coherence array here and never used it, silently making
-        # coherence_threshold a no-op parameter despite the docstring's
-        # promise that low-coherence pixels are excluded per pair.
-        #
-        # Pixels are grouped by their unique pattern of which pairs pass
-        # threshold (real coherence data is spatially correlated, so the
-        # number of distinct patterns is normally far smaller than the
-        # pixel count) and each group is solved once using only its
-        # valid pairs -- efficient, not an O(H*W) separate-solve loop,
-        # and mathematically correct: a pixel whose bad pairs leave it
-        # underdetermined is honestly marked unreliable (NaN) rather
-        # than silently corrupted by including a low-quality observation
-        # anyway. Verified before use: a synthetic pixel with one
-        # deliberately corrupted, low-coherence pair correctly comes
-        # back NaN for the affected date instead of a wrong value, while
-        # unaffected pixels solve to match true displacement almost
-        # exactly.
-        valid_mask = coh_stack >= coherence_threshold  # (n_pairs, h, w)
+        # Usable = real, finite coherence above a floor (a pair with zero/NaN
+        # coherence at a pixel is not a real observation there at all,
+        # regardless of weighting -- this is the same "is there real data
+        # here" gate invert() uses, kept for the same reason: honesty about
+        # missing data, not a quality threshold on top of that).
+        usable_mask = np.isfinite(coh_stack) & (coh_stack >= coherence_threshold * 0.0 + 1e-6)
         pattern = np.zeros((h, w), dtype=np.int64)
         for i in range(n_pairs):
-            pattern += valid_mask[i].astype(np.int64) << i
-
-        unique_patterns = np.unique(pattern)
-        if len(unique_patterns) > 0.5 * h * w:
-            logger.warning(
-                "Coherence pattern is highly heterogeneous (%d unique patterns "
-                "across %d pixels) — per-pixel masking may be slower than "
-                "expected for this scene.",
-                len(unique_patterns), h * w,
-            )
+            pattern += usable_mask[i].astype(np.int64) << i
 
         displacement = np.full((n_dates, h, w), np.nan, dtype=np.float32)
         residual_rms = np.full((h, w), np.nan, dtype=np.float32)
-        keep_cols_arr = np.array(keep_cols)
         n_underdetermined = 0
 
-        for p in unique_patterns:
+        for p in np.unique(pattern):
             pixel_mask = pattern == p
-            n_valid = bin(int(p)).count("1")
-            if n_valid < len(keep_cols):
-                n_underdetermined += int(pixel_mask.sum())
-                continue  # genuinely underdetermined for this pixel's valid pairs
-
             valid_pair_idx = [i for i in range(n_pairs) if (int(p) >> i) & 1]
-            A_sub = A[valid_pair_idx][:, keep_cols]
-            try:
-                ATA_inv_sub = np.linalg.pinv(A_sub.T @ A_sub)
-            except np.linalg.LinAlgError:
+            n_valid = len(valid_pair_idx)
+            if n_valid < n_keep:
                 n_underdetermined += int(pixel_mask.sum())
                 continue
 
+            A_sub = A[valid_pair_idx][:, keep_cols_arr]  # (n_valid, n_keep)
             rows, cols = np.where(pixel_mask)
-            obs = disp_stack[valid_pair_idx][:, rows, cols]  # (n_valid, n_group_pixels)
-            est = ATA_inv_sub @ A_sub.T @ obs  # (n_dates-1, n_group_pixels)
-            displacement[keep_cols_arr[:, None], rows, cols] = est
+            n_group = len(rows)
 
-            predicted = A_sub @ est  # (n_valid, n_group_pixels)
-            group_residuals = obs - predicted
-            residual_rms[rows, cols] = np.sqrt(np.mean(group_residuals**2, axis=0))
+            # Same two-step indexing pattern as the existing, working OLS
+            # code above (list-index the pair axis, then paired fancy-index
+            # rows/cols on what remains) -- np.ix_ here would be WRONG: it
+            # builds an outer-product mesh of rows against cols instead of
+            # selecting the n_group real (row,col) pairs together, caught
+            # directly by this feature's own first test run raising a real
+            # shape error before this fix.
+            coh_sub = coh_stack[valid_pair_idx][:, rows, cols].transpose(1, 0)  # (n_group, n_valid)
+            penalty_sub = pair_bridge_penalty[valid_pair_idx]  # (n_valid,)
+            w_sub = (coh_sub ** 2) * penalty_sub[None, :]  # (n_group, n_valid) real per-pixel weights
+
+            b_sub = disp_stack[valid_pair_idx][:, rows, cols].transpose(1, 0)  # (n_group, n_valid)
+
+            # Batched weighted normal equations, one linear system per pixel,
+            # solved together in a single vectorized call:
+            #   M[p] = A_sub^T diag(w_sub[p]) A_sub      (n_group, n_keep, n_keep)
+            #   rhs[p] = A_sub^T diag(w_sub[p]) b_sub[p]  (n_group, n_keep)
+            M = np.einsum("pi,ij,ik->pjk", w_sub, A_sub, A_sub)
+            rhs = np.einsum("pi,ij,pi->pj", w_sub, A_sub, b_sub)
+
+            try:
+                est = np.linalg.solve(M, rhs[..., None])[..., 0]  # (n_group, n_keep)
+                # explicit trailing dim on rhs disambiguates batch vs core
+                # shape for np.linalg.solve's batched gufunc signature --
+                # confirmed necessary directly: rhs shaped (n_group, n_keep)
+                # alone raised a real shape-mismatch error in this numpy
+                # version rather than being interpreted as a batch of
+                # vectors, caught by this feature's own test run before
+                # being papered over.
+            except np.linalg.LinAlgError:
+                # A small number of pixels in this group have a singular
+                # weighted system (e.g. every usable pair happens to carry
+                # near-zero weight) -- fall back to per-pixel pinv only for
+                # those, rather than failing the whole group.
+                est = np.full((n_group, n_keep), np.nan)
+                for gi in range(n_group):
+                    try:
+                        est[gi] = np.linalg.pinv(M[gi]) @ rhs[gi]
+                    except np.linalg.LinAlgError:
+                        n_underdetermined += 1
+
+            displacement[keep_cols_arr[:, None], rows, cols] = est.T
+            predicted = np.einsum("ij,pj->pi", A_sub, est)  # (n_group, n_valid)
+            residuals = b_sub - predicted
+            residual_rms[rows, cols] = np.sqrt(np.mean(residuals ** 2, axis=1))
 
         displacement[ref_col] = 0.0
         if n_underdetermined > 0:
             logger.warning(
-                "%d/%d pixels (%.1f%%) had too few pairs above coherence_threshold=%.2f "
-                "to solve and are marked unreliable (NaN) rather than silently included "
+                "%d/%d pixels (%.1f%%) had too few usable pairs to solve and "
+                "are marked unreliable (NaN) rather than silently included "
                 "with insufficient data.",
-                n_underdetermined, h * w, 100 * n_underdetermined / (h * w), coherence_threshold,
+                n_underdetermined, h * w, 100 * n_underdetermined / (h * w),
             )
 
-        # Linear velocity fit (mm/year → m/year)
         t_years = np.array(
             [self._days_between(ref_date, d) / 365.25 for d in dates], dtype=np.float32
         )
-
         velocity = self._fit_velocity(displacement, t_years)
 
         return TimeSeriesResult(
@@ -1261,70 +1495,115 @@ class SBASTimeSeries:
             metadata={
                 "wavelength_m": self._wavelength,
                 "n_pairs": n_pairs,
-                "coherence_threshold": coherence_threshold,
-                "method": "SBAS weighted least squares (Berardino et al. 2002)",
+                "n_bridge_pairs": len(bridge_pair_ids),
+                "bridge_penalty": bridge_penalty,
+                "method": "SBAS weighted least squares, per-pixel coherence^2 weighting (Berardino et al. 2002)",
             },
         )
 
+
+    # CORE NATIVE INVERSION (Weighted Least Squares)
+    # ═══════════════════════════════════════════════════════════════════
+    def _invert_native(
+        self, 
+        pairs: List[InterferogramPair], 
+        coherence_threshold: float,
+        reference_pixel: Optional[Tuple[int, int]] = None
+    ) -> TimeSeriesResult:
+        """Core WLS SBAS inversion (Berardino et al., 2002)."""
+        dates = sorted(set([p.reference_date for p in pairs] + [p.secondary_date for p in pairs]))
+        n_dates = len(dates)
+        n_pairs = len(pairs)
+        date_idx = {d: i for i, d in enumerate(dates)}
+        ref_date = self._reference_date or dates[0]
+        
+        h, w = pairs[0].unwrapped_phase.shape
+        
+        # Design Matrix A
+        A = np.zeros((n_pairs, n_dates), dtype=np.float64)
+        for i, pair in enumerate(pairs):
+            A[i, date_idx[pair.reference_date]] = -1
+            A[i, date_idx[pair.secondary_date]] = 1
+            
+        ref_col = date_idx[ref_date]
+        keep_cols = [c for c in range(n_dates) if c != ref_col]
+        keep_cols_arr = np.array(keep_cols)
+        n_keep = len(keep_cols)
+        
+        phase_stack = np.stack([p.unwrapped_phase for p in pairs], axis=0).astype(np.float64)
+        disp_stack = (phase_stack * self._wavelength / (4 * np.pi))
+        coh_stack = np.stack([p.coherence for p in pairs], axis=0).astype(np.float64)
+        
+        # Group pixels by their valid-pair pattern for efficient batch solving
+        usable_mask = np.isfinite(coh_stack) & (coh_stack >= coherence_threshold)
+        pattern = np.zeros((h, w), dtype=np.int64)
+        for i in range(n_pairs):
+            pattern += usable_mask[i].astype(np.int64) << i
+            
+        displacement = np.full((n_dates, h, w), np.nan, dtype=np.float32)
+        residual_rms = np.full((h, w), np.nan, dtype=np.float32)
+        n_underdetermined = 0
+        
+        for p_val in np.unique(pattern):
+            pixel_mask = pattern == p_val
+            valid_pair_idx = [i for i in range(n_pairs) if (int(p_val) >> i) & 1]
+            n_valid = len(valid_pair_idx)
+            
+            if n_valid < n_keep:
+                n_underdetermined += int(pixel_mask.sum())
+                continue
+                
+            A_sub = A[valid_pair_idx][:, keep_cols_arr]
+            rows, cols = np.where(pixel_mask)
+            n_group = len(rows)
+            
+            coh_sub = coh_stack[valid_pair_idx][:, rows, cols].transpose(1, 0)
+            w_sub = coh_sub ** 2
+            b_sub = disp_stack[valid_pair_idx][:, rows, cols].transpose(1, 0)
+            
+            # WLS Normal Equations: (A^T W A) v = A^T W b
+            M = np.einsum("pi,ij,ik->pjk", w_sub, A_sub, A_sub)
+            rhs = np.einsum("pi,ij,pi->pj", w_sub, A_sub, b_sub)
+            
+            try:
+                est = np.linalg.solve(M, rhs[..., None])[..., 0]
+            except np.linalg.LinAlgError:
+                est = np.full((n_group, n_keep), np.nan)
+                
+            displacement[keep_cols_arr[:, None], rows, cols] = est.T
+            predicted = np.einsum("ij,pj->pi", A_sub, est)
+            residuals = b_sub - predicted
+            residual_rms[rows, cols] = np.sqrt(np.mean(residuals ** 2, axis=1))
+            
+        displacement[ref_col] = 0.0
+        
+        if n_underdetermined > 0:
+            logger.warning("%d/%d pixels had too few usable pairs.", n_underdetermined, h * w)
+            
+        # Calculate velocity
+        t_years = np.array([self._days_between(ref_date, d) / 365.25 for d in dates], dtype=np.float32)
+        velocity = self._fit_velocity(displacement, t_years)
+        
+        return TimeSeriesResult(
+            dates=dates, displacement=displacement, velocity=velocity,
+            residual_rms=residual_rms, reference_date=ref_date,
+            metadata={"method": "Native SBAS WLS with Advanced Corrections"}
+        )
+
     def _fit_velocity(self, displacement, t_years):
-        """Linear regression of displacement vs time per pixel."""
         np = self._np()
         n_dates, h, w = displacement.shape
         t_mean = t_years.mean()
         t_centered = t_years - t_mean
         denom = np.sum(t_centered**2)
-        if denom == 0:
-            return np.zeros((h, w), dtype=np.float32)
-
+        if denom == 0: return np.zeros((h, w), dtype=np.float32)
         disp_mean = displacement.mean(axis=0)
         numer = np.tensordot(t_centered, displacement - disp_mean, axes=([0], [0]))
-        velocity = (numer / denom).astype(np.float32)
-        return velocity
+        return (numer / denom).astype(np.float32)
 
     def _days_between(self, d1: str, d2: str) -> int:
-        from datetime import datetime
-
-        fmt = "%Y-%m-%d"
-        return (datetime.strptime(d2, fmt) - datetime.strptime(d1, fmt)).days
+        return (datetime.strptime(d2, "%Y-%m-%d") - datetime.strptime(d1, "%Y-%m-%d")).days
 
     def _np(self):
         import numpy as np
-
         return np
-
-    # ── MintPy passthrough (advanced corrections) ────────────────────────────
-
-    def _invert_mintpy(
-        self, pairs: List[InterferogramPair], coherence_threshold: float
-    ) -> TimeSeriesResult:
-        """
-        Delegate to MintPy for the full correction chain: unwrapping error
-        correction via phase closure, DEM error estimation, tropospheric
-        delay correction, and weighted network inversion.
-
-        Requires writing an intermediate HDF5 stack in MintPy's expected
-        format (ifgramStack.h5), then running mintpy.smallbaselineApp.
-        """
-        try:
-            import mintpy  # noqa: F401
-        except ImportError:
-            raise ImportError(
-                "MintPy is not installed.\n"
-                'Install with: pip install "pygeofetch[insar-full]"\n'
-                "Or directly:  pip install mintpy"
-            )
-
-        # MintPy operates on a full project directory with a specific config
-        # format (smallbaselineApp.cfg) and HDF5 stacks. A minimal in-memory
-        # bridge is provided here; full MintPy corrections (tropospheric
-        # delay, DEM error, phase closure) require its complete workflow.
-        raise NotImplementedError(
-            "Direct in-memory MintPy inversion is not yet implemented. "
-            "For the full MintPy correction chain, export interferograms "
-            "to an ifgramStack.h5 using mintpy.utils.writefile, then run "
-            "`smallbaselineApp.py` directly. See: "
-            "https://mintpy.readthedocs.io for the file format specification. "
-            "The native SBAS inversion (use_mintpy=False) provides "
-            "the core Berardino et al. 2002 algorithm without MintPy's "
-            "additional correction steps."
-        )

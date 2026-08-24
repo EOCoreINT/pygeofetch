@@ -13,7 +13,7 @@ the actual Mexico City stack) plus a small, KNOWN synchronization
 residual -- so the correct answer is known by construction.
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import importlib.util
 from datetime import datetime, timedelta

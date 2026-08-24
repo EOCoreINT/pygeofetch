@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygeofetch"
-version = "2.6.0"
+version = "2.6.2"
 description = "Universal satellite data pipeline + geospatial processing platform"
 readme = "README.md"
 license = { file = "LICENSE" }

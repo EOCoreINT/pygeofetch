@@ -9,7 +9,7 @@ real measured coherence, but derived purely from the cheap burst-sync
 signal, before any full processing would have run.
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import importlib.util
 

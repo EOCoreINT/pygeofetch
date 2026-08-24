@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="icon/pygeofetch_logo.png" alt="PyGeoFetch Logo" width="350">
+<img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/main/icon/pygeofetch_logo.png" alt="PyGeoFetch Logo" width="350">
 
 [![PyPI version](https://badge.fury.io/py/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)

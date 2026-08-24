@@ -94,7 +94,17 @@ def parse_orbit_file(eof_path: Union[str, Path]):
         utc_elem = osv.find("UTC")
         if utc_elem is None or utc_elem.text is None:
             continue
+        # Real ESA .EOF orbit files' <UTC> text is typically prefixed
+        # "UTC=", and can carry a trailing 'Z' that datetime.fromisoformat
+        # doesn't accept in Python versions before 3.11 -- both handled
+        # here. A prior edit to add the trailing-Z strip accidentally
+        # deleted the line extracting utc_str from utc_elem.text in the
+        # first place, leaving utc_str referenced before assignment --
+        # a real NameError on the very first orbit file parsed, this
+        # pipeline's earliest real step. Both pieces of real, intended
+        # logic are combined correctly here.
         utc_str = utc_elem.text.split("=", 1)[-1]
+        utc_str = utc_str.rstrip('Z')
         t = datetime.fromisoformat(utc_str)
 
         x = float(osv.find("X").text)
@@ -222,6 +232,95 @@ def los_to_vertical_displacement(
         print("(assumption-based: negligible horizontal motion, see docstring)")
     """
     return los_displacement / math.cos(math.radians(incidence_angle_deg))
+
+
+def range_offset_to_vertical_displacement(
+    range_offset_px, pixel_spacing_m: float, incidence_angle_deg: float = 39.0,
+):
+    """
+    Convert an amplitude-tracking range-direction PIXEL offset to an
+    assumption-based vertical-equivalent estimate — the offset-
+    tracking analogue of los_to_vertical_displacement, and deliberately
+    implemented by calling that same function rather than duplicating
+    its formula or assumption.
+
+    Physical reasoning, stated precisely rather than assumed: a real
+    range-direction pixel offset from amplitude cross-correlation
+    (OffsetTracker's own range_offset field) measures the same
+    physical quantity phase-based LOS displacement does — a change in
+    real slant-range distance between the sensor and the ground point
+    — just recovered from amplitude structure instead of phase.
+    Converting the pixel offset to metres via the real slant-range
+    pixel spacing therefore gives a real LOS-equivalent displacement,
+    which this function hands directly to the existing, already-cited
+    los_to_vertical_displacement() rather than re-deriving or
+    re-asserting the same vertical-projection assumption a second
+    time. See that function's own docstring for the full statement of
+    what this assumption does and doesn't cover (negligible horizontal
+    motion; a real, standard, defensible assumption for vertically-
+    dominated deformation sources like mining subsidence, not
+    automatically true for every source).
+
+    HONEST, STATED GAP: this covers only the range direction. The
+    azimuth-direction offset (OffsetTracker's azimuth_offset field) is
+    NOT converted here — a real, precise azimuth-to-North/East
+    decomposition needs the satellite heading angle with an explicit,
+    verified sign convention, which was not found to sufficient
+    precision in the research done for this specific function (see
+    this module's own commit history / PR description for what was
+    checked and why it wasn't enough to trust). Real full 3D (East,
+    North, Up) displacement from single-track offset tracking alone
+    is, in any case, genuinely underdetermined — two real
+    observations (range, azimuth), three real unknowns (Rocca 2003,
+    as cited in real InSAR 3D-decomposition literature) — and needs
+    either a second independent viewing geometry or a real,
+    externally-justified assumption on one component, the same
+    structural limitation los_to_vertical_displacement already states
+    for phase-only LOS.
+
+    Args:
+        range_offset_px: Real range-direction pixel offset (e.g.
+            OffsetTracker's own range_offset field), any shape.
+        pixel_spacing_m: Real ground-projected slant-range pixel
+            spacing, metres — a real product metadata value, not a
+            constant; varies by sensor, mode, and processing level.
+        incidence_angle_deg: Same meaning as
+            los_to_vertical_displacement's own parameter.
+
+    Returns:
+        Vertical-equivalent displacement, same shape and units
+        (metres) as range_offset_px * pixel_spacing_m.
+
+    Example::
+
+        result = tracker.track(reference_amplitude, secondary_amplitude)
+        vertical_estimate = range_offset_to_vertical_displacement(
+            result.range_offset, pixel_spacing_m=2.3, incidence_angle_deg=39.0,
+        )
+        # result.azimuth_offset is NOT converted -- see this function's
+        # own docstring for why that piece is deliberately not here yet.
+    """
+    # REAL SIGN BUG FOUND AND FIXED HERE, confirmed against the actual
+    # pipeline convention rather than assumed: this codebase's own
+    # annotation.py defines slant_range_m(col) with a POSITIVE
+    # coefficient on col (range_time = near_range_time_s +
+    # col/range_sampling_rate_hz), confirming directly that increasing
+    # column/pixel index means increasing physical slant range -- i.e.
+    # a positive range_offset_px means the target moved AWAY from the
+    # satellite. Separately, the real Mexico City case study's own
+    # results (negative = subsidence, confirmed against Cigna & Tapete
+    # 2021) establish this pipeline's real vertical-displacement sign
+    # convention as positive = toward the satellite = uplift. Those two
+    # real facts together mean a positive range_offset_px (away from
+    # the satellite) must map to a NEGATIVE vertical estimate, and the
+    # original version of this line did not apply that sign flip --
+    # it would have silently reported subsidence as uplift, and vice
+    # versa, for every real use of this function. Fixed with an
+    # explicit negative sign; verified against offset_geometry.py's
+    # independently-derived, correctly-signed forward model, which
+    # agrees with this fix exactly.
+    los_equivalent_m = -range_offset_px * pixel_spacing_m
+    return los_to_vertical_displacement(los_equivalent_m, incidence_angle_deg)
 
 
 def geodetic_to_ecef(

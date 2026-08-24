@@ -4,7 +4,7 @@ map-preview boilerplate consolidated out of every real project's
 notebook (Mexico City, Obuasi both hand-wrote this identically).
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import importlib.util
 import json

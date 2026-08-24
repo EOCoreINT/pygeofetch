@@ -19,7 +19,7 @@ compute_burst_synchronization()'s own logic: the modulo-reduction to a
 single burst cycle and the threshold comparison.
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import importlib.util
 from datetime import datetime, timedelta

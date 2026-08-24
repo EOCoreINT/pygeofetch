@@ -9,7 +9,7 @@ live network calls. See the module's own docstring for what that does
 and doesn't confirm about the real, live CDSE API.
 """
 import sys
-sys.path.insert(0, "/home/claude/work/pygeofetch2")
+# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/pygeofetch")
 
 from unittest.mock import patch, MagicMock
 from pathlib import Path
@@ -220,10 +220,10 @@ def test_end_to_end_zip_readable_by_real_parse_burst_info():
         assert zip_path.exists()
 
         # Now hand it to the REAL, unmodified annotation.parse_burst_info()
-        sys.path.insert(0, "/home/claude/work/pygeofetch2")
+        sys.path.insert(0, "/home/mrtenkorang/open-source-projects/pygeofetch")
         import importlib.util
         spec = importlib.util.spec_from_file_location(
-            "pygeofetch.insar.annotation", "/home/claude/work/pygeofetch2/pygeofetch/insar/annotation.py",
+            "pygeofetch.insar.annotation", "/home/mrtenkorang/open-source-projects/pygeofetch/pygeofetch/insar/annotation.py",
         )
         annotation_mod = importlib.util.module_from_spec(spec)
         sys.modules["pygeofetch.insar.annotation"] = annotation_mod

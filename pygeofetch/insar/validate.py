@@ -241,6 +241,120 @@ class DataValidator:
 
         return ValidationResult(valid=len(errors) == 0, errors=errors, warnings=warnings)
 
+    @staticmethod
+    def classify_pairs(
+        pairs: Sequence,
+        dates: Sequence[str],
+        coherence_threshold: float = 0.3,
+    ) -> "PairClassification":
+        """
+        Classify SBAS pairs into good/bridge/excluded, using real graph
+        theory rather than a heuristic.
+
+        A "bridge" here is the standard graph-theoretic definition: an
+        edge whose removal increases the number of connected components.
+        A low-coherence pair that is ALSO a bridge is topologically
+        necessary — removing it would fracture the network into
+        disconnected islands, the exact failure mode this project has
+        directly hit and diagnosed before (a real network reported as
+        "58/64 dates connected" by its own coherence-based selection
+        step fractured into 17 pieces the moment a handful of
+        low-quality pairs were removed naively). A low-coherence pair
+        that is NOT a bridge is safe to drop outright — other paths
+        already connect its endpoints.
+
+        Args:
+            pairs: Sequence of pair objects with .reference_date,
+                  .secondary_date, and .coherence (a real coherence
+                  array — its spatial mean is used as this pair's
+                  scalar quality summary).
+            dates: All acquisition dates expected in the network.
+            coherence_threshold: Pairs at or above this mean coherence
+                  are always "good", regardless of bridge status.
+
+        Returns:
+            PairClassification with three real, disjoint lists:
+            good_pairs, bridge_pairs, excluded_pairs. Every input pair
+            appears in exactly one of the three.
+        """
+        np = _require_numpy()
+
+        def pair_dates(p):
+            d1 = getattr(p, "reference_date", None) or (p[0] if isinstance(p, (tuple, list)) else None)
+            d2 = getattr(p, "secondary_date", None) or (p[1] if isinstance(p, (tuple, list)) else None)
+            return d1, d2
+
+        def mean_coherence(p):
+            coh = getattr(p, "coherence", None)
+            if coh is None:
+                return 0.0
+            arr = np.asarray(coh)
+            finite = arr[np.isfinite(arr)]
+            return float(finite.mean()) if finite.size else 0.0
+
+        date_set = set(dates)
+        all_edges = [pair_dates(p) for p in pairs]
+
+        def is_connected(edges):
+            """Real union-find connectivity check over the given edge list."""
+            parent = {d: d for d in date_set}
+
+            def find(x):
+                while parent[x] != x:
+                    parent[x] = parent[parent[x]]
+                    x = parent[x]
+                return x
+
+            for d1, d2 in edges:
+                if d1 in parent and d2 in parent:
+                    r1, r2 = find(d1), find(d2)
+                    if r1 != r2:
+                        parent[r1] = r2
+            roots = {find(d) for d in date_set}
+            return len(roots) <= 1
+
+        good_pairs, bridge_pairs, excluded_pairs = [], [], []
+
+        for i, p in enumerate(pairs):
+            coh = mean_coherence(p)
+            if coh >= coherence_threshold:
+                good_pairs.append(p)
+                continue
+
+            # Real bridge check: is the network still connected with
+            # exactly this one edge removed from the full graph?
+            edges_without_this = all_edges[:i] + all_edges[i + 1:]
+            if is_connected(edges_without_this):
+                excluded_pairs.append(p)  # other paths exist -- safe to drop
+            else:
+                bridge_pairs.append(p)  # topologically necessary despite low quality
+
+        return PairClassification(
+            good_pairs=good_pairs, bridge_pairs=bridge_pairs, excluded_pairs=excluded_pairs,
+        )
+
+
+@dataclass
+class PairClassification:
+    """
+    Real output of DataValidator.classify_pairs() — every input pair
+    appears in exactly one list. bridge_pairs are real, measured
+    low-coherence pairs kept only because removing them would
+    disconnect the network (see classify_pairs' own docstring for the
+    exact graph-theoretic definition used).
+    """
+    good_pairs: List[Any] = field(default_factory=list)
+    bridge_pairs: List[Any] = field(default_factory=list)
+    excluded_pairs: List[Any] = field(default_factory=list)
+
+    def summary(self) -> str:
+        total = len(self.good_pairs) + len(self.bridge_pairs) + len(self.excluded_pairs)
+        return (
+            f"{len(self.good_pairs)}/{total} good, "
+            f"{len(self.bridge_pairs)}/{total} bridge (kept, down-weighted), "
+            f"{len(self.excluded_pairs)}/{total} excluded (redundant, safe to drop)"
+        )
+
 
 def _require_numpy():
     try:

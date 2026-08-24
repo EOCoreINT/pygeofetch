@@ -8,7 +8,7 @@ capability (cycle-slip cleanup), both via the tested library instead
 of ad-hoc notebook code.
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import importlib.util
 import numpy as np

@@ -4,7 +4,7 @@ known ground truth, reproducing every confirmed bug from the original
 version and showing the fix resolves it.
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 import importlib.util
 import numpy as np

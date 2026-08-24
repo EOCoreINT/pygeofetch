@@ -6,7 +6,7 @@ cross-family split) that the original, buggy version would have
 missed.
 """
 import sys
-sys.path.insert(0, "/home/claude/work")
+# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 from datetime import datetime
 from unittest.mock import patch, MagicMock
