@@ -7,12 +7,12 @@ message: >
 
 type: software
 title: "pygeofetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing"
-version: "1.0.0"  # Update this to match your tagged GitHub release (e.g., v1.0.0)
-date-released: "2026-08-25"  # Update to the actual date of your Zenodo release
+version: "1.0.0"
+date-released: "2026-08-25"
 license: MIT
 repository-code: "https://github.com/EOCoreINT/pygeofetch"
 url: "https://appiahkubis14.github.io/pygeofetch-docs/"
-doi: "10.5281/zenodo.XXXXXXX"  # Zenodo will auto-update this upon release
+doi: "10.5281/zenodo.XXXXXXX"
 
 abstract: >
   pygeofetch is a unified, open-source Python library that abstracts satellite 
@@ -32,7 +32,7 @@ abstract: >
 authors:
   - family-names: "Appiah Kubi"
     given-names: "Samuel"
-    orcid: "https://orcid.org/0000-0000-0000-0000"  # REPLACE with your actual ORCID
+    orcid: "https://orcid.org/0000-0000-0000-0000"
     affiliation: "EOCoreINT, Accra, Ghana"
     email: "appiahkubis14@gmail.com"
 
@@ -53,20 +53,6 @@ keywords:
   - reproducible research
   - Africa
   - Global South
-
-# Once the JOSS paper is accepted, uncomment and update this block:
-# preferred-citation:
-#   type: article
-#   authors:
-#     - family-names: "Appiah Kubi"
-#       given-names: "Samuel"
-#   title: "pygeofetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing"
-#   journal: "Journal of Open Source Software"
-#   year: 2026
-#   volume: 11  # Update with actual JOSS volume
-#   issue: XX    # Update with actual JOSS issue
-#   pages: XXXX  # Update with actual JOSS pages
-#   doi: "10.21105/joss.XXXXX"
 
 references:
   - type: article
