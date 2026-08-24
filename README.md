@@ -246,6 +246,7 @@ If you use PyGeoFetch in your research or operational work, please cite it using
   doi          = {10.5281/zenodo.22086780},
   url          = {https://doi.org/10.5281/zenodo.22086780}
 }
+```
 
 ## Documentation
 
@@ -258,7 +259,7 @@ Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Good first
 ```bash
 git clone git@github.com:EOCoreINT/pygeofetch.git && cd pygeofetch
 pip install -e ".[dev,all]" && pytest tests/unit/ -v
-```
+
 
 ## License
 
