@@ -5,6 +5,7 @@
 [![PyPI version](https://badge.fury.io/py/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/pygeofetch.svg)](https://pypi.org/project/pygeofetch/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22086780.svg)](https://doi.org/10.5281/zenodo.22086780)
 [![Tests](https://github.com/appiahkubis14/pygeofetch/actions/workflows/tests.yml/badge.svg)](https://github.com/appiahkubis14/pygeofetch/actions)
 [![Coverage](https://codecov.io/gh/appiahkubis14/pygeofetch/branch/main/graph/badge.svg)](https://codecov.io/gh/appiahkubis14/pygeofetch)
 
@@ -230,29 +231,21 @@ Run `pygeofetch --help` or any subcommand with `--help` for the complete, curren
 
 ---
 
-<!-- ## 📚 Notebooks
+## 📚 Citation
 
-| Notebook | Topics |
-|---|---|
-| `01_getting_started.ipynb` | Install, doctor, first search, first download |
-| `02_authentication_and_providers.ipynb` | All 24 providers, credentials, capability filters |
-| `03_advanced_search.ipynb` | Federated search, CQL2 filters, output formats, caching |
-| `04_download_and_postprocessing.ipynb` | Band selection, parallel downloads, post-processing |
-| `05_pipelines_and_scheduling.ipynb` | YAML pipelines, scheduling, Python builder API |
-| `06_real_world_workflows.ipynb` | NDVI time series, change detection, multi-sensor fusion |
-| `07_copernicus_and_authenticated_providers.ipynb` | Copernicus, USGS, NASA, Planet, ASF, OpenTopography |
-| `08_cli_complete_reference.ipynb` | Every CLI command with runnable examples |
-| `09_processing_complete.ipynb` | Full processing engine: preprocessing, indices, SAR, pipelines |
-| [`mexico_city_full_confirmed (2).ipynb`](<https://github.com/EOCoreINT/mexico-subsidence-project/blob/main/mexico_city_full_confirmed%20(2).ipynb>) ↗ | The [Mexico City case study](#-case-study-mapping-mexico-city-land-subsidence-with-insar) above, in a separate companion repo — real search/download, full InSAR chain, SBAS inversion |
-| `piton_fournaise_full.ipynb` | Verified InSAR pipeline against the real April 2021 Piton de la Fournaise eruption |
-| `amatrice_full.ipynb` | Verified InSAR pipeline against the real 2016 Amatrice, Italy earthquake |
-| `provider_search_footprint_test.ipynb` | Search and footprint-map validation across all 24 providers |
+If you use PyGeoFetch in your research or operational work, please cite it using the following:
 
-```bash
-cd notebooks/ && jupyter lab
-``` -->
-
----
+### Software Citation
+```bibtex
+@software{pygeofetch_2026,
+  author       = {Appiah Kubi, Samuel},
+  title        = {PyGeoFetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing},
+  year         = {2026},
+  publisher    = {Zenodo},
+  version      = {2.6.2},
+  doi          = {10.5281/zenodo.22086780},
+  url          = {https://doi.org/10.5281/zenodo.22086780}
+}
 
 ## Documentation
 
