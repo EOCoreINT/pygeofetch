@@ -190,7 +190,7 @@ include = ["pygeofetch*"]
 pygeofetch = ["config/*.yaml", "py.typed"]
 
 [tool.black]
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ["py39", "py310", "py311"]
 line-length = 88
 
 [tool.ruff.lint]
