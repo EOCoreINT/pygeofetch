@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software in your research, please cite it using the metadata below to support open-source geospatial science."
 type: software
 title: "PyGeoFetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing"
-version: "2.6.2"
+version: "2.6.2.1"
 date-released: "2026-08-24"
 doi: "10.5281/zenodo.22087230"
 license: MIT

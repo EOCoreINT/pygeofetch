@@ -22,7 +22,8 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import rasterio
+
+rasterio = pytest.importorskip("rasterio")
 from rasterio.control import GroundControlPoint
 from rasterio.crs import CRS
 from rasterio.transform import Affine

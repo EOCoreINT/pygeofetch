@@ -52,7 +52,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          # Was ".[dev]" — that skipped installing shapely/rasterio/scipy
+          # entirely, which is what caused the 20 collection errors (see
+          # pygeofetch/insar/__init__.py eagerly importing preflight.py,
+          # which needs shapely). "test" = dev + geo + insar, so the suite
+          # actually runs instead of erroring or silently skipping, and
+          # the coverage number this job measures matches what you see
+          # locally.
+          pip install -e ".[test]"
 
       - name: Run tests with coverage
         run: |
@@ -68,6 +75,10 @@ jobs:
           file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
+          # codecov-action v4 requires CODECOV_TOKEN even for public repos
+          # in most cases now (unlike v3). If uploads are failing/rate
+          # limited, add a CODECOV_TOKEN repo secret and uncomment:
+          # token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     name: Build distribution

@@ -5,6 +5,7 @@ version and showing the fix resolves it.
 """
 
 import numpy as np
+import pytest
 
 from pygeofetch.insar import analysis as rm
 
@@ -218,6 +219,7 @@ def test_coverage_no_longer_fabricates_a_number():
 
 
 def test_plot_risk_map_renders():
+    pytest.importorskip("matplotlib")
     print(
         "=== 8. plot_risk_map (including uncertainty hatching) renders without error ==="
     )

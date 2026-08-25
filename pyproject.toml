@@ -72,6 +72,11 @@ providers = [
 insar = [
     "sarxarray>=0.1",
     "scipy>=1.12",
+    # Required by pygeofetch.insar.preflight for AOI-vs-footprint coverage
+    # checks; pygeofetch.insar's __init__ imports preflight eagerly, so this
+    # must be declared here or `pip install "pygeofetch[insar]"` (as the
+    # module's own docstring instructs) leaves the package unimportable.
+    "shapely>=2.0",
 ]
 
 # Tier 5b: SAR processing (heavy — requires SNAP)
@@ -160,6 +165,16 @@ dev = [
     "twine>=5.0",
 ]
 
+# Everything required to actually run `pytest tests/` and collect every
+# module without ImportErrors. Several test files import rasterio and
+# scipy directly (real GeoTIFF I/O / independent reference-implementation
+# checks in the InSAR integration tests), on top of what the insar/geo
+# extras' own library code needs. CI should install this extra, e.g.
+# `pip install -e ".[test]"`.
+test = [
+    "pygeofetch[dev,geo,insar]",
+]
+
 insar-full = [
     "snaphu>=0.1",
     "scipy>=1.12",
@@ -168,7 +183,7 @@ insar-full = [
 # Everything that reliably installs across platforms — keplergl is
 # deliberately excluded (see viz-3d above); add it explicitly if you need it.
 full = [
-    "pygeofetch[geo,processor,providers,sar,viz,cloud,notebook,schedule]",
+    "pygeofetch[geo,processor,providers,insar,viz,cloud,notebook,schedule]",
 ]
 # Legacy alias
 all = ["pygeofetch[full]"]
@@ -206,3 +221,34 @@ plugins = ["pydantic.mypy"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts   = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["pygeofetch"]
+branch = true
+omit = [
+    # Thin bindings that require SNAP / OpenSarToolkit to be installed on
+    # the machine running the tests — not exercisable in a normal CI
+    # container, so they're excluded rather than silently dragging the
+    # percentage down for reasons unrelated to test quality.
+    "pygeofetch/sar/_native.py",
+    "pygeofetch/sar/_ost.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+precision = 1
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "^\\s*\\.\\.\\.\\s*$",
+]
+# 33.7% is the current measured baseline WITH branch coverage on
+# (branch=true above is stricter than plain line coverage — a module can
+# have every line executed but still miss branches, e.g. an `if` that
+# only ever takes the True path in tests). 30% leaves a few points of
+# slack so today's suite passes this gate. Ratchet this up deliberately
+# as CLI/provider/processing coverage improves — treat drops below the
+# last-merged value as a real regression, not just a number to reset.
+fail_under = 30

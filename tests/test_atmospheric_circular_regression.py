@@ -26,7 +26,9 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
-import rasterio
+import pytest
+
+rasterio = pytest.importorskip("rasterio")
 from rasterio.crs import CRS
 from rasterio.transform import from_bounds
 

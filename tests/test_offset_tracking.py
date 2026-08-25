@@ -5,6 +5,9 @@ that the code runs.
 """
 
 import numpy as np
+import pytest
+
+scipy_ndimage = pytest.importorskip("scipy.ndimage")
 from scipy.ndimage import shift as ndi_shift
 
 from pygeofetch.insar.offset_tracking import (

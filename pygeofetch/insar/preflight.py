@@ -37,8 +37,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from shapely.geometry import box, shape
-
 logger = logging.getLogger("pygeofetch.insar.preflight")
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -309,6 +307,14 @@ class PreflightGate:
         self, selected: List[Any]
     ) -> Tuple[List[Any], List[PreflightIssue]]:
         """Drop scenes whose true footprint doesn't cover the AOI."""
+        try:
+            from shapely.geometry import box, shape
+        except ImportError as exc:  # pragma: no cover - exercised via ImportError path
+            raise ImportError(
+                "AOI coverage checking requires shapely. Install it with "
+                "'pip install \"pygeofetch[insar]\"' or 'pip install shapely'."
+            ) from exc
+
         aoi_poly = box(
             self.aoi_bbox.min_lon,
             self.aoi_bbox.min_lat,

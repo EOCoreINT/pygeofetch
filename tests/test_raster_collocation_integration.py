@@ -25,7 +25,9 @@ import tempfile
 from pathlib import Path
 
 import numpy as np
-import rasterio
+import pytest
+
+rasterio = pytest.importorskip("rasterio")
 from rasterio.transform import Affine, from_origin
 
 from pygeofetch.insar.interferogram import InterferogramGenerator
