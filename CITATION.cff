@@ -23,7 +23,7 @@ abstract: >
 authors:
   - family-names: "Appiah Kubi"
     given-names: "Samuel"
-    orcid: "https://orcid.org/0009-0002-1376-108X"  # <-- REPLACE WITH YOUR REAL ORCID
+    orcid: "https://orcid.org/0009-0002-1376-108X"
     affiliation: "EOCoreINT, Accra, Ghana"
     email: "appiahkubis14@gmail.com"
 
