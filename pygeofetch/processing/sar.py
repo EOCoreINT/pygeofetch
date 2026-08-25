@@ -311,8 +311,16 @@ class SARProcessor:
         }
         if reference is not None:
             metadata["detect_direction"] = detect_direction
-            decrease_pct = 100 * np.sum((change > change_threshold) & valid) / (np.sum(valid) + 1e-10)
-            increase_pct = 100 * np.sum((change < -change_threshold) & valid) / (np.sum(valid) + 1e-10)
+            decrease_pct = (
+                100
+                * np.sum((change > change_threshold) & valid)
+                / (np.sum(valid) + 1e-10)
+            )
+            increase_pct = (
+                100
+                * np.sum((change < -change_threshold) & valid)
+                / (np.sum(valid) + 1e-10)
+            )
             metadata["decrease_pct"] = round(float(decrease_pct), 2)
             metadata["increase_pct"] = round(float(increase_pct), 2)
 

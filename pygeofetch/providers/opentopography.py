@@ -158,7 +158,11 @@ class OpentopographyProvider(AbstractBaseProvider):
                 pass  # a real, non-empty key is already present, keep it
             elif existing_match:
                 # Present but empty -- replace with the current key
-                href = href[: existing_match.start(1)] + api_key + href[existing_match.end(1) :]
+                href = (
+                    href[: existing_match.start(1)]
+                    + api_key
+                    + href[existing_match.end(1) :]
+                )
             else:
                 sep = "&" if "?" in href else "?"
                 href = f"{href}{sep}API_Key={api_key}"

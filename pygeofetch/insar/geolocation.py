@@ -104,7 +104,7 @@ def parse_orbit_file(eof_path: Union[str, Path]):
         # pipeline's earliest real step. Both pieces of real, intended
         # logic are combined correctly here.
         utc_str = utc_elem.text.split("=", 1)[-1]
-        utc_str = utc_str.rstrip('Z')
+        utc_str = utc_str.rstrip("Z")
         t = datetime.fromisoformat(utc_str)
 
         x = float(osv.find("X").text)
@@ -118,7 +118,9 @@ def parse_orbit_file(eof_path: Union[str, Path]):
         positions.append((x, y, z))
         velocities.append((vx, vy, vz))
 
-    logger.info("Parsed %d orbit state vectors from %s", len(times), Path(eof_path).name)
+    logger.info(
+        "Parsed %d orbit state vectors from %s", len(times), Path(eof_path).name
+    )
     return times, positions, velocities
 
 
@@ -180,9 +182,7 @@ def interpolate_orbit_state(
     return pos, vel
 
 
-def los_to_vertical_displacement(
-    los_displacement, incidence_angle_deg: float = 39.0
-):
+def los_to_vertical_displacement(los_displacement, incidence_angle_deg: float = 39.0):
     """
     Convert LOS (line-of-sight) displacement/velocity to an assumption-
     based vertical-equivalent estimate — the standard technique used
@@ -235,7 +235,9 @@ def los_to_vertical_displacement(
 
 
 def range_offset_to_vertical_displacement(
-    range_offset_px, pixel_spacing_m: float, incidence_angle_deg: float = 39.0,
+    range_offset_px,
+    pixel_spacing_m: float,
+    incidence_angle_deg: float = 39.0,
 ):
     """
     Convert an amplitude-tracking range-direction PIXEL offset to an
@@ -408,12 +410,16 @@ def find_zero_doppler_time(
     """
 
     def doppler(t: datetime) -> float:
-        pos, vel = interpolate_orbit_state(orbit_times, orbit_positions, orbit_velocities, t)
+        pos, vel = interpolate_orbit_state(
+            orbit_times, orbit_positions, orbit_velocities, t
+        )
         dx = tuple(ground_point[i] - pos[i] for i in range(3))
         return sum(vel[i] * dx[i] for i in range(3))
 
     t0 = initial_time_guess
-    t1 = initial_time_guess + timedelta(seconds=0.01)  # small perturbation to start the secant
+    t1 = initial_time_guess + timedelta(
+        seconds=0.01
+    )  # small perturbation to start the secant
 
     f0 = doppler(t0)
     f1 = doppler(t1)
@@ -593,11 +599,17 @@ def solve_ground_point(
         logger.debug(
             "Primary initial guess did not converge after %d iterations "
             "(step size %.3e m) -- retrying with a plain nadir starting point.",
-            max_iterations, step_norm,
+            max_iterations,
+            step_norm,
         )
         return solve_ground_point(
-            sat_pos, sat_vel, range_time_s, dem_height_m,
-            max_iterations, tolerance_m, _retry=True,
+            sat_pos,
+            sat_vel,
+            range_time_s,
+            dem_height_m,
+            max_iterations,
+            tolerance_m,
+            _retry=True,
         )
 
     raise RuntimeError(
@@ -611,6 +623,7 @@ def solve_ground_point(
 def _solve_3x3(matrix, rhs):
     """Solve a 3x3 linear system via Cramer's rule (small, fixed-size,
     no numpy dependency needed for a 3x3 solve at this hot-path scale)."""
+
     def det3(m):
         return (
             m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
@@ -677,7 +690,9 @@ def perpendicular_baseline(
     los = tuple(sat_pos_ref[i] - ground_point[i] for i in range(3))
     los_mag = math.sqrt(sum(c**2 for c in los))
     if los_mag < 1.0:
-        raise ValueError("Degenerate line-of-sight (satellite at ground point) -- check inputs.")
+        raise ValueError(
+            "Degenerate line-of-sight (satellite at ground point) -- check inputs."
+        )
     los_hat = tuple(c / los_mag for c in los)
 
     baseline_mag = math.sqrt(sum(c**2 for c in baseline))
@@ -716,13 +731,17 @@ def select_reference_minimizing_baselines(
     """
     labels = list(candidate_positions.keys())
     if len(labels) < 2:
-        raise ValueError(f"Need at least 2 candidate scenes to select a reference, got {len(labels)}.")
+        raise ValueError(
+            f"Need at least 2 candidate scenes to select a reference, got {len(labels)}."
+        )
 
     all_baselines = {label: {} for label in labels}
     for i, label_i in enumerate(labels):
-        for label_j in labels[i + 1:]:
+        for label_j in labels[i + 1 :]:
             b_perp = perpendicular_baseline(
-                candidate_positions[label_i], candidate_positions[label_j], ground_point,
+                candidate_positions[label_i],
+                candidate_positions[label_j],
+                ground_point,
             )
             all_baselines[label_i][label_j] = b_perp
             all_baselines[label_j][label_i] = b_perp

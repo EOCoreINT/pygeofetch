@@ -94,7 +94,11 @@ class MapViewer:
             logger.info("Raster layer added: %s", name)
         except Exception as exc:
             msg = str(exc)
-            if "is not installed" in msg or "ModuleNotFoundError" in msg or isinstance(exc, ImportError):
+            if (
+                "is not installed" in msg
+                or "ModuleNotFoundError" in msg
+                or isinstance(exc, ImportError)
+            ):
                 # A missing dependency means EVERY raster layer will
                 # silently fail to appear on the map, not just this one --
                 # confirmed directly: add_raster() previously caught this,
@@ -163,10 +167,13 @@ class MapViewer:
                 right_label=right_label or right_p.stem,
             )
             self._map = m
-            self._layers.append({"type": "split", "left": str(left_p), "right": str(right_p)})
+            self._layers.append(
+                {"type": "split", "left": str(left_p), "right": str(right_p)}
+            )
             logger.info(
                 "Split comparison added: %s vs %s",
-                left_label or left_p.stem, right_label or right_p.stem,
+                left_label or left_p.stem,
+                right_label or right_p.stem,
             )
         except Exception as exc:
             msg = str(exc)
@@ -188,13 +195,19 @@ class MapViewer:
                 msg,
             )
             self._static_split_fallback(
-                left_p, right_p,
-                left_label or left_p.stem, right_label or right_p.stem,
-                colormap, vmin, vmax,
+                left_p,
+                right_p,
+                left_label or left_p.stem,
+                right_label or right_p.stem,
+                colormap,
+                vmin,
+                vmax,
             )
         return self
 
-    def _static_split_fallback(self, left_p, right_p, left_label, right_label, colormap, vmin, vmax):
+    def _static_split_fallback(
+        self, left_p, right_p, left_label, right_label, colormap, vmin, vmax
+    ):
         """Server-free side-by-side raster comparison (matplotlib), used
         when leafmap's dynamic split view can't start a local tile server."""
         import matplotlib.pyplot as plt
@@ -222,7 +235,9 @@ class MapViewer:
         plt.tight_layout()
 
         self._map = fig
-        self._layers.append({"type": "static_split", "left": str(left_p), "right": str(right_p)})
+        self._layers.append(
+            {"type": "static_split", "left": str(left_p), "right": str(right_p)}
+        )
         return self
 
     def add_vector(
@@ -252,9 +267,19 @@ class MapViewer:
         name = layer_name or p.stem
         m = self._get_map()
         style = style or {"color": "red", "weight": 1, "fillOpacity": 0.3}
-        hover_style = hover_style or {"weight": 3, "fillOpacity": 0.5, "color": "yellow"}
+        hover_style = hover_style or {
+            "weight": 3,
+            "fillOpacity": 0.5,
+            "color": "yellow",
+        }
         try:
-            m.add_vector(str(p), layer_name=name, style=style, hover_style=hover_style, info_mode=info_mode)
+            m.add_vector(
+                str(p),
+                layer_name=name,
+                style=style,
+                hover_style=hover_style,
+                info_mode=info_mode,
+            )
             logger.info("Vector layer added: %s", name)
         except Exception as exc:
             logger.warning("Could not add vector %s: %s", p.name, exc)
@@ -299,10 +324,15 @@ class MapViewer:
             min_lon, min_lat, max_lon, max_lat = bbox
             return {
                 "type": "Polygon",
-                "coordinates": [[
-                    [min_lon, min_lat], [max_lon, min_lat],
-                    [max_lon, max_lat], [min_lon, max_lat], [min_lon, min_lat],
-                ]],
+                "coordinates": [
+                    [
+                        [min_lon, min_lat],
+                        [max_lon, min_lat],
+                        [max_lon, max_lat],
+                        [min_lon, max_lat],
+                        [min_lon, min_lat],
+                    ]
+                ],
             }
 
         features = []
@@ -314,31 +344,48 @@ class MapViewer:
                 geometry_missing_count += 1
             if geometry is None:
                 continue
-            features.append({
-                "type": "Feature", "geometry": geometry,
-                "properties": {
-                    "Scene": getattr(r, "id", "unknown"),
-                    "Date": str(getattr(r, "datetime", None))[:10] if getattr(r, "datetime", None) else "unknown",
-                    "Satellite": getattr(r, "satellite", None) or "unknown",
-                    "Provider": getattr(r, "provider", "unknown"),
-                    "Cloud cover": f"{r.cloud_cover}%" if getattr(r, "cloud_cover", None) is not None else "n/a",
-                },
-            })
+            features.append(
+                {
+                    "type": "Feature",
+                    "geometry": geometry,
+                    "properties": {
+                        "Scene": getattr(r, "id", "unknown"),
+                        "Date": (
+                            str(getattr(r, "datetime", None))[:10]
+                            if getattr(r, "datetime", None)
+                            else "unknown"
+                        ),
+                        "Satellite": getattr(r, "satellite", None) or "unknown",
+                        "Provider": getattr(r, "provider", "unknown"),
+                        "Cloud cover": (
+                            f"{r.cloud_cover}%"
+                            if getattr(r, "cloud_cover", None) is not None
+                            else "n/a"
+                        ),
+                    },
+                }
+            )
 
         if geometry_missing_count:
             logger.info(
                 "Real geometry missing for %d/%d results — used bbox fallback",
-                geometry_missing_count, len(search_results[:max_results]),
+                geometry_missing_count,
+                len(search_results[:max_results]),
             )
 
         if not features:
-            logger.warning("No real geometry OR bbox available for any search result — skipping display")
+            logger.warning(
+                "No real geometry OR bbox available for any search result — skipping display"
+            )
             return self
 
         geojson_path = Path(tempfile.mkdtemp()) / f"{layer_name}.geojson"
-        geojson_path.write_text(json.dumps({"type": "FeatureCollection", "features": features}))
+        geojson_path.write_text(
+            json.dumps({"type": "FeatureCollection", "features": features})
+        )
         return self.add_vector(
-            str(geojson_path), layer_name=layer_name,
+            str(geojson_path),
+            layer_name=layer_name,
             style=style or {"color": "cyan", "weight": 2, "fillOpacity": 0.05},
             hover_style=hover_style,
         )
@@ -375,7 +422,9 @@ class MapViewer:
         # PNG instead, adjusting the extension if the caller asked for .html
         png_out = out.with_suffix(".png") if out.suffix.lower() == ".html" else out
         m.savefig(str(png_out), dpi=150, bbox_inches="tight", facecolor="white")
-        logger.info("Static comparison saved (no interactive server available) → %s", png_out)
+        logger.info(
+            "Static comparison saved (no interactive server available) → %s", png_out
+        )
         return png_out
 
     @property

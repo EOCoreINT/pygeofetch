@@ -27,6 +27,7 @@ documentation (MPC-0392) and Product Specification (MPC-0240):
 /product/swathTiming/linesPerBurst
 /product/swathTiming/burstList/burst/azimuthTime
 """
+
 from __future__ import annotations
 
 import bisect
@@ -63,6 +64,7 @@ class SLCGeometry:
     correct piecewise model below instead; otherwise this falls back to
     the plain linear model.
     """
+
     first_line_time: datetime
     azimuth_time_interval_s: float
     near_range_time_s: float
@@ -93,9 +95,11 @@ class SLCGeometry:
             L = self.lines_per_burst
             b = max(0, min(int(row // L), len(self.burst_azimuth_times) - 1))
             return self.burst_azimuth_times[b] + timedelta(
-                seconds=(row - b * L) * self.azimuth_time_interval_s)
+                seconds=(row - b * L) * self.azimuth_time_interval_s
+            )
         return self.first_line_time + timedelta(
-            seconds=row * self.azimuth_time_interval_s)
+            seconds=row * self.azimuth_time_interval_s
+        )
 
     def range_time(self, col: float) -> float:
         """Two-way slant range time (seconds) of a given (possibly
@@ -121,10 +125,12 @@ class SLCGeometry:
             L = self.lines_per_burst
             b = bisect.bisect_right(self.burst_azimuth_times, t) - 1
             b = max(0, min(b, len(self.burst_azimuth_times) - 1))
-            return (b * L + (t - self.burst_azimuth_times[b]).total_seconds()
-                    / self.azimuth_time_interval_s)
-        return ((t - self.first_line_time).total_seconds()
-                / self.azimuth_time_interval_s)
+            return (
+                b * L
+                + (t - self.burst_azimuth_times[b]).total_seconds()
+                / self.azimuth_time_interval_s
+            )
+        return (t - self.first_line_time).total_seconds() / self.azimuth_time_interval_s
 
     def col_for_range_time(self, range_time_s: float) -> float:
         """Inverse of range_time(): which (fractional) column corresponds
@@ -169,13 +175,16 @@ def _extract_burst_timing_from_root(root: ET.Element) -> list[dict]:
         az_time_str = burst.findtext("azimuthTime")
         sensing_time_str = burst.findtext("sensingTime")
 
-        burst_timings.append({
-            "azimuthTime": az_time_str,
-            "sensingTime": sensing_time_str,
-            # Add other fields like byteOffset, firstValidSample, etc. if needed
-        })
+        burst_timings.append(
+            {
+                "azimuthTime": az_time_str,
+                "sensingTime": sensing_time_str,
+                # Add other fields like byteOffset, firstValidSample, etc. if needed
+            }
+        )
 
     return burst_timings
+
 
 def parse_slc_geometry(
     safe_zip_path: Union[str, Path], member_hint: Optional[str] = None
@@ -184,8 +193,10 @@ def parse_slc_geometry(
 
     with zipfile.ZipFile(safe_zip_path) as zf:
         candidates = [
-            n for n in zf.namelist()
-            if "/annotation/" in n and n.lower().endswith(".xml")
+            n
+            for n in zf.namelist()
+            if "/annotation/" in n
+            and n.lower().endswith(".xml")
             and "/calibration/" not in n.lower()
             and not Path(n).name.lower().startswith("rfi-")
             and "/rfi/" not in n.lower()
@@ -214,9 +225,15 @@ def parse_slc_geometry(
         first_line_time = datetime.fromisoformat(
             get_text(".//imageAnnotation/imageInformation/productFirstLineUtcTime")
         )
-        azimuth_interval = float(get_text(".//imageAnnotation/imageInformation/azimuthTimeInterval"))
-        near_range = float(get_text(".//imageAnnotation/imageInformation/slantRangeTime"))
-        range_rate = float(get_text(".//generalAnnotation/productInformation/rangeSamplingRate"))
+        azimuth_interval = float(
+            get_text(".//imageAnnotation/imageInformation/azimuthTimeInterval")
+        )
+        near_range = float(
+            get_text(".//imageAnnotation/imageInformation/slantRangeTime")
+        )
+        range_rate = float(
+            get_text(".//generalAnnotation/productInformation/rangeSamplingRate")
+        )
         n_lines = int(get_text(".//imageAnnotation/imageInformation/numberOfLines"))
         n_columns = int(get_text(".//imageAnnotation/imageInformation/numberOfSamples"))
 
@@ -255,7 +272,9 @@ def parse_slc_geometry(
             # Added AttributeError and TypeError to catch the exact failure mode you experienced
             burst_azimuth_times, lines_per_burst = _parse_swath_timing(root)
             burst_note = " (linear timing fallback)"
-            logger.debug(f"Burst timing fallback triggered for {Path(safe_zip_path).name}: {e}")
+            logger.debug(
+                f"Burst timing fallback triggered for {Path(safe_zip_path).name}: {e}"
+            )
 
         # 3. Instantiate cleanly
         geometry = SLCGeometry(
@@ -271,8 +290,11 @@ def parse_slc_geometry(
 
         logger.info(
             "Parsed real SLC geometry from %s: %d x %d, starting %s%s",
-            Path(safe_zip_path).name, geometry.n_lines, geometry.n_columns,
-            geometry.first_line_time, burst_note
+            Path(safe_zip_path).name,
+            geometry.n_lines,
+            geometry.n_columns,
+            geometry.first_line_time,
+            burst_note,
         )
         return geometry
 
@@ -291,8 +313,10 @@ def parse_chirp_bandwidth(
 
     with zipfile.ZipFile(safe_zip_path) as zf:
         candidates = [
-            n for n in zf.namelist()
-            if "/annotation/" in n and n.lower().endswith(".xml")
+            n
+            for n in zf.namelist()
+            if "/annotation/" in n
+            and n.lower().endswith(".xml")
             and "/calibration/" not in n.lower()
             and not Path(n).name.lower().startswith("rfi-")
             and "/rfi/" not in n.lower()
@@ -317,18 +341,23 @@ def parse_chirp_bandwidth(
                 )
             return elem.text.strip()
 
-        pulse_length_s = float(get_text(
-            ".//generalAnnotation/downlinkInformationList/downlinkInformation/"
-            "downlinkValues/txPulseLength"
-        ))
-        ramp_rate_hz_per_s = float(get_text(
-            ".//generalAnnotation/downlinkInformationList/downlinkInformation/"
-            "downlinkValues/txPulseRampRate"
-        ))
+        pulse_length_s = float(
+            get_text(
+                ".//generalAnnotation/downlinkInformationList/downlinkInformation/"
+                "downlinkValues/txPulseLength"
+            )
+        )
+        ramp_rate_hz_per_s = float(
+            get_text(
+                ".//generalAnnotation/downlinkInformationList/downlinkInformation/"
+                "downlinkValues/txPulseRampRate"
+            )
+        )
         bandwidth_hz = abs(ramp_rate_hz_per_s * pulse_length_s)
         logger.info(
             "Parsed real chirp bandwidth from %s: %.2f MHz",
-            Path(safe_zip_path).name, bandwidth_hz / 1e6,
+            Path(safe_zip_path).name,
+            bandwidth_hz / 1e6,
         )
         return bandwidth_hz
 
@@ -339,6 +368,7 @@ class BurstInfo:
     Real per-burst timing and valid-sample metadata for one Sentinel-1
     TOPS burst, parsed from the annotation XML's swathTiming element.
     """
+
     burst_index: int
     azimuth_time: datetime
     sensing_time: Optional[datetime]
@@ -354,11 +384,10 @@ class SwathTiming:
     per-burst dimensions plus the real, individual timing/valid-sample
     metadata for every burst.
     """
+
     lines_per_burst: int
     samples_per_burst: int
     bursts: List[BurstInfo] = field(default_factory=list)
-
-
 
 
 def parse_burst_info(
@@ -388,8 +417,10 @@ def parse_burst_info(
 
     with zipfile.ZipFile(safe_zip_path) as zf:
         candidates = [
-            n for n in zf.namelist()
-            if "/annotation/" in n and n.lower().endswith(".xml")
+            n
+            for n in zf.namelist()
+            if "/annotation/" in n
+            and n.lower().endswith(".xml")
             and "/calibration/" not in n.lower()
             and not Path(n).name.lower().startswith("rfi-")
             and "/rfi/" not in n.lower()
@@ -462,19 +493,24 @@ def parse_burst_info(
                     f"{len(first_valid_sample)} entries, expected "
                     f"linesPerBurst={lines_per_burst}."
                 )
-            bursts.append(BurstInfo(
-                burst_index=i,
-                azimuth_time=azimuth_time,
-                sensing_time=sensing_time,
-                byte_offset=byte_offset,
-                first_valid_sample=first_valid_sample,
-                last_valid_sample=last_valid_sample,
-            ))
+            bursts.append(
+                BurstInfo(
+                    burst_index=i,
+                    azimuth_time=azimuth_time,
+                    sensing_time=sensing_time,
+                    byte_offset=byte_offset,
+                    first_valid_sample=first_valid_sample,
+                    last_valid_sample=last_valid_sample,
+                )
+            )
 
         logger.info(
             "Parsed real burst metadata from %s: %d bursts, %d lines/burst, "
             "%d samples/burst",
-            Path(safe_zip_path).name, len(bursts), lines_per_burst, samples_per_burst,
+            Path(safe_zip_path).name,
+            len(bursts),
+            lines_per_burst,
+            samples_per_burst,
         )
         # CRITICAL: always return the SwathTiming wrapper, never a raw list.
         return SwathTiming(

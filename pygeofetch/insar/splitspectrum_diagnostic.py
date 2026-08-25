@@ -90,11 +90,15 @@ def extract_subband_slc(
 
     spectrum = np.fft.fft(slc_complex, axis=-1)
     band_mask = np.abs(freqs - sub_center_offset_hz) <= (sub_bandwidth_hz / 2)
-    filtered_spectrum = spectrum * (band_mask[None, :] if slc_complex.ndim == 2 else band_mask)
+    filtered_spectrum = spectrum * (
+        band_mask[None, :] if slc_complex.ndim == 2 else band_mask
+    )
     subband_slc = np.fft.ifft(filtered_spectrum, axis=-1)
 
     range_idx = np.arange(n_range)
-    demod = np.exp(-2j * np.pi * sub_center_offset_hz * range_idx / range_sampling_rate_hz)
+    demod = np.exp(
+        -2j * np.pi * sub_center_offset_hz * range_idx / range_sampling_rate_hz
+    )
     return subband_slc * demod
 
 
@@ -150,7 +154,9 @@ def diagnose_dispersive_signal(
     window = 5
     from scipy.ndimage import uniform_filter
 
-    num = uniform_filter(double_diff_complex.real, window) + 1j * uniform_filter(double_diff_complex.imag, window)
+    num = uniform_filter(double_diff_complex.real, window) + 1j * uniform_filter(
+        double_diff_complex.imag, window
+    )
     denom = uniform_filter(np.abs(ifg_high) * np.abs(ifg_low), window)
     dd_coherence = np.abs(num) / np.maximum(denom, 1e-10)
 
@@ -161,7 +167,9 @@ def diagnose_dispersive_signal(
     logger.info(
         "Split-spectrum diagnostic: double-difference coherence mean=%.3f, "
         "phase range=[%.3f, %.3f] rad",
-        np.nanmean(dd_coherence), np.nanmin(double_diff_phase), np.nanmax(double_diff_phase),
+        np.nanmean(dd_coherence),
+        np.nanmin(double_diff_phase),
+        np.nanmax(double_diff_phase),
     )
 
     return {

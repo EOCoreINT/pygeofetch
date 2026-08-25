@@ -38,6 +38,7 @@ logger = logging.getLogger("pygeofetch.insar.ps_selection")
 def _require_numpy():
     try:
         import numpy as np
+
         return np
     except ImportError as exc:
         raise ImportError("ps_selection requires numpy: pip install numpy") from exc
@@ -47,9 +48,11 @@ def _require_numpy():
 class PSSelectionResult:
     """Real output of select_persistent_scatterers()."""
 
-    adi: "Any"           # (h, w) float32 — real amplitude dispersion index per pixel
-    ps_mask: "Any"        # (h, w) bool — True where ADI-based selection passed
-    mean_amplitude: "Any"  # (h, w) float32 — real per-pixel mean amplitude across the stack
+    adi: "Any"  # (h, w) float32 — real amplitude dispersion index per pixel
+    ps_mask: "Any"  # (h, w) bool — True where ADI-based selection passed
+    mean_amplitude: (
+        "Any"  # (h, w) float32 — real per-pixel mean amplitude across the stack
+    )
     n_candidates: int
     threshold_used: float
 
@@ -154,12 +157,16 @@ def select_persistent_scatterers(
             "and mean amplitude > %.1fth percentile. This is reported honestly, "
             "not silently substituted -- the caller should fall back to "
             "standard SBAS rather than proceed with an empty PS mask.",
-            threshold, amplitude_percentile,
+            threshold,
+            amplitude_percentile,
         )
 
     return PSSelectionResult(
-        adi=adi, ps_mask=ps_mask, mean_amplitude=mean_amp,
-        n_candidates=n_candidates, threshold_used=threshold,
+        adi=adi,
+        ps_mask=ps_mask,
+        mean_amplitude=mean_amp,
+        n_candidates=n_candidates,
+        threshold_used=threshold,
     )
 
 
@@ -261,13 +268,18 @@ def refine_ps_mask_with_temporal_coherence(
     logger.info(
         "refine_ps_mask_with_temporal_coherence: %d/%d ADI candidates "
         "retained after real temporal coherence >= %.2f (%d demoted).",
-        n_refined, ps_result.n_candidates, coherence_threshold,
+        n_refined,
+        ps_result.n_candidates,
+        coherence_threshold,
         ps_result.n_candidates - n_refined,
     )
 
     return PSSelectionResult(
-        adi=ps_result.adi, ps_mask=refined_mask, mean_amplitude=ps_result.mean_amplitude,
-        n_candidates=n_refined, threshold_used=ps_result.threshold_used,
+        adi=ps_result.adi,
+        ps_mask=refined_mask,
+        mean_amplitude=ps_result.mean_amplitude,
+        n_candidates=n_refined,
+        threshold_used=ps_result.threshold_used,
     )
 
 

@@ -88,9 +88,13 @@ class AtmosphericCorrector:
         )
     """
 
-    def __init__(self, method: str = "elevation", cds_api_key: Optional[str] = None) -> None:
+    def __init__(
+        self, method: str = "elevation", cds_api_key: Optional[str] = None
+    ) -> None:
         if method not in ("elevation", "era5", "gacos"):
-            raise ValueError(f"method must be 'elevation', 'era5', or 'gacos', got {method!r}")
+            raise ValueError(
+                f"method must be 'elevation', 'era5', or 'gacos', got {method!r}"
+            )
         self._method = method
         if cds_api_key is not None:
             self._write_cdsapirc(cds_api_key)
@@ -103,13 +107,16 @@ class AtmosphericCorrector:
         if cdsapirc_path.exists():
             existing = cdsapirc_path.read_text()
             if existing.strip() == content.strip():
-                logger.info("~/.cdsapirc already contains this exact key — nothing to do.")
+                logger.info(
+                    "~/.cdsapirc already contains this exact key — nothing to do."
+                )
                 return
             logger.warning(
                 "~/.cdsapirc already exists with different content — "
                 "NOT overwriting it automatically. Remove or update it "
                 "manually if you want to replace it with the key just "
-                "provided, at %s", cdsapirc_path,
+                "provided, at %s",
+                cdsapirc_path,
             )
             return
 
@@ -167,10 +174,16 @@ class AtmosphericCorrector:
 
         if self._method == "era5":
             if not dem or not reference_datetime or not secondary_datetime:
-                raise ValueError("ERA5 requires dem, reference_datetime, and secondary_datetime.")
+                raise ValueError(
+                    "ERA5 requires dem, reference_datetime, and secondary_datetime."
+                )
             result = self._correct_era5(
-                phase, dem, reference_datetime, secondary_datetime,
-                incidence_angle_deg, wavelength_m
+                phase,
+                dem,
+                reference_datetime,
+                secondary_datetime,
+                incidence_angle_deg,
+                wavelength_m,
             )
             metadata["correction_applied"] = True
 
@@ -186,8 +199,12 @@ class AtmosphericCorrector:
             if not dem:
                 raise ValueError("Elevation method requires a DEM path.")
             result, elev_meta = self._correct_elevation(
-                phase, dem, profile=profile, poly_degree=poly_degree,
-                spatial_filter_m=spatial_filter_m, unwrapped=unwrapped
+                phase,
+                dem,
+                profile=profile,
+                poly_degree=poly_degree,
+                spatial_filter_m=spatial_filter_m,
+                unwrapped=unwrapped,
             )
             metadata.update(elev_meta)
 
@@ -196,8 +213,13 @@ class AtmosphericCorrector:
     # ── native elevation-correlated correction ────────────────────────────────
 
     def _correct_elevation(
-        self, phase: Any, dem: Union[str, Path], profile: Optional[dict] = None,
-        poly_degree: int = 1, spatial_filter_m: Optional[float] = None, unwrapped: bool = False
+        self,
+        phase: Any,
+        dem: Union[str, Path],
+        profile: Optional[dict] = None,
+        poly_degree: int = 1,
+        spatial_filter_m: Optional[float] = None,
+        unwrapped: bool = False,
     ) -> Any:
         """
         Remove the phase component correlated with elevation.
@@ -211,27 +233,46 @@ class AtmosphericCorrector:
             raise ImportError('rasterio required: pip install "pygeofetch[geo]"')
 
         with rasterio.open(dem) as src:
-            if profile is not None and profile.get("crs") is not None and profile.get("transform") is not None:
+            if (
+                profile is not None
+                and profile.get("crs") is not None
+                and profile.get("transform") is not None
+            ):
                 from rasterio.warp import Resampling, reproject
+
                 dem_data = np.empty(phase.shape, dtype=np.float32)
                 reproject(
-                    source=rasterio.band(src, 1), destination=dem_data,
-                    src_transform=src.transform, src_crs=src.crs,
-                    dst_transform=profile["transform"], dst_crs=profile["crs"],
-                    resampling=Resampling.bilinear, src_nodata=src.nodata, dst_nodata=np.nan,
+                    source=rasterio.band(src, 1),
+                    destination=dem_data,
+                    src_transform=src.transform,
+                    src_crs=src.crs,
+                    dst_transform=profile["transform"],
+                    dst_crs=profile["crs"],
+                    resampling=Resampling.bilinear,
+                    src_nodata=src.nodata,
+                    dst_nodata=np.nan,
                 )
             else:
                 dem_data = src.read(1).astype(np.float32)
                 if dem_data.shape != phase.shape:
-                    logger.warning("No profile supplied. Falling back to shape-ratio DEM resample.")
+                    logger.warning(
+                        "No profile supplied. Falling back to shape-ratio DEM resample."
+                    )
                     from scipy.ndimage import zoom
-                    zf = (phase.shape[0] / dem_data.shape[0], phase.shape[1] / dem_data.shape[1])
+
+                    zf = (
+                        phase.shape[0] / dem_data.shape[0],
+                        phase.shape[1] / dem_data.shape[1],
+                    )
                     dem_data = zoom(dem_data, zf, order=1)
 
         valid = np.isfinite(phase) & np.isfinite(dem_data) & (dem_data > -500)
         if valid.sum() < 100:
             logger.warning("Insufficient valid pixels for elevation correction.")
-            return phase, {"correction_applied": False, "reason": "insufficient_valid_pixels"}
+            return phase, {
+                "correction_applied": False,
+                "reason": "insufficient_valid_pixels",
+            }
 
         dem_v = dem_data[valid]
         phase_v = phase[valid]
@@ -242,6 +283,7 @@ class AtmosphericCorrector:
         # filtering the phase isolates the broad atmospheric trend.
         if spatial_filter_m and profile and profile.get("transform"):
             from scipy.ndimage import gaussian_filter
+
             pixel_size = abs(profile["transform"].a)
             sigma_pixels = spatial_filter_m / pixel_size
 
@@ -257,7 +299,9 @@ class AtmosphericCorrector:
 
             # Update phase_v with the smoothed long-wavelength phase
             phase_v = phase_smooth_full[valid]
-            logger.info(f"Applied spatial low-pass filter ({spatial_filter_m}m) before regression.")
+            logger.info(
+                f"Applied spatial low-pass filter ({spatial_filter_m}m) before regression."
+            )
 
         # ── Regression ────────────────────────────────────────────────────────
         if unwrapped:
@@ -269,8 +313,8 @@ class AtmosphericCorrector:
             tropo_phase = np.polyval(coeffs, dem_data)
 
             # Calculate R²
-            ss_res = np.sum((phase_v - np.polyval(coeffs, dem_v))**2)
-            ss_tot = np.sum((phase_v - np.mean(phase_v))**2)
+            ss_res = np.sum((phase_v - np.polyval(coeffs, dem_v)) ** 2)
+            ss_tot = np.sum((phase_v - np.mean(phase_v)) ** 2)
             r_squared = 1 - (ss_res / ss_tot) if ss_tot > 1e-10 else 0.0
 
         else:
@@ -299,13 +343,18 @@ class AtmosphericCorrector:
                 dem_search, phase_search = dem_v, phase_v
 
             def _flatness(candidate_slopes):
-                phase_matrix = phase_search[None, :] - candidate_slopes[:, None] * dem_search[None, :]
+                phase_matrix = (
+                    phase_search[None, :]
+                    - candidate_slopes[:, None] * dem_search[None, :]
+                )
                 return np.abs(np.mean(np.exp(1j * phase_matrix), axis=1))
 
             coarse = np.linspace(-max_slope, max_slope, 400)
             best_slope = float(coarse[np.argmax(_flatness(coarse))])
             fine_half_width = coarse[1] - coarse[0]
-            fine = np.linspace(best_slope - fine_half_width, best_slope + fine_half_width, 400)
+            fine = np.linspace(
+                best_slope - fine_half_width, best_slope + fine_half_width, 400
+            )
             best_slope = float(fine[np.argmax(_flatness(fine))])
 
             residual_v = np.angle(np.exp(1j * (phase_v - best_slope * dem_v)))
@@ -322,26 +371,42 @@ class AtmosphericCorrector:
             ss_tot = np.sum(centered**2)
             r_squared = 1 - (ss_res / ss_tot) if ss_tot > 1e-10 else 0.0
 
-        if r_squared < 0.3:  # Lowered threshold slightly as spatial filtering changes variance
+        if (
+            r_squared < 0.3
+        ):  # Lowered threshold slightly as spatial filtering changes variance
             logger.info(
                 "Elevation correlation too weak (R²=%.2f) — skipping atmospheric correction.",
                 r_squared,
             )
             return phase, {"correction_applied": False, "r_squared": float(r_squared)}
 
-        corrected = np.angle(np.exp(1j * (phase - tropo_phase))) if not unwrapped else (phase - tropo_phase)
+        corrected = (
+            np.angle(np.exp(1j * (phase - tropo_phase)))
+            if not unwrapped
+            else (phase - tropo_phase)
+        )
 
         logger.info(
             "Elevation-correlated correction applied: R²=%.2f (degree=%d) over %d valid pixels",
-            r_squared, poly_degree, int(valid.sum()),
+            r_squared,
+            poly_degree,
+            int(valid.sum()),
         )
-        return corrected.astype(np.float32), {"correction_applied": True, "r_squared": float(r_squared)}
+        return corrected.astype(np.float32), {
+            "correction_applied": True,
+            "r_squared": float(r_squared),
+        }
 
     # ── ERA5/PyAPS-based correction ───────────────────────────────────────────
 
     def _correct_era5(
-        self, phase: Any, dem: Union[str, Path], reference_datetime: str,
-        secondary_datetime: str, incidence_angle_deg: float, wavelength_m: float
+        self,
+        phase: Any,
+        dem: Union[str, Path],
+        reference_datetime: str,
+        secondary_datetime: str,
+        incidence_angle_deg: float,
+        wavelength_m: float,
     ) -> Any:
         """ERA5 reanalysis-based tropospheric correction (PyAPS method)."""
         np = self._np()
@@ -373,29 +438,45 @@ class AtmosphericCorrector:
             dem_bounds.bottom - pad,
             dem_bounds.top + pad,
             dem_bounds.left - pad,
-            dem_bounds.right + pad
+            dem_bounds.right + pad,
         ]
 
         import tempfile
+
         grib_dir = Path(tempfile.gettempdir()) / "pygeofetch_era5_grib"
         grib_dir.mkdir(parents=True, exist_ok=True)
 
         from datetime import datetime
+
         dt_ref = datetime.fromisoformat(reference_datetime)
         dt_sec = datetime.fromisoformat(secondary_datetime)
 
-        logger.info("Fetching ERA5 reanalysis for %s and %s...", dt_ref.isoformat(), dt_sec.isoformat())
+        logger.info(
+            "Fetching ERA5 reanalysis for %s and %s...",
+            dt_ref.isoformat(),
+            dt_sec.isoformat(),
+        )
 
         def _los_phase_delay_for(dt):
             grib_files = pyaps.ECMWFdload(
-                [dt.strftime("%Y%m%d")], dt.strftime("%H"), str(grib_dir),
-                model="ERA5", snwe=snwe,
+                [dt.strftime("%Y%m%d")],
+                dt.strftime("%H"),
+                str(grib_dir),
+                model="ERA5",
+                snwe=snwe,
             )
-            grib_path = grib_files[0] if isinstance(grib_files, (list, tuple)) else grib_files
+            grib_path = (
+                grib_files[0] if isinstance(grib_files, (list, tuple)) else grib_files
+            )
 
             aps_obj = pyaps.PyAPS(
-                grib_path, dem_data, lat_grid, lon_grid,
-                inc=incidence_angle_deg, grib="ERA5", verb=False,
+                grib_path,
+                dem_data,
+                lat_grid,
+                lon_grid,
+                inc=incidence_angle_deg,
+                grib="ERA5",
+                verb=False,
             )
             phase_out = np.zeros(dem_data.shape, dtype=np.float32)
             aps_obj.getdelay(phase_out, wvl=wavelength_m)
@@ -411,18 +492,29 @@ class AtmosphericCorrector:
 
         if atmo_phase.shape != phase.shape:
             from scipy.ndimage import zoom
-            zf = (phase.shape[0] / atmo_phase.shape[0], phase.shape[1] / atmo_phase.shape[1])
+
+            zf = (
+                phase.shape[0] / atmo_phase.shape[0],
+                phase.shape[1] / atmo_phase.shape[1],
+            )
             atmo_phase = zoom(atmo_phase, zf, order=1)
 
         corrected = phase - atmo_phase
-        logger.info("ERA5 tropospheric correction applied (incidence=%.1f°).", incidence_angle_deg)
+        logger.info(
+            "ERA5 tropospheric correction applied (incidence=%.1f°).",
+            incidence_angle_deg,
+        )
         return corrected.astype(np.float32)
 
     # ── GACOS-based correction ────────────────────────────────────────────────
 
     def _correct_gacos(
-        self, phase: Any, gacos_ref: Union[str, Path], gacos_sec: Union[str, Path],
-        incidence_angle_deg: float, wavelength_m: float
+        self,
+        phase: Any,
+        gacos_ref: Union[str, Path],
+        gacos_sec: Union[str, Path],
+        incidence_angle_deg: float,
+        wavelength_m: float,
     ) -> Any:
         """
         GACOS (Generic Atmospheric Correction Online Service) correction.
@@ -449,7 +541,11 @@ class AtmosphericCorrector:
 
         if atmo_phase.shape != phase.shape:
             from scipy.ndimage import zoom
-            zf = (phase.shape[0] / atmo_phase.shape[0], phase.shape[1] / atmo_phase.shape[1])
+
+            zf = (
+                phase.shape[0] / atmo_phase.shape[0],
+                phase.shape[1] / atmo_phase.shape[1],
+            )
             atmo_phase = zoom(atmo_phase, zf, order=1)
 
         corrected = phase - atmo_phase
@@ -459,6 +555,7 @@ class AtmosphericCorrector:
     def _require_pyaps(self):
         try:
             import pyaps3 as pyaps
+
             return pyaps
         except ImportError:
             raise ImportError(
@@ -473,4 +570,5 @@ class AtmosphericCorrector:
 
     def _np(self):
         import numpy as np
+
         return np

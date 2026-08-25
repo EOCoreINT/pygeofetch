@@ -207,14 +207,22 @@ class TimeSeriesAnalyzer:
                     "(align_grids=True). This is expected when different "
                     "acquisitions come from different scene footprints over "
                     "the same AOI.",
-                    date, label, arr.shape, ref_shape,
+                    date,
+                    label,
+                    arr.shape,
+                    ref_shape,
                 )
                 aligned = np.full(ref_shape, np.nan, dtype=np.float32)
                 reproject(
-                    source=arr, destination=aligned,
-                    src_transform=src.transform, src_crs=src.crs,
-                    dst_transform=ref_transform, dst_crs=ref_crs,
-                    resampling=Resampling.bilinear, src_nodata=np.nan, dst_nodata=np.nan,
+                    source=arr,
+                    destination=aligned,
+                    src_transform=src.transform,
+                    src_crs=src.crs,
+                    dst_transform=ref_transform,
+                    dst_crs=ref_crs,
+                    resampling=Resampling.bilinear,
+                    src_nodata=np.nan,
+                    dst_nodata=np.nan,
                 )
                 return aligned
 
@@ -229,14 +237,18 @@ class TimeSeriesAnalyzer:
                     band_arrays[band_name.upper()] = _read_aligned(
                         Path(band_path), date, band_name
                     )
-                arr = np.asarray(si.compute(self.index_name, **band_arrays), dtype=np.float32)
+                arr = np.asarray(
+                    si.compute(self.index_name, **band_arrays), dtype=np.float32
+                )
 
             arrays.append(arr)
 
         stack = np.stack(arrays, axis=0)
         logger.info(
             "Built %s time stack: %d dates, shape %s",
-            self.index_name, len(dates), stack.shape,
+            self.index_name,
+            len(dates),
+            stack.shape,
         )
         return IndexTimeStack(stack, dates, profile, self.index_name)
 
@@ -258,7 +270,9 @@ class TimeSeriesAnalyzer:
 
         import pandas as pd
 
-        t_years = (pd.to_datetime(stack.dates) - pd.to_datetime(stack.dates[0])).days / 365.25
+        t_years = (
+            pd.to_datetime(stack.dates) - pd.to_datetime(stack.dates[0])
+        ).days / 365.25
         t_years = np.asarray(t_years, dtype=np.float64)
 
         n_times, h, w = stack.values.shape
@@ -322,8 +336,11 @@ class TimeSeriesAnalyzer:
         from rasterio.features import geometry_mask
 
         stat_fns = {
-            "mean": np.nanmean, "median": np.nanmedian,
-            "min": np.nanmin, "max": np.nanmax, "std": np.nanstd,
+            "mean": np.nanmean,
+            "median": np.nanmedian,
+            "min": np.nanmin,
+            "max": np.nanmax,
+            "std": np.nanstd,
         }
         if stat not in stat_fns:
             raise ValueError(f"stat must be one of {list(stat_fns)}, got {stat!r}")
@@ -431,6 +448,8 @@ class TimeSeriesAnalyzer:
         baseline_std = np.nanstd(baseline_stack, axis=0)
 
         with np.errstate(divide="ignore", invalid="ignore"):
-            z = np.where(baseline_std > 0, (target_arr - baseline_mean) / baseline_std, np.nan)
+            z = np.where(
+                baseline_std > 0, (target_arr - baseline_mean) / baseline_std, np.nan
+            )
 
         return z

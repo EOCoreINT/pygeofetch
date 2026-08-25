@@ -303,12 +303,16 @@ class CopernicusProvider(AbstractBaseProvider):
         if requested_units:
             before = len(results)
             results = [
-                r for r in results
-                if self._product_unit(r) is None or self._product_unit(r) in requested_units
+                r
+                for r in results
+                if self._product_unit(r) is None
+                or self._product_unit(r) in requested_units
             ]
             self._logger.info(
                 "Real unit-level satellite filter (%s): %d/%d results kept.",
-                sorted(requested_units), len(results), before,
+                sorted(requested_units),
+                len(results),
+                before,
             )
 
         return results[: query.max_results]
@@ -850,7 +854,9 @@ class CopernicusProvider(AbstractBaseProvider):
                 # re-downloaded that same 1GB+ again before even reaching
                 # new data, on a connection that had just shown it
                 # couldn't sustain the transfer in the first place.
-                existing_bytes = output_file.stat().st_size if output_file.exists() else 0
+                existing_bytes = (
+                    output_file.stat().st_size if output_file.exists() else 0
+                )
                 headers = {"Authorization": f"Bearer {self._session.access_token}"}  # type: ignore
                 if existing_bytes > 0:
                     headers["Range"] = f"bytes={existing_bytes}-"
@@ -903,7 +909,11 @@ class CopernicusProvider(AbstractBaseProvider):
                             f.write(chunk)
                             bytes_written += len(chunk)
                             elapsed = time.time() - chunk_t0
-                            speed = (bytes_written - existing_bytes) / elapsed if elapsed > 0 else 0.0
+                            speed = (
+                                (bytes_written - existing_bytes) / elapsed
+                                if elapsed > 0
+                                else 0.0
+                            )
                             report_download_progress(bytes_written, total_bytes, speed)
 
                 duration = time.time() - start_time

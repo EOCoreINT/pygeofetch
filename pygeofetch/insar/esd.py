@@ -133,7 +133,10 @@ def compute_overlap_row_ranges(
                 "Overlap %d<->%d: backward-view row count (%d) does not "
                 "match forward-view row count (%d) -- unusual burst "
                 "timing; using the shorter of the two.",
-                i, i + 1, n_bw, n_fw,
+                i,
+                i + 1,
+                n_bw,
+                n_fw,
             )
             n_common = min(n_bw, n_fw)
             bw_row_start = bw_row_end - n_common + 1
@@ -166,7 +169,6 @@ def overlap_time_windows(
         )
         out.append((i, start, end))
     return out
-
 
 
 def compute_common_ground_overlaps(
@@ -214,11 +216,13 @@ def compute_common_ground_overlaps(
     report = []
     for i, r_start, r_end in ref_wins:
         n_lines = max(0, int(round((r_end - r_start).total_seconds() / dt)) + 1)
-        report.append({
-            "ref_overlap_index": i,
-            "ref_window": (r_start, r_end),
-            "common_lines": n_lines,
-        })
+        report.append(
+            {
+                "ref_overlap_index": i,
+                "ref_window": (r_start, r_end),
+                "common_lines": n_lines,
+            }
+        )
     return report
 
 
@@ -386,13 +390,15 @@ def compute_burst_synchronization(
         "sec_zero_doppler_time": t_sec,
         "burst_cycle_s": cycle,
         "sync_offset_ms": sync_offset_ms,
-        "within_esa_requirement": abs(sync_offset_ms) < SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
+        "within_esa_requirement": abs(sync_offset_ms)
+        < SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
     }
 
     logger.info(
         "Burst synchronization: Δt_acq=%.3f ms (burst cycle %.4f s) -- "
         "%s Sentinel-1's own <%.0f ms requirement.",
-        sync_offset_ms, cycle,
+        sync_offset_ms,
+        cycle,
         "within" if result["within_esa_requirement"] else "OUTSIDE",
         SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
     )
@@ -404,15 +410,18 @@ def compute_burst_synchronization(
             "of coregistration accuracy (Yagüe-Martínez et al. 2016, "
             "Sec. II-B). No amount of pixel-level registration fixes "
             "this; it reflects the two acquisitions' own burst timing.",
-            sync_offset_ms, SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
+            sync_offset_ms,
+            SENTINEL1_BURST_SYNC_REQUIREMENT_MS,
         )
 
     return result
 
 
 def estimate_esd_shift_per_burst_overlap(
-    ref_complex, sec_complex,
-    swath_timing, azimuth_time_interval_s,
+    ref_complex,
+    sec_complex,
+    swath_timing,
+    azimuth_time_interval_s,
     row_offset: int = 0,
     delta_f_ovl_hz=SENTINEL1_IW_DELTA_F_OVL_HZ,
     coherence_threshold: float = 0.2,
@@ -469,7 +478,7 @@ def estimate_esd_shift_per_burst_overlap(
     per_overlap_shifts = []
     skip_reasons = []
 
-    for (i, r_start, r_end) in ref_wins:
+    for i, r_start, r_end in ref_wins:
         # The reference's own overlap window is the common ground for
         # BOTH arrays: by the time ESD runs, sec_complex has already
         # been resampled onto the reference's pixel grid by
@@ -494,8 +503,18 @@ def estimate_esd_shift_per_burst_overlap(
         bw_rows, fw_rows = [], []
         for k in range(n_lines):
             tt = r_start + timedelta(seconds=k * dt)
-            bw_rows.append(i * L + round((tt - swath_timing.bursts[i].azimuth_time).total_seconds() / dt) - row_offset)
-            fw_rows.append((i + 1) * L + round((tt - swath_timing.bursts[i + 1].azimuth_time).total_seconds() / dt) - row_offset)
+            bw_rows.append(
+                i * L
+                + round((tt - swath_timing.bursts[i].azimuth_time).total_seconds() / dt)
+                - row_offset
+            )
+            fw_rows.append(
+                (i + 1) * L
+                + round(
+                    (tt - swath_timing.bursts[i + 1].azimuth_time).total_seconds() / dt
+                )
+                - row_offset
+            )
 
         bw = np.array([r for r in bw_rows if 0 <= r < ref_complex.shape[0]])
         fw = np.array([r for r in fw_rows if 0 <= r < ref_complex.shape[0]])
@@ -513,10 +532,15 @@ def estimate_esd_shift_per_burst_overlap(
         n_common = len(bw)
         coh_window = min(5, n_common) if n_common >= 3 else 1
         if coh_window >= 3:
-            num = np.abs(uniform_filter(igram_bw.real, size=coh_window)
-                         + 1j * uniform_filter(igram_bw.imag, size=coh_window))
-            denom = np.sqrt(uniform_filter(np.abs(ref_bw)**2, size=coh_window)
-                            * uniform_filter(np.abs(sec_bw)**2, size=coh_window) + 1e-10)
+            num = np.abs(
+                uniform_filter(igram_bw.real, size=coh_window)
+                + 1j * uniform_filter(igram_bw.imag, size=coh_window)
+            )
+            denom = np.sqrt(
+                uniform_filter(np.abs(ref_bw) ** 2, size=coh_window)
+                * uniform_filter(np.abs(sec_bw) ** 2, size=coh_window)
+                + 1e-10
+            )
             valid = np.isfinite(num / denom) & ((num / denom) >= coherence_threshold)
         else:
             valid = np.ones(igram_bw.shape, dtype=bool)
@@ -539,10 +563,19 @@ def estimate_esd_shift_per_burst_overlap(
         logger.warning(
             "ESD: no usable overlaps of %d (%d too short, %d outside array "
             "bounds, %d low coherence)",
-            len(ref_wins), n_short, n_outside, n_low)
+            len(ref_wins),
+            n_short,
+            n_outside,
+            n_low,
+        )
         return None, per_overlap_shifts
 
     combined = float(np.median(valid_shifts))
-    logger.info("ESD common-ground: %d/%d usable, shift=%.6f ms (%.4f px)",
-                len(valid_shifts), len(ref_wins), combined*1000, combined/dt)
+    logger.info(
+        "ESD common-ground: %d/%d usable, shift=%.6f ms (%.4f px)",
+        len(valid_shifts),
+        len(ref_wins),
+        combined * 1000,
+        combined / dt,
+    )
     return combined, per_overlap_shifts

@@ -97,11 +97,12 @@ MODULE_VERSION = "v5-sorted-annotation-members"  # bumped whenever request/parsi
 logger.info(
     "copernicus_nodes module loaded (%s) -- node-name quoting: unquoted "
     "only; annotation members sorted deterministically before use. If a "
-    "real run's log shows \"quoted... got a real 400... retrying\" for "
+    'real run\'s log shows "quoted... got a real 400... retrying" for '
     "ANY call, OR shows annotation members fetched in a non-alphabetical "
     "order (should always be iw1 before iw2 before iw3), the running "
     "file is NOT this version -- re-copy providers/copernicus_nodes.py "
-    "before trusting anything else in that run.", MODULE_VERSION,
+    "before trusting anything else in that run.",
+    MODULE_VERSION,
 )
 
 
@@ -140,7 +141,12 @@ def get_bearer_token(client: Any, provider: str = "copernicus") -> str:
     return _unwrap_token(session.access_token)
 
 
-def _nodes_url(product_id: str, path_segments: List[str], list_children: bool, quote_segments: bool = False) -> str:
+def _nodes_url(
+    product_id: str,
+    path_segments: List[str],
+    list_children: bool,
+    quote_segments: bool = False,
+) -> str:
     """
     Build a real Nodes navigation URL.
 
@@ -204,13 +210,19 @@ def _raise_with_body(resp: Any) -> None:
     raise httpx.HTTPStatusError(
         f"{resp.status_code} {resp.reason_phrase} for {resp.request.url} -- "
         f"real response body: {body!r}",
-        request=resp.request, response=resp,
+        request=resp.request,
+        response=resp,
     )
 
 
 def _fetch(
-    client: Any, product_id: str, path_segments: List[str], list_children: bool,
-    provider: str, timeout_seconds: float, accept_json: bool,
+    client: Any,
+    product_id: str,
+    path_segments: List[str],
+    list_children: bool,
+    provider: str,
+    timeout_seconds: float,
+    accept_json: bool,
 ) -> Any:
     """
     Real GET against a Nodes URL, using the unquoted node-name form
@@ -247,7 +259,10 @@ def _fetch(
 
 
 def list_nodes(
-    client: Any, product_id: str, path_segments: List[str], provider: str = "copernicus",
+    client: Any,
+    product_id: str,
+    path_segments: List[str],
+    provider: str = "copernicus",
     timeout_seconds: float = 30.0,
 ) -> List[Dict[str, Any]]:
     """
@@ -284,8 +299,13 @@ def list_nodes(
                     response body included (see _raise_with_body()).
     """
     resp = _fetch(
-        client, product_id, path_segments, list_children=True, provider=provider,
-        timeout_seconds=timeout_seconds, accept_json=True,
+        client,
+        product_id,
+        path_segments,
+        list_children=True,
+        provider=provider,
+        timeout_seconds=timeout_seconds,
+        accept_json=True,
     )
     data = resp.json()
 
@@ -302,7 +322,10 @@ def list_nodes(
 
 
 def fetch_node_bytes(
-    client: Any, product_id: str, path_segments: List[str], provider: str = "copernicus",
+    client: Any,
+    product_id: str,
+    path_segments: List[str],
+    provider: str = "copernicus",
     timeout_seconds: float = 30.0,
 ) -> bytes:
     """
@@ -317,14 +340,21 @@ def fetch_node_bytes(
         Real raw file bytes.
     """
     resp = _fetch(
-        client, product_id, path_segments, list_children=False, provider=provider,
-        timeout_seconds=timeout_seconds, accept_json=False,
+        client,
+        product_id,
+        path_segments,
+        list_children=False,
+        provider=provider,
+        timeout_seconds=timeout_seconds,
+        accept_json=False,
     )
     return resp.content
 
 
 def find_annotation_members(
-    client: Any, satellite_data: Any, polarisation: Optional[str] = "vv",
+    client: Any,
+    satellite_data: Any,
+    polarisation: Optional[str] = "vv",
     provider: str = "copernicus",
 ) -> List[Tuple[List[str], str]]:
     """
@@ -387,7 +417,11 @@ def find_annotation_members(
                     if no real annotation folder / no matching real XML
                     files are found.
     """
-    safe_name = satellite_data.properties.get("name") if hasattr(satellite_data, "properties") else None
+    safe_name = (
+        satellite_data.properties.get("name")
+        if hasattr(satellite_data, "properties")
+        else None
+    )
     if not safe_name:
         raise ValueError(
             "find_annotation_members: satellite_data.properties['name'] is "
@@ -398,7 +432,8 @@ def find_annotation_members(
     product_id = satellite_data.id
     top_level = list_nodes(client, product_id, [safe_name], provider=provider)
     annotation_entry = next(
-        (n for n in top_level if str(n.get("Name", "")).lower() == "annotation"), None,
+        (n for n in top_level if str(n.get("Name", "")).lower() == "annotation"),
+        None,
     )
     if annotation_entry is None:
         raise ValueError(
@@ -407,7 +442,9 @@ def find_annotation_members(
             f"{[n.get('Name') for n in top_level]}"
         )
 
-    annotation_files = list_nodes(client, product_id, [safe_name, "annotation"], provider=provider)
+    annotation_files = list_nodes(
+        client, product_id, [safe_name, "annotation"], provider=provider
+    )
 
     members: List[Tuple[List[str], str]] = []
     for entry in annotation_files:
@@ -415,7 +452,11 @@ def find_annotation_members(
         name_lower = name.lower()
         if not name_lower.endswith(".xml"):
             continue
-        if "calibration" in name_lower or name_lower.startswith("rfi-") or "/rfi/" in name_lower:
+        if (
+            "calibration" in name_lower
+            or name_lower.startswith("rfi-")
+            or "/rfi/" in name_lower
+        ):
             continue
         if polarisation is not None and f"-{polarisation.lower()}-" not in name_lower:
             continue
@@ -437,7 +478,10 @@ def find_annotation_members(
 
 
 def fetch_annotation_zip(
-    client: Any, satellite_data: Any, output_dir: Any, polarisation: Optional[str] = "vv",
+    client: Any,
+    satellite_data: Any,
+    output_dir: Any,
+    polarisation: Optional[str] = "vv",
     provider: str = "copernicus",
 ) -> Path:
     """
@@ -458,7 +502,9 @@ def fetch_annotation_zip(
         `<safe_name>_annotation_only.zip`).
     """
     safe_name = satellite_data.properties["name"]
-    members = find_annotation_members(client, satellite_data, polarisation=polarisation, provider=provider)
+    members = find_annotation_members(
+        client, satellite_data, polarisation=polarisation, provider=provider
+    )
 
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -472,9 +518,13 @@ def fetch_annotation_zip(
 
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         for path_segments, filename in members:
-            content = fetch_node_bytes(client, satellite_data.id, path_segments + [filename], provider=provider)
+            content = fetch_node_bytes(
+                client, satellite_data.id, path_segments + [filename], provider=provider
+            )
             arcname = "/".join(path_segments + [filename])
             zf.writestr(arcname, content)
-            logger.info("Fetched real annotation member %s (%d bytes)", arcname, len(content))
+            logger.info(
+                "Fetched real annotation member %s (%d bytes)", arcname, len(content)
+            )
 
     return zip_path

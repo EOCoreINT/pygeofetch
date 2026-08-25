@@ -484,9 +484,11 @@ def providers_info(provider_id: str, as_json: bool) -> None:
     table.add_row("Auth type", caps.auth_type)
     table.add_row(
         "Auth status",
-        f"[green]{auth_status}[/]"
-        if "✓" in auth_status or "🌐" in auth_status
-        else f"[red]{auth_status}[/]",
+        (
+            f"[green]{auth_status}[/]"
+            if "✓" in auth_status or "🌐" in auth_status
+            else f"[red]{auth_status}[/]"
+        ),
     )
     table.add_row("Satellites", ", ".join(caps.satellites) if caps.satellites else "—")
     table.add_row("SAR support", "[green]Yes[/]" if caps.supports_sar else "No")
@@ -495,9 +497,11 @@ def providers_info(provider_id: str, as_json: bool) -> None:
     table.add_row("CQL2 filter", "[green]Yes[/]" if caps.supports_cql2 else "No")
     table.add_row(
         "Resolution",
-        f"{caps.resolution_min_m}m – {caps.resolution_max_m}m"
-        if caps.resolution_min_m
-        else "Varies",
+        (
+            f"{caps.resolution_min_m}m – {caps.resolution_max_m}m"
+            if caps.resolution_min_m
+            else "Varies"
+        ),
     )
     table.add_row("Regions", ", ".join(caps.regions) if caps.regions else "global")
     table.add_row("Endpoint", caps.endpoint_url or "—")

@@ -93,10 +93,17 @@ class CoregistrationQuality:
             "rejection iteration(s) (degree-%d warp) — RMS mean %.3f px, "
             "std %.3f px [row residual mean/std %.3f/%.3f px, col "
             "residual mean/std %.3f/%.3f px]%s",
-            self.n_gcps_final, self.n_gcps_initial, self.iterations_used,
-            self.degree, self.rms_mean, self.rms_std,
-            self.row_residual_mean, self.row_residual_std,
-            self.col_residual_mean, self.col_residual_std, coh_part,
+            self.n_gcps_final,
+            self.n_gcps_initial,
+            self.iterations_used,
+            self.degree,
+            self.rms_mean,
+            self.rms_std,
+            self.row_residual_mean,
+            self.row_residual_std,
+            self.col_residual_mean,
+            self.col_residual_std,
+            coh_part,
         )
 
     def is_reliable(self, min_gcps: int = 6, max_rms_px: float = 1.0) -> bool:
@@ -262,7 +269,9 @@ def collocate_by_geocoding(
         "cubic": Resampling.cubic,
     }
     if resampling not in resampling_map:
-        raise ValueError(f"resampling must be one of {list(resampling_map)}, got {resampling!r}")
+        raise ValueError(
+            f"resampling must be one of {list(resampling_map)}, got {resampling!r}"
+        )
 
     sec_crs = secondary_profile.get("crs")
     sec_transform = secondary_profile.get("transform")
@@ -294,16 +303,20 @@ def collocate_by_geocoding(
     reproject(
         source=np.ascontiguousarray(secondary_data.real.astype(np.float32)),
         destination=real_out,
-        src_transform=sec_transform, src_crs=sec_crs,
-        dst_transform=ref_transform, dst_crs=ref_crs,
+        src_transform=sec_transform,
+        src_crs=sec_crs,
+        dst_transform=ref_transform,
+        dst_crs=ref_crs,
         resampling=resampling_map[resampling],
         dst_nodata=np.nan,
     )
     reproject(
         source=np.ascontiguousarray(secondary_data.imag.astype(np.float32)),
         destination=imag_out,
-        src_transform=sec_transform, src_crs=sec_crs,
-        dst_transform=ref_transform, dst_crs=ref_crs,
+        src_transform=sec_transform,
+        src_crs=sec_crs,
+        dst_transform=ref_transform,
+        dst_crs=ref_crs,
         resampling=resampling_map[resampling],
         dst_nodata=np.nan,
     )
@@ -467,12 +480,18 @@ def compute_offset_field_from_dem(
                 ground_point = geodetic_to_ecef(lat, lon, height)
 
                 t_ref = find_zero_doppler_time(
-                    ref_orbit[0], ref_orbit[1], ref_orbit[2],
-                    ground_point, ref_scene_center_time,
+                    ref_orbit[0],
+                    ref_orbit[1],
+                    ref_orbit[2],
+                    ground_point,
+                    ref_scene_center_time,
                 )
                 t_sec = find_zero_doppler_time(
-                    sec_orbit[0], sec_orbit[1], sec_orbit[2],
-                    ground_point, sec_scene_center_time,
+                    sec_orbit[0],
+                    sec_orbit[1],
+                    sec_orbit[2],
+                    ground_point,
+                    sec_scene_center_time,
                 )
 
                 ref_row = ref_geometry.row_for_azimuth_time(t_ref)
@@ -485,7 +504,10 @@ def compute_offset_field_from_dem(
                 ref_col = ref_geometry.col_for_range_time(range_ref_time)
                 sec_col = sec_geometry.col_for_range_time(range_sec_time)
 
-                if not (0 <= ref_row < ref_geometry.n_lines and 0 <= ref_col < ref_geometry.n_columns):
+                if not (
+                    0 <= ref_row < ref_geometry.n_lines
+                    and 0 <= ref_col < ref_geometry.n_columns
+                ):
                     n_out_of_bounds += 1
                     continue  # this DEM point falls outside the actual SLC extent
 
@@ -495,7 +517,12 @@ def compute_offset_field_from_dem(
                 offset_cols.append(sec_col - ref_col)
             except RuntimeError as exc:
                 n_failed += 1
-                logger.debug("DEM-driven offset field: point (%d, %d) failed: %s", dem_row, dem_col, exc)
+                logger.debug(
+                    "DEM-driven offset field: point (%d, %d) failed: %s",
+                    dem_row,
+                    dem_col,
+                    exc,
+                )
 
     if n_failed > n_total / 2:
         raise RuntimeError(
@@ -513,14 +540,17 @@ def compute_offset_field_from_dem(
         logger.info(
             "DEM-driven offset field: %d/%d points solved successfully "
             "(%d fell outside the actual SLC extent%s, %d raised a real error)",
-            len(grid_rows), n_total, n_out_of_bounds,
+            len(grid_rows),
+            n_total,
+            n_out_of_bounds,
             " -- consider passing sample_bounds" if sample_bounds is None else "",
             n_failed,
         )
     else:
         logger.info(
             "DEM-driven offset field: %d/%d points solved successfully",
-            len(grid_rows), n_total,
+            len(grid_rows),
+            n_total,
         )
     return grid_rows, grid_cols, offset_rows, offset_cols
 
@@ -595,7 +625,10 @@ def compute_offset_field(
 
                 sat_pos, sat_vel = _interpolate(ref_orbit, t_ref)
                 ground_point = solve_ground_point(
-                    sat_pos, sat_vel, range_time, dem_height_m=dem_height_m,
+                    sat_pos,
+                    sat_vel,
+                    range_time,
+                    dem_height_m=dem_height_m,
                     initial_guess=last_ground_point,
                 )
                 last_ground_point = ground_point  # seed the next grid point
@@ -616,7 +649,9 @@ def compute_offset_field(
                 offset_cols.append(sec_col - col)
             except RuntimeError as exc:
                 n_failed += 1
-                logger.debug("Offset field: grid point (%d, %d) failed: %s", row, col, exc)
+                logger.debug(
+                    "Offset field: grid point (%d, %d) failed: %s", row, col, exc
+                )
                 # Don't carry a failed point's (non-existent) result forward
                 # as the next warm-start seed -- last_ground_point simply
                 # stays at its last successful value, which is still a
@@ -636,7 +671,9 @@ def compute_offset_field(
             "Offset field: %d/%d grid points failed to solve (proceeding "
             "with the remaining %d) — the polynomial fit below is still "
             "valid, but based on fewer points than requested.",
-            n_failed, n_total, n_total - n_failed,
+            n_failed,
+            n_total,
+            n_total - n_failed,
         )
 
     return grid_rows, grid_cols, offset_rows, offset_cols
@@ -660,8 +697,12 @@ def _sample_complex_imagette(data, center_row: float, center_col: float, size: i
     row_idx = row_idx - half + center_row
     col_idx = col_idx - half + center_col
 
-    real = map_coordinates(data.real, [row_idx, col_idx], order=1, mode="constant", cval=0.0)
-    imag = map_coordinates(data.imag, [row_idx, col_idx], order=1, mode="constant", cval=0.0)
+    real = map_coordinates(
+        data.real, [row_idx, col_idx], order=1, mode="constant", cval=0.0
+    )
+    imag = map_coordinates(
+        data.imag, [row_idx, col_idx], order=1, mode="constant", cval=0.0
+    )
     return (real + 1j * imag).astype(np.complex64)
 
 
@@ -815,7 +856,9 @@ def refine_offsets_by_coherence(
             n_edge_dropped += 1
             continue
 
-        ref_imagette = _sample_complex_imagette(ref_complex, ref_local_row, ref_local_col, window)
+        ref_imagette = _sample_complex_imagette(
+            ref_complex, ref_local_row, ref_local_col, window
+        )
 
         # --- Coarse stage: integer-pixel cross-correlation search ---
         best_dr, best_dc, best_coh = 0, 0, -1.0
@@ -829,7 +872,9 @@ def refine_offsets_by_coherence(
                     best_dr, best_dc, best_coh = dr, dc, coh
 
         # --- Fine stage: sub-pixel coherence maximization (Powell) ---
-        def _neg_coherence(shift, _row0=sec_local_row + best_dr, _col0=sec_local_col + best_dc):
+        def _neg_coherence(
+            shift, _row0=sec_local_row + best_dr, _col0=sec_local_col + best_dc
+        ):
             sec_imagette = _sample_complex_imagette(
                 sec_complex, _row0 + shift[0], _col0 + shift[1], window
             )
@@ -871,13 +916,18 @@ def refine_offsets_by_coherence(
             "Cross-correlation refinement: %d/%d GCPs refined "
             "(%d dropped: too close to an edge; %d dropped: below "
             "coherence threshold %.2f); mean coherence %.3f",
-            len(out_rows), n_total, n_edge_dropped, n_low_coherence,
-            coherence_threshold, float(np.mean(out_coh)),
+            len(out_rows),
+            n_total,
+            n_edge_dropped,
+            n_low_coherence,
+            coherence_threshold,
+            float(np.mean(out_coh)),
         )
     else:
         logger.info(
-            "Cross-correlation refinement: all %d GCPs refined, mean "
-            "coherence %.3f", len(out_rows), float(np.mean(out_coh)),
+            "Cross-correlation refinement: all %d GCPs refined, mean " "coherence %.3f",
+            len(out_rows),
+            float(np.mean(out_coh)),
         )
 
     return out_rows, out_cols, out_orow, out_ocol, out_coh
@@ -890,11 +940,7 @@ def _poly_term_exponents(degree: int):
     always agree. degree=1 -> [(0,0),(1,0),(0,1)]; degree=2 adds
     (1,1),(2,0),(0,2); degree=3 (SNAP's max supported order) adds
     (2,1),(1,2),(3,0),(0,3)."""
-    return [
-        (i, total - i)
-        for total in range(degree + 1)
-        for i in range(total + 1)
-    ]
+    return [(i, total - i) for total in range(degree + 1) for i in range(total + 1)]
 
 
 def fit_offset_polynomial(grid_rows, grid_cols, offsets, degree: int = 1):
@@ -1072,8 +1118,12 @@ def fit_offset_polynomial_robust(
             keep = np.zeros(n_initial, dtype=bool)
             keep[idx[survivors_local]] = True
             idx = np.nonzero(keep)[0]
-            row_fn = fit_offset_polynomial(rows[idx], cols[idx], orow[idx], degree=degree)
-            col_fn = fit_offset_polynomial(rows[idx], cols[idx], ocol[idx], degree=degree)
+            row_fn = fit_offset_polynomial(
+                rows[idx], cols[idx], orow[idx], degree=degree
+            )
+            col_fn = fit_offset_polynomial(
+                rows[idx], cols[idx], ocol[idx], degree=degree
+            )
             resid_row = row_fn(rows[idx], cols[idx]) - orow[idx]
             resid_col = col_fn(rows[idx], cols[idx]) - ocol[idx]
             rms = np.sqrt(resid_row**2 + resid_col**2)
@@ -1083,8 +1133,11 @@ def fit_offset_polynomial_robust(
                 "leave only %d/%d GCPs (below the %d a degree-%d fit "
                 "needs) -- skipping the absolute-threshold filter and "
                 "keeping the iterative-mean-RMS result instead.",
-                rms_threshold, int(survivors_local.sum()), idx.size,
-                min_gcps, degree,
+                rms_threshold,
+                int(survivors_local.sum()),
+                idx.size,
+                min_gcps,
+                degree,
             )
 
     n_final = int(np.count_nonzero(keep))
@@ -1107,9 +1160,13 @@ def fit_offset_polynomial_robust(
 
 
 def resample_with_offset_field(
-    data, row_offset_fn, col_offset_fn,
-    ref_row_offset: float = 0.0, ref_col_offset: float = 0.0,
-    sec_row_offset: float = 0.0, sec_col_offset: float = 0.0,
+    data,
+    row_offset_fn,
+    col_offset_fn,
+    ref_row_offset: float = 0.0,
+    ref_col_offset: float = 0.0,
+    sec_row_offset: float = 0.0,
+    sec_col_offset: float = 0.0,
 ):
     """
     Resample a complex array using a real, per-pixel offset field
@@ -1163,7 +1220,6 @@ def resample_with_offset_field(
     # halves the footprint on its own; chunking bounds peak memory to
     # one row-block regardless of total crop size.
 
-
     h, w = data.shape
     out_real = np.empty((h, w), dtype=np.float32)
     out_imag = np.empty((h, w), dtype=np.float32)
@@ -1193,14 +1249,26 @@ def resample_with_offset_field(
             sample_cols = ref_global_col + offset_col - sec_col_offset
 
             # Broadcast to 2D for map_coordinates
-            sample_rows_2d = np.broadcast_to(sample_rows, (r_end - r_start, c_end - c_start))
-            sample_cols_2d = np.broadcast_to(sample_cols, (r_end - r_start, c_end - c_start))
+            sample_rows_2d = np.broadcast_to(
+                sample_rows, (r_end - r_start, c_end - c_start)
+            )
+            sample_cols_2d = np.broadcast_to(
+                sample_cols, (r_end - r_start, c_end - c_start)
+            )
 
             out_real[r_start:r_end, c_start:c_end] = map_coordinates(
-                data_real, [sample_rows_2d, sample_cols_2d], order=1, mode="constant", cval=0.0
+                data_real,
+                [sample_rows_2d, sample_cols_2d],
+                order=1,
+                mode="constant",
+                cval=0.0,
             )
             out_imag[r_start:r_end, c_start:c_end] = map_coordinates(
-                data_imag, [sample_rows_2d, sample_cols_2d], order=1, mode="constant", cval=0.0
+                data_imag,
+                [sample_rows_2d, sample_cols_2d],
+                order=1,
+                mode="constant",
+                cval=0.0,
             )
 
             del sample_rows_2d, sample_cols_2d, offset_row, offset_col

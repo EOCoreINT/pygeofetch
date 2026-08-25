@@ -195,9 +195,11 @@ class NASAEarthdataProvider(AbstractBaseProvider):
             id=g.get("id", g.get("title", "unknown")),
             provider=self.PROVIDER_ID,
             collection=g.get("short_name", g.get("collection_concept_id")),
-            satellite=g.get("platforms", [{}])[0].get("short_name")
-            if g.get("platforms")
-            else None,
+            satellite=(
+                g.get("platforms", [{}])[0].get("short_name")
+                if g.get("platforms")
+                else None
+            ),
             datetime=dt,
             bbox=bbox,
             geometry=geometry,

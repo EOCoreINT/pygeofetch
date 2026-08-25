@@ -29,6 +29,7 @@ each product's real annotation XML, which isn't available before
 download). This gate handles what real pre-download signals actually
 allow, and is explicit about the one real risk it cannot resolve early.
 """
+
 from __future__ import annotations
 
 import logging
@@ -44,18 +45,21 @@ logger = logging.getLogger("pygeofetch.insar.preflight")
 # Report data model
 # ────────────────────────────────────────────────────────────────────────────
 
-SEVERITY_GREEN = "GREEN"    # safe to proceed
+SEVERITY_GREEN = "GREEN"  # safe to proceed
 SEVERITY_YELLOW = "YELLOW"  # proceed, but with logged caveats
-SEVERITY_RED = "RED"        # do not download; fix first
+SEVERITY_RED = "RED"  # do not download; fix first
+
 
 @dataclass
 class PreflightIssue:
     """A single problem found during preflight, with its fix."""
-    code: str                 # machine-readable id, e.g. "SEARCH_TRUNCATED"
-    severity: str             # one of the SEVERITY_* constants
-    message: str              # human-readable explanation
+
+    code: str  # machine-readable id, e.g. "SEARCH_TRUNCATED"
+    severity: str  # one of the SEVERITY_* constants
+    message: str  # human-readable explanation
     auto_fixed: bool = False  # did the gate heal this automatically?
-    fix_detail: str = ""      # what the auto-fix did, if applied
+    fix_detail: str = ""  # what the auto-fix did, if applied
+
 
 @dataclass
 class PreflightReport:
@@ -65,12 +69,15 @@ class PreflightReport:
     applied, and — critically — the provenance manifest that makes the
     whole run reproducible and defensible.
     """
+
     go: bool
     severity: str
     issues: List[PreflightIssue] = field(default_factory=list)
-    selected: List[Any] = field(default_factory=list)   # final scene objects
+    selected: List[Any] = field(default_factory=list)  # final scene objects
     manifest: Dict[str, Any] = field(default_factory=dict)
-    original_count: int = 0  # how many scenes came IN, before any filtering -- see summary()'s own real-bug note
+    original_count: int = (
+        0  # how many scenes came IN, before any filtering -- see summary()'s own real-bug note
+    )
 
     def summary(self) -> str:
         lines = [f"PREFLIGHT {self.severity} — {'PROCEED' if self.go else 'BLOCKED'}"]
@@ -78,7 +85,9 @@ class PreflightReport:
         # Print Bandwidth Manifest if available
         if "bandwidth_and_manifest" in self.manifest:
             bw = self.manifest["bandwidth_and_manifest"]
-            lines.append(f"  [INFO] Estimated download size: {bw['estimated_bandwidth_gb']} GB for {len(bw['download_manifest'])} scenes.")
+            lines.append(
+                f"  [INFO] Estimated download size: {bw['estimated_bandwidth_gb']} GB for {len(bw['download_manifest'])} scenes."
+            )
 
         for issue in self.issues:
             fixed = " [AUTO-FIXED]" if issue.auto_fixed else ""
@@ -110,9 +119,11 @@ class PreflightReport:
             )
         return "\n".join(lines)
 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # The gate itself
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class PreflightGate:
     """
@@ -125,6 +136,7 @@ class PreflightGate:
             raise RuntimeError("Preflight blocked the stack. See report.")
         download_results = client.download(report.selected, ...)
     """
+
     def __init__(
         self,
         client: Any,
@@ -182,12 +194,16 @@ class PreflightGate:
         self.attempt_real_burst_check = attempt_real_burst_check
 
     # ── public entry point ───────────────────────────────────────────────
-    def run(self, selected: List[Any], search_report: Dict[str, Any]) -> PreflightReport:
+    def run(
+        self, selected: List[Any], search_report: Dict[str, Any]
+    ) -> PreflightReport:
         issues: List[PreflightIssue] = []
         selected = list(selected)  # work on a copy
 
         # Check 1: search truncation (with auto-heal re-search loop)
-        selected, search_report, trunc_issue = self._check_truncation(selected, search_report)
+        selected, search_report, trunc_issue = self._check_truncation(
+            selected, search_report
+        )
         if trunc_issue:
             issues.append(trunc_issue)
 
@@ -220,8 +236,11 @@ class PreflightGate:
         go = severity != SEVERITY_RED and len(selected) >= 2
 
         report = PreflightReport(
-            go=go, severity=severity, issues=issues,
-            selected=selected, manifest=manifest,
+            go=go,
+            severity=severity,
+            issues=issues,
+            selected=selected,
+            manifest=manifest,
             original_count=original_count,
         )
         logger.info("\n%s", report.summary())
@@ -239,12 +258,18 @@ class PreflightGate:
             current_max *= 3
             logger.warning(
                 "Search hit max_results=%d — likely truncated. Re-searching with %d.",
-                search_report["raw_result_count"], current_max,
+                search_report["raw_result_count"],
+                current_max,
             )
             selected, search_report = search_and_select_consistent_stack(
-                self.client, self.aoi_bbox, self.start_date, self.end_date,
-                satellites=self.satellites, providers=self.providers,
-                preferred_track=self.preferred_track, max_scenes=self.max_scenes,
+                self.client,
+                self.aoi_bbox,
+                self.start_date,
+                self.end_date,
+                satellites=self.satellites,
+                providers=self.providers,
+                preferred_track=self.preferred_track,
+                max_scenes=self.max_scenes,
                 max_results=current_max,
                 min_coverage_fraction=self.min_coverage_fraction,
                 product_type=self.product_type,
@@ -252,29 +277,43 @@ class PreflightGate:
             retries += 1
 
         if search_report.get("hit_max_results"):
-            return selected, search_report, PreflightIssue(
-                code="SEARCH_TRUNCATED", severity=SEVERITY_RED,
-                message=(
-                    f"Search still hitting max_results={current_max} after {retries} "
-                    "auto-widen attempts. The archive is larger than expected; raise "
-                    "max_results manually before trusting this stack."
+            return (
+                selected,
+                search_report,
+                PreflightIssue(
+                    code="SEARCH_TRUNCATED",
+                    severity=SEVERITY_RED,
+                    message=(
+                        f"Search still hitting max_results={current_max} after {retries} "
+                        "auto-widen attempts. The archive is larger than expected; raise "
+                        "max_results manually before trusting this stack."
+                    ),
                 ),
             )
         if retries > 0:
-            return selected, search_report, PreflightIssue(
-                code="SEARCH_TRUNCATED", severity=SEVERITY_GREEN,
-                message=f"Search was truncated; auto-widened max_results to {current_max}.",
-                auto_fixed=True,
-                fix_detail=f"Re-searched {retries}x, now {search_report['raw_result_count']} raw scenes.",
+            return (
+                selected,
+                search_report,
+                PreflightIssue(
+                    code="SEARCH_TRUNCATED",
+                    severity=SEVERITY_GREEN,
+                    message=f"Search was truncated; auto-widened max_results to {current_max}.",
+                    auto_fixed=True,
+                    fix_detail=f"Re-searched {retries}x, now {search_report['raw_result_count']} raw scenes.",
+                ),
             )
         return selected, search_report, None
 
     # ── Check 2: AOI coverage ─────────────────────────────────────────────
-    def _check_coverage(self, selected: List[Any]) -> Tuple[List[Any], List[PreflightIssue]]:
+    def _check_coverage(
+        self, selected: List[Any]
+    ) -> Tuple[List[Any], List[PreflightIssue]]:
         """Drop scenes whose true footprint doesn't cover the AOI."""
         aoi_poly = box(
-            self.aoi_bbox.min_lon, self.aoi_bbox.min_lat,
-            self.aoi_bbox.max_lon, self.aoi_bbox.max_lat,
+            self.aoi_bbox.min_lon,
+            self.aoi_bbox.min_lat,
+            self.aoi_bbox.max_lon,
+            self.aoi_bbox.max_lat,
         )
         kept, dropped = [], {}
         for s in selected:
@@ -289,15 +328,18 @@ class PreflightGate:
 
         issues = []
         if dropped:
-            issues.append(PreflightIssue(
-                code="LOW_AOI_COVERAGE", severity=SEVERITY_YELLOW,
-                message=(
-                    f"{len(dropped)} scene(s) below {self.min_coverage_fraction:.0%} "
-                    f"AOI coverage dropped: {dropped}"
-                ),
-                auto_fixed=True,
-                fix_detail="Genuine coverage gaps removed from the stack.",
-            ))
+            issues.append(
+                PreflightIssue(
+                    code="LOW_AOI_COVERAGE",
+                    severity=SEVERITY_YELLOW,
+                    message=(
+                        f"{len(dropped)} scene(s) below {self.min_coverage_fraction:.0%} "
+                        f"AOI coverage dropped: {dropped}"
+                    ),
+                    auto_fixed=True,
+                    fix_detail="Genuine coverage gaps removed from the stack.",
+                )
+            )
         return kept, issues
 
     # ── Check 3: temporal network prediction ──────────────────────────────
@@ -314,13 +356,17 @@ class PreflightGate:
         dates = sorted({str(s.datetime)[:10] for s in selected})
         n = len(dates)
         if n < 2:
-            return [PreflightIssue(
-                code="TOO_FEW_DATES", severity=SEVERITY_RED,
-                message=f"Only {n} unique date(s) — need >= 2 for any interferogram.",
-            )]
+            return [
+                PreflightIssue(
+                    code="TOO_FEW_DATES",
+                    severity=SEVERITY_RED,
+                    message=f"Only {n} unique date(s) — need >= 2 for any interferogram.",
+                )
+            ]
 
         candidate_pairs = generate_candidate_pairs(
-            dates, max_temporal_baseline_days=self.max_temporal_baseline_days,
+            dates,
+            max_temporal_baseline_days=self.max_temporal_baseline_days,
         )
         adjacency: Dict[str, set] = {d: set() for d in dates}
         for d1, d2 in candidate_pairs:
@@ -340,36 +386,47 @@ class PreflightGate:
         unconnected = set(dates) - visited
         issues = []
         if unconnected:
-            issues.append(PreflightIssue(
-                code="NETWORK_DISCONNECTED", severity=SEVERITY_RED,
-                message=(
-                    f"{len(unconnected)} date(s) unreachable within "
-                    f"{self.max_temporal_baseline_days}d baseline: {sorted(unconnected)}. "
-                    "Widen the temporal baseline or the date range."
-                ),
-            ))
+            issues.append(
+                PreflightIssue(
+                    code="NETWORK_DISCONNECTED",
+                    severity=SEVERITY_RED,
+                    message=(
+                        f"{len(unconnected)} date(s) unreachable within "
+                        f"{self.max_temporal_baseline_days}d baseline: {sorted(unconnected)}. "
+                        "Widen the temporal baseline or the date range."
+                    ),
+                )
+            )
 
-        low_redundancy = [d for d in dates if len(adjacency[d]) < self.min_network_redundancy]
+        low_redundancy = [
+            d for d in dates if len(adjacency[d]) < self.min_network_redundancy
+        ]
         if low_redundancy:
-            issues.append(PreflightIssue(
-                code="LOW_NETWORK_REDUNDANCY", severity=SEVERITY_YELLOW,
-                message=(
-                    f"{len(low_redundancy)} date(s) have < {self.min_network_redundancy} "
-                    f"neighbours within {self.max_temporal_baseline_days}d: {low_redundancy}. "
-                    "The network is fragile — a single bad pair could disconnect it."
-                ),
-            ))
+            issues.append(
+                PreflightIssue(
+                    code="LOW_NETWORK_REDUNDANCY",
+                    severity=SEVERITY_YELLOW,
+                    message=(
+                        f"{len(low_redundancy)} date(s) have < {self.min_network_redundancy} "
+                        f"neighbours within {self.max_temporal_baseline_days}d: {low_redundancy}. "
+                        "The network is fragile — a single bad pair could disconnect it."
+                    ),
+                )
+            )
 
         if not issues:
             logger.info(
                 "Temporal network OK: %d dates, all connected, redundancy >= %d.",
-                n, self.min_network_redundancy,
+                n,
+                self.min_network_redundancy,
             )
         return issues
 
     # ── Check 4: burst-timing family risk ─────────────────────────────────
     def _screen_burst_families(
-        self, selected: List[Any], geometry_report: Dict[str, Any],
+        self,
+        selected: List[Any],
+        geometry_report: Dict[str, Any],
     ) -> Tuple[List[Any], List[PreflightIssue]]:
         """
         Pre-download burst-timing family risk -- attempts a REAL
@@ -428,18 +485,25 @@ class PreflightGate:
         if len(tracks) > 1:
             # Should be unreachable if select_consistent_geometry() already
             # ran correctly -- a real defensive check, not the expected path.
-            issues.append(PreflightIssue(
-                code="MULTIPLE_TRACKS_IN_SELECTION", severity=SEVERITY_RED,
-                message=(
-                    f"Selected scenes span {len(tracks)} different real tracks "
-                    f"({sorted(t for t in tracks if t is not None)}) -- "
-                    f"select_consistent_geometry() should have already enforced "
-                    f"a single track. Do not download until this is resolved."
-                ),
-            ))
+            issues.append(
+                PreflightIssue(
+                    code="MULTIPLE_TRACKS_IN_SELECTION",
+                    severity=SEVERITY_RED,
+                    message=(
+                        f"Selected scenes span {len(tracks)} different real tracks "
+                        f"({sorted(t for t in tracks if t is not None)}) -- "
+                        f"select_consistent_geometry() should have already enforced "
+                        f"a single track. Do not download until this is resolved."
+                    ),
+                )
+            )
 
         satellites_present = geometry_report.get("satellites", set())
-        real_result = self._try_real_burst_family_check(selected) if self.attempt_real_burst_check else None
+        real_result = (
+            self._try_real_burst_family_check(selected)
+            if self.attempt_real_burst_check
+            else None
+        )
 
         nodes_version = "unknown"
         try:
@@ -477,7 +541,8 @@ class PreflightGate:
                 f"too, not just the date-level split, since a majority-family "
                 f"date can still be connected mostly through bridge-quality "
                 f"pairs to its neighbours."
-                if n_pairs_total else ""
+                if n_pairs_total
+                else ""
             )
 
             # REAL BUGS FOUND from a careful third-party review, verified
@@ -518,79 +583,89 @@ class PreflightGate:
                 f"connected: {internal_bridges} -- real same-family drift, "
                 f"unrelated to the excluded minority date(s); expect these "
                 f"specific pairs to correlate poorly too."
-                if internal_bridges else ""
+                if internal_bridges
+                else ""
             )
 
-            issues.append(PreflightIssue(
-                code="BURST_FAMILY_DETECTED",
-                severity=SEVERITY_GREEN if resolved else SEVERITY_YELLOW,
-                message=(
-                    f"[copernicus_nodes {nodes_version}] "
-                    f"Real pre-download burst-family check succeeded "
-                    f"({n_good + n_bridge}/{n_total} dates had both real "
-                    f"annotation and orbit data available): majority family "
-                    f"{n_good} dates, minority {n_bridge} dates."
-                    + (
-                        " Majority family used exclusively -- the "
-                        "cross-family risk is genuinely resolved before "
-                        "download, not deferred; known-poor minority "
-                        "date(s) dropped rather than kept as chaff."
-                        + internal_bridge_msg
-                        if resolved else
-                        f" Majority family alone is not usable on its own "
-                        f"({'disconnected even among themselves' if not family_report.get('majority_self_connected', True) else f'only {n_good} dates, below min_workable_dates'}); "
-                        f"minority dates KEPT as necessary bridges, not "
-                        f"excluded -- this is a real compromise, not a fix. "
-                        f"Expect the specific bridge pairs to correlate "
-                        f"poorly (see the select_pairs_for_processing log "
-                        f"warning for exactly which ones). Widen the date "
-                        f"range for a cleaner single-family network if "
-                        f"possible."
-                    )
-                    + pair_fraction_msg
-                ),
-                auto_fixed=resolved,
-                fix_detail=(
-                    f"Applied date selection: {chosen_dates}" if resolved else
-                    f"No dates excluded -- majority family not usable on "
-                    f"its own (see message). Full stack kept: {chosen_dates}."
-                ),
-            ))
+            issues.append(
+                PreflightIssue(
+                    code="BURST_FAMILY_DETECTED",
+                    severity=SEVERITY_GREEN if resolved else SEVERITY_YELLOW,
+                    message=(
+                        f"[copernicus_nodes {nodes_version}] "
+                        f"Real pre-download burst-family check succeeded "
+                        f"({n_good + n_bridge}/{n_total} dates had both real "
+                        f"annotation and orbit data available): majority family "
+                        f"{n_good} dates, minority {n_bridge} dates."
+                        + (
+                            " Majority family used exclusively -- the "
+                            "cross-family risk is genuinely resolved before "
+                            "download, not deferred; known-poor minority "
+                            "date(s) dropped rather than kept as chaff."
+                            + internal_bridge_msg
+                            if resolved
+                            else f" Majority family alone is not usable on its own "
+                            f"({'disconnected even among themselves' if not family_report.get('majority_self_connected', True) else f'only {n_good} dates, below min_workable_dates'}); "
+                            f"minority dates KEPT as necessary bridges, not "
+                            f"excluded -- this is a real compromise, not a fix. "
+                            f"Expect the specific bridge pairs to correlate "
+                            f"poorly (see the select_pairs_for_processing log "
+                            f"warning for exactly which ones). Widen the date "
+                            f"range for a cleaner single-family network if "
+                            f"possible."
+                        )
+                        + pair_fraction_msg
+                    ),
+                    auto_fixed=resolved,
+                    fix_detail=(
+                        f"Applied date selection: {chosen_dates}"
+                        if resolved
+                        else f"No dates excluded -- majority family not usable on "
+                        f"its own (see message). Full stack kept: {chosen_dates}."
+                    ),
+                )
+            )
 
             # ACTUALLY apply the recommendation -- not just report it.
             chosen_set = set(chosen_dates)
-            filtered_selected = [s for s in selected if str(s.datetime)[:10] in chosen_set]
+            filtered_selected = [
+                s for s in selected if str(s.datetime)[:10] in chosen_set
+            ]
             return filtered_selected, issues
 
         # Real check unavailable, disabled, or failed -- honest fallback,
         # never a silent pass.
-        issues.append(PreflightIssue(
-            code="BURST_FAMILY_RISK_UNASSESSED", severity=SEVERITY_YELLOW,
-            message=(
-                f"[copernicus_nodes {nodes_version}] "
-                f"Track consistency confirmed ({len(tracks)} track(s)); real "
-                f"satellite(s) present: "
-                f"{sorted(satellites_present) if satellites_present else 'unknown'}. "
-                f"Burst-timing FAMILY risk (the real cause of Mexico City's "
-                f"cross-family split) could not be resolved before download"
-                + (
-                    " (attempt_real_burst_check=False)."
-                    if not self.attempt_real_burst_check else
-                    " -- the real pre-download check "
-                    "(copernicus_nodes-based annotation fetch) was attempted "
-                    "and did not succeed for enough dates; see the log above "
-                    "for why."
-                )
-                + " Run select_burst_synchronized_dates() on the downloaded "
-                "stack before committing to full interferogram processing; "
-                "a clean preflight pass is not confirmation this risk is "
-                "absent."
-            ),
-        ))
+        issues.append(
+            PreflightIssue(
+                code="BURST_FAMILY_RISK_UNASSESSED",
+                severity=SEVERITY_YELLOW,
+                message=(
+                    f"[copernicus_nodes {nodes_version}] "
+                    f"Track consistency confirmed ({len(tracks)} track(s)); real "
+                    f"satellite(s) present: "
+                    f"{sorted(satellites_present) if satellites_present else 'unknown'}. "
+                    f"Burst-timing FAMILY risk (the real cause of Mexico City's "
+                    f"cross-family split) could not be resolved before download"
+                    + (
+                        " (attempt_real_burst_check=False)."
+                        if not self.attempt_real_burst_check
+                        else " -- the real pre-download check "
+                        "(copernicus_nodes-based annotation fetch) was attempted "
+                        "and did not succeed for enough dates; see the log above "
+                        "for why."
+                    )
+                    + " Run select_burst_synchronized_dates() on the downloaded "
+                    "stack before committing to full interferogram processing; "
+                    "a clean preflight pass is not confirmation this risk is "
+                    "absent."
+                ),
+            )
+        )
         return selected, issues
 
     def _try_real_burst_family_check(
-        self, selected: List[Any],
+        self,
+        selected: List[Any],
     ) -> Optional[Tuple[List[str], Dict[str, Any]]]:
         """
         Best-effort REAL pre-download burst-family classification.
@@ -614,10 +689,13 @@ class PreflightGate:
         import importlib
         import shutil
         import tempfile
+
         try:
             for _mod_name in (
-                "pygeofetch.providers.copernicus_nodes", "pygeofetch.core.orbits",
-                "pygeofetch.insar.stack_selection", "pygeofetch.insar.geolocation",
+                "pygeofetch.providers.copernicus_nodes",
+                "pygeofetch.core.orbits",
+                "pygeofetch.insar.stack_selection",
+                "pygeofetch.insar.geolocation",
             ):
                 importlib.import_module(_mod_name)
         except ImportError as exc:
@@ -627,7 +705,10 @@ class PreflightGate:
         try:
             work_dir = Path(tempfile.mkdtemp(prefix="preflight_burst_"))
         except Exception as exc:
-            logger.info("Real pre-download burst check: couldn't create a scratch dir (%s).", exc)
+            logger.info(
+                "Real pre-download burst check: couldn't create a scratch dir (%s).",
+                exc,
+            )
             return None
 
         # REAL BUG FOUND AND FIXED: work_dir was never removed on any exit
@@ -674,7 +755,11 @@ class PreflightGate:
             try:
                 safe_zips[date] = fetch_annotation_zip(self.client, s, work_dir)
             except Exception as exc:
-                logger.info("Real pre-download burst check: no annotation for %s (%s).", date, exc)
+                logger.info(
+                    "Real pre-download burst check: no annotation for %s (%s).",
+                    date,
+                    exc,
+                )
                 continue
 
             try:
@@ -690,26 +775,42 @@ class PreflightGate:
                 for orbit_type in ["precise", "restituted", "predicted"]:
                     try:
                         orbit_file = fetch_orbit_file(
-                            product_name=name, output_dir=str(work_dir), orbit_type=orbit_type,
+                            product_name=name,
+                            output_dir=str(work_dir),
+                            orbit_type=orbit_type,
                         )
                         if orbit_file is not None:
                             if orbit_type != "precise":
                                 logger.warning(
                                     "Orbit cascading: fell back to '%s' orbit for %s "
-                                    "(precise not available).", orbit_type, date
+                                    "(precise not available).",
+                                    orbit_type,
+                                    date,
                                 )
                             break
                     except Exception as exc:
-                        logger.debug("Orbit cascade: '%s' failed for %s (%s).", orbit_type, date, exc)
+                        logger.debug(
+                            "Orbit cascade: '%s' failed for %s (%s).",
+                            orbit_type,
+                            date,
+                            exc,
+                        )
                         continue
 
                 if orbit_file is None:
-                    logger.info("Real pre-download burst check: no orbit file (any type) for %s.", date)
+                    logger.info(
+                        "Real pre-download burst check: no orbit file (any type) for %s.",
+                        date,
+                    )
                     continue
 
                 orbit_files[date] = orbit_file
             except Exception as exc:
-                logger.info("Real pre-download burst check: orbit cascade failed for %s (%s).", date, exc)
+                logger.info(
+                    "Real pre-download burst check: orbit cascade failed for %s (%s).",
+                    date,
+                    exc,
+                )
                 continue
 
         usable_dates = sorted(set(safe_zips) & set(orbit_files))
@@ -717,7 +818,9 @@ class PreflightGate:
             logger.info(
                 "Real pre-download burst check: only %d/%d dates had both "
                 "real annotation and orbit data available -- not enough to "
-                "classify.", len(usable_dates), len({str(s.datetime)[:10] for s in selected}),
+                "classify.",
+                len(usable_dates),
+                len({str(s.datetime)[:10] for s in selected}),
             )
             return None
 
@@ -726,7 +829,10 @@ class PreflightGate:
             aoi_center_lon = (self.aoi_bbox.min_lon + self.aoi_bbox.max_lon) / 2
             ground_point = geodetic_to_ecef(aoi_center_lat, aoi_center_lon, 0.0)
             chosen_dates, family_report = select_burst_synchronized_dates(
-                usable_dates, safe_zips, orbit_files, ground_point,
+                usable_dates,
+                safe_zips,
+                orbit_files,
+                ground_point,
                 min_majority_dates=self.min_majority_family_dates,
                 min_workable_dates=self.min_workable_family_dates,
             )
@@ -735,13 +841,16 @@ class PreflightGate:
             logger.warning(
                 "Real pre-download burst-family check failed unexpectedly "
                 "(%s) -- falling back to the honest unassessed advisory "
-                "rather than risk a wrong classification.", exc,
+                "rather than risk a wrong classification.",
+                exc,
             )
             return None
 
     # ── manifest + severity ───────────────────────────────────────────────
     def _build_manifest(
-        self, selected: List[Any], search_report: Dict[str, Any],
+        self,
+        selected: List[Any],
+        search_report: Dict[str, Any],
         issues: List[PreflightIssue],
     ) -> Dict[str, Any]:
         # ── FIX: BANDWIDTH & DOWNLOAD MANIFEST ──
@@ -753,12 +862,14 @@ class PreflightGate:
         download_manifest = []
         for s in selected:
             props = s.properties if hasattr(s, "properties") else {}
-            download_manifest.append({
-                "date": str(s.datetime)[:10],
-                "scene_id": props.get("name"),
-                "satellite": props.get("platform"),
-                "polarisation": props.get("polarisation"),
-            })
+            download_manifest.append(
+                {
+                    "date": str(s.datetime)[:10],
+                    "scene_id": props.get("name"),
+                    "satellite": props.get("platform"),
+                    "polarisation": props.get("polarisation"),
+                }
+            )
 
         return {
             "search": {
@@ -769,8 +880,10 @@ class PreflightGate:
                 "product_type": self.product_type,
                 "max_results_effective": search_report.get("raw_result_count"),
                 "aoi_bbox": [
-                    self.aoi_bbox.min_lon, self.aoi_bbox.min_lat,
-                    self.aoi_bbox.max_lon, self.aoi_bbox.max_lat,
+                    self.aoi_bbox.min_lon,
+                    self.aoi_bbox.min_lat,
+                    self.aoi_bbox.max_lon,
+                    self.aoi_bbox.max_lat,
                 ],
             },
             "selection": {
@@ -789,8 +902,12 @@ class PreflightGate:
             "preflight": {
                 "severity": self._overall_severity(issues),
                 "issues": [
-                    {"code": i.code, "severity": i.severity,
-                     "auto_fixed": i.auto_fixed, "message": i.message}
+                    {
+                        "code": i.code,
+                        "severity": i.severity,
+                        "auto_fixed": i.auto_fixed,
+                        "message": i.message,
+                    }
                     for i in issues
                 ],
             },

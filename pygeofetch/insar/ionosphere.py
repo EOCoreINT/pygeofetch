@@ -87,7 +87,9 @@ def _thin_shell_mapping_function(
 
     elevation_deg = 90.0 - incidence_angle_deg
     elevation_rad = np.radians(elevation_deg)
-    cos_e_prime = (earth_radius_km / (earth_radius_km + shell_height_km)) * np.cos(elevation_rad)
+    cos_e_prime = (earth_radius_km / (earth_radius_km + shell_height_km)) * np.cos(
+        elevation_rad
+    )
     e_prime = np.arccos(cos_e_prime)
     return 1.0 / np.sin(e_prime)
 
@@ -148,7 +150,7 @@ def parse_ionex(path: Union[str, Path]) -> Tuple[Dict[datetime, Any], Any, Any]:
 
     header_end = next(i for i, line in enumerate(lines) if "END OF HEADER" in line)
     header_lines = lines[:header_end]
-    data_lines = lines[header_end + 1:]
+    data_lines = lines[header_end + 1 :]
 
     def get_header_value(label):
         for header_line in header_lines:
@@ -186,7 +188,7 @@ def parse_ionex(path: Union[str, Path]) -> Tuple[Dict[datetime, Any], Any, Any]:
                     ):
                         values.extend(int(v) for v in data_lines[i].split())
                         i += 1
-                    grid[row_idx, :] = np.array(values[:n_lons]) * (10.0 ** exponent)
+                    grid[row_idx, :] = np.array(values[:n_lons]) * (10.0**exponent)
                     row_idx += 1
                 else:
                     i += 1
@@ -199,7 +201,9 @@ def parse_ionex(path: Union[str, Path]) -> Tuple[Dict[datetime, Any], Any, Any]:
     return maps, lats, lons
 
 
-def _interpolate_vtec(maps, lats, lons, target_time: datetime, target_lat: float, target_lon: float):
+def _interpolate_vtec(
+    maps, lats, lons, target_time: datetime, target_lat: float, target_lon: float
+):
     """
     Real, bilinear (spatial) + nearest-in-time interpolation of VTEC
     from a parsed IONEX map set, to a specific real ground location
@@ -207,11 +211,17 @@ def _interpolate_vtec(maps, lats, lons, target_time: datetime, target_lat: float
     """
     import numpy as np
 
-    nearest_epoch = min(maps.keys(), key=lambda t: abs((t - target_time).total_seconds()))
+    nearest_epoch = min(
+        maps.keys(), key=lambda t: abs((t - target_time).total_seconds())
+    )
     grid = maps[nearest_epoch]
 
     # Real bilinear interpolation over the real lat/lon grid
-    lat_idx = np.searchsorted(-lats, -target_lat) - 1 if lats[0] > lats[-1] else np.searchsorted(lats, target_lat) - 1
+    lat_idx = (
+        np.searchsorted(-lats, -target_lat) - 1
+        if lats[0] > lats[-1]
+        else np.searchsorted(lats, target_lat) - 1
+    )
     lon_idx = np.searchsorted(lons, target_lon) - 1
     lat_idx = max(0, min(lat_idx, len(lats) - 2))
     lon_idx = max(0, min(lon_idx, len(lons) - 2))
@@ -235,7 +245,9 @@ def _interpolate_vtec(maps, lats, lons, target_time: datetime, target_lat: float
     return float(vtec)
 
 
-def _interpolate_vtec_grid(maps, lats, lons, target_time: datetime, target_lat_grid, target_lon_grid):
+def _interpolate_vtec_grid(
+    maps, lats, lons, target_time: datetime, target_lat_grid, target_lon_grid
+):
     """
     Real, vectorized bilinear interpolation of VTEC to an entire array
     of target locations at once (one real IPP location per pixel),
@@ -244,12 +256,17 @@ def _interpolate_vtec_grid(maps, lats, lons, target_time: datetime, target_lat_g
     """
     import numpy as np
 
-    nearest_epoch = min(maps.keys(), key=lambda t: abs((t - target_time).total_seconds()))
+    nearest_epoch = min(
+        maps.keys(), key=lambda t: abs((t - target_time).total_seconds())
+    )
     grid = maps[nearest_epoch]
 
     descending = lats[0] > lats[-1]
-    lat_idx = (np.searchsorted(-lats, -target_lat_grid) - 1 if descending
-               else np.searchsorted(lats, target_lat_grid) - 1)
+    lat_idx = (
+        np.searchsorted(-lats, -target_lat_grid) - 1
+        if descending
+        else np.searchsorted(lats, target_lat_grid) - 1
+    )
     lon_idx = np.searchsorted(lons, target_lon_grid) - 1
     lat_idx = np.clip(lat_idx, 0, len(lats) - 2)
     lon_idx = np.clip(lon_idx, 0, len(lons) - 2)
@@ -274,8 +291,13 @@ def _interpolate_vtec_grid(maps, lats, lons, target_time: datetime, target_lat_g
     )
 
 
-def _compute_ipp_location(ground_lat_deg, ground_lon_deg, azimuth_deg, elevation_deg,
-                           shell_height_km: float = DEFAULT_SHELL_HEIGHT_KM):
+def _compute_ipp_location(
+    ground_lat_deg,
+    ground_lon_deg,
+    azimuth_deg,
+    elevation_deg,
+    shell_height_km: float = DEFAULT_SHELL_HEIGHT_KM,
+):
     """
     Real, standard ionospheric pierce point (IPP) location, using the
     ICD-GPS-200 / Klobuchar model formula -- confirmed against three
@@ -300,16 +322,22 @@ def _compute_ipp_location(ground_lat_deg, ground_lon_deg, azimuth_deg, elevation
     a = np.radians(azimuth_deg)
     e = np.radians(elevation_deg)
 
-    e_prime = np.arccos((EARTH_RADIUS_KM / (EARTH_RADIUS_KM + shell_height_km)) * np.cos(e))
+    e_prime = np.arccos(
+        (EARTH_RADIUS_KM / (EARTH_RADIUS_KM + shell_height_km)) * np.cos(e)
+    )
     psi = e_prime - e
 
-    phi_ipp = np.arcsin(np.sin(phi_r) * np.cos(psi) + np.cos(phi_r) * np.sin(psi) * np.cos(a))
+    phi_ipp = np.arcsin(
+        np.sin(phi_r) * np.cos(psi) + np.cos(phi_r) * np.sin(psi) * np.cos(a)
+    )
     lam_ipp = lam_r + np.arcsin(np.sin(psi) * np.sin(a) / np.cos(phi_ipp))
 
     return np.degrees(phi_ipp), np.degrees(lam_ipp)
 
 
-def _real_satellite_azimuth_elevation(orbit_data, ground_lat_deg, ground_lon_deg, time_guess: datetime):
+def _real_satellite_azimuth_elevation(
+    orbit_data, ground_lat_deg, ground_lon_deg, time_guess: datetime
+):
     """
     Real satellite azimuth and elevation as seen from a real ground
     point, computed directly from real orbit state vectors -- not
@@ -337,11 +365,21 @@ def _real_satellite_azimuth_elevation(orbit_data, ground_lat_deg, ground_lon_deg
 
     lat_rad, lon_rad = np.radians(ground_lat_deg), np.radians(ground_lon_deg)
     dx = np.array(sat_ecef) - np.array(ground_ecef)
-    rotation = np.array([
-        [-np.sin(lon_rad), np.cos(lon_rad), 0],
-        [-np.sin(lat_rad) * np.cos(lon_rad), -np.sin(lat_rad) * np.sin(lon_rad), np.cos(lat_rad)],
-        [np.cos(lat_rad) * np.cos(lon_rad), np.cos(lat_rad) * np.sin(lon_rad), np.sin(lat_rad)],
-    ])
+    rotation = np.array(
+        [
+            [-np.sin(lon_rad), np.cos(lon_rad), 0],
+            [
+                -np.sin(lat_rad) * np.cos(lon_rad),
+                -np.sin(lat_rad) * np.sin(lon_rad),
+                np.cos(lat_rad),
+            ],
+            [
+                np.cos(lat_rad) * np.cos(lon_rad),
+                np.cos(lat_rad) * np.sin(lon_rad),
+                np.sin(lat_rad),
+            ],
+        ]
+    )
     east, north, up = rotation @ dx
     azimuth_deg = float(np.degrees(np.arctan2(east, north)) % 360)
     horizontal_dist = float(np.sqrt(east**2 + north**2))
@@ -397,12 +435,16 @@ class IonosphericCorrector:
         differently-configured file.
         """
         netrc_path = Path.home() / ".netrc"
-        entry = f"machine urs.earthdata.nasa.gov\nlogin {username}\npassword {password}\n"
+        entry = (
+            f"machine urs.earthdata.nasa.gov\nlogin {username}\npassword {password}\n"
+        )
 
         if netrc_path.exists():
             existing = netrc_path.read_text()
             if "urs.earthdata.nasa.gov" in existing:
-                logger.info("~/.netrc already has an urs.earthdata.nasa.gov entry — nothing to do.")
+                logger.info(
+                    "~/.netrc already has an urs.earthdata.nasa.gov entry — nothing to do."
+                )
                 return
             with open(netrc_path, "a") as f:
                 f.write(entry)
@@ -412,7 +454,9 @@ class IonosphericCorrector:
 
         netrc_path.write_text(entry)
         try:
-            netrc_path.chmod(0o600)  # required -- most netrc readers reject world-readable files
+            netrc_path.chmod(
+                0o600
+            )  # required -- most netrc readers reject world-readable files
         except OSError:
             pass
         logger.info("Wrote Earthdata Login credentials to %s", netrc_path)
@@ -529,8 +573,12 @@ class IonosphericCorrector:
         maps_ref, lats_ref, lons_ref = parse_ionex(ionex_ref)
         maps_sec, lats_sec, lons_sec = parse_ionex(ionex_sec)
 
-        vtec_ref = _interpolate_vtec(maps_ref, lats_ref, lons_ref, dt_ref, center_lat, center_lon)
-        vtec_sec = _interpolate_vtec(maps_sec, lats_sec, lons_sec, dt_sec, center_lat, center_lon)
+        vtec_ref = _interpolate_vtec(
+            maps_ref, lats_ref, lons_ref, dt_ref, center_lat, center_lon
+        )
+        vtec_sec = _interpolate_vtec(
+            maps_sec, lats_sec, lons_sec, dt_sec, center_lat, center_lon
+        )
 
         phase_ref = _tec_to_los_phase(vtec_ref, incidence_angle_deg, wavelength_m)
         phase_sec = _tec_to_los_phase(vtec_sec, incidence_angle_deg, wavelength_m)
@@ -539,7 +587,9 @@ class IonosphericCorrector:
         logger.info(
             "Ionospheric correction: VTEC_ref=%.1f TECU, VTEC_sec=%.1f TECU, "
             "real phase contribution=%.3f rad",
-            vtec_ref, vtec_sec, iono_phase,
+            vtec_ref,
+            vtec_sec,
+            iono_phase,
         )
 
         corrected = np.angle(np.exp(1j * (phase - iono_phase)))
@@ -612,34 +662,53 @@ class IonosphericCorrector:
 
         orbit_ref = parse_orbit_file(reference_orbit_file)
         orbit_sec = parse_orbit_file(secondary_orbit_file)
-        az_ref, el_ref = _real_satellite_azimuth_elevation(orbit_ref, center_lat, center_lon, dt_ref)
-        az_sec, el_sec = _real_satellite_azimuth_elevation(orbit_sec, center_lat, center_lon, dt_sec)
+        az_ref, el_ref = _real_satellite_azimuth_elevation(
+            orbit_ref, center_lat, center_lon, dt_ref
+        )
+        az_sec, el_sec = _real_satellite_azimuth_elevation(
+            orbit_sec, center_lat, center_lon, dt_sec
+        )
 
-        ipp_lat_ref, ipp_lon_ref = _compute_ipp_location(lat_grid, lon_grid, az_ref, el_ref, shell_height_km)
-        ipp_lat_sec, ipp_lon_sec = _compute_ipp_location(lat_grid, lon_grid, az_sec, el_sec, shell_height_km)
+        ipp_lat_ref, ipp_lon_ref = _compute_ipp_location(
+            lat_grid, lon_grid, az_ref, el_ref, shell_height_km
+        )
+        ipp_lat_sec, ipp_lon_sec = _compute_ipp_location(
+            lat_grid, lon_grid, az_sec, el_sec, shell_height_km
+        )
 
         ionex_ref = self._require_ionex_for_date(dt_ref)
         ionex_sec = self._require_ionex_for_date(dt_sec)
         maps_ref, lats_ref, lons_ref = parse_ionex(ionex_ref)
         maps_sec, lats_sec, lons_sec = parse_ionex(ionex_sec)
 
-        vtec_ref_grid = _interpolate_vtec_grid(maps_ref, lats_ref, lons_ref, dt_ref, ipp_lat_ref, ipp_lon_ref)
-        vtec_sec_grid = _interpolate_vtec_grid(maps_sec, lats_sec, lons_sec, dt_sec, ipp_lat_sec, ipp_lon_sec)
+        vtec_ref_grid = _interpolate_vtec_grid(
+            maps_ref, lats_ref, lons_ref, dt_ref, ipp_lat_ref, ipp_lon_ref
+        )
+        vtec_sec_grid = _interpolate_vtec_grid(
+            maps_sec, lats_sec, lons_sec, dt_sec, ipp_lat_sec, ipp_lon_sec
+        )
 
         # Real, per-pixel incidence angle from elevation (elevation
         # computed at scene center above -- see the stated
         # simplification in this method's own docstring)
         incidence_ref, incidence_sec = 90.0 - el_ref, 90.0 - el_sec
-        phase_ref_grid = _tec_to_los_phase(vtec_ref_grid, incidence_ref, wavelength_m, shell_height_km)
-        phase_sec_grid = _tec_to_los_phase(vtec_sec_grid, incidence_sec, wavelength_m, shell_height_km)
+        phase_ref_grid = _tec_to_los_phase(
+            vtec_ref_grid, incidence_ref, wavelength_m, shell_height_km
+        )
+        phase_sec_grid = _tec_to_los_phase(
+            vtec_sec_grid, incidence_sec, wavelength_m, shell_height_km
+        )
         iono_phase_grid = phase_sec_grid - phase_ref_grid
 
         logger.info(
             "Per-pixel ionospheric correction: VTEC_ref range=[%.1f, %.1f] TECU, "
             "VTEC_sec range=[%.1f, %.1f] TECU, real phase correction range=[%.3f, %.3f] rad",
-            np.nanmin(vtec_ref_grid), np.nanmax(vtec_ref_grid),
-            np.nanmin(vtec_sec_grid), np.nanmax(vtec_sec_grid),
-            np.nanmin(iono_phase_grid), np.nanmax(iono_phase_grid),
+            np.nanmin(vtec_ref_grid),
+            np.nanmax(vtec_ref_grid),
+            np.nanmin(vtec_sec_grid),
+            np.nanmax(vtec_sec_grid),
+            np.nanmin(iono_phase_grid),
+            np.nanmax(iono_phase_grid),
         )
 
         corrected = np.angle(np.exp(1j * (phase - iono_phase_grid)))

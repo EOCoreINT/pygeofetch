@@ -139,12 +139,16 @@ class SentinelHubProvider(AbstractBaseProvider):
             }
         if query.start_date or query.end_date:
             payload["timeRange"] = {
-                "from": f"{query.start_date}T00:00:00Z"
-                if query.start_date
-                else "2015-01-01T00:00:00Z",
-                "to": f"{query.end_date}T23:59:59Z"
-                if query.end_date
-                else datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "from": (
+                    f"{query.start_date}T00:00:00Z"
+                    if query.start_date
+                    else "2015-01-01T00:00:00Z"
+                ),
+                "to": (
+                    f"{query.end_date}T23:59:59Z"
+                    if query.end_date
+                    else datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+                ),
             }
         if query.cloud_cover_max is not None:
             payload["filter"] = {"maxCloudCoverage": query.cloud_cover_max}

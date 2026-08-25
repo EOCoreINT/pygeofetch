@@ -399,9 +399,11 @@ class SatelliteData(BaseModel):
                 href=asset_data.get("href", ""),
                 title=asset_data.get("title"),
                 media_type=asset_data.get("type"),
-                roles=[asset_data["roles"]]
-                if isinstance(asset_data.get("roles"), str)
-                else list(asset_data.get("roles") or []),
+                roles=(
+                    [asset_data["roles"]]
+                    if isinstance(asset_data.get("roles"), str)
+                    else list(asset_data.get("roles") or [])
+                ),
                 size_bytes=asset_data.get("size"),
             )
 

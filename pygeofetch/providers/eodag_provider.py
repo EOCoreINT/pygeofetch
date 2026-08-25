@@ -176,9 +176,11 @@ class EODAGProvider(AbstractBaseProvider):
             # Build EODAG search parameters
             params = {
                 "start": str(query.start_date) if query.start_date else "1970-01-01",
-                "end": str(query.end_date)
-                if query.end_date
-                else datetime.utcnow().strftime("%Y-%m-%d"),
+                "end": (
+                    str(query.end_date)
+                    if query.end_date
+                    else datetime.utcnow().strftime("%Y-%m-%d")
+                ),
                 "items_per_page": min(getattr(query, "max_results", 100), 500),
             }
 
@@ -305,7 +307,9 @@ class EODAGProvider(AbstractBaseProvider):
             cloud_cover=props.get("cloudCover"),
             processing_level=processing_level,
             assets={
-                "download": SatelliteAsset(key="download", href=product.remote_location or "")
+                "download": SatelliteAsset(
+                    key="download", href=product.remote_location or ""
+                )
             },
             properties={"eodag_product_id": product.properties.get("id", ""), **props},
         )

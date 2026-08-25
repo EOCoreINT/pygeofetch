@@ -38,6 +38,7 @@ def write_provenance_manifest(
         Path to the written provenance.yaml.
     """
     import pygeofetch
+
     record = {
         "generated_utc": datetime.datetime.utcnow().isoformat() + "Z",
         "environment": {

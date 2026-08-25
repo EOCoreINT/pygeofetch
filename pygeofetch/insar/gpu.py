@@ -63,7 +63,9 @@ def gpu_available() -> bool:
     except ImportError:
         _gpu_available = False
     except Exception as exc:  # pragma: no cover - defensive, real driver errors vary
-        logger.debug("GPU check failed with an unexpected error, assuming no GPU: %s", exc)
+        logger.debug(
+            "GPU check failed with an unexpected error, assuming no GPU: %s", exc
+        )
         _gpu_available = False
     return _gpu_available
 

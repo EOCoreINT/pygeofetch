@@ -177,7 +177,9 @@ def select_consistent_geometry(
                     usable interferometric pair.
     """
     if not search_results:
-        raise ValueError("select_consistent_geometry() received no real search results to group.")
+        raise ValueError(
+            "select_consistent_geometry() received no real search results to group."
+        )
 
     by_track: Dict[Any, List["SatelliteData"]] = defaultdict(list)
     for r in search_results:
@@ -205,7 +207,8 @@ def select_consistent_geometry(
                 "Requested track %s not found among real search results "
                 "(real tracks available: %s) -- falling back to the "
                 "automatic, largest-group selection.",
-                preferred_track, available,
+                preferred_track,
+                available,
             )
             best_track = max(by_track, key=lambda k: len(by_track[k]))
             track_available = False
@@ -220,7 +223,11 @@ def select_consistent_geometry(
     satellite_available = None
     if preferred_satellite is not None:
         requested_unit = _extract_satellite_unit(preferred_satellite)
-        matching = [r for r in kept if _real_product_unit(r) == requested_unit] if requested_unit else []
+        matching = (
+            [r for r in kept if _real_product_unit(r) == requested_unit]
+            if requested_unit
+            else []
+        )
         if matching and len(matching) >= 2:
             kept = matching
             satellite_available = True
@@ -229,7 +236,10 @@ def select_consistent_geometry(
                 "Requested satellite %s not found (or too few real scenes, "
                 "%d) within track %s's %d real scenes -- keeping the whole "
                 "track, no satellite-level filter applied.",
-                preferred_satellite, len(matching), best_track, len(kept),
+                preferred_satellite,
+                len(matching),
+                best_track,
+                len(kept),
             )
             satellite_available = False
 
@@ -260,9 +270,14 @@ def select_consistent_geometry(
     }
 
     report = {
-        "track": best_track, "requested_track": preferred_track, "track_available": track_available,
-        "satellites": satellites, "dropped": dropped, "capped": capped,
-        "requested_satellite": preferred_satellite, "satellite_available": satellite_available,
+        "track": best_track,
+        "requested_track": preferred_track,
+        "track_available": track_available,
+        "satellites": satellites,
+        "dropped": dropped,
+        "capped": capped,
+        "requested_satellite": preferred_satellite,
+        "satellite_available": satellite_available,
     }
     return kept, report
 
@@ -389,8 +404,11 @@ def search_and_select_consistent_stack(
         providers = ["copernicus"]
 
     search_kwargs: Dict[str, Any] = dict(
-        bbox=aoi_bbox, start_date=start_date, end_date=end_date,
-        product_type=product_type, max_results=max_results,
+        bbox=aoi_bbox,
+        start_date=start_date,
+        end_date=end_date,
+        product_type=product_type,
+        max_results=max_results,
     )
     if satellites is not None:
         search_kwargs["satellites"] = satellites
@@ -413,10 +431,13 @@ def search_and_select_consistent_stack(
             "Real search hit max_results=%d exactly -- results may still "
             "be truncated (this exact pattern hid Obuasi's entire 2019 "
             "mine-reopening period once). Raise max_results and re-run "
-            "before trusting anything downstream.", max_results,
+            "before trusting anything downstream.",
+            max_results,
         )
 
-    aoi_polygon = box(aoi_bbox.min_lon, aoi_bbox.min_lat, aoi_bbox.max_lon, aoi_bbox.max_lat)
+    aoi_polygon = box(
+        aoi_bbox.min_lon, aoi_bbox.min_lat, aoi_bbox.max_lon, aoi_bbox.max_lat
+    )
 
     raw_by_date: Dict[str, List[Any]] = defaultdict(list)
     for r in search_results:
@@ -440,28 +461,39 @@ def search_and_select_consistent_stack(
         logger.info(
             "%d of %d multi-candidate date(s) needed the coverage-aware "
             "dedup fix -- the first-arriving result was NOT the best-"
-            "covering one.", picked_non_first, len(multi_candidate_dates),
+            "covering one.",
+            picked_non_first,
+            len(multi_candidate_dates),
         )
 
     selected, geometry_report = select_consistent_geometry(
-        list(by_date.values()), max_scenes=max_scenes,
-        preferred_track=preferred_track, preferred_satellite=preferred_satellite,
+        list(by_date.values()),
+        max_scenes=max_scenes,
+        preferred_track=preferred_track,
+        preferred_satellite=preferred_satellite,
     )
 
     final_coverage = {
-        str(s.datetime)[:10]: aoi_polygon.intersection(shape(s.geometry)).area / aoi_polygon.area
+        str(s.datetime)[:10]: aoi_polygon.intersection(shape(s.geometry)).area
+        / aoi_polygon.area
         for s in selected
     }
-    final_low_coverage_dates = {d: f for d, f in final_coverage.items() if f < min_coverage_fraction}
+    final_low_coverage_dates = {
+        d: f for d, f in final_coverage.items() if f < min_coverage_fraction
+    }
     if final_low_coverage_dates:
         logger.warning(
             "%d real date(s) still below %.0f%% AOI coverage after the "
             "coverage-aware dedup -- genuine gaps (no real acquisition "
             "covering the AOI that date on this track), not a dedup "
-            "artifact: %s", len(final_low_coverage_dates),
-            min_coverage_fraction * 100, sorted(final_low_coverage_dates),
+            "artifact: %s",
+            len(final_low_coverage_dates),
+            min_coverage_fraction * 100,
+            sorted(final_low_coverage_dates),
         )
-        selected = [s for s in selected if str(s.datetime)[:10] not in final_low_coverage_dates]
+        selected = [
+            s for s in selected if str(s.datetime)[:10] not in final_low_coverage_dates
+        ]
 
     report = {
         "geometry_report": geometry_report,
@@ -590,11 +622,17 @@ def select_burst_synchronized_dates(
 
     dates_for_screening = sorted(set(safe_zips) & set(orbit_files) & set(dates))
     sync_results = screen_stack_burst_synchronization(
-        dates_for_screening, safe_zips, orbit_files, ground_point, swath_hints=swath_hints,
+        dates_for_screening,
+        safe_zips,
+        orbit_files,
+        ground_point,
+        swath_hints=swath_hints,
     )
 
     _, family_report = select_pairs_for_processing(
-        sync_results, dates_for_screening, redundancy=redundancy,
+        sync_results,
+        dates_for_screening,
+        redundancy=redundancy,
     )
 
     good_dates = sorted(set(d for pair in family_report["good_pairs"] for d in pair))
@@ -619,7 +657,11 @@ def select_burst_synchronized_dates(
     majority_date_set = set(good_dates)
 
     def _internal_pairs(pairs):
-        return [(d1, d2) for d1, d2 in pairs if d1 in majority_date_set and d2 in majority_date_set]
+        return [
+            (d1, d2)
+            for d1, d2 in pairs
+            if d1 in majority_date_set and d2 in majority_date_set
+        ]
 
     def _connected(nodes, edges):
         if not nodes:
@@ -642,7 +684,9 @@ def select_burst_synchronized_dates(
     internal_good = _internal_pairs(family_report["good_pairs"])
     internal_bridge = _internal_pairs(family_report["bridge_pairs"])
 
-    majority_self_connected = _connected(majority_date_set, internal_good + internal_bridge)
+    majority_self_connected = _connected(
+        majority_date_set, internal_good + internal_bridge
+    )
     needed_internal_bridges = (
         not _connected(majority_date_set, internal_good) and majority_self_connected
     )
@@ -659,7 +703,9 @@ def select_burst_synchronized_dates(
         # non-standard sync_results representation never breaks the
         # majority-only-and-clean path.
         offset_by_pair = {(r.date1, r.date2): r.sync_offset_ms for r in sync_results}
-        offset_by_pair.update({(r.date2, r.date1): r.sync_offset_ms for r in sync_results})
+        offset_by_pair.update(
+            {(r.date2, r.date1): r.sync_offset_ms for r in sync_results}
+        )
         majority_internal_bridges = [
             (d1, d2, round(offset_by_pair[(d1, d2)], 1)) for d1, d2 in internal_bridge
         ]
@@ -672,27 +718,35 @@ def select_burst_synchronized_dates(
             "Burst-sync majority family (%d real dates) connects on its "
             "own -- excluding %d minority-family date(s) entirely rather "
             "than keeping known-poor chaff.%s%s",
-            len(good_dates), len(bridge_only_dates),
-            f" (below the recommended min_majority_dates={min_majority_dates}; "
-            f"widen the search window for a more robust network if possible.)"
-            if below_recommended else "",
-            f" Note: the majority family itself still needed {len(majority_internal_bridges)} "
-            f"internal bridge(s) to stay connected: {majority_internal_bridges} -- real "
-            f"same-family drift, not related to the excluded minority date(s)."
-            if majority_internal_bridges else "",
+            len(good_dates),
+            len(bridge_only_dates),
+            (
+                f" (below the recommended min_majority_dates={min_majority_dates}; "
+                f"widen the search window for a more robust network if possible.)"
+                if below_recommended
+                else ""
+            ),
+            (
+                f" Note: the majority family itself still needed {len(majority_internal_bridges)} "
+                f"internal bridge(s) to stay connected: {majority_internal_bridges} -- real "
+                f"same-family drift, not related to the excluded minority date(s)."
+                if majority_internal_bridges
+                else ""
+            ),
         )
     else:
         reason = (
             f"only {len(good_dates)} real dates (< min_workable_dates={min_workable_dates})"
-            if len(good_dates) < min_workable_dates else
-            "disconnected even among themselves"
+            if len(good_dates) < min_workable_dates
+            else "disconnected even among themselves"
         )
         logger.info(
             "Burst-sync majority family has %s -- keeping %d minority-family "
             "date(s) as necessary bridges rather than leaving the network "
             "unusable. Widen the real search window if more majority-family "
             "dates should be available.",
-            reason, len(bridge_only_dates),
+            reason,
+            len(bridge_only_dates),
         )
         chosen_dates = sorted(good_dates + bridge_only_dates)
         used_majority_only = False
@@ -730,18 +784,24 @@ def bbox_to_geojson_path(bbox: Any, name: str = "AOI") -> Path:
 
     geojson = {
         "type": "FeatureCollection",
-        "features": [{
-            "type": "Feature",
-            "properties": {"name": name},
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [[
-                    [bbox.min_lon, bbox.min_lat], [bbox.max_lon, bbox.min_lat],
-                    [bbox.max_lon, bbox.max_lat], [bbox.min_lon, bbox.max_lat],
-                    [bbox.min_lon, bbox.min_lat],
-                ]],
-            },
-        }],
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {"name": name},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [bbox.min_lon, bbox.min_lat],
+                            [bbox.max_lon, bbox.min_lat],
+                            [bbox.max_lon, bbox.max_lat],
+                            [bbox.min_lon, bbox.max_lat],
+                            [bbox.min_lon, bbox.min_lat],
+                        ]
+                    ],
+                },
+            }
+        ],
     }
     path = Path(tempfile.mkdtemp()) / "aoi.geojson"
     path.write_text(json.dumps(geojson))

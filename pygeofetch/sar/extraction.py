@@ -83,7 +83,9 @@ def georeference_via_gcps_if_needed(path: Union[str, Path]) -> Path:
 
         logger.info(
             "Georeferenced %s via %d embedded GCPs → %s",
-            path.name, len(gcp_list), georef_path.name,
+            path.name,
+            len(gcp_list),
+            georef_path.name,
         )
         return georef_path
 
@@ -135,7 +137,8 @@ class GRDExtractor:
         try:
             with zipfile.ZipFile(zip_path) as zf:
                 pol_members = [
-                    n for n in zf.namelist()
+                    n
+                    for n in zf.namelist()
                     if "/measurement/" in n
                     and f"-{self._pol}-" in n
                     and n.endswith(".tiff")
@@ -143,7 +146,8 @@ class GRDExtractor:
                 if not pol_members:
                     logger.error(
                         "No %s measurement band found in %s",
-                        self._pol.upper(), zip_path.name,
+                        self._pol.upper(),
+                        zip_path.name,
                     )
                     return None
 

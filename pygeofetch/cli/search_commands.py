@@ -67,7 +67,7 @@ def search() -> None:
 @click.option(
     "--polarisation",
     default=None,
-    help='SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as --product-type.',
+    help="SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as --product-type.",
 )
 @click.option("--max-results", "-n", default=100, show_default=True)
 @click.option(

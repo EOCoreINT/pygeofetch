@@ -136,18 +136,28 @@ def plan_monitoring_run(
 
     if not new_dates:
         return MonitoringRunResult(
-            new_dates=[], new_pairs=[], network_changed=False, ran_inversion=False,
+            new_dates=[],
+            new_pairs=[],
+            network_changed=False,
+            ran_inversion=False,
             message="No new dates since last run -- nothing to do.",
         )
 
-    new_pairs = generate_incremental_pairs(new_dates, sorted(already_processed), n_neighbors)
+    new_pairs = generate_incremental_pairs(
+        new_dates, sorted(already_processed), n_neighbors
+    )
 
     logger.info(
         "Monitoring run: %d new date(s), %d new pair(s) needed (%d neighbors each).",
-        len(new_dates), len(new_pairs), n_neighbors,
+        len(new_dates),
+        len(new_pairs),
+        n_neighbors,
     )
 
     return MonitoringRunResult(
-        new_dates=new_dates, new_pairs=new_pairs, network_changed=True, ran_inversion=False,
+        new_dates=new_dates,
+        new_pairs=new_pairs,
+        network_changed=True,
+        ran_inversion=False,
         message=f"{len(new_dates)} new date(s), {len(new_pairs)} new pair(s) planned.",
     )

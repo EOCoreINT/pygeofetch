@@ -516,10 +516,20 @@ class USGSProvider(AbstractBaseProvider):
                 if r.datetime is None:
                     in_range.append(r)  # can't judge — don't silently drop it
                     continue
-                r_date = r.datetime.date() if hasattr(r.datetime, "date") else r.datetime
-                if start and r_date < (start if hasattr(start, "year") else datetime.strptime(str(start), "%Y-%m-%d").date()):
+                r_date = (
+                    r.datetime.date() if hasattr(r.datetime, "date") else r.datetime
+                )
+                if start and r_date < (
+                    start
+                    if hasattr(start, "year")
+                    else datetime.strptime(str(start), "%Y-%m-%d").date()
+                ):
                     out_of_range.append(r)
-                elif end and r_date > (end if hasattr(end, "year") else datetime.strptime(str(end), "%Y-%m-%d").date()):
+                elif end and r_date > (
+                    end
+                    if hasattr(end, "year")
+                    else datetime.strptime(str(end), "%Y-%m-%d").date()
+                ):
                     out_of_range.append(r)
                 else:
                     in_range.append(r)
@@ -575,7 +585,12 @@ class USGSProvider(AbstractBaseProvider):
             date_str = scene.get("acquisitionDate") or scene.get("startingDate")
 
         if date_str:
-            for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M:%S"):
+            for fmt in (
+                "%Y-%m-%d",
+                "%Y-%m-%dT%H:%M:%S.%fZ",
+                "%Y-%m-%dT%H:%M:%SZ",
+                "%Y-%m-%d %H:%M:%S",
+            ):
                 try:
                     dt = datetime.strptime(date_str, fmt)
                     break

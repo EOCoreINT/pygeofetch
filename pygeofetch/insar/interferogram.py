@@ -218,8 +218,12 @@ class InterferogramResult:
         mv.add_basemap("SATELLITE")
         layer_name = f"{band} ({self.reference_date} -> {self.secondary_date})"
         mv.add_raster(
-            str(raster_path), colormap=colormap, layer_name=layer_name,
-            opacity=opacity, vmin=vmin, vmax=vmax,
+            str(raster_path),
+            colormap=colormap,
+            layer_name=layer_name,
+            opacity=opacity,
+            vmin=vmin,
+            vmax=vmax,
         )
         # Real fix: MapViewer needs .show() called explicitly to
         # trigger Jupyter's rich display -- confirmed directly earlier
@@ -382,16 +386,20 @@ class InterferogramGenerator:
             # FIX: Full sub-swath files are GCP-georeferenced and lack an affine
             # transform. Downstream steps (flat-earth, topo phase, AOI crop)
             # require a transform. Fit an approximate one from the GCPs.
-            if profile.get("transform") is None or getattr(profile.get("transform"), "is_identity", False):
+            if profile.get("transform") is None or getattr(
+                profile.get("transform"), "is_identity", False
+            ):
                 gcps, gcp_crs = src.gcps
                 if gcps and len(gcps) >= 4:
                     from rasterio.transform import from_gcps
+
                     profile["transform"] = from_gcps(gcps)
                     if gcp_crs:
                         profile["crs"] = gcp_crs
                     logger.info(
                         "Fitted approximate affine transform from %d GCPs for %s",
-                        len(gcps), path.name
+                        len(gcps),
+                        path.name,
                     )
 
             dtype = src.dtypes[0]
@@ -406,7 +414,9 @@ class InterferogramGenerator:
                 logger.warning(
                     "%s has no complex/phase data (dtype=%s, count=%d). "
                     "InSAR requires complex SLC data.",
-                    path.name, dtype, src.count,
+                    path.name,
+                    dtype,
+                    src.count,
                 )
                 data = src.read(1).astype(np.complex64)
                 return data, profile
@@ -416,8 +426,10 @@ class InterferogramGenerator:
             for row_start in range(0, height, chunk_rows):
                 row_end = min(row_start + chunk_rows, height)
                 window = Window(
-                    col_off=0, row_off=row_start,
-                    width=width, height=row_end - row_start,
+                    col_off=0,
+                    row_off=row_start,
+                    width=width,
+                    height=row_end - row_start,
                 )
 
                 if is_complex:
@@ -436,8 +448,10 @@ class InterferogramGenerator:
 
             logger.info(
                 "Read complex SLC in %d chunks of %d rows: %s -> %s",
-                len(range(0, height, chunk_rows)), chunk_rows,
-                path.name, data.shape,
+                len(range(0, height, chunk_rows)),
+                chunk_rows,
+                path.name,
+                data.shape,
             )
 
         return data, profile
@@ -498,19 +512,30 @@ class InterferogramGenerator:
 
         # Convert AOI corners to pixel coordinates
         # Note: rowcol expects (x, y) = (lon, lat)
-                # Convert AOI corners to pixel coordinates
+        # Convert AOI corners to pixel coordinates
         # FIX: Sentinel-1 grids are often rotated. We must check all 4 corners
         # to find the true pixel bounding box, not just two opposite corners.
         try:
-            lons = [aoi_bbox.min_lon, aoi_bbox.max_lon, aoi_bbox.min_lon, aoi_bbox.max_lon]
-            lats = [aoi_bbox.min_lat, aoi_bbox.min_lat, aoi_bbox.max_lat, aoi_bbox.max_lat]
+            lons = [
+                aoi_bbox.min_lon,
+                aoi_bbox.max_lon,
+                aoi_bbox.min_lon,
+                aoi_bbox.max_lon,
+            ]
+            lats = [
+                aoi_bbox.min_lat,
+                aoi_bbox.min_lat,
+                aoi_bbox.max_lat,
+                aoi_bbox.max_lat,
+            ]
             rows, cols = rowcol(transform, lons, lats)
             row_min, row_max = min(rows), max(rows)
             col_min, col_max = min(cols), max(cols)
         except Exception as exc:
             logger.warning(
                 "Failed to convert AOI to pixel coordinates (%s) — "
-                "returning full debursted arrays.", exc
+                "returning full debursted arrays.",
+                exc,
             )
             return ref_debursted, sec_debursted, profile, None
 
@@ -522,9 +547,13 @@ class InterferogramGenerator:
 
         # Add margin
         row_min = max(0, row_min - margin_px)
-        row_max = min(ref_debursted.shape[0], row_max + margin_px + 1)  # +1 because slice end is exclusive
+        row_max = min(
+            ref_debursted.shape[0], row_max + margin_px + 1
+        )  # +1 because slice end is exclusive
         col_min = max(0, col_min - margin_px)
-        col_max = min(ref_debursted.shape[1], col_max + margin_px + 1)  # +1 because slice end is exclusive
+        col_max = min(
+            ref_debursted.shape[1], col_max + margin_px + 1
+        )  # +1 because slice end is exclusive
 
         n_rows = row_max - row_min
         n_cols = col_max - col_min
@@ -532,7 +561,9 @@ class InterferogramGenerator:
         if n_rows <= 0 or n_cols <= 0:
             logger.warning(
                 "AOI crop window is empty (%d x %d) — returning full "
-                "debursted arrays.", n_rows, n_cols
+                "debursted arrays.",
+                n_rows,
+                n_cols,
             )
             return ref_debursted, sec_debursted, profile, None
 
@@ -542,6 +573,7 @@ class InterferogramGenerator:
 
         # Update the profile transform to reflect the new origin
         from rasterio import Affine
+
         new_transform = transform * Affine.translation(col_min, row_min)
         updated_profile = dict(profile)
         updated_profile["transform"] = new_transform
@@ -558,8 +590,12 @@ class InterferogramGenerator:
         logger.info(
             "Cropped to AOI after deburst: %s -> (%d, %d) "
             "(row_off=%d, col_off=%d, margin=%d px)",
-            ref_debursted.shape, n_rows, n_cols,
-            row_min, col_min, margin_px,
+            ref_debursted.shape,
+            n_rows,
+            n_cols,
+            row_min,
+            col_min,
+            margin_px,
         )
 
         return ref_cropped, sec_cropped, updated_profile, crop_info
@@ -662,7 +698,10 @@ class InterferogramGenerator:
         try:
             import rasterio
         except ImportError:
-            return interferogram, {"correction_applied": False, "reason": "rasterio_missing"}
+            return interferogram, {
+                "correction_applied": False,
+                "reason": "rasterio_missing",
+            }
 
         try:
             interferogram_crs = profile.get("crs")
@@ -670,8 +709,12 @@ class InterferogramGenerator:
 
             # Reproject DEM to interferogram grid (full size, unavoidable)
             with rasterio.open(dem_path) as dem_src:
-                if interferogram_crs is not None and interferogram_transform is not None:
+                if (
+                    interferogram_crs is not None
+                    and interferogram_transform is not None
+                ):
                     from rasterio.warp import Resampling, reproject
+
                     dem = np.empty(interferogram.shape, dtype=np.float32)
                     reproject(
                         source=rasterio.band(dem_src, 1),
@@ -693,6 +736,7 @@ class InterferogramGenerator:
                     dem = dem_src.read(1).astype(np.float32)
                     if dem.shape != interferogram.shape:
                         from scipy.ndimage import zoom
+
                         zf = (
                             interferogram.shape[0] / dem.shape[0],
                             interferogram.shape[1] / dem.shape[1],
@@ -743,7 +787,7 @@ class InterferogramGenerator:
             coarse = np.linspace(-max_slope, max_slope, 400)
             best_slope = float(coarse[np.argmax(_flatness(coarse))])
 
-            fine_half_width = (coarse[1] - coarse[0])
+            fine_half_width = coarse[1] - coarse[0]
             fine = np.linspace(
                 best_slope - fine_half_width, best_slope + fine_half_width, 400
             )
@@ -777,7 +821,8 @@ class InterferogramGenerator:
             if r_squared < 0.5:
                 logger.info(
                     "DEM-elevation correlation too weak (R²=%.2f) — skipping "
-                    "topographic phase removal.", r_squared
+                    "topographic phase removal.",
+                    r_squared,
                 )
                 return interferogram, {
                     "correction_applied": False,
@@ -789,18 +834,18 @@ class InterferogramGenerator:
             for row_start in range(0, interferogram.shape[0], chunk_rows):
                 row_end = min(row_start + chunk_rows, interferogram.shape[0])
 
-                topo_phase_chunk = np.angle(np.exp(1j * (
-                    best_slope * dem[row_start:row_end] + intercept
-                )))
-                corrected[row_start:row_end] = (
-                    interferogram[row_start:row_end] * np.exp(-1j * topo_phase_chunk)
+                topo_phase_chunk = np.angle(
+                    np.exp(1j * (best_slope * dem[row_start:row_end] + intercept))
                 )
+                corrected[row_start:row_end] = interferogram[
+                    row_start:row_end
+                ] * np.exp(-1j * topo_phase_chunk)
 
                 del topo_phase_chunk
 
             logger.info(
                 "Topographic phase regression R²=%.2f — correction applied (chunked)",
-                r_squared
+                r_squared,
             )
 
             del dem, phase, dem_v, phase_v
@@ -819,11 +864,16 @@ class InterferogramGenerator:
     # ══════════════════════════════════════════════════════════════════
 
     def _burst_aware_processing(
-        self, ref_complex, sec_complex,
-        reference_safe_zip, secondary_safe_zip,
-        reference_extracted_path, secondary_extracted_path,
+        self,
+        ref_complex,
+        sec_complex,
+        reference_safe_zip,
+        secondary_safe_zip,
+        reference_extracted_path,
+        secondary_extracted_path,
         representative_row_offset: float = 0.0,
-        reference_orbit_file=None, secondary_orbit_file=None,
+        reference_orbit_file=None,
+        secondary_orbit_file=None,
     ):
         """
         Real per-burst-overlap ESD (esd.py) followed by real deburst
@@ -866,16 +916,24 @@ class InterferogramGenerator:
 
             ref_swath_hint = (
                 read_matched_swath(reference_extracted_path)
-                if reference_extracted_path is not None else None
+                if reference_extracted_path is not None
+                else None
             )
             sec_swath_hint = (
                 read_matched_swath(secondary_extracted_path)
-                if secondary_extracted_path is not None else None
+                if secondary_extracted_path is not None
+                else None
             )
 
-            ref_geom = parse_slc_geometry(reference_safe_zip, member_hint=ref_swath_hint)
-            ref_burst_info = parse_burst_info(reference_safe_zip, member_hint=ref_swath_hint)
-            sec_burst_info = parse_burst_info(secondary_safe_zip, member_hint=sec_swath_hint)
+            ref_geom = parse_slc_geometry(
+                reference_safe_zip, member_hint=ref_swath_hint
+            )
+            ref_burst_info = parse_burst_info(
+                reference_safe_zip, member_hint=ref_swath_hint
+            )
+            sec_burst_info = parse_burst_info(
+                secondary_safe_zip, member_hint=sec_swath_hint
+            )
 
             # Guard against any code path that accidentally returns a raw list.
             if not isinstance(ref_burst_info, SwathTiming):
@@ -914,7 +972,8 @@ class InterferogramGenerator:
             logger.info(
                 "ESD common-ground diagnostic: reference overlap lengths "
                 "(azimuth lines): [%s] (total %d)",
-                ", ".join(str(n) for n in common_lines), total_common,
+                ", ".join(str(n) for n in common_lines),
+                total_common,
             )
 
             metadata["esd_common_ground_lines"] = common_lines
@@ -965,17 +1024,26 @@ class InterferogramGenerator:
                     if eval_lon is not None:
                         ground_point = geodetic_to_ecef(eval_lat, eval_lon, 0.0)
                         ref_center_time = ref_geom.azimuth_time(ref_geom.n_lines / 2)
-                        sec_geom_for_sync = parse_slc_geometry(secondary_safe_zip, member_hint=sec_swath_hint)
-                        sec_center_time = sec_geom_for_sync.azimuth_time(sec_geom_for_sync.n_lines / 2)
+                        sec_geom_for_sync = parse_slc_geometry(
+                            secondary_safe_zip, member_hint=sec_swath_hint
+                        )
+                        sec_center_time = sec_geom_for_sync.azimuth_time(
+                            sec_geom_for_sync.n_lines / 2
+                        )
 
                         sync_result = compute_burst_synchronization(
-                            ref_orbit, sec_orbit, ref_burst_info, sec_burst_info,
+                            ref_orbit,
+                            sec_orbit,
+                            ref_burst_info,
+                            sec_burst_info,
                             ground_point,
                             ref_time_guess=ref_center_time,
                             sec_time_guess=sec_center_time,
                         )
                         metadata["burst_sync_offset_ms"] = sync_result["sync_offset_ms"]
-                        metadata["burst_sync_within_requirement"] = sync_result["within_esa_requirement"]
+                        metadata["burst_sync_within_requirement"] = sync_result[
+                            "within_esa_requirement"
+                        ]
                 except Exception as exc:
                     logger.warning(
                         "Burst synchronization diagnostic failed (%s) — "
@@ -993,21 +1061,29 @@ class InterferogramGenerator:
 
             ref_row_off, _ = (
                 read_crop_offset(reference_extracted_path)
-                if reference_extracted_path is not None else (0.0, 0.0)
+                if reference_extracted_path is not None
+                else (0.0, 0.0)
             )
             sec_row_off, _ = (
                 read_crop_offset(secondary_extracted_path)
-                if secondary_extracted_path is not None else (0.0, 0.0)
+                if secondary_extracted_path is not None
+                else (0.0, 0.0)
             )
 
             # Right after coregistration, before ESD/Deburst:
             min_rows = min(ref_complex.shape[0], sec_complex.shape[0])
             min_cols = min(ref_complex.shape[1], sec_complex.shape[1])
 
-            if ref_complex.shape != (min_rows, min_cols) or sec_complex.shape != (min_rows, min_cols):
+            if ref_complex.shape != (min_rows, min_cols) or sec_complex.shape != (
+                min_rows,
+                min_cols,
+            ):
                 logger.warning(
                     "Reference %s and secondary %s shapes differ — cropping both to common (%d, %d) shape before ESD.",
-                    ref_complex.shape, sec_complex.shape, min_rows, min_cols
+                    ref_complex.shape,
+                    sec_complex.shape,
+                    min_rows,
+                    min_cols,
                 )
                 ref_complex = ref_complex[:min_rows, :min_cols]
                 sec_complex = sec_complex[:min_rows, :min_cols]
@@ -1018,18 +1094,25 @@ class InterferogramGenerator:
             # comparing reference and secondary at the same real rows.
             if self._esd_enabled:
                 esd_shift_s, per_overlap = estimate_esd_shift_per_burst_overlap(
-                    ref_complex, sec_complex, ref_burst_info, azimuth_time_interval_s,
+                    ref_complex,
+                    sec_complex,
+                    ref_burst_info,
+                    azimuth_time_interval_s,
                     row_offset=int(ref_row_off),
                 )
                 if esd_shift_s is not None:
                     esd_shift_px = esd_shift_s / azimuth_time_interval_s
                     n_usable = sum(1 for s in per_overlap if s is not None)
                     if abs(esd_shift_px) > 1e-4:
-                        sec_complex = self._apply_azimuth_shift(sec_complex, esd_shift_px)
+                        sec_complex = self._apply_azimuth_shift(
+                            sec_complex, esd_shift_px
+                        )
                     logger.info(
                         "Real per-burst-overlap ESD azimuth shift: %.6f px "
                         "(%d/%d burst overlaps usable)",
-                        esd_shift_px, n_usable, len(per_overlap),
+                        esd_shift_px,
+                        n_usable,
+                        len(per_overlap),
                     )
                     metadata["esd_shift_px"] = esd_shift_px
                     metadata["esd_overlaps_usable"] = n_usable
@@ -1065,7 +1148,9 @@ class InterferogramGenerator:
             # earlier, on the pre-deburst array, and was already using
             # ref_row_off correctly for both images at that stage.
             ref_debursted, ref_first_kept_row = deburst_array(
-                ref_complex, ref_burst_info, azimuth_time_interval_s,
+                ref_complex,
+                ref_burst_info,
+                azimuth_time_interval_s,
                 row_offset=int(ref_row_off),
             )
 
@@ -1076,7 +1161,9 @@ class InterferogramGenerator:
             # sec_burst_info applies the secondary's original, un-warped timing,
             # which cuts out the wrong rows and destroys coherence at burst edges.
             sec_debursted, _ = deburst_array(
-                sec_complex, ref_burst_info, azimuth_time_interval_s,
+                sec_complex,
+                ref_burst_info,
+                azimuth_time_interval_s,
                 row_offset=int(ref_row_off),
             )
 
@@ -1102,7 +1189,10 @@ class InterferogramGenerator:
                     "differ (different dates' real burst timing need "
                     "not match exactly) — cropping both to the common "
                     "(%d, %d) shape.",
-                    ref_debursted.shape, sec_debursted.shape, min_rows, min_cols,
+                    ref_debursted.shape,
+                    sec_debursted.shape,
+                    min_rows,
+                    min_cols,
                 )
                 ref_debursted = ref_debursted[:min_rows, :min_cols]
                 sec_debursted = sec_debursted[:min_rows, :min_cols]
@@ -1112,7 +1202,8 @@ class InterferogramGenerator:
             logger.info(
                 "Real burst-aware processing complete: %s -> %s "
                 "(burst-boundary redundancy removed)",
-                ref_complex.shape, ref_debursted.shape,
+                ref_complex.shape,
+                ref_debursted.shape,
             )
             return ref_debursted, sec_debursted, metadata
 
@@ -1131,7 +1222,8 @@ class InterferogramGenerator:
                 if esd_shift is not None and abs(esd_shift) > 1e-4:
                     sec_complex = self._apply_azimuth_shift(sec_complex, esd_shift)
                     logger.info(
-                        "Whole-image ESD azimuth shift applied (fallback): %.5f px", esd_shift
+                        "Whole-image ESD azimuth shift applied (fallback): %.5f px",
+                        esd_shift,
                     )
             metadata["esd_shift_px"] = esd_shift
             return ref_complex, sec_complex, metadata
@@ -1283,6 +1375,7 @@ class InterferogramGenerator:
 
         # Validate
         from pygeofetch.insar.validate import DataValidator
+
         DataValidator.validate_slc(ref_complex, name="reference SLC").raise_if_invalid()
         DataValidator.validate_slc(sec_complex, name="secondary SLC").raise_if_invalid()
 
@@ -1296,16 +1389,24 @@ class InterferogramGenerator:
                     "different Sentinel-1 satellites -- burst boundaries "
                     "for the same real ground area are not guaranteed to "
                     "align between S1A and S1B.",
-                    ref_platform, sec_platform,
+                    ref_platform,
+                    sec_platform,
                 )
             try:
                 from pygeofetch.insar.coregister import read_matched_swath
-                ref_swath = read_matched_swath(reference) if reference is not None else None
-                sec_swath = read_matched_swath(secondary) if secondary is not None else None
+
+                ref_swath = (
+                    read_matched_swath(reference) if reference is not None else None
+                )
+                sec_swath = (
+                    read_matched_swath(secondary) if secondary is not None else None
+                )
                 if ref_swath and sec_swath and ref_swath != sec_swath:
                     logger.warning(
                         "Reference (%s) and secondary (%s) extracted from "
-                        "different sub-swaths.", ref_swath, sec_swath,
+                        "different sub-swaths.",
+                        ref_swath,
+                        sec_swath,
                     )
             except Exception:
                 pass
@@ -1313,8 +1414,7 @@ class InterferogramGenerator:
         # ── Step 1: Coregistration ──
         if coregistration_method == "raster_collocation":
             ref_has_geocoding = (
-                profile.get("crs") is not None
-                and profile.get("transform") is not None
+                profile.get("crs") is not None and profile.get("transform") is not None
             )
             sec_has_geocoding = (
                 sec_profile.get("crs") is not None
@@ -1322,7 +1422,10 @@ class InterferogramGenerator:
             )
             if ref_has_geocoding and sec_has_geocoding:
                 sec_complex, coreg_metadata = self._raster_collocation_coregister(
-                    ref_complex, sec_complex, profile, sec_profile,
+                    ref_complex,
+                    sec_complex,
+                    profile,
+                    sec_profile,
                     refine_by_coherence=coregistration_refine_by_coherence,
                     degree=coregistration_degree,
                     rms_threshold=coregistration_rms_threshold,
@@ -1341,24 +1444,36 @@ class InterferogramGenerator:
                     "present" if sec_has_geocoding else "MISSING",
                 )
                 if sec_complex.shape != ref_complex.shape:
-                    sec_complex = self._resample_to_reference(sec_complex, ref_complex.shape)
+                    sec_complex = self._resample_to_reference(
+                        sec_complex, ref_complex.shape
+                    )
                 coreg_metadata = {
                     "method": "shape_based_fallback_missing_geocoding",
                     "refined_by_coherence": False,
-                    "n_gcps_initial": None, "n_gcps_final": None,
-                    "rms_mean_px": None, "mean_coherence": None,
+                    "n_gcps_initial": None,
+                    "n_gcps_final": None,
+                    "rms_mean_px": None,
+                    "mean_coherence": None,
                 }
         elif coregistration_method == "orbit_dem":
             real_coreg_inputs = (
-                dem, reference_safe_zip, secondary_safe_zip,
-                reference_orbit_file, secondary_orbit_file,
+                dem,
+                reference_safe_zip,
+                secondary_safe_zip,
+                reference_orbit_file,
+                secondary_orbit_file,
             )
             if all(x is not None for x in real_coreg_inputs):
                 sec_complex, coreg_metadata = self._orbit_based_coregister(
-                    ref_complex, sec_complex, dem,
-                    reference_safe_zip, secondary_safe_zip,
-                    reference_orbit_file, secondary_orbit_file,
-                    reference, secondary,
+                    ref_complex,
+                    sec_complex,
+                    dem,
+                    reference_safe_zip,
+                    secondary_safe_zip,
+                    reference_orbit_file,
+                    secondary_orbit_file,
+                    reference,
+                    secondary,
                     refine_by_coherence=coregistration_refine_by_coherence,
                     degree=coregistration_degree,
                     rms_threshold=coregistration_rms_threshold,
@@ -1374,7 +1489,9 @@ class InterferogramGenerator:
                     "orbit files; not all were supplied)."
                 )
                 if sec_complex.shape != ref_complex.shape:
-                    sec_complex = self._resample_to_reference(sec_complex, ref_complex.shape)
+                    sec_complex = self._resample_to_reference(
+                        sec_complex, ref_complex.shape
+                    )
                 coreg_metadata = {
                     "method": "shape_based_fallback",
                     "refined_by_coherence": False,
@@ -1392,10 +1509,16 @@ class InterferogramGenerator:
         # Shape reconciliation before ESD
         min_rows = min(ref_complex.shape[0], sec_complex.shape[0])
         min_cols = min(ref_complex.shape[1], sec_complex.shape[1])
-        if ref_complex.shape != (min_rows, min_cols) or sec_complex.shape != (min_rows, min_cols):
+        if ref_complex.shape != (min_rows, min_cols) or sec_complex.shape != (
+            min_rows,
+            min_cols,
+        ):
             logger.warning(
                 "Reference %s and secondary %s shapes differ — cropping to common (%d, %d).",
-                ref_complex.shape, sec_complex.shape, min_rows, min_cols
+                ref_complex.shape,
+                sec_complex.shape,
+                min_rows,
+                min_cols,
             )
             ref_complex = ref_complex[:min_rows, :min_cols]
             sec_complex = sec_complex[:min_rows, :min_cols]
@@ -1404,12 +1527,19 @@ class InterferogramGenerator:
         esd_shift = None
         burst_metadata = {"method": "whole_image_esd", "deburst_applied": False}
 
-        if self._use_real_burst_processing and reference_safe_zip is not None and secondary_safe_zip is not None:
+        if (
+            self._use_real_burst_processing
+            and reference_safe_zip is not None
+            and secondary_safe_zip is not None
+        ):
             _rep_row_offset = coreg_metadata.get("representative_row_offset_px", 0.0)
             ref_complex, sec_complex, burst_metadata = self._burst_aware_processing(
-                ref_complex, sec_complex,
-                reference_safe_zip, secondary_safe_zip,
-                reference, secondary,
+                ref_complex,
+                sec_complex,
+                reference_safe_zip,
+                secondary_safe_zip,
+                reference,
+                secondary,
                 representative_row_offset=_rep_row_offset,
                 reference_orbit_file=reference_orbit_file,
                 secondary_orbit_file=secondary_orbit_file,
@@ -1417,10 +1547,17 @@ class InterferogramGenerator:
             esd_shift = burst_metadata.get("esd_shift_px")
             rows_removed = burst_metadata.get("rows_removed_from_top", 0)
 
-            if rows_removed and rows_removed > 0 and profile.get("transform") is not None:
+            if (
+                rows_removed
+                and rows_removed > 0
+                and profile.get("transform") is not None
+            ):
                 from rasterio import Affine
+
                 profile = dict(profile)
-                profile["transform"] = profile["transform"] * Affine.translation(0, rows_removed)
+                profile["transform"] = profile["transform"] * Affine.translation(
+                    0, rows_removed
+                )
                 logger.info(
                     "Adjusted georeferencing transform origin: deburst "
                     "removed %d row(s) from the top of the crop.",
@@ -1440,25 +1577,37 @@ class InterferogramGenerator:
         # ═══════════════════════════════════════════════════════════════
         crop_info = None
         if crop_after_deburst and aoi_bbox is not None:
-            ref_complex, sec_complex, profile, crop_info = self._crop_to_aoi_after_deburst(
-                ref_complex, sec_complex, profile, aoi_bbox,
-                margin_px=50,
+            ref_complex, sec_complex, profile, crop_info = (
+                self._crop_to_aoi_after_deburst(
+                    ref_complex,
+                    sec_complex,
+                    profile,
+                    aoi_bbox,
+                    margin_px=50,
+                )
             )
 
         # ── Step 3: Multilook (on cropped data) ──
         ref_complex_native = ref_complex
         sec_complex_native = sec_complex
-        coh_window = self._coh_window_explicit if self._coh_window_explicit is not None else 5
+        coh_window = (
+            self._coh_window_explicit if self._coh_window_explicit is not None else 5
+        )
 
         if looks_azimuth > 1 or looks_range > 1:
             from pygeofetch.insar.unwrap import multilook
+
             pre_shape = ref_complex.shape
             ref_complex = multilook(ref_complex, looks_azimuth, looks_range)
             sec_complex = multilook(sec_complex, looks_azimuth, looks_range)
             logger.info(
                 "Multilooked %dx%d -> %dx%d (%d azimuth x %d range looks)",
-                pre_shape[0], pre_shape[1], ref_complex.shape[0], ref_complex.shape[1],
-                looks_azimuth, looks_range,
+                pre_shape[0],
+                pre_shape[1],
+                ref_complex.shape[0],
+                ref_complex.shape[1],
+                looks_azimuth,
+                looks_range,
             )
 
         # ── Step 4: Form interferogram ──
@@ -1505,9 +1654,12 @@ class InterferogramGenerator:
         # Step 5) to match.
         flat_earth_metadata = {"applied": False}
         if self._remove_flat_earth_phase and all(
-            x is not None for x in (
-                reference_safe_zip, secondary_safe_zip,
-                reference_orbit_file, secondary_orbit_file,
+            x is not None
+            for x in (
+                reference_safe_zip,
+                secondary_safe_zip,
+                reference_orbit_file,
+                secondary_orbit_file,
             )
         ):
             try:
@@ -1516,10 +1668,18 @@ class InterferogramGenerator:
                 from pygeofetch.insar.flatearth import compute_flat_earth_phase
                 from pygeofetch.insar.geolocation import parse_orbit_file
 
-                ref_swath_hint = read_matched_swath(reference) if reference is not None else None
-                sec_swath_hint = read_matched_swath(secondary) if secondary is not None else None
-                ref_geom_fe = parse_slc_geometry(reference_safe_zip, member_hint=ref_swath_hint)
-                sec_geom_fe = parse_slc_geometry(secondary_safe_zip, member_hint=sec_swath_hint)
+                ref_swath_hint = (
+                    read_matched_swath(reference) if reference is not None else None
+                )
+                sec_swath_hint = (
+                    read_matched_swath(secondary) if secondary is not None else None
+                )
+                ref_geom_fe = parse_slc_geometry(
+                    reference_safe_zip, member_hint=ref_swath_hint
+                )
+                sec_geom_fe = parse_slc_geometry(
+                    secondary_safe_zip, member_hint=sec_swath_hint
+                )
                 ref_orbit_fe = parse_orbit_file(reference_orbit_file)
                 sec_orbit_fe = parse_orbit_file(secondary_orbit_file)
 
@@ -1541,38 +1701,48 @@ class InterferogramGenerator:
                 transform_fe = profile.get("transform")
                 if transform_fe is not None:
                     from rasterio.transform import array_bounds
+
                     # array_bounds returns (left, bottom, right, top)
                     left, bottom, right, top = array_bounds(
                         profile.get("height", ref_complex_native.shape[0]),
                         profile.get("width", ref_complex_native.shape[1]),
-                        transform_fe
+                        transform_fe,
                     )
                     margin_lon = (right - left) * 0.2
                     margin_lat = (top - bottom) * 0.2
                     sample_bounds_fe = (
-                        left - margin_lon, bottom - margin_lat,
-                        right + margin_lon, top + margin_lat,
+                        left - margin_lon,
+                        bottom - margin_lat,
+                        right + margin_lon,
+                        top + margin_lat,
                     )
                 else:
                     sample_bounds_fe = None
 
                 wavelength_m = 0.05546576  # real Sentinel-1 C-band wavelength
                 flat_earth_phase = compute_flat_earth_phase(
-                    ref_geom_fe, ref_orbit_fe, sec_geom_fe, sec_orbit_fe,
-                    ref_center_time_fe, sec_center_time_fe,
-                    interferogram.shape, wavelength_m,
+                    ref_geom_fe,
+                    ref_orbit_fe,
+                    sec_geom_fe,
+                    sec_orbit_fe,
+                    ref_center_time_fe,
+                    sec_center_time_fe,
+                    interferogram.shape,
+                    wavelength_m,
                     sample_bounds=sample_bounds_fe,
                 )
                 interferogram = interferogram * self._np().exp(-1j * flat_earth_phase)
                 flat_earth_metadata = {
                     "applied": True,
                     "phase_range_rad": (
-                        float(flat_earth_phase.min()), float(flat_earth_phase.max())
+                        float(flat_earth_phase.min()),
+                        float(flat_earth_phase.max()),
                     ),
                 }
                 logger.info(
                     "Real flat-earth phase removed: range [%.2f, %.2f] rad",
-                    flat_earth_phase.min(), flat_earth_phase.max(),
+                    flat_earth_phase.min(),
+                    flat_earth_phase.max(),
                 )
             except Exception as exc:
                 logger.warning(
@@ -1599,9 +1769,7 @@ class InterferogramGenerator:
                     Path(dem).name,
                 )
         else:
-            logger.warning(
-                "No DEM provided — topographic phase NOT removed."
-            )
+            logger.warning("No DEM provided — topographic phase NOT removed.")
 
         # ── Step 5b: Goldstein filter (moved here -- see the ordering
         # note above Step 4b) -- runs on the RESIDUAL phase (deformation
@@ -1611,13 +1779,18 @@ class InterferogramGenerator:
         # needs to work correctly.
         if apply_goldstein_filter:
             from pygeofetch.insar.unwrap import goldstein_filter
+
             interferogram = goldstein_filter(interferogram, alpha=goldstein_alpha)
-            logger.info("Goldstein phase filter applied (alpha=%.2f, tiled)", goldstein_alpha)
+            logger.info(
+                "Goldstein phase filter applied (alpha=%.2f, tiled)", goldstein_alpha
+            )
 
         # ── Step 6: Coherence estimation (chunked if enabled) ──
         if use_chunked_processing and effective_chunk is not None:
             coherence_native = self._estimate_coherence_chunked(
-                ref_complex_native, sec_complex_native, coh_window,
+                ref_complex_native,
+                sec_complex_native,
+                coh_window,
                 chunk_rows=effective_chunk,
             )
         else:
@@ -1631,7 +1804,10 @@ class InterferogramGenerator:
 
         if looks_azimuth > 1 or looks_range > 1:
             from pygeofetch.insar.unwrap import multilook
-            coherence = multilook(coherence_native, looks_azimuth, looks_range, wrapped_phase=False)
+
+            coherence = multilook(
+                coherence_native, looks_azimuth, looks_range, wrapped_phase=False
+            )
         else:
             coherence = coherence_native
 
@@ -1654,23 +1830,34 @@ class InterferogramGenerator:
                 "esd_applied": self._esd_enabled and esd_shift is not None,
                 "esd_method": burst_metadata["method"],
                 "deburst_applied": burst_metadata["deburst_applied"],
-                "esd_common_ground_lines": burst_metadata.get("esd_common_ground_lines"),
-                "esd_common_ground_total": burst_metadata.get("esd_common_ground_total"),
+                "esd_common_ground_lines": burst_metadata.get(
+                    "esd_common_ground_lines"
+                ),
+                "esd_common_ground_total": burst_metadata.get(
+                    "esd_common_ground_total"
+                ),
                 "burst_sync_offset_ms": burst_metadata.get("burst_sync_offset_ms"),
-                "burst_sync_within_requirement": burst_metadata.get("burst_sync_within_requirement"),
+                "burst_sync_within_requirement": burst_metadata.get(
+                    "burst_sync_within_requirement"
+                ),
                 "flat_earth_phase_removed": flat_earth_metadata["applied"],
                 "topographic_phase_removed": topo_metadata["correction_applied"],
                 "topographic_phase_r_squared": topo_metadata.get("r_squared"),
                 "coregistration_method": coreg_metadata.get("method"),
-                "coregistration_refined_by_coherence": coreg_metadata.get("refined_by_coherence"),
+                "coregistration_refined_by_coherence": coreg_metadata.get(
+                    "refined_by_coherence"
+                ),
                 "coregistration_gcps_initial": coreg_metadata.get("n_gcps_initial"),
                 "coregistration_gcps_final": coreg_metadata.get("n_gcps_final"),
                 "coregistration_rms_mean_px": coreg_metadata.get("rms_mean_px"),
                 "coregistration_mean_coherence": coreg_metadata.get("mean_coherence"),
-                "coregistration_collocation_coverage_fraction": coreg_metadata.get("collocation_coverage_fraction"),
+                "coregistration_collocation_coverage_fraction": coreg_metadata.get(
+                    "collocation_coverage_fraction"
+                ),
                 "crop_after_deburst_applied": crop_info is not None,
                 "crop_info": crop_info,
-                "chunked_processing": use_chunked_processing and effective_chunk is not None,
+                "chunked_processing": use_chunked_processing
+                and effective_chunk is not None,
                 "chunk_rows": effective_chunk,
             },
         )
@@ -1681,6 +1868,7 @@ class InterferogramGenerator:
 
     def _np(self):
         import numpy as np
+
         return np
 
     def _read_complex(self, path: Path, ref_shape=None):
@@ -1697,16 +1885,20 @@ class InterferogramGenerator:
             # FIX: Full sub-swath files are GCP-georeferenced and lack an affine
             # transform. Fit an approximate one from the GCPs so downstream
             # steps (flat-earth, topo phase, AOI crop) have a valid transform.
-            if profile.get("transform") is None or getattr(profile.get("transform"), "is_identity", False):
+            if profile.get("transform") is None or getattr(
+                profile.get("transform"), "is_identity", False
+            ):
                 gcps, gcp_crs = src.gcps
                 if gcps and len(gcps) >= 4:
                     from rasterio.transform import from_gcps
+
                     profile["transform"] = from_gcps(gcps)
                     if gcp_crs:
                         profile["crs"] = gcp_crs
                     logger.info(
                         "Fitted approximate affine transform from %d GCPs for %s",
-                        len(gcps), path.name
+                        len(gcps),
+                        path.name,
                     )
 
             dtype = src.dtypes[0]
@@ -1722,7 +1914,8 @@ class InterferogramGenerator:
                     "%s has no complex/phase data (dtype=%s, single real band). "
                     "InSAR requires complex SLC data — this pair cannot "
                     "produce a meaningful interferogram.",
-                    path.name, dtype,
+                    path.name,
+                    dtype,
                 )
                 real = src.read(1).astype(np.float32)
                 data = real.astype(np.complex64)
@@ -1733,12 +1926,22 @@ class InterferogramGenerator:
         return data.astype(np.complex64), profile
 
     def _orbit_based_coregister(
-        self, ref_complex, sec_complex, dem,
-        reference_safe_zip, secondary_safe_zip,
-        reference_orbit_file, secondary_orbit_file,
-        reference_extracted_path=None, secondary_extracted_path=None,
-        refine_by_coherence=True, degree=1, rms_threshold=None,
-        window=None, coarse_search_radius=None, fine_search_radius=None,
+        self,
+        ref_complex,
+        sec_complex,
+        dem,
+        reference_safe_zip,
+        secondary_safe_zip,
+        reference_orbit_file,
+        secondary_orbit_file,
+        reference_extracted_path=None,
+        secondary_extracted_path=None,
+        refine_by_coherence=True,
+        degree=1,
+        rms_threshold=None,
+        window=None,
+        coarse_search_radius=None,
+        fine_search_radius=None,
         coherence_threshold=None,
     ):
         """
@@ -1794,15 +1997,21 @@ class InterferogramGenerator:
 
             ref_swath_hint = (
                 read_matched_swath(reference_extracted_path)
-                if reference_extracted_path is not None else None
+                if reference_extracted_path is not None
+                else None
             )
             sec_swath_hint = (
                 read_matched_swath(secondary_extracted_path)
-                if secondary_extracted_path is not None else None
+                if secondary_extracted_path is not None
+                else None
             )
 
-            ref_geom = parse_slc_geometry(reference_safe_zip, member_hint=ref_swath_hint)
-            sec_geom = parse_slc_geometry(secondary_safe_zip, member_hint=sec_swath_hint)
+            ref_geom = parse_slc_geometry(
+                reference_safe_zip, member_hint=ref_swath_hint
+            )
+            sec_geom = parse_slc_geometry(
+                secondary_safe_zip, member_hint=sec_swath_hint
+            )
             ref_orbit = parse_orbit_file(reference_orbit_file)
             sec_orbit = parse_orbit_file(secondary_orbit_file)
 
@@ -1811,11 +2020,13 @@ class InterferogramGenerator:
 
             ref_row_off, ref_col_off = (
                 read_crop_offset(reference_extracted_path)
-                if reference_extracted_path is not None else (0.0, 0.0)
+                if reference_extracted_path is not None
+                else (0.0, 0.0)
             )
             sec_row_off, sec_col_off = (
                 read_crop_offset(secondary_extracted_path)
-                if secondary_extracted_path is not None else (0.0, 0.0)
+                if secondary_extracted_path is not None
+                else (0.0, 0.0)
             )
 
             # ═══════════════════════════════════════════════════════════
@@ -1838,15 +2049,22 @@ class InterferogramGenerator:
                     # approximate transform from GCPs to get real lon/lat bounds.
                     if src.transform.is_identity and src.gcps[0]:
                         from rasterio.transform import array_bounds, from_gcps
+
                         approx_transform = from_gcps(src.gcps[0])
-                        left, bottom, right, top = array_bounds(src.height, src.width, approx_transform)
+                        left, bottom, right, top = array_bounds(
+                            src.height, src.width, approx_transform
+                        )
                         sample_bounds = (left, bottom, right, top)
                     else:
                         b = src.bounds
                         sample_bounds = (b.left, b.bottom, b.right, b.top)
 
             grid_rows, grid_cols, off_rows, off_cols = compute_offset_field_from_dem(
-                ref_geom, ref_orbit, sec_geom, sec_orbit, dem,
+                ref_geom,
+                ref_orbit,
+                sec_geom,
+                sec_orbit,
+                dem,
                 ref_scene_center_time=ref_center_time,
                 sec_scene_center_time=sec_center_time,
                 # No grid_points override -- use the function's own
@@ -1875,10 +2093,16 @@ class InterferogramGenerator:
                 try:
                     grid_rows, grid_cols, off_rows, off_cols, coherences = (
                         refine_offsets_by_coherence(
-                            ref_complex, sec_complex,
-                            grid_rows, grid_cols, off_rows, off_cols,
-                            ref_row_offset=ref_row_off, ref_col_offset=ref_col_off,
-                            sec_row_offset=sec_row_off, sec_col_offset=sec_col_off,
+                            ref_complex,
+                            sec_complex,
+                            grid_rows,
+                            grid_cols,
+                            off_rows,
+                            off_cols,
+                            ref_row_offset=ref_row_off,
+                            ref_col_offset=ref_col_off,
+                            sec_row_offset=sec_row_off,
+                            sec_col_offset=sec_col_off,
                             **refine_kwargs,
                         )
                     )
@@ -1892,8 +2116,12 @@ class InterferogramGenerator:
                     )
 
             row_fn, col_fn, coreg_quality = fit_offset_polynomial_robust(
-                grid_rows, grid_cols, off_rows, off_cols,
-                degree=degree, rms_threshold=rms_threshold,
+                grid_rows,
+                grid_cols,
+                off_rows,
+                off_cols,
+                degree=degree,
+                rms_threshold=rms_threshold,
             )
             coreg_quality.mean_coherence = mean_coherence
             coreg_quality.log_summary()
@@ -1903,12 +2131,16 @@ class InterferogramGenerator:
             # offset field can be non-uniform, and the median is more robust
             # to outliers than a single-point evaluation.
             import numpy as np
+
             all_offsets = [row_fn(r, c) for r, c in zip(grid_rows, grid_cols)]
-            representative_row_offset = float(np.median(all_offsets)) if all_offsets else 0.0
+            representative_row_offset = (
+                float(np.median(all_offsets)) if all_offsets else 0.0
+            )
 
             coreg_metadata = {
                 "method": "orbit_dem_based",
-                "refined_by_coherence": refine_by_coherence and mean_coherence is not None,
+                "refined_by_coherence": refine_by_coherence
+                and mean_coherence is not None,
                 "n_gcps_initial": n_gcps_initial,
                 "n_gcps_final": coreg_quality.n_gcps_final,
                 "rms_mean_px": coreg_quality.rms_mean,
@@ -1920,18 +2152,26 @@ class InterferogramGenerator:
                 logger.info(
                     "Correcting for cropped extraction: reference offset "
                     "(%.0f, %.0f), secondary offset (%.0f, %.0f)",
-                    ref_row_off, ref_col_off, sec_row_off, sec_col_off,
+                    ref_row_off,
+                    ref_col_off,
+                    sec_row_off,
+                    sec_col_off,
                 )
 
             logger.info(
                 "Real orbit-based coregistration applied (%d/%d grid "
                 "points used in final fit)",
-                coreg_quality.n_gcps_final, n_gcps_initial,
+                coreg_quality.n_gcps_final,
+                n_gcps_initial,
             )
             resampled = resample_with_offset_field(
-                sec_complex, row_fn, col_fn,
-                ref_row_offset=ref_row_off, ref_col_offset=ref_col_off,
-                sec_row_offset=sec_row_off, sec_col_offset=sec_col_off,
+                sec_complex,
+                row_fn,
+                col_fn,
+                ref_row_offset=ref_row_off,
+                ref_col_offset=ref_col_off,
+                sec_row_offset=sec_row_off,
+                sec_col_offset=sec_col_off,
             )
             if resampled.shape != ref_complex.shape:
                 resampled = self._resample_to_reference(resampled, ref_complex.shape)
@@ -1954,13 +2194,24 @@ class InterferogramGenerator:
                 "representative_row_offset_px": 0.0,
             }
             if sec_complex.shape != ref_complex.shape:
-                return self._resample_to_reference(sec_complex, ref_complex.shape), fallback_metadata
+                return (
+                    self._resample_to_reference(sec_complex, ref_complex.shape),
+                    fallback_metadata,
+                )
             return sec_complex, fallback_metadata
 
     def _raster_collocation_coregister(
-        self, ref_complex, sec_complex, ref_profile, sec_profile,
-        refine_by_coherence=True, degree=1, rms_threshold=None,
-        window=None, coarse_search_radius=None, fine_search_radius=None,
+        self,
+        ref_complex,
+        sec_complex,
+        ref_profile,
+        sec_profile,
+        refine_by_coherence=True,
+        degree=1,
+        rms_threshold=None,
+        window=None,
+        coarse_search_radius=None,
+        fine_search_radius=None,
         coherence_threshold=None,
     ):
         """
@@ -1988,7 +2239,10 @@ class InterferogramGenerator:
             )
 
             collocated, coverage_fraction, valid_mask = collocate_by_geocoding(
-                sec_complex, sec_profile, ref_complex.shape, ref_profile,
+                sec_complex,
+                sec_profile,
+                ref_complex.shape,
+                ref_profile,
             )
             logger.info(
                 "Raster collocation (CreateStack-style) applied: %.1f%% "
@@ -2002,7 +2256,11 @@ class InterferogramGenerator:
                 grid_rows, grid_cols = [], []
                 for r, c in candidates:
                     ri, ci = int(round(r)), int(round(c))
-                    if 0 <= ri < valid_mask.shape[0] and 0 <= ci < valid_mask.shape[1] and valid_mask[ri, ci]:
+                    if (
+                        0 <= ri < valid_mask.shape[0]
+                        and 0 <= ci < valid_mask.shape[1]
+                        and valid_mask[ri, ci]
+                    ):
                         grid_rows.append(r)
                         grid_cols.append(c)
                 off_rows = [0.0] * len(grid_rows)
@@ -2022,10 +2280,16 @@ class InterferogramGenerator:
                 try:
                     grid_rows, grid_cols, off_rows, off_cols, coherences = (
                         refine_offsets_by_coherence(
-                            ref_complex, collocated,
-                            grid_rows, grid_cols, off_rows, off_cols,
-                            ref_row_offset=0.0, ref_col_offset=0.0,
-                            sec_row_offset=0.0, sec_col_offset=0.0,
+                            ref_complex,
+                            collocated,
+                            grid_rows,
+                            grid_cols,
+                            off_rows,
+                            off_cols,
+                            ref_row_offset=0.0,
+                            ref_col_offset=0.0,
+                            sec_row_offset=0.0,
+                            sec_col_offset=0.0,
                             **refine_kwargs,
                         )
                     )
@@ -2033,15 +2297,20 @@ class InterferogramGenerator:
                 except Exception as exc:
                     logger.warning(
                         "Cross-correlation coherence refinement failed "
-                        "after raster collocation (%s).", exc,
+                        "after raster collocation (%s).",
+                        exc,
                     )
             else:
                 n_gcps_initial = 0
 
             if refine_by_coherence and mean_coherence is not None:
                 row_fn, col_fn, coreg_quality = fit_offset_polynomial_robust(
-                    grid_rows, grid_cols, off_rows, off_cols,
-                    degree=degree, rms_threshold=rms_threshold,
+                    grid_rows,
+                    grid_cols,
+                    off_rows,
+                    off_cols,
+                    degree=degree,
+                    rms_threshold=rms_threshold,
                 )
                 coreg_quality.mean_coherence = mean_coherence
                 coreg_quality.log_summary()
@@ -2058,7 +2327,8 @@ class InterferogramGenerator:
 
             coreg_metadata = {
                 "method": "raster_collocation",
-                "refined_by_coherence": refine_by_coherence and mean_coherence is not None,
+                "refined_by_coherence": refine_by_coherence
+                and mean_coherence is not None,
                 "n_gcps_initial": n_gcps_initial,
                 "n_gcps_final": n_gcps_final,
                 "rms_mean_px": rms_mean_px,
@@ -2070,7 +2340,8 @@ class InterferogramGenerator:
         except Exception as exc:
             logger.warning(
                 "Raster collocation coregistration failed (%s) -- "
-                "falling back to shape-based resampling.", exc,
+                "falling back to shape-based resampling.",
+                exc,
             )
             fallback_metadata = {
                 "method": "shape_based_fallback_after_error",
@@ -2083,7 +2354,10 @@ class InterferogramGenerator:
                 "error": str(exc),
             }
             if sec_complex.shape != ref_complex.shape:
-                return self._resample_to_reference(sec_complex, ref_complex.shape), fallback_metadata
+                return (
+                    self._resample_to_reference(sec_complex, ref_complex.shape),
+                    fallback_metadata,
+                )
             return sec_complex, fallback_metadata
 
     def _resample_to_reference(self, data, target_shape):
@@ -2138,15 +2412,22 @@ class InterferogramGenerator:
         try:
             import rasterio
         except ImportError:
-            return interferogram, {"correction_applied": False, "reason": "rasterio_missing"}
+            return interferogram, {
+                "correction_applied": False,
+                "reason": "rasterio_missing",
+            }
 
         try:
             interferogram_crs = profile.get("crs")
             interferogram_transform = profile.get("transform")
 
             with rasterio.open(dem_path) as dem_src:
-                if interferogram_crs is not None and interferogram_transform is not None:
+                if (
+                    interferogram_crs is not None
+                    and interferogram_transform is not None
+                ):
                     from rasterio.warp import Resampling, reproject
+
                     dem = np.empty(interferogram.shape, dtype=np.float32)
                     reproject(
                         source=rasterio.band(dem_src, 1),
@@ -2168,6 +2449,7 @@ class InterferogramGenerator:
                     dem = dem_src.read(1).astype(np.float32)
                     if dem.shape != interferogram.shape:
                         from scipy.ndimage import zoom
+
                         zf = (
                             interferogram.shape[0] / dem.shape[0],
                             interferogram.shape[1] / dem.shape[1],
@@ -2181,7 +2463,10 @@ class InterferogramGenerator:
                 logger.warning(
                     "Insufficient valid DEM pixels for topo phase regression"
                 )
-                return interferogram, {"correction_applied": False, "reason": "insufficient_valid_pixels"}
+                return interferogram, {
+                    "correction_applied": False,
+                    "reason": "insufficient_valid_pixels",
+                }
 
             dem_std = np.std(dem[valid])
             if dem_std < 1.0:
@@ -2189,7 +2474,10 @@ class InterferogramGenerator:
                     "DEM has negligible elevation variance (std=%.2fm) — skipping.",
                     dem_std,
                 )
-                return interferogram, {"correction_applied": False, "reason": "dem_no_variance"}
+                return interferogram, {
+                    "correction_applied": False,
+                    "reason": "dem_no_variance",
+                }
 
             dem_v = dem[valid]
             phase_v = phase[valid]
@@ -2219,7 +2507,7 @@ class InterferogramGenerator:
             coarse = np.linspace(-max_slope, max_slope, 400)
             best_slope = float(coarse[np.argmax(_flatness(coarse))])
 
-            fine_half_width = (coarse[1] - coarse[0])
+            fine_half_width = coarse[1] - coarse[0]
             fine = np.linspace(
                 best_slope - fine_half_width, best_slope + fine_half_width, 400
             )
@@ -2247,9 +2535,13 @@ class InterferogramGenerator:
                     "DEM-elevation correlation too weak (R²=%.2f, best "
                     "candidate slope=%.5f rad/m) — skipping topographic "
                     "phase removal to avoid absorbing real signal.",
-                    r_squared, best_slope,
+                    r_squared,
+                    best_slope,
                 )
-                return interferogram, {"correction_applied": False, "r_squared": float(r_squared)}
+                return interferogram, {
+                    "correction_applied": False,
+                    "r_squared": float(r_squared),
+                }
 
             topo_phase = np.angle(np.exp(1j * (best_slope * dem + intercept)))
 
@@ -2257,7 +2549,10 @@ class InterferogramGenerator:
                 "Topographic phase regression R²=%.2f — correction applied", r_squared
             )
             corrected = interferogram * np.exp(-1j * topo_phase)
-            return corrected.astype(np.complex64), {"correction_applied": True, "r_squared": float(r_squared)}
+            return corrected.astype(np.complex64), {
+                "correction_applied": True,
+                "r_squared": float(r_squared),
+            }
 
         except Exception as exc:
             logger.warning(

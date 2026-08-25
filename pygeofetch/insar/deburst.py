@@ -16,6 +16,7 @@ twice by two different (radiometrically and phase-wise inconsistent)
 parts of the antenna beam pattern — this is a real, confirmed source
 of visible striping and degraded coherence at burst boundaries.
 """
+
 from __future__ import annotations
 
 import logging
@@ -62,9 +63,10 @@ def compute_burst_row_ranges(
             seconds=(lines_per_burst - 1) * azimuth_time_interval_s
         )
         burst_next_first_line_time = bursts[i + 1].azimuth_time
-        cut_time = burst_i_last_line_time + (
-            burst_next_first_line_time - burst_i_last_line_time
-        ) / 2
+        cut_time = (
+            burst_i_last_line_time
+            + (burst_next_first_line_time - burst_i_last_line_time) / 2
+        )
 
         cut_row_in_i = round(
             (cut_time - bursts[i].azimuth_time).total_seconds()
@@ -88,7 +90,9 @@ def compute_burst_row_ranges(
         if keep_start > keep_end:
             logger.warning(
                 "Burst %d: computed keep range is empty (start=%d > end=%d)",
-                i, keep_start, keep_end,
+                i,
+                keep_start,
+                keep_end,
             )
         ranges.append((keep_start, keep_end))
 
@@ -159,7 +163,9 @@ def deburst_array(
 
     logger.info(
         "Deburst: %d bursts -> %d output rows (input was %d rows)",
-        len(swath_timing.bursts), debursted.shape[0], data.shape[0],
+        len(swath_timing.bursts),
+        debursted.shape[0],
+        data.shape[0],
     )
 
     return debursted, first_kept_full_scene_row

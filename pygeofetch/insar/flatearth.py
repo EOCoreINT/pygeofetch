@@ -144,7 +144,9 @@ def compute_flat_earth_phase(
         lat_samples = _linspace(min_lat, max_lat, grid_points)
         lonlat_samples = [(lon, lat) for lat in lat_samples for lon in lon_samples]
     else:
-        raise ValueError("compute_flat_earth_phase requires either dem_path or sample_bounds.")
+        raise ValueError(
+            "compute_flat_earth_phase requires either dem_path or sample_bounds."
+        )
 
     grid_rows, grid_cols, grid_phase = [], [], []
     n_failed = 0
@@ -159,10 +161,18 @@ def compute_flat_earth_phase(
             ground_point = geodetic_to_ecef(lat, lon, 0.0)
 
             t_ref = find_zero_doppler_time(
-                ref_orbit[0], ref_orbit[1], ref_orbit[2], ground_point, ref_scene_center_time,
+                ref_orbit[0],
+                ref_orbit[1],
+                ref_orbit[2],
+                ground_point,
+                ref_scene_center_time,
             )
             t_sec = find_zero_doppler_time(
-                sec_orbit[0], sec_orbit[1], sec_orbit[2], ground_point, sec_scene_center_time,
+                sec_orbit[0],
+                sec_orbit[1],
+                sec_orbit[2],
+                ground_point,
+                sec_scene_center_time,
             )
 
             ref_row = ref_geometry.row_for_azimuth_time(t_ref)
@@ -174,7 +184,10 @@ def compute_flat_earth_phase(
             range_ref_time = 2 * R_ref / 299792458.0
             ref_col = ref_geometry.col_for_range_time(range_ref_time)
 
-            if not (0 <= ref_row < ref_geometry.n_lines and 0 <= ref_col < ref_geometry.n_columns):
+            if not (
+                0 <= ref_row < ref_geometry.n_lines
+                and 0 <= ref_col < ref_geometry.n_columns
+            ):
                 n_out_of_bounds += 1
                 continue
 
@@ -198,7 +211,10 @@ def compute_flat_earth_phase(
             range_sec_time = 2 * R_sec / 299792458.0
             sec_col = sec_geometry.col_for_range_time(range_sec_time)
 
-            if not (0 <= sec_row < sec_geometry.n_lines and 0 <= sec_col < sec_geometry.n_columns):
+            if not (
+                0 <= sec_row < sec_geometry.n_lines
+                and 0 <= sec_col < sec_geometry.n_columns
+            ):
                 n_out_of_bounds += 1
                 logger.debug(
                     "Flat-earth phase: sample (%.4f, %.4f) rejected -- "
@@ -207,7 +223,12 @@ def compute_flat_earth_phase(
                     "(%d lines x %d columns). This is the real, specific "
                     "case the reference-only bounds check upstream could "
                     "not catch.",
-                    lon, lat, sec_row, sec_col, sec_geometry.n_lines, sec_geometry.n_columns,
+                    lon,
+                    lat,
+                    sec_row,
+                    sec_col,
+                    sec_geometry.n_lines,
+                    sec_geometry.n_columns,
                 )
                 continue
 
@@ -223,7 +244,9 @@ def compute_flat_earth_phase(
             grid_phase.append(flat_phase)
         except RuntimeError as exc:
             n_failed += 1
-            logger.debug("Flat-earth phase: sample (%.4f, %.4f) failed: %s", lon, lat, exc)
+            logger.debug(
+                "Flat-earth phase: sample (%.4f, %.4f) failed: %s", lon, lat, exc
+            )
 
     if n_failed > n_total / 2:
         raise RuntimeError(
@@ -241,7 +264,8 @@ def compute_flat_earth_phase(
             "Flat-earth phase: %d/%d sample points fell outside the "
             "actual SLC extent (expected if sample_bounds/dem extent is "
             "larger than the crop).",
-            n_out_of_bounds, n_total,
+            n_out_of_bounds,
+            n_total,
         )
 
     # Fit a real, smooth 2D polynomial to the sparse samples (matching
@@ -257,7 +281,7 @@ def compute_flat_earth_phase(
             col_power = total_degree - row_power
             term_powers.append((row_power, col_power))
     for row_power, col_power in term_powers:
-        terms.append((grid_rows ** row_power) * (grid_cols ** col_power))
+        terms.append((grid_rows**row_power) * (grid_cols**col_power))
     A = np.column_stack(terms)
     coeffs, _, _, _ = np.linalg.lstsq(A, grid_phase, rcond=None)
 
@@ -265,12 +289,15 @@ def compute_flat_earth_phase(
     row_idx, col_idx = np.mgrid[0:h, 0:w].astype(np.float64)
     dense_phase = np.zeros((h, w), dtype=np.float64)
     for coeff, (row_power, col_power) in zip(coeffs, term_powers):
-        dense_phase += coeff * (row_idx ** row_power) * (col_idx ** col_power)
+        dense_phase += coeff * (row_idx**row_power) * (col_idx**col_power)
 
     logger.info(
         "Flat-earth phase computed from %d real grid points (degree-%d "
         "polynomial fit), range [%.2f, %.2f] rad across the scene.",
-        len(grid_rows), polynomial_degree, dense_phase.min(), dense_phase.max(),
+        len(grid_rows),
+        polynomial_degree,
+        dense_phase.min(),
+        dense_phase.max(),
     )
 
     return dense_phase.astype(np.float32)

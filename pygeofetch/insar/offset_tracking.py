@@ -52,10 +52,10 @@ class OffsetTrackingResult:
     hidden).
     """
 
-    range_offset: "Any"     # (n_windows_y, n_windows_x) float32, pixels
-    azimuth_offset: "Any"   # (n_windows_y, n_windows_x) float32, pixels
-    snr: "Any"              # (n_windows_y, n_windows_x) float32
-    reliable: "Any"         # (n_windows_y, n_windows_x) bool
+    range_offset: "Any"  # (n_windows_y, n_windows_x) float32, pixels
+    azimuth_offset: "Any"  # (n_windows_y, n_windows_x) float32, pixels
+    snr: "Any"  # (n_windows_y, n_windows_x) float32
+    reliable: "Any"  # (n_windows_y, n_windows_x) bool
     window_centers_y: "Any"  # (n_windows_y,) int, pixel row of each window's center in the reference image
     window_centers_x: "Any"  # (n_windows_x,) int, pixel col of each window's center
 
@@ -63,6 +63,7 @@ class OffsetTrackingResult:
 def _require_numpy():
     try:
         import numpy as np
+
         return np
     except ImportError as exc:
         raise ImportError("offset_tracking requires numpy: pip install numpy") from exc
@@ -115,7 +116,7 @@ def normalized_cross_correlation(reference_patch, search_patch):
 
     ref = reference_patch.astype(np.float64)
     ref = ref - ref.mean()
-    ref_norm = np.sqrt(np.sum(ref ** 2))
+    ref_norm = np.sqrt(np.sum(ref**2))
     if ref_norm < 1e-12:
         # A perfectly uniform reference patch (e.g. flat water) has no
         # real texture to match against -- every offset is equally
@@ -140,11 +141,13 @@ def normalized_cross_correlation(reference_patch, search_patch):
     # standard technique (Lewis 1995), not an approximation.
     ones = np.ones((rh, rw), dtype=np.float64)
     local_sum = fftconvolve(search, ones, mode="valid")
-    local_sum_sq = fftconvolve(search ** 2, ones, mode="valid")
+    local_sum_sq = fftconvolve(search**2, ones, mode="valid")
     n = rh * rw
     local_mean = local_sum / n
-    local_var = local_sum_sq / n - local_mean ** 2
-    local_var = np.clip(local_var, 0, None)  # real floating point can produce tiny negatives here
+    local_var = local_sum_sq / n - local_mean**2
+    local_var = np.clip(
+        local_var, 0, None
+    )  # real floating point can produce tiny negatives here
     local_norm = np.sqrt(local_var * n)
 
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -185,14 +188,22 @@ def subpixel_peak_offset(ncc_surface) -> Tuple[float, float, float]:
 
     dy = 0.0
     if 0 < iy < h - 1:
-        f_m1, f_0, f_p1 = ncc_surface[iy - 1, ix], ncc_surface[iy, ix], ncc_surface[iy + 1, ix]
+        f_m1, f_0, f_p1 = (
+            ncc_surface[iy - 1, ix],
+            ncc_surface[iy, ix],
+            ncc_surface[iy + 1, ix],
+        )
         denom = f_m1 - 2 * f_0 + f_p1
         if abs(denom) > 1e-12:
             dy = 0.5 * (f_m1 - f_p1) / denom
 
     dx = 0.0
     if 0 < ix < w - 1:
-        f_m1, f_0, f_p1 = ncc_surface[iy, ix - 1], ncc_surface[iy, ix], ncc_surface[iy, ix + 1]
+        f_m1, f_0, f_p1 = (
+            ncc_surface[iy, ix - 1],
+            ncc_surface[iy, ix],
+            ncc_surface[iy, ix + 1],
+        )
         denom = f_m1 - 2 * f_0 + f_p1
         if abs(denom) > 1e-12:
             dx = 0.5 * (f_m1 - f_p1) / denom
@@ -200,7 +211,9 @@ def subpixel_peak_offset(ncc_surface) -> Tuple[float, float, float]:
     return float(iy) + dy, float(ix) + dx, peak_val
 
 
-def compute_snr(ncc_surface, peak_yx: Tuple[int, int], exclusion_radius: int = 2) -> float:
+def compute_snr(
+    ncc_surface, peak_yx: Tuple[int, int], exclusion_radius: int = 2
+) -> float:
     """
     Real signal-to-noise ratio of an NCC correlation peak, used to
     reject false matches in featureless areas (open water, smooth
@@ -270,7 +283,12 @@ class OffsetTracker:
         # result.range_offset, result.azimuth_offset: pixel offsets, NaN where unreliable
     """
 
-    def __init__(self, search_window_size: int = 64, step_size: int = 16, chip_size: Optional[int] = None):
+    def __init__(
+        self,
+        search_window_size: int = 64,
+        step_size: int = 16,
+        chip_size: Optional[int] = None,
+    ):
         """
         Args:
             search_window_size: Real search radius context — the
@@ -342,7 +360,9 @@ class OffsetTracker:
         h, w = reference_amplitude.shape
         half_chip = self.chip_size // 2
         half_search = self.search_window_size // 2
-        margin = half_search  # need this much real image on every side of a window center
+        margin = (
+            half_search  # need this much real image on every side of a window center
+        )
 
         centers_y = list(range(margin, h - margin, self.step_size))
         centers_x = list(range(margin, w - margin, self.step_size))
@@ -364,19 +384,21 @@ class OffsetTracker:
         for iy, cy in enumerate(centers_y):
             for ix, cx in enumerate(centers_x):
                 ref_chip = reference_amplitude[
-                    cy - half_chip: cy - half_chip + self.chip_size,
-                    cx - half_chip: cx - half_chip + self.chip_size,
+                    cy - half_chip : cy - half_chip + self.chip_size,
+                    cx - half_chip : cx - half_chip + self.chip_size,
                 ]
                 search_chip = secondary_amplitude[
-                    cy - half_search: cy - half_search + self.search_window_size,
-                    cx - half_search: cx - half_search + self.search_window_size,
+                    cy - half_search : cy - half_search + self.search_window_size,
+                    cx - half_search : cx - half_search + self.search_window_size,
                 ]
                 # Search chip must be at least chip-sized larger than the
                 # reference chip in both dims for a real valid correlation;
                 # skip (leave NaN/unreliable) rather than crash on an edge
                 # window that doesn't have enough real margin.
-                if (search_chip.shape[0] < ref_chip.shape[0] or
-                        search_chip.shape[1] < ref_chip.shape[1]):
+                if (
+                    search_chip.shape[0] < ref_chip.shape[0]
+                    or search_chip.shape[1] < ref_chip.shape[1]
+                ):
                     continue
 
                 ncc = normalized_cross_correlation(ref_chip, search_chip)
@@ -402,7 +424,10 @@ class OffsetTracker:
             logger.info(
                 "OffsetTracker: %d/%d windows (%.1f%%) below SNR threshold "
                 "%.1f, marked unreliable rather than silently included.",
-                n_low_snr, total, 100 * n_low_snr / total, snr_threshold,
+                n_low_snr,
+                total,
+                100 * n_low_snr / total,
+                snr_threshold,
             )
 
         return OffsetTrackingResult(

@@ -113,7 +113,7 @@ class SLCExtractor:
         label: str = "",
         resume: bool = False,
         preferred_swath: Optional[str] = None,
-        azimuth_margin_px: float = 1000.0,   # NEW
+        azimuth_margin_px: float = 1000.0,  # NEW
         extract_full_swath: bool = False,
     ) -> Optional[Path]:
         """
@@ -199,13 +199,16 @@ class SLCExtractor:
                         if src.width > 0 and src.height > 0:
                             logger.info(
                                 "Resume: %s already extracted and valid (%dx%d) — skipping",
-                                expected_path.name, src.width, src.height,
+                                expected_path.name,
+                                src.width,
+                                src.height,
                             )
                             return expected_path
                 except Exception as exc:
                     logger.warning(
                         "Resume: %s exists but failed to open (%s) — re-extracting",
-                        expected_path.name, exc,
+                        expected_path.name,
+                        exc,
                     )
 
         if not zip_path.exists():
@@ -293,12 +296,12 @@ class SLCExtractor:
             else output_dir / f"{zip_path.stem}_{self._pol}.tif"
         )
 
-
         # --- NEW: Full Swath Extraction Path ---
         if extract_full_swath:
             logger.info(
                 "Extracting FULL sub-swath %s (no AOI crop) -> %s",
-                self._swath_label(matched_member), out_path.name
+                self._swath_label(matched_member),
+                out_path.name,
             )
             with zipfile.ZipFile(zip_path) as zf:
                 with zf.open(matched_member) as src_f, open(out_path, "wb") as dst_f:
@@ -308,7 +311,10 @@ class SLCExtractor:
 
         # --- Existing Cropped Path ---
         cropped = self._crop_to_aoi(
-            zip_path, matched_member, aoi_tuple, out_path,
+            zip_path,
+            matched_member,
+            aoi_tuple,
+            out_path,
             azimuth_margin_px=azimuth_margin_px,
         )
 
@@ -336,7 +342,7 @@ class SLCExtractor:
         output_dir: Union[str, Path],
         resume: bool = False,
         max_crop_ratio: float = 3.0,
-        azimuth_margin_px: float = 200.0,   # NEW
+        azimuth_margin_px: float = 200.0,  # NEW
         extract_full_swath: bool = False,
     ) -> Tuple[Dict[str, Path], Dict[str, Any]]:
         """
@@ -407,7 +413,9 @@ class SLCExtractor:
 
         scenes = dict(scenes)
         if not scenes:
-            raise ValueError("extract_consistent_stack() received no real scenes to extract.")
+            raise ValueError(
+                "extract_consistent_stack() received no real scenes to extract."
+            )
 
         output_dir = Path(output_dir)
         kept: Dict[str, Path] = {}
@@ -420,9 +428,12 @@ class SLCExtractor:
         # )
 
         reference_path = self.extract_scene(
-            zip_path=scenes[reference_label], aoi=aoi,
-            output_dir=output_dir / reference_label, label=reference_label,
-            resume=resume, azimuth_margin_px=azimuth_margin_px,
+            zip_path=scenes[reference_label],
+            aoi=aoi,
+            output_dir=output_dir / reference_label,
+            label=reference_label,
+            resume=resume,
+            azimuth_margin_px=azimuth_margin_px,
             extract_full_swath=extract_full_swath,
         )
 
@@ -439,7 +450,10 @@ class SLCExtractor:
         logger.info(
             "Reference scene %s matched real sub-swath %s (%d real cropped rows) "
             "— forcing all other dates onto %s.",
-            reference_label, reference_swath, reference_rows, reference_swath,
+            reference_label,
+            reference_swath,
+            reference_rows,
+            reference_swath,
         )
 
         for label, zip_path in scenes.items():
@@ -447,10 +461,14 @@ class SLCExtractor:
                 continue
 
             extracted_path = self.extract_scene(
-                zip_path=zip_path, aoi=aoi, output_dir=output_dir / label,
-                label=label, resume=resume, preferred_swath=reference_swath,
+                zip_path=zip_path,
+                aoi=aoi,
+                output_dir=output_dir / label,
+                label=label,
+                resume=resume,
+                preferred_swath=reference_swath,
                 azimuth_margin_px=azimuth_margin_px,
-                extract_full_swath=extract_full_swath, # <--- PASS FLAG
+                extract_full_swath=extract_full_swath,  # <--- PASS FLAG
             )
 
             if extracted_path is None:
@@ -471,8 +489,11 @@ class SLCExtractor:
                     continue
 
             kept[label] = extracted_path
-            logger.info("  %s: extracted (%s)", label, "FULL SWATH" if extract_full_swath else f"{src.height} rows")
-
+            logger.info(
+                "  %s: extracted (%s)",
+                label,
+                "FULL SWATH" if extract_full_swath else f"{src.height} rows",
+            )
 
         report = {
             "reference": reference_label,
@@ -482,7 +503,8 @@ class SLCExtractor:
         }
         logger.info(
             "%d/%d real, reliable scenes kept%s",
-            len(kept), len(scenes),
+            len(kept),
+            len(scenes),
             f" — excluded: {list(excluded.keys())}" if excluded else "",
         )
         return kept, report
@@ -560,9 +582,12 @@ class SLCExtractor:
         mv = MapViewer(center=(center_lat, center_lon), zoom=12)
         mv.add_basemap("SATELLITE")
         mv.add_raster(
-            str(tmp_path), colormap=colormap,
-            layer_name=extracted_path.stem, opacity=opacity,
-            vmin=vmin, vmax=vmax,
+            str(tmp_path),
+            colormap=colormap,
+            layer_name=extracted_path.stem,
+            opacity=opacity,
+            vmin=vmin,
+            vmax=vmax,
         )
         logger.info(
             "Real amplitude display range (2nd-98th percentile): [%.3f, %.3f]",
@@ -641,7 +666,8 @@ class SLCExtractor:
                 if not gcps or len(gcps) < 4:
                     logger.warning(
                         "%s: too few GCPs (%d) to fit a reliable crop transform",
-                        member_name, len(gcps) if gcps else 0,
+                        member_name,
+                        len(gcps) if gcps else 0,
                     )
                     return None
 
@@ -659,8 +685,10 @@ class SLCExtractor:
                 # assumption about orientation at all.
                 inv_transform = ~approx_transform
                 corners = [
-                    (min_lon, min_lat), (min_lon, max_lat),
-                    (max_lon, min_lat), (max_lon, max_lat),
+                    (min_lon, min_lat),
+                    (min_lon, max_lat),
+                    (max_lon, min_lat),
+                    (max_lon, max_lat),
                 ]
                 cols, rows = [], []
                 for lon, lat in corners:
@@ -668,8 +696,10 @@ class SLCExtractor:
                     cols.append(col)
                     rows.append(row)
                 window = Window(
-                    col_off=min(cols), row_off=min(rows),
-                    width=max(cols) - min(cols), height=max(rows) - min(rows),
+                    col_off=min(cols),
+                    row_off=min(rows),
+                    width=max(cols) - min(cols),
+                    height=max(rows) - min(rows),
                 )
 
                 # Safety margin: the GCP-fitted transform is only an
@@ -686,8 +716,12 @@ class SLCExtractor:
                 # can legitimately extend past the real data bounds.
                 col_off_clamped = max(0, col_off)
                 row_off_clamped = max(0, row_off)
-                width_clamped = min(width - (col_off_clamped - col_off), src.width - col_off_clamped)
-                height_clamped = min(height - (row_off_clamped - row_off), src.height - row_off_clamped)
+                width_clamped = min(
+                    width - (col_off_clamped - col_off), src.width - col_off_clamped
+                )
+                height_clamped = min(
+                    height - (row_off_clamped - row_off), src.height - row_off_clamped
+                )
 
                 if width_clamped <= 0 or height_clamped <= 0:
                     logger.warning(
@@ -707,14 +741,21 @@ class SLCExtractor:
 
                 # Real, locally-accurate transform for the cropped region,
                 # derived from the same GCP-fit transform used to locate it.
-                crop_transform = rasterio.windows.transform(read_window, approx_transform)
+                crop_transform = rasterio.windows.transform(
+                    read_window, approx_transform
+                )
 
                 out_path.parent.mkdir(parents=True, exist_ok=True)
                 with rasterio.open(
-                    out_path, "w", driver="GTiff",
-                    dtype=data.dtype, count=1,
-                    width=data.shape[1], height=data.shape[0],
-                    crs=CRS.from_epsg(4326), transform=crop_transform,
+                    out_path,
+                    "w",
+                    driver="GTiff",
+                    dtype=data.dtype,
+                    count=1,
+                    width=data.shape[1],
+                    height=data.shape[0],
+                    crs=CRS.from_epsg(4326),
+                    transform=crop_transform,
                     compress="deflate",
                 ) as dst:
                     dst.write(data, 1)
@@ -737,8 +778,11 @@ class SLCExtractor:
 
                 logger.info(
                     "Cropped %s: %dx%d -> %dx%d (%.1fx smaller)",
-                    self._swath_label(member_name), src.width, src.height,
-                    data.shape[1], data.shape[0],
+                    self._swath_label(member_name),
+                    src.width,
+                    src.height,
+                    data.shape[1],
+                    data.shape[0],
                     (src.width * src.height) / max(data.size, 1),
                 )
                 return out_path
@@ -846,13 +890,11 @@ class SLCExtractor:
         return "?"
 
 
-
-
 def subset_continuous_raster(
     continuous_raster_path: Union[str, Path],
     aoi: "BoundingBox",
     output_path: Union[str, Path],
-    margin_frac: float = 0.05
+    margin_frac: float = 0.05,
 ) -> Optional[Path]:
     """
     Apply AOI crop to a continuous, debursted SLC (or coherence/interferogram).
@@ -869,17 +911,26 @@ def subset_continuous_raster(
     with rasterio.open(continuous_raster_path) as src:
         gcps, crs = src.gcps
         if not gcps or len(gcps) < 4:
-            logger.warning("No GCPs found in continuous raster, cannot subset geographically.")
+            logger.warning(
+                "No GCPs found in continuous raster, cannot subset geographically."
+            )
             return None
 
         # Fit an approximate affine transform from the GCPs
         approx_transform = from_gcps(gcps)
         inv_transform = ~approx_transform
 
-        min_lon, min_lat, max_lon, max_lat = aoi.min_lon, aoi.min_lat, aoi.max_lon, aoi.max_lat
+        min_lon, min_lat, max_lon, max_lat = (
+            aoi.min_lon,
+            aoi.min_lat,
+            aoi.max_lon,
+            aoi.max_lat,
+        )
         corners = [
-            (min_lon, min_lat), (min_lon, max_lat),
-            (max_lon, min_lat), (max_lon, max_lat),
+            (min_lon, min_lat),
+            (min_lon, max_lat),
+            (max_lon, min_lat),
+            (max_lon, max_lat),
         ]
         cols, rows = [], []
         for lon, lat in corners:
@@ -908,13 +959,20 @@ def subset_continuous_raster(
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         with rasterio.open(
-            output_path, "w", driver="GTiff",
-            dtype=data.dtype, count=1,
-            width=data.shape[1], height=data.shape[0],
-            crs=crs, transform=crop_transform,
-            compress="deflate"
+            output_path,
+            "w",
+            driver="GTiff",
+            dtype=data.dtype,
+            count=1,
+            width=data.shape[1],
+            height=data.shape[0],
+            crs=crs,
+            transform=crop_transform,
+            compress="deflate",
         ) as dst:
             dst.write(data, 1)
 
-    logger.info(f"Subset continuous raster: {src.width}x{src.height} -> {data.shape[1]}x{data.shape[0]}")
+    logger.info(
+        f"Subset continuous raster: {src.width}x{src.height} -> {data.shape[1]}x{data.shape[0]}"
+    )
     return output_path

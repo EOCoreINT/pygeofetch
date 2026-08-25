@@ -50,7 +50,9 @@ def visualize_interferogram(
     paths = {}
 
     label = ""
-    if getattr(result, "reference_date", None) and getattr(result, "secondary_date", None):
+    if getattr(result, "reference_date", None) and getattr(
+        result, "secondary_date", None
+    ):
         label = f" ({result.reference_date} → {result.secondary_date})"
 
     # Colormap: "hsv" -- a real, full-hue-cycling colormap, chosen to
@@ -218,14 +220,22 @@ def visualize_timeseries(
 
     ncols = min(3, len(indices))
     nrows = int(np.ceil(len(indices) / ncols))
-    fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 4.5 * nrows), facecolor="white")
+    fig, axes = plt.subplots(
+        nrows, ncols, figsize=(5 * ncols, 4.5 * nrows), facecolor="white"
+    )
     axes = np.atleast_1d(axes).ravel()
     disp_vmax = float(np.nanpercentile(np.abs(result.displacement), 98))
     for ax, idx in zip(axes, indices):
-        im = ax.imshow(result.displacement[idx], cmap="RdBu_r", vmin=-disp_vmax, vmax=disp_vmax,aspect="auto")
+        im = ax.imshow(
+            result.displacement[idx],
+            cmap="RdBu_r",
+            vmin=-disp_vmax,
+            vmax=disp_vmax,
+            aspect="auto",
+        )
         ax.set_title(result.dates[idx], fontsize=11)
         plt.colorbar(im, ax=ax, fraction=0.046)
-    for ax in axes[len(indices):]:
+    for ax in axes[len(indices) :]:
         ax.axis("off")
     fig.suptitle("Cumulative Displacement by Date (m)", fontsize=14)
     plt.tight_layout()

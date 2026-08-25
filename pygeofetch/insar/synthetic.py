@@ -134,8 +134,10 @@ def okada_surface_deformation(
     n_singular = 0
 
     az, _, dist_m = geod.inv(
-        np.full(lon_grid.size, fault_lon), np.full(lon_grid.size, fault_lat),
-        lon_grid.ravel(), lat_grid.ravel(),
+        np.full(lon_grid.size, fault_lon),
+        np.full(lon_grid.size, fault_lat),
+        lon_grid.ravel(),
+        lat_grid.ravel(),
     )
     az = az.reshape(h, w)
     dist_km = dist_m.reshape(h, w) / 1000.0
@@ -152,14 +154,21 @@ def okada_surface_deformation(
     for i in range(h):
         for j in range(w):
             success, u, _ = dc3dwrapper(
-                alpha, [x_fault[i, j], y_fault[i, j], 0.0], depth_km, dip_deg,
-                strike_width, dip_width, [ss, ds, opening_m],
+                alpha,
+                [x_fault[i, j], y_fault[i, j], 0.0],
+                depth_km,
+                dip_deg,
+                strike_width,
+                dip_width,
+                [ss, ds, opening_m],
             )
             if success == 1:
                 n_singular += 1
             ux_strike, uy_strike, uz = u
             east[i, j] = ux_strike * np.sin(strike_rad) - uy_strike * np.cos(strike_rad)
-            north[i, j] = ux_strike * np.cos(strike_rad) + uy_strike * np.sin(strike_rad)
+            north[i, j] = ux_strike * np.cos(strike_rad) + uy_strike * np.sin(
+                strike_rad
+            )
             up[i, j] = uz
 
     if n_singular > 0:
@@ -167,7 +176,8 @@ def okada_surface_deformation(
             "%d/%d observation points returned a singular (success=1) "
             "result from DC3D, typically points exactly on the fault "
             "edge -- their displacement values may be unreliable.",
-            n_singular, h * w,
+            n_singular,
+            h * w,
         )
 
     return east, north, up
@@ -211,7 +221,9 @@ def displacement_to_los(
 
     theta = np.radians(incidence_deg)
     heading = np.radians(heading_deg)
-    look_azimuth = heading + np.pi / 2  # right-looking: 90 deg clockwise of flight direction
+    look_azimuth = (
+        heading + np.pi / 2
+    )  # right-looking: 90 deg clockwise of flight direction
 
     los_east = np.sin(theta) * np.sin(look_azimuth)
     los_north = np.sin(theta) * np.cos(look_azimuth)
@@ -329,8 +341,18 @@ def generate_synthetic_interferogram(
     import numpy as np
 
     east, north, up = okada_surface_deformation(
-        lon_grid, lat_grid, fault_lon, fault_lat, strike_deg, dip_deg,
-        rake_deg, slip_m, length_km, width_km, depth_km, opening_m=opening_m,
+        lon_grid,
+        lat_grid,
+        fault_lon,
+        fault_lat,
+        strike_deg,
+        dip_deg,
+        rake_deg,
+        slip_m,
+        length_km,
+        width_km,
+        depth_km,
+        opening_m=opening_m,
     )
     los_true_m = displacement_to_los(east, north, up, incidence_deg, heading_deg)
     true_phase = 4 * np.pi / wavelength_m * los_true_m
@@ -349,18 +371,26 @@ def generate_synthetic_interferogram(
     atmo_phase = (4 * np.pi / wavelength_m) * (atmo_amplitude_m * atmo_field)
 
     coherence = np.clip(
-        mean_coherence + 0.05 * spatially_correlated_field(
-            lon_grid.shape, atmo_correlation_length_px * 0.5,
+        mean_coherence
+        + 0.05
+        * spatially_correlated_field(
+            lon_grid.shape,
+            atmo_correlation_length_px * 0.5,
             seed=None if seed is None else seed + 1,
         ),
-        0.05, 0.99,
+        0.05,
+        0.99,
     ).astype(np.float32)
 
-    phase_std = np.sqrt(1 - coherence**2) / (coherence * np.sqrt(2 * max(n_looks, 1e-6)))
+    phase_std = np.sqrt(1 - coherence**2) / (
+        coherence * np.sqrt(2 * max(n_looks, 1e-6))
+    )
     rng = np.random.default_rng(None if seed is None else seed + 2)
     decorrelation_noise = rng.normal(0, phase_std)
 
-    wrapped_phase = np.angle(np.exp(1j * (true_phase + atmo_phase + decorrelation_noise)))
+    wrapped_phase = np.angle(
+        np.exp(1j * (true_phase + atmo_phase + decorrelation_noise))
+    )
 
     return SyntheticInterferogramResult(
         wrapped_phase=wrapped_phase.astype(np.float32),
@@ -379,8 +409,14 @@ class SyntheticInterferogramResult:
     for validating recovery through the real processing pipeline."""
 
     def __init__(
-        self, wrapped_phase, coherence, true_los_displacement_m,
-        true_east_m, true_north_m, true_up_m, wavelength_m,
+        self,
+        wrapped_phase,
+        coherence,
+        true_los_displacement_m,
+        true_east_m,
+        true_north_m,
+        true_up_m,
+        wavelength_m,
     ):
         self.wrapped_phase = wrapped_phase
         self.coherence = coherence

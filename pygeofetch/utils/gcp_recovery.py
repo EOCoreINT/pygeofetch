@@ -265,9 +265,7 @@ def validate_georeference(path: str | Path) -> dict:
                 "crs_type": (
                     "geographic"
                     if (crs and crs.is_geographic)
-                    else "projected"
-                    if (crs and crs.is_projected)
-                    else "unknown"
+                    else "projected" if (crs and crs.is_projected) else "unknown"
                 ),
                 "transform": t,
                 "pixel_size": (abs(t.a), abs(t.e)),

@@ -447,9 +447,11 @@ class AuthManager:
                 {
                     "provider": provider,
                     "has_session": session is not None and session.is_valid,
-                    "session_expires": session.expires_at.isoformat()
-                    if session and session.expires_at
-                    else None,
+                    "session_expires": (
+                        session.expires_at.isoformat()
+                        if session and session.expires_at
+                        else None
+                    ),
                 }
             )
         return result

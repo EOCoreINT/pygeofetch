@@ -93,7 +93,9 @@ class DataValidator:
                 warnings.append(msg)
 
         if n_total > 0 and np.all(arr == 0):
-            errors.append(f"{name} is entirely zero — this is almost always a failed or empty read, not real data.")
+            errors.append(
+                f"{name} is entirely zero — this is almost always a failed or empty read, not real data."
+            )
 
         if np.iscomplexobj(arr) and finite_mask.any():
             amplitude = np.abs(arr[finite_mask])
@@ -120,7 +122,9 @@ class DataValidator:
                     f"of an SLC), not a real InSAR-ready input."
                 )
 
-        return ValidationResult(valid=len(errors) == 0, errors=errors, warnings=warnings)
+        return ValidationResult(
+            valid=len(errors) == 0, errors=errors, warnings=warnings
+        )
 
     @staticmethod
     def validate_coherence(data: Any, name: str = "coherence") -> ValidationResult:
@@ -144,9 +148,13 @@ class DataValidator:
         below_zero = float(np.min(finite))
         above_one = float(np.max(finite))
         if below_zero < -1e-6:
-            errors.append(f"{name} has values below 0 (min={below_zero:.4f}) — coherence is bounded [0,1] by definition.")
+            errors.append(
+                f"{name} has values below 0 (min={below_zero:.4f}) — coherence is bounded [0,1] by definition."
+            )
         if above_one > 1 + 1e-6:
-            errors.append(f"{name} has values above 1 (max={above_one:.4f}) — coherence is bounded [0,1] by definition.")
+            errors.append(
+                f"{name} has values above 1 (max={above_one:.4f}) — coherence is bounded [0,1] by definition."
+            )
 
         if np.all(finite == finite.flat[0]):
             warnings.append(
@@ -155,10 +163,14 @@ class DataValidator:
                 f"usually means a computation didn't run or a placeholder was used."
             )
 
-        return ValidationResult(valid=len(errors) == 0, errors=errors, warnings=warnings)
+        return ValidationResult(
+            valid=len(errors) == 0, errors=errors, warnings=warnings
+        )
 
     @staticmethod
-    def validate_sbas_network(pairs: Sequence, dates: Sequence[str]) -> ValidationResult:
+    def validate_sbas_network(
+        pairs: Sequence, dates: Sequence[str]
+    ) -> ValidationResult:
         """
         Verify an SBAS interferogram network is fully connected — every
         acquisition date must be reachable from every other through the
@@ -191,7 +203,9 @@ class DataValidator:
                 or (p[1] if isinstance(p, (tuple, list)) else None)
             )
             if d1 is None or d2 is None:
-                errors.append(f"Could not extract reference_date/secondary_date from pair {p!r}")
+                errors.append(
+                    f"Could not extract reference_date/secondary_date from pair {p!r}"
+                )
                 continue
             edges.append((d1, d2))
 
@@ -239,7 +253,9 @@ class DataValidator:
                 f"Add at least one interferogram pair bridging each component."
             )
 
-        return ValidationResult(valid=len(errors) == 0, errors=errors, warnings=warnings)
+        return ValidationResult(
+            valid=len(errors) == 0, errors=errors, warnings=warnings
+        )
 
     @staticmethod
     def classify_pairs(
@@ -280,8 +296,12 @@ class DataValidator:
         np = _require_numpy()
 
         def pair_dates(p):
-            d1 = getattr(p, "reference_date", None) or (p[0] if isinstance(p, (tuple, list)) else None)
-            d2 = getattr(p, "secondary_date", None) or (p[1] if isinstance(p, (tuple, list)) else None)
+            d1 = getattr(p, "reference_date", None) or (
+                p[0] if isinstance(p, (tuple, list)) else None
+            )
+            d2 = getattr(p, "secondary_date", None) or (
+                p[1] if isinstance(p, (tuple, list)) else None
+            )
             return d1, d2
 
         def mean_coherence(p):
@@ -323,14 +343,16 @@ class DataValidator:
 
             # Real bridge check: is the network still connected with
             # exactly this one edge removed from the full graph?
-            edges_without_this = all_edges[:i] + all_edges[i + 1:]
+            edges_without_this = all_edges[:i] + all_edges[i + 1 :]
             if is_connected(edges_without_this):
                 excluded_pairs.append(p)  # other paths exist -- safe to drop
             else:
                 bridge_pairs.append(p)  # topologically necessary despite low quality
 
         return PairClassification(
-            good_pairs=good_pairs, bridge_pairs=bridge_pairs, excluded_pairs=excluded_pairs,
+            good_pairs=good_pairs,
+            bridge_pairs=bridge_pairs,
+            excluded_pairs=excluded_pairs,
         )
 
 
@@ -343,6 +365,7 @@ class PairClassification:
     disconnect the network (see classify_pairs' own docstring for the
     exact graph-theoretic definition used).
     """
+
     good_pairs: List[Any] = field(default_factory=list)
     bridge_pairs: List[Any] = field(default_factory=list)
     excluded_pairs: List[Any] = field(default_factory=list)

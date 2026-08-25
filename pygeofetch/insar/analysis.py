@@ -30,6 +30,7 @@ Usage::
     risk_map.export_uncertainty("uncertainty.tif")
     risk_map.plot_risk_map("risk_figure.png", dpi=300)
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -66,6 +67,7 @@ class RiskMap:
     metadata : dict
         Additional metadata
     """
+
     risk: np.ndarray
     uncertainty: np.ndarray
     lower_ci: np.ndarray
@@ -102,12 +104,15 @@ class RiskMap:
         meta.update(kwargs)
 
         # Stack bands
-        stack = np.stack([
-            self.risk,
-            self.uncertainty,
-            self.lower_ci,
-            self.upper_ci,
-        ], axis=0)
+        stack = np.stack(
+            [
+                self.risk,
+                self.uncertainty,
+                self.lower_ci,
+                self.upper_ci,
+            ],
+            axis=0,
+        )
         stack = np.nan_to_num(stack, nan=meta["nodata"])
 
         with rasterio.open(path, "w", **meta) as dst:
@@ -184,6 +189,7 @@ class RiskMap:
     ) -> str:
         """Create publication-quality risk map visualization."""
         import matplotlib
+
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -220,15 +226,21 @@ class RiskMap:
         if add_uncertainty_hatch:
             finite_uncertainty = self.uncertainty[np.isfinite(self.uncertainty)]
             if finite_uncertainty.size > 0:
-                high_uncertainty = self.uncertainty > np.nanpercentile(self.uncertainty, 90)
-                y, x = np.mgrid[:self.uncertainty.shape[0], :self.uncertainty.shape[1]]
+                high_uncertainty = self.uncertainty > np.nanpercentile(
+                    self.uncertainty, 90
+                )
+                y, x = np.mgrid[
+                    : self.uncertainty.shape[0], : self.uncertainty.shape[1]
+                ]
                 masked_data = np.ma.masked_where(~high_uncertainty, high_uncertainty)
                 axes[0].contourf(
-                    x, y, masked_data,
-                    hatches=['////'],
+                    x,
+                    y,
+                    masked_data,
+                    hatches=["////"],
                     alpha=0,
                     levels=[0.5, 1.5],
-                    colors='none',
+                    colors="none",
                 )
 
         plt.suptitle(
@@ -375,7 +387,14 @@ class RiskMapper:
         )
 
     def _resolve_times_raw(self) -> Any:
-        time_attrs = ["times", "dates", "time", "date", "acquisition_dates", "date_list"]
+        time_attrs = [
+            "times",
+            "dates",
+            "time",
+            "date",
+            "acquisition_dates",
+            "date_list",
+        ]
         for attr in time_attrs:
             if hasattr(self.ts_result, attr):
                 value = getattr(self.ts_result, attr)
@@ -397,7 +416,7 @@ class RiskMapper:
         n_time = self.data.shape[0]
         logger.warning(
             "No time/date attribute found -- falling back to integer "
-            "indices 0..%d. Risk trends will be in \"per acquisition\" "
+            'indices 0..%d. Risk trends will be in "per acquisition" '
             "units, not a real physical rate (e.g. not mm/year), since "
             "there is no real time information available to anchor them.",
             n_time - 1,
@@ -417,7 +436,9 @@ class RiskMapper:
 
     def compute_risk(
         self,
-        method: Literal["bayesian", "monte_carlo", "bootstrap", "analytical"] = "bayesian",
+        method: Literal[
+            "bayesian", "monte_carlo", "bootstrap", "analytical"
+        ] = "bayesian",
         confidence_level: float = 0.95,
         n_simulations: int = 1000,
         risk_function: Callable | None = None,
@@ -463,13 +484,13 @@ class RiskMapper:
                 risk_function, confidence_level, n_simulations, **kwargs
             )
         elif method == "analytical":
-            return self._analytical_risk(
-                risk_function, confidence_level, **kwargs
-            )
+            return self._analytical_risk(risk_function, confidence_level, **kwargs)
         else:
             raise ValueError(f"Unknown method: {method}")
 
-    def _default_risk_function(self, data: np.ndarray, time_years: np.ndarray) -> np.ndarray:
+    def _default_risk_function(
+        self, data: np.ndarray, time_years: np.ndarray
+    ) -> np.ndarray:
         """
         Default risk function: trend magnitude (per real year) normalized
         by variability.
@@ -565,9 +586,7 @@ class RiskMapper:
 
         risk_samples = risk_samples.reshape(n_simulations, height, width)
 
-        return self._compute_risk_statistics(
-            risk_samples, confidence_level, "bayesian"
-        )
+        return self._compute_risk_statistics(risk_samples, confidence_level, "bayesian")
 
     def _bayesian_linear_regression(
         self,
@@ -625,12 +644,12 @@ class RiskMapper:
 
         residuals = y - (intercept_ols + slope_ols * x)
         dof = max(n - 2, 1)
-        sigma2 = np.sum(residuals ** 2) / dof
+        sigma2 = np.sum(residuals**2) / dof
 
         slope_var = sigma2 / (ss_xx + 1e-10)
 
         # Real conjugate Normal-Normal posterior update.
-        prior_precision = 1.0 / (prior_std ** 2 + 1e-300)
+        prior_precision = 1.0 / (prior_std**2 + 1e-300)
         likelihood_precision = 1.0 / (slope_var + 1e-300)
         posterior_precision = prior_precision + likelihood_precision
         posterior_var = 1.0 / posterior_precision
@@ -758,6 +777,7 @@ class RiskMapper:
         uncertainty = np.nanstd(data, axis=0) / np.sqrt(data.shape[0])
 
         from scipy import stats
+
         z_score = stats.norm.ppf((1 + confidence_level) / 2)
 
         lower_ci = risk - z_score * uncertainty
@@ -835,14 +855,14 @@ class RiskMapper:
             valid = ~np.isnan(risk) & ~np.isnan(validation_data)
 
             if "rmse" in metrics:
-                results["rmse"] = float(np.sqrt(
-                    np.mean((risk[valid] - validation_data[valid]) ** 2)
-                ))
+                results["rmse"] = float(
+                    np.sqrt(np.mean((risk[valid] - validation_data[valid]) ** 2))
+                )
 
             if "mae" in metrics:
-                results["mae"] = float(np.mean(
-                    np.abs(risk[valid] - validation_data[valid])
-                ))
+                results["mae"] = float(
+                    np.mean(np.abs(risk[valid] - validation_data[valid]))
+                )
 
             if "r2" in metrics:
                 ss_res = np.sum((validation_data[valid] - risk[valid]) ** 2)
@@ -853,9 +873,8 @@ class RiskMapper:
 
         if "coverage" in metrics:
             if validation_data is not None and valid is not None:
-                within_ci = (
-                    (validation_data >= risk_map.lower_ci) &
-                    (validation_data <= risk_map.upper_ci)
+                within_ci = (validation_data >= risk_map.lower_ci) & (
+                    validation_data <= risk_map.upper_ci
                 )
                 results["coverage"] = float(np.mean(within_ci[valid]))
             else:
@@ -940,6 +959,7 @@ def create_risk_map(
     logger.info(f"Validation metrics: {validation}")
 
     import json
+
     with open(output_dir / "validation.json", "w") as f:
         json.dump(validation, f, indent=2)
 

@@ -83,11 +83,20 @@ class InSARProject:
         from pygeofetch.models.search_query import SearchQuery
 
         query = SearchQuery(
-            bbox=self.aoi, start_date=start_date, end_date=end_date,
-            product_type="SLC", max_results=max_results,
+            bbox=self.aoi,
+            start_date=start_date,
+            end_date=end_date,
+            product_type="SLC",
+            max_results=max_results,
         )
         self.search_results = self._client.search(query, providers=self._providers)
-        logger.info("Real search: %d results for %s (%s to %s)", len(self.search_results), self.name, start_date, end_date)
+        logger.info(
+            "Real search: %d results for %s (%s to %s)",
+            len(self.search_results),
+            self.name,
+            start_date,
+            end_date,
+        )
 
         if show_map and self.search_results:
             self._show_search_results_on_map()
@@ -117,17 +126,31 @@ class InSARProject:
             if geometry is None:
                 continue
             acq = getattr(item, "datetime", None)
-            features.append({
-                "type": "Feature", "geometry": geometry,
-                "properties": {"date": str(acq)[:10] if acq else "unknown", "id": getattr(item, "id", "")},
-            })
+            features.append(
+                {
+                    "type": "Feature",
+                    "geometry": geometry,
+                    "properties": {
+                        "date": str(acq)[:10] if acq else "unknown",
+                        "id": getattr(item, "id", ""),
+                    },
+                }
+            )
 
         if features:
             geojson_path = Path(tempfile.mkdtemp()) / "search_results.geojson"
-            geojson_path.write_text(json.dumps({"type": "FeatureCollection", "features": features}))
-            mv.add_vector(str(geojson_path), layer_name="search_results", style={"color": "cyan", "weight": 2, "fillOpacity": 0.05})
+            geojson_path.write_text(
+                json.dumps({"type": "FeatureCollection", "features": features})
+            )
+            mv.add_vector(
+                str(geojson_path),
+                layer_name="search_results",
+                style={"color": "cyan", "weight": 2, "fillOpacity": 0.05},
+            )
         else:
-            logger.warning("No real geometry found in search results — nothing to show on the map")
+            logger.warning(
+                "No real geometry found in search results — nothing to show on the map"
+            )
 
         return mv.show()
 
@@ -150,7 +173,9 @@ class InSARProject:
 
         items = selected if selected is not None else self.search_results
         if not items:
-            raise ValueError("No search results to download -- call .search() first, or pass selected=...")
+            raise ValueError(
+                "No search results to download -- call .search() first, or pass selected=..."
+            )
 
         by_date: Dict[str, Any] = {}
         for item in items:
@@ -163,7 +188,8 @@ class InSARProject:
 
         raw_dir = self.output_dir / "raw"
         download_results_list = self._client.download(
-            list(by_date.values()), destination=raw_dir,
+            list(by_date.values()),
+            destination=raw_dir,
             options=DownloadOptions(parallel=4, resume=True),
         )
         for label, dl_result in zip(by_date.keys(), download_results_list):
@@ -171,12 +197,17 @@ class InSARProject:
 
         from pygeofetch.insar.geolocation import parse_orbit_file
 
-        orbit_candidates = sorted(raw_dir.rglob("*POEORB*.EOF")) + sorted(raw_dir.rglob("*RESORB*.EOF"))
+        orbit_candidates = sorted(raw_dir.rglob("*POEORB*.EOF")) + sorted(
+            raw_dir.rglob("*RESORB*.EOF")
+        )
 
         for label, dl_result in self.download_results.items():
             extracted_path = self._extractor.extract_scene(
-                zip_path=dl_result.output_path, aoi=self.aoi,
-                output_dir=self.output_dir / "slc" / label, label=label, resume=True,
+                zip_path=dl_result.output_path,
+                aoi=self.aoi,
+                output_dir=self.output_dir / "slc" / label,
+                label=label,
+                resume=True,
             )
             if extracted_path is None:
                 logger.warning("%s: no sub-swath overlaps this AOI", label)
@@ -193,7 +224,12 @@ class InSARProject:
                 except Exception:
                     continue
 
-        logger.info("Real extraction: %d/%d scenes extracted for %s", len(self.extracted_slcs), len(by_date), self.name)
+        logger.info(
+            "Real extraction: %d/%d scenes extracted for %s",
+            len(self.extracted_slcs),
+            len(by_date),
+            self.name,
+        )
 
         if show_map and self.extracted_slcs:
             first_label = next(iter(self.extracted_slcs))
@@ -219,11 +255,16 @@ class InSARProject:
         from pygeofetch.insar import InterferogramGenerator
 
         if len(self.extracted_slcs) < 2:
-            raise ValueError("Need at least 2 real extracted scenes -- call .download_and_extract() first")
+            raise ValueError(
+                "Need at least 2 real extracted scenes -- call .download_and_extract() first"
+            )
 
         ifg_gen = InterferogramGenerator(
-            coherence_window=5, esd_enabled=True, use_gpu=False,
-            use_real_burst_processing=True, remove_flat_earth_phase=True,
+            coherence_window=5,
+            esd_enabled=True,
+            use_gpu=False,
+            use_real_burst_processing=True,
+            remove_flat_earth_phase=True,
         )
 
         for d1, d2 in combinations(self.extracted_slcs.keys(), 2):
@@ -237,10 +278,15 @@ class InSARProject:
                 )
             try:
                 result = ifg_gen.process_pair(
-                    reference=self.extracted_slcs[d1], secondary=self.extracted_slcs[d2],
-                    dem=dem, reference_date=d1, secondary_date=d2,
-                    looks_azimuth=looks_azimuth, looks_range=looks_range,
-                    apply_goldstein_filter=True, goldstein_alpha=0.6,
+                    reference=self.extracted_slcs[d1],
+                    secondary=self.extracted_slcs[d2],
+                    dem=dem,
+                    reference_date=d1,
+                    secondary_date=d2,
+                    looks_azimuth=looks_azimuth,
+                    looks_range=looks_range,
+                    apply_goldstein_filter=True,
+                    goldstein_alpha=0.6,
                     **coreg_kwargs,
                 )
             except ValueError as exc:
@@ -249,9 +295,19 @@ class InSARProject:
 
             self.interferograms[(d1, d2)] = result
             days = (date.fromisoformat(d2) - date.fromisoformat(d1)).days
-            logger.info("  %s -> %s (%3dd): coherence=%.3f", d1, d2, days, result.coherence.mean())
+            logger.info(
+                "  %s -> %s (%3dd): coherence=%.3f",
+                d1,
+                d2,
+                days,
+                result.coherence.mean(),
+            )
 
-        logger.info("Real pairs formed: %d/%d possible", len(self.interferograms), len(list(combinations(self.extracted_slcs.keys(), 2))))
+        logger.info(
+            "Real pairs formed: %d/%d possible",
+            len(self.interferograms),
+            len(list(combinations(self.extracted_slcs.keys(), 2))),
+        )
 
         if show_strongest and self.interferograms:
             return self.show_strongest_pair()
@@ -265,17 +321,27 @@ class InSARProject:
         gradient-colored (cyclic for wrapped phase) map.
         """
         if not self.interferograms:
-            raise ValueError("No interferograms formed yet -- call .form_all_interferograms() first")
-        strongest_key = max(self.interferograms, key=lambda k: self.interferograms[k].coherence.mean())
+            raise ValueError(
+                "No interferograms formed yet -- call .form_all_interferograms() first"
+            )
+        strongest_key = max(
+            self.interferograms, key=lambda k: self.interferograms[k].coherence.mean()
+        )
         strongest = self.interferograms[strongest_key]
-        logger.info("Strongest real pair: %s, coherence=%.3f", strongest_key, strongest.coherence.mean())
+        logger.info(
+            "Strongest real pair: %s, coherence=%.3f",
+            strongest_key,
+            strongest.coherence.mean(),
+        )
         return strongest.show_on_map(band=band)
 
     def summary(self) -> None:
         """Real, quick-glance summary of everything done so far."""
         print(f"Project: {self.name}")
         print(f"Real search results: {len(self.search_results)}")
-        print(f"Real scenes extracted: {len(self.extracted_slcs)}/{len(self.download_results)}")
+        print(
+            f"Real scenes extracted: {len(self.extracted_slcs)}/{len(self.download_results)}"
+        )
         print(f"Real interferograms formed: {len(self.interferograms)}")
         if self.interferograms:
             for (d1, d2), result in sorted(self.interferograms.items()):

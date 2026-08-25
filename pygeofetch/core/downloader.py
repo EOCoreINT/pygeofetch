@@ -365,9 +365,9 @@ class AdaptiveDownloader:
         sum(1 for r in results if r and r.success)
         sum(1 for r in results if r and not r.success)
         dp.__exit__(None, None, None)
-        assert len(results) == len(data_list), (
-            f"BUG: result count {len(results)} != input count {len(data_list)}"
-        )
+        assert len(results) == len(
+            data_list
+        ), f"BUG: result count {len(results)} != input count {len(data_list)}"
         sum(
             r.bytes_downloaded / (1024 * 1024)
             for r in results
@@ -889,7 +889,7 @@ class AdaptiveDownloader:
             from pygeofetch.processor import SpectralIndex
         except ImportError as exc:
             raise ImportError(
-                f'{index_name} requires the processor extra: '
+                f"{index_name} requires the processor extra: "
                 f'pip install "pygeofetch[processor]"'
             ) from exc
 
@@ -904,7 +904,10 @@ class AdaptiveDownloader:
                 (
                     p
                     for p in result.output_paths
-                    if any(pat in p.name or pat.lower() in p.name.lower() for pat in patterns)
+                    if any(
+                        pat in p.name or pat.lower() in p.name.lower()
+                        for pat in patterns
+                    )
                 ),
                 None,
             )
@@ -914,8 +917,15 @@ class AdaptiveDownloader:
                     f"{band_name} (looked for {patterns} in filenames)"
                 )
             with rasterio.open(path) as src:
-                arr = src.read(1, out_shape=ref_shape, resampling=rasterio.enums.Resampling.bilinear) \
-                    if ref_shape else src.read(1)
+                arr = (
+                    src.read(
+                        1,
+                        out_shape=ref_shape,
+                        resampling=rasterio.enums.Resampling.bilinear,
+                    )
+                    if ref_shape
+                    else src.read(1)
+                )
                 if ref_shape is None:
                     ref_shape = arr.shape
                     profile = src.profile.copy()
@@ -949,7 +959,6 @@ class AdaptiveDownloader:
         result.output_path = out_path
         logger.info(f"{index_name} computed → {out_path}")
         return result
-
 
     def _find_existing_download(
         self, data: "SatelliteData", destination: Path
@@ -1230,7 +1239,8 @@ class AdaptiveDownloader:
                         "%s has no direct CRS/transform, using its %d "
                         "ground control points for reprojection instead "
                         "(common for raw SAR/GRD delivery).",
-                        source_path.name, len(src_gcps),
+                        source_path.name,
+                        len(src_gcps),
                     )
                 elif src_crs is None:
                     raise RuntimeError(
@@ -1300,7 +1310,6 @@ class AdaptiveDownloader:
                 "This is a known rasterio/GDAL edge case with certain input CRS."
             )
             raise RuntimeError(msg)
-
 
     def _backoff(self, attempt: int, options: DownloadOptions) -> float:
         """Calculate retry delay based on strategy."""

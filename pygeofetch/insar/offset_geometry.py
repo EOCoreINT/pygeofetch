@@ -58,7 +58,9 @@ def pixel_to_physical_offsets(
         raise ValueError("Pixel spacings must be strictly positive.")
 
     range_offset_m = np.asarray(range_offset_px, dtype=np.float64) * range_spacing_m
-    azimuth_offset_m = np.asarray(azimuth_offset_px, dtype=np.float64) * azimuth_spacing_m
+    azimuth_offset_m = (
+        np.asarray(azimuth_offset_px, dtype=np.float64) * azimuth_spacing_m
+    )
 
     return range_offset_m, azimuth_offset_m
 
@@ -158,7 +160,8 @@ def solve_enu_displacement(
 
         logger.info(
             "solve_enu_displacement: Solved for E/N using provided vertical displacement. "
-            "Matrix determinant (sin(θ)) = %.4f (stable).", sin_theta
+            "Matrix determinant (sin(θ)) = %.4f (stable).",
+            sin_theta,
         )
 
     elif assume_north_zero:
@@ -168,10 +171,11 @@ def solve_enu_displacement(
             logger.warning(
                 "solve_enu_displacement: assume_north_zero is highly unstable for "
                 "heading angles near 0° or 180° (sin(α) ≈ %.4f). "
-                "Results for d_E will be noisy.", sin_alpha
+                "Results for d_E will be noisy.",
+                sin_alpha,
             )
 
-        d_U[valid_mask] = 0.0 # Explicitly set to 0 for this mode
+        d_U[valid_mask] = 0.0  # Explicitly set to 0 for this mode
         d_N[valid_mask] = 0.0
 
         # From azimuth equation: ΔA = d_E * sin(α)  =>  d_E = ΔA / sin(α)

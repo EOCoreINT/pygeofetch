@@ -33,22 +33,51 @@ console = Console()
 logger = logging.getLogger("pygeofetch.cli.monitor")
 
 
-@click.group(name="monitor", help="Automated, incremental InSAR monitoring (Feature 4).")
+@click.group(
+    name="monitor", help="Automated, incremental InSAR monitoring (Feature 4)."
+)
 def monitor():
     pass
 
 
-@monitor.command(name="run", help="Run one real monitoring cycle: search for new scenes, plan incremental processing.")
-@click.option("--state-db", required=True, type=click.Path(), help="Path to this project's real state database.")
-@click.option("--bbox", required=True, type=str, help="Real AOI bounding box, 'minlon,minlat,maxlon,maxlat'.")
-@click.option("--satellites", default="Sentinel-1A,Sentinel-1B", help="Comma-separated real satellite names.")
-@click.option("--n-neighbors", default=3, type=int, help="Real neighbors each new date connects to (spec default: 3).")
-@click.option("--cron-daily", is_flag=True, help="Marker flag for scheduled invocation (real cron job); does not change behavior, documents intent in logs.")
+@monitor.command(
+    name="run",
+    help="Run one real monitoring cycle: search for new scenes, plan incremental processing.",
+)
+@click.option(
+    "--state-db",
+    required=True,
+    type=click.Path(),
+    help="Path to this project's real state database.",
+)
+@click.option(
+    "--bbox",
+    required=True,
+    type=str,
+    help="Real AOI bounding box, 'minlon,minlat,maxlon,maxlat'.",
+)
+@click.option(
+    "--satellites",
+    default="Sentinel-1A,Sentinel-1B",
+    help="Comma-separated real satellite names.",
+)
+@click.option(
+    "--n-neighbors",
+    default=3,
+    type=int,
+    help="Real neighbors each new date connects to (spec default: 3).",
+)
+@click.option(
+    "--cron-daily",
+    is_flag=True,
+    help="Marker flag for scheduled invocation (real cron job); does not change behavior, documents intent in logs.",
+)
 @click.pass_context
 def monitor_run(ctx, state_db, bbox, satellites, n_neighbors, cron_daily):
     client = ctx.obj.get("client") if ctx.obj else None
     if client is None:
         from pygeofetch import PyGeoFetch
+
         client = PyGeoFetch()
 
     state = ProjectState(state_db)
@@ -66,7 +95,9 @@ def monitor_run(ctx, state_db, bbox, satellites, n_neighbors, cron_daily):
     if state.last_download_timestamp:
         query.start_date = state.last_download_timestamp
 
-    console.print(f"[bold]pygeofetch monitor[/bold] — {'scheduled' if cron_daily else 'manual'} run")
+    console.print(
+        f"[bold]pygeofetch monitor[/bold] — {'scheduled' if cron_daily else 'manual'} run"
+    )
     console.print(f"State: {state_db}")
 
     try:
@@ -76,7 +107,9 @@ def monitor_run(ctx, state_db, bbox, satellites, n_neighbors, cron_daily):
         console.print(f"[red]Search failed:[/red] {exc}")
         raise
 
-    available_dates = sorted({str(r.datetime)[:10] for r in results if getattr(r, "datetime", None)})
+    available_dates = sorted(
+        {str(r.datetime)[:10] for r in results if getattr(r, "datetime", None)}
+    )
     plan = plan_monitoring_run(state, available_dates, n_neighbors=n_neighbors)
 
     console.print(plan.message)
@@ -84,11 +117,13 @@ def monitor_run(ctx, state_db, bbox, satellites, n_neighbors, cron_daily):
         console.print(f"  New dates: {plan.new_dates}")
         console.print(f"  New pairs needed: {len(plan.new_pairs)}")
 
-    state.record_run(RunSummary(
-        status="success" if plan.network_changed else "no_new_scenes",
-        n_new_scenes=len(plan.new_dates),
-        detail=plan.message,
-    ))
+    state.record_run(
+        RunSummary(
+            status="success" if plan.network_changed else "no_new_scenes",
+            n_new_scenes=len(plan.new_dates),
+            detail=plan.message,
+        )
+    )
 
     return plan
 

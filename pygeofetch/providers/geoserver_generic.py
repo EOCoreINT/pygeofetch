@@ -69,7 +69,10 @@ class GeoserverGenericProvider(AbstractBaseProvider):
             provider=self.PROVIDER_ID,
             access_token=_plain(token) or credentials.username or "anonymous",
             expires_at=datetime.now(timezone.utc) + timedelta(days=365),
-            session_data={"api_key": _plain(token), "username": credentials.username or ""},
+            session_data={
+                "api_key": _plain(token),
+                "username": credentials.username or "",
+            },
         )
         self._session = session
         self._logger.info(f"{self.DISPLAY_NAME}: authenticated")

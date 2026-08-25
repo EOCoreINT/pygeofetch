@@ -42,8 +42,14 @@ def _d8_flow_accumulation(dem, cell_size_m, np):
     """
     h, w = dem.shape
     neighbors = [
-        (-1, -1, 1.4142), (-1, 0, 1.0), (-1, 1, 1.4142), (0, -1, 1.0),
-        (0, 1, 1.0), (1, -1, 1.4142), (1, 0, 1.0), (1, 1, 1.4142),
+        (-1, -1, 1.4142),
+        (-1, 0, 1.0),
+        (-1, 1, 1.4142),
+        (0, -1, 1.0),
+        (0, 1, 1.0),
+        (1, -1, 1.4142),
+        (1, 0, 1.0),
+        (1, 1, 1.4142),
     ]
 
     flow_dir = np.full((h, w), -1, dtype=np.int8)
@@ -753,9 +759,7 @@ class Preprocessor:
             # (delivered in their native UTM zone) with a WGS84 AOI
             # boundary (the standard, expected format for GeoJSON AOIs).
             if src.crs is not None and str(src.crs) != str(geometry_crs):
-                shapes = [
-                    transform_geom(geometry_crs, src.crs, shp) for shp in shapes
-                ]
+                shapes = [transform_geom(geometry_crs, src.crs, shp) for shp in shapes]
 
             try:
                 out_image, out_transform = rasterio_mask(
@@ -778,12 +782,15 @@ class Preprocessor:
                 px_size = abs(src.transform[0])
                 buffer_dist = px_size * 3
                 buffered_shapes = [
-                    _shp_shape(s).buffer(buffer_dist).__geo_interface__
-                    for s in shapes
+                    _shp_shape(s).buffer(buffer_dist).__geo_interface__ for s in shapes
                 ]
                 try:
                     out_image, out_transform = rasterio_mask(
-                        src, buffered_shapes, crop=True, all_touched=all_touched, nodata=0
+                        src,
+                        buffered_shapes,
+                        crop=True,
+                        all_touched=all_touched,
+                        nodata=0,
                     )
                     logger.warning(
                         f"clip(): initial geometry missed the raster by a "
@@ -973,7 +980,9 @@ class Preprocessor:
             pixel_size_y = abs(transform.e)
             if crs is not None and crs.is_geographic:
                 center_lat = (src.bounds.top + src.bounds.bottom) / 2.0
-                pixel_size_x_m = pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                pixel_size_x_m = (
+                    pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                )
                 pixel_size_y_m = pixel_size_y * 111320.0
             else:
                 pixel_size_x_m = pixel_size_x
@@ -994,7 +1003,9 @@ class Preprocessor:
         slope_rad_floored = np.maximum(slope_rad, np.radians(0.1))
 
         specific_catchment_area = flow_accum * cell_size_m
-        twi = np.log(specific_catchment_area / np.tan(slope_rad_floored)).astype(np.float32)
+        twi = np.log(specific_catchment_area / np.tan(slope_rad_floored)).astype(
+            np.float32
+        )
 
         out_profile = profile.copy()
         out_profile.update(dtype="float32", count=1)
@@ -1060,7 +1071,9 @@ class Preprocessor:
             pixel_size_y = abs(transform.e)
             if crs is not None and crs.is_geographic:
                 center_lat = (src.bounds.top + src.bounds.bottom) / 2.0
-                pixel_size_x_m = pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                pixel_size_x_m = (
+                    pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                )
                 pixel_size_y_m = pixel_size_y * 111320.0
             else:
                 pixel_size_x_m = pixel_size_x
@@ -1215,7 +1228,9 @@ class Preprocessor:
             metadata={
                 "depression_pct": depression_pct,
                 "max_depth_m": float(np.max(depth)),
-                "mean_depth_where_present_m": float(np.mean(depth[depth > 0])) if depression_pct > 0 else 0.0,
+                "mean_depth_where_present_m": (
+                    float(np.mean(depth[depth > 0])) if depression_pct > 0 else 0.0
+                ),
             },
         )
 
@@ -1273,7 +1288,9 @@ class Preprocessor:
             pixel_size_y = abs(transform.e)
             if crs is not None and crs.is_geographic:
                 center_lat = (src.bounds.top + src.bounds.bottom) / 2.0
-                pixel_size_x_m = pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                pixel_size_x_m = (
+                    pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                )
                 pixel_size_y_m = pixel_size_y * 111320.0
             else:
                 pixel_size_x_m = pixel_size_x
@@ -1364,7 +1381,9 @@ class Preprocessor:
             # a degree of latitude except at the equator.
             if crs is not None and crs.is_geographic:
                 center_lat = (src.bounds.top + src.bounds.bottom) / 2.0
-                pixel_size_x_m = pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                pixel_size_x_m = (
+                    pixel_size_x * 111320.0 * np.cos(np.radians(center_lat))
+                )
                 pixel_size_y_m = pixel_size_y * 111320.0
             else:
                 pixel_size_x_m = pixel_size_x
@@ -1379,10 +1398,9 @@ class Preprocessor:
 
         azimuth_rad = np.radians(360 - azimuth + 90)
         zenith_rad = np.radians(90 - altitude)
-        hillshade = (
-            np.cos(zenith_rad) * np.cos(slope_rad)
-            + np.sin(zenith_rad) * np.sin(slope_rad) * np.cos(azimuth_rad - aspect_rad)
-        )
+        hillshade = np.cos(zenith_rad) * np.cos(slope_rad) + np.sin(
+            zenith_rad
+        ) * np.sin(slope_rad) * np.cos(azimuth_rad - aspect_rad)
         hillshade = np.clip(hillshade, 0, 1).astype(np.float32)
 
         out_profile = profile.copy()
@@ -1392,7 +1410,11 @@ class Preprocessor:
         aspect_path = out_dir / f"{inp.stem}_aspect.tif"
         hillshade_path = out_dir / f"{inp.stem}_hillshade.tif"
 
-        for path, arr in [(slope_path, slope_deg), (aspect_path, aspect_deg), (hillshade_path, hillshade)]:
+        for path, arr in [
+            (slope_path, slope_deg),
+            (aspect_path, aspect_deg),
+            (hillshade_path, hillshade),
+        ]:
             with rasterio.open(path, "w", **out_profile) as dst:
                 dst.write(arr, 1)
 
@@ -1493,14 +1515,18 @@ class Preprocessor:
 
             with rasterio.open(inp) as src:
                 profile = src.profile.copy()
-                profile.update(height=new_h, width=new_w, transform=ref_transform, crs=ref_crs)
+                profile.update(
+                    height=new_h, width=new_w, transform=ref_transform, crs=ref_crs
+                )
                 data = np.zeros((src.count, new_h, new_w), dtype=src.dtypes[0])
                 for band_idx in range(1, src.count + 1):
                     _warp_reproject(
                         source=rasterio.band(src, band_idx),
                         destination=data[band_idx - 1],
-                        src_transform=src.transform, src_crs=src.crs,
-                        dst_transform=ref_transform, dst_crs=ref_crs,
+                        src_transform=src.transform,
+                        src_crs=src.crs,
+                        dst_transform=ref_transform,
+                        dst_crs=ref_crs,
                         resampling=rs_method,
                     )
 
@@ -1513,7 +1539,12 @@ class Preprocessor:
                 operation="resample",
                 input_path=inp,
                 output_path=out_path,
-                metadata={"method": method, "new_width": new_w, "new_height": new_h, "reference": str(reference)},
+                metadata={
+                    "method": method,
+                    "new_width": new_w,
+                    "new_height": new_h,
+                    "reference": str(reference),
+                },
             )
 
         res_label = str(resolution or scale_factor).replace(".", "p")

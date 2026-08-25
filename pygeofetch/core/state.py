@@ -127,7 +127,9 @@ class ProjectState:
 
     # ── processed dates ─────────────────────────────────────────────
 
-    def mark_dates_processed(self, dates: List[str], scene_ids: Optional[List[str]] = None):
+    def mark_dates_processed(
+        self, dates: List[str], scene_ids: Optional[List[str]] = None
+    ):
         """Real, idempotent insert -- re-marking an already-processed date is a no-op, not an error."""
         now = datetime.now(timezone.utc).isoformat()
         scene_ids = scene_ids or [None] * len(dates)
@@ -139,12 +141,16 @@ class ProjectState:
 
     def processed_dates(self) -> List[str]:
         with self._connect() as conn:
-            rows = conn.execute("SELECT date FROM processed_dates ORDER BY date").fetchall()
+            rows = conn.execute(
+                "SELECT date FROM processed_dates ORDER BY date"
+            ).fetchall()
         return [r[0] for r in rows]
 
     def is_date_processed(self, date: str) -> bool:
         with self._connect() as conn:
-            row = conn.execute("SELECT 1 FROM processed_dates WHERE date = ?", (date,)).fetchone()
+            row = conn.execute(
+                "SELECT 1 FROM processed_dates WHERE date = ?", (date,)
+            ).fetchone()
         return row is not None
 
     # ── project metadata (last_download_timestamp, network hash, reference pixel) ──
@@ -159,7 +165,9 @@ class ProjectState:
 
     def _get_meta(self, key: str) -> Optional[str]:
         with self._connect() as conn:
-            row = conn.execute("SELECT value FROM project_meta WHERE key = ?", (key,)).fetchone()
+            row = conn.execute(
+                "SELECT value FROM project_meta WHERE key = ?", (key,)
+            ).fetchone()
         return row[0] if row else None
 
     @property
@@ -226,7 +234,13 @@ class ProjectState:
                 (limit,),
             ).fetchall()
         return [
-            {"run_id": r[0], "started_at": r[1], "finished_at": r[2],
-             "status": r[3], "n_new_scenes": r[4], "detail": r[5]}
+            {
+                "run_id": r[0],
+                "started_at": r[1],
+                "finished_at": r[2],
+                "status": r[3],
+                "n_new_scenes": r[4],
+                "detail": r[5],
+            }
             for r in rows
         ]
