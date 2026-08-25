@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"  # Use a single version for linting
+          python-version: "3.12"  # Matches the highest version in [tool.black] target-version
 
       - name: Install dependencies
         run: |
