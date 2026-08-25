@@ -31,7 +31,9 @@ jobs:
         run: ruff check pygeofetch/
 
       - name: Check formatting with black
-        run: black --target-version py311 --check pygeofetch/ tests/  # <-- FIXED HERE
+        run: |
+          pip install black==26.5.1  # Pin to your local version
+          black --check pygeofetch/ tests/
 
       - name: Type check with mypy
         run: mypy pygeofetch/ --ignore-missing-imports
