@@ -188,6 +188,9 @@ include = ["pygeofetch*"]
 [tool.setuptools.package-data]
 pygeofetch = ["config/*.yaml", "py.typed"]
 
+[tool.black]
+target-version = ["py39", "py310", "py311", "py312"]
+
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
 ignore = ["E501"]
