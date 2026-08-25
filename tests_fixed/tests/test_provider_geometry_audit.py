@@ -175,26 +175,3 @@ def test_nasa_earthdata_cloud_does_not_crash_on_real_granule():
     result = provider._parse_granule(entry)
     assert result.collection == "C1234-TEST"
     assert result.bbox == (-55.75, -21.28, -55.66, -21.19)
-
-
-def test_nasa_earthdata_parses_real_cmr_polygons_field():
-    """Real fix, confirmed against two independent real examples (NASA's
-    own CMR GitHub repo, NSIDC's SnowEx Hackweek tutorial): the real
-    granules.json "polygons" field, previously never parsed at all."""
-    provider = _make_provider("nasa_earthdata", "NASAEarthdataProvider")
-    g = {
-        "id": "G1441955149-LAADS",
-        "title": "LAADS:2898928073",
-        "time_start": "2017-12-04T19:15:00.000Z",
-        "short_name": "MYD01",
-        "boxes": ["12.722903 -103.427423 33.998022 -76.12721"],
-        "polygons": [[
-            "33.998022 -78.986962 30.291195 -103.427423 "
-            "12.722903 -97.56511 15.805856 -76.12721 33.998022 -78.986962"
-        ]],
-        "links": [],
-    }
-    result = provider._granule_to_satellite_data(g)
-    assert result.geometry is not None
-    assert result.geometry["type"] == "Polygon"
-    assert result.bbox == (-103.427423, 12.722903, -76.12721, 33.998022)

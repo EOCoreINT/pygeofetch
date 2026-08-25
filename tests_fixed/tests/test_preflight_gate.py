@@ -6,7 +6,6 @@ cross-family split) that the original, buggy version would have
 missed.
 """
 import sys
-# sys.path.insert(0, "/home/mrtenkorang/open-source-projects/")
 
 from datetime import datetime
 from unittest.mock import patch, MagicMock
@@ -47,7 +46,7 @@ def test_reproduces_mexico_city_same_track_split_not_missed():
     geometry_report = {"track": 143, "satellites": {"S1A"}}
 
     gate = make_gate()
-    issues = gate._screen_burst_families(selected, geometry_report)
+    _, issues = gate._screen_burst_families(selected, geometry_report)
     codes = [i.code for i in issues]
     print(f"  issue codes returned: {codes}")
 
@@ -101,7 +100,7 @@ def test_multiple_real_tracks_flagged_red():
     ]
     geometry_report = {"track": 143, "satellites": {"S1A"}}
     gate = make_gate()
-    issues = gate._screen_burst_families(selected, geometry_report)
+    _, issues = gate._screen_burst_families(selected, geometry_report)
     codes = [i.code for i in issues]
     print(f"  issue codes: {codes}")
     assert "MULTIPLE_TRACKS_IN_SELECTION" in codes
@@ -157,8 +156,102 @@ def test_full_run_end_to_end_mexico_city_scenario():
     print("  PASS\n")
 
 
+def test_summary_reminds_caller_when_scenes_were_actually_excluded():
+    print("=== 7b. REAL BUG regression: summary() loudly reminds the caller to use report.selected when something was dropped ===")
+    # Reproduces the exact real notebook bug: preflight correctly
+    # excluded real scenes (confirmed directly, found in an actual
+    # uploaded notebook -- a cell literally titled "Download the real,
+    # filtered scenes" called client.download(selected, ...) using the
+    # ORIGINAL pre-preflight variable, never reassigned from
+    # report.selected, so every excluded scene got downloaded anyway).
+    dates = ["2016-07-24", "2016-08-05", "2016-08-17", "2016-08-29", "2016-09-10", "2016-09-22"]
+    selected = [
+        FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1A")
+        for d in dates
+    ]
+    search_report = {
+        "geometry_report": {"track": 143, "satellites": {"S1A"}, "dropped": {}},
+        "hit_max_results": False,
+        "raw_result_count": 6,
+    }
+    gate = make_gate(attempt_real_burst_check=True)
+    gate.min_coverage_fraction = 0.0
+    fake_family_report = {
+        "good_dates": dates[:5], "bridge_only_dates": [dates[5]],
+        "used_majority_only": True,
+        "majority_self_connected": True,
+        "majority_internal_bridges": [],
+        "sync_results": [],
+    }
+    gate._try_real_burst_family_check = MagicMock(return_value=(dates[:5], fake_family_report))
+
+    report = gate.run(selected, search_report)
+    print(report.summary())
+
+    assert report.original_count == 6
+    assert len(report.selected) == 5
+    assert "[REMINDER]" in report.summary()
+    assert "report.selected" in report.summary()
+    assert "1 of 6 scene(s) were excluded" in report.summary()
+    print("  PASS -- the exact real mistake (using the original list, not report.selected) now gets a loud, unmissable reminder\n")
+
+
+def test_summary_stays_quiet_when_nothing_was_excluded():
+    print("=== 7c. summary() does NOT show the reminder when nothing was actually dropped (no false alarms) ===")
+    dates = ["2016-07-24", "2016-08-05", "2016-08-17"]
+    selected = [
+        FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1A")
+        for d in dates
+    ]
+    search_report = {
+        "geometry_report": {"track": 143, "satellites": {"S1A"}, "dropped": {}},
+        "hit_max_results": False,
+        "raw_result_count": 3,
+    }
+    gate = make_gate(attempt_real_burst_check=False)  # skip the real check -> honest-unassessed path, nothing dropped
+    gate.min_coverage_fraction = 0.0
+
+    report = gate.run(selected, search_report)
+    print(report.summary())
+
+    assert report.original_count == 3
+    assert len(report.selected) == 3
+    assert "[REMINDER]" not in report.summary(), "should not warn when nothing was actually excluded"
+    print("  PASS\n")
+
+
+def test_original_count_not_confused_by_truncation_widening():
+    print("=== 7d. A truncation-driven re-search that GROWS the pool doesn't trigger a false 'dropped' reminder ===")
+    dates_small = ["2016-07-24", "2016-08-05"]
+    selected_small = [
+        FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1A")
+        for d in dates_small
+    ]
+    dates_wide = ["2016-07-24", "2016-08-05", "2016-08-17", "2016-08-29"]
+    selected_wide = [
+        FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1A")
+        for d in dates_wide
+    ]
+    search_report = {
+        "geometry_report": {"track": 143, "satellites": {"S1A"}, "dropped": {}},
+        "hit_max_results": True,  # triggers the truncation re-search path
+        "raw_result_count": 2,
+    }
+    gate = make_gate(attempt_real_burst_check=False)
+    gate.min_coverage_fraction = 0.0
+    gate._check_truncation = MagicMock(return_value=(
+        selected_wide, {**search_report, "hit_max_results": False}, None,
+    ))
+
+    report = gate.run(selected_small, search_report)
+    print(report.summary())
+    assert report.original_count == 4, "baseline should be captured AFTER truncation resolves (the grown pool), not before"
+    assert "[REMINDER]" not in report.summary(), "growing the pool via re-search is not a 'drop' and must not warn"
+    print("  PASS\n")
+
+
 def test_real_check_success_produces_burst_family_detected():
-    print("=== 8. Real check success -> BURST_FAMILY_DETECTED replaces the unassessed advisory ===")
+    print("=== 8. Real check success -> BURST_FAMILY_DETECTED, AND selected is actually filtered ===")
     dates = ["2016-07-24", "2016-08-05", "2016-08-17", "2016-08-29", "2016-09-10", "2016-09-22"]
     selected = [FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1A") for d in dates]
     geometry_report = {"track": 143, "satellites": {"S1A"}}
@@ -170,7 +263,7 @@ def test_real_check_success_produces_burst_family_detected():
     }
     gate._try_real_burst_family_check = MagicMock(return_value=(dates[:5], fake_family_report))
 
-    issues = gate._screen_burst_families(selected, geometry_report)
+    filtered_selected, issues = gate._screen_burst_families(selected, geometry_report)
     codes = [i.code for i in issues]
     print(f"  issue codes: {codes}")
     assert "BURST_FAMILY_DETECTED" in codes
@@ -179,7 +272,171 @@ def test_real_check_success_produces_burst_family_detected():
     assert detected.severity == preflight.SEVERITY_GREEN
     assert detected.auto_fixed is True
     assert "used exclusively" in detected.message
+    # Real bug prevention: the copernicus_nodes version must be visible
+    # directly in this message, since this is the block the user has
+    # consistently shared every time -- not just at module-import time,
+    # which can be missed if a shared log snippet starts partway through.
+    from pygeofetch.providers.copernicus_nodes import MODULE_VERSION
+    assert f"[copernicus_nodes {MODULE_VERSION}]" in detected.message, (
+        "the running copernicus_nodes version must be visible in the final "
+        "summary block, not just at import time"
+    )
+
+    # REAL BUG regression: auto_fixed=True must mean the exclusion was
+    # actually APPLIED to the returned selection, not just described in
+    # the message text.
+    filtered_dates = sorted(str(s.datetime)[:10] for s in filtered_selected)
+    print(f"  filtered selected dates: {filtered_dates}")
+    assert filtered_dates == sorted(dates[:5]), (
+        "the minority date (2016-09-22) must actually be excluded from "
+        "the returned selection, not just mentioned in the message"
+    )
+    assert len(filtered_selected) == 5
     gate._try_real_burst_family_check.assert_called_once()
+    print("  PASS\n")
+
+
+def test_compromise_case_uses_yellow_not_green_and_auto_fixed_false():
+    print("=== 8c. Third-party review fix: compromise (minority KEPT) is YELLOW + auto_fixed=False, not GREEN ===")
+    # Reproduces the real run a third-party review flagged: majority
+    # family too small to exclude the minority, so ALL dates get kept
+    # (a real compromise, not a fix) -- this must NOT be reported the
+    # same way as a genuine, clean exclusion.
+    dates = ["2016-11-03", "2016-11-15", "2016-11-27", "2016-12-09", "2016-12-15", "2016-12-21"]
+    selected = [FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1B") for d in dates]
+    geometry_report = {"track": 143, "satellites": {"S1A", "S1B"}}
+
+    gate = make_gate(attempt_real_burst_check=True)
+    fake_family_report = {
+        "good_dates": dates[:5], "bridge_only_dates": [dates[5]],
+        "used_majority_only": False,  # majority too small -- real compromise
+        "sync_results": [],
+    }
+    gate._try_real_burst_family_check = MagicMock(return_value=(dates, fake_family_report))  # ALL 6 kept
+
+    filtered_selected, issues = gate._screen_burst_families(selected, geometry_report)
+    detected = next(i for i in issues if i.code == "BURST_FAMILY_DETECTED")
+    print(f"  severity: {detected.severity}, auto_fixed: {detected.auto_fixed}")
+    print(f"  message: {detected.message}")
+
+    assert detected.severity == preflight.SEVERITY_YELLOW, "a real compromise (minority kept) must be YELLOW, not GREEN"
+    assert detected.auto_fixed is False, "nothing was actually excluded -- this is not a real auto-fix"
+    assert "compromise, not a fix" in detected.message
+    assert len(filtered_selected) == 6, "no date should have been excluded in the compromise case"
+    print("  PASS\n")
+
+
+def test_resolved_case_still_green_and_auto_fixed_true():
+    print("=== 8d. Genuine exclusion (majority large enough) is still correctly GREEN + auto_fixed=True ===")
+    dates = ["2016-07-24", "2016-08-05", "2016-08-17", "2016-08-29", "2016-09-10", "2016-09-22"]
+    selected = [FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1A") for d in dates]
+    geometry_report = {"track": 143, "satellites": {"S1A"}}
+
+    gate = make_gate(attempt_real_burst_check=True)
+    fake_family_report = {
+        "good_dates": dates[:5], "bridge_only_dates": [dates[5]],
+        "used_majority_only": True,  # genuinely resolved
+        "sync_results": [],
+    }
+    gate._try_real_burst_family_check = MagicMock(return_value=(dates[:5], fake_family_report))
+
+    _, issues = gate._screen_burst_families(selected, geometry_report)
+    detected = next(i for i in issues if i.code == "BURST_FAMILY_DETECTED")
+    assert detected.severity == preflight.SEVERITY_GREEN, "a genuine exclusion should still be GREEN"
+    assert detected.auto_fixed is True
+    assert "genuinely resolved" in detected.message
+    print("  PASS\n")
+
+
+def test_majority_internal_bridge_surfaced_in_preflight_message():
+    print("=== 8f. Real scenario: exclusion happens, but internal majority bridge is honestly surfaced (not implied clean) ===")
+    # Reproduces exactly what a direct user question surfaced: excluding
+    # a known-poor minority date doesn't automatically mean the
+    # remaining majority is bridge-free.
+    dates = ["2016-11-03", "2016-11-15", "2016-11-27", "2016-12-09", "2016-12-15", "2016-12-21"]
+    selected = [FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1B") for d in dates]
+    geometry_report = {"track": 143, "satellites": {"S1A", "S1B"}}
+
+    gate = make_gate(attempt_real_burst_check=True)
+    fake_family_report = {
+        "good_dates": dates[:5], "bridge_only_dates": [dates[5]],
+        "used_majority_only": True,
+        "majority_self_connected": True,
+        "majority_internal_bridges": [("2016-11-03", "2016-12-09", -7.1)],
+        "sync_results": [],
+    }
+    gate._try_real_burst_family_check = MagicMock(return_value=(dates[:5], fake_family_report))
+
+    filtered, issues = gate._screen_burst_families(selected, geometry_report)
+    detected = next(i for i in issues if i.code == "BURST_FAMILY_DETECTED")
+    print(f"  message: {detected.message}")
+    assert detected.severity == preflight.SEVERITY_GREEN, "exclusion still genuinely happened -- GREEN is correct"
+    assert "2016-12-21" not in [str(s.datetime)[:10] for s in filtered], "minority date should still be excluded"
+    assert "internal bridge" in detected.message
+    assert "('2016-11-03', '2016-12-09', -7.1)" in detected.message, "the specific internal bridge must be named, not hidden"
+    print("  PASS\n")
+
+
+def test_pair_level_fraction_reported_not_just_date_level_split():
+    print("=== 8e. Third-party review fix: pair-level within-requirement fraction is now reported ===")
+    # Reproduces the real finding: only 4/15 (27%) of real candidate
+    # pairs were within the 5ms requirement, including a pair WITHIN
+    # the 5-date majority family itself -- the date-level split alone
+    # ('5 majority / 1 minority') doesn't surface how pervasive this is.
+    from types import SimpleNamespace
+
+    dates = ["2016-11-03", "2016-11-15", "2016-11-27", "2016-12-09", "2016-12-15", "2016-12-21"]
+    selected = [FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1B") for d in dates]
+    geometry_report = {"track": 143, "satellites": {"S1A", "S1B"}}
+
+    within_flags = [True, True, False, False, False, True, False, False, False, False, False, False, False, True, False]
+    fake_sync_results = [SimpleNamespace(within_requirement=w) for w in within_flags]
+    assert len(fake_sync_results) == 15
+
+    gate = make_gate(attempt_real_burst_check=True)
+    fake_family_report = {
+        "good_dates": dates[:5], "bridge_only_dates": [dates[5]],
+        "used_majority_only": False,
+        "sync_results": fake_sync_results,
+    }
+    gate._try_real_burst_family_check = MagicMock(return_value=(dates, fake_family_report))
+
+    _, issues = gate._screen_burst_families(selected, geometry_report)
+    detected = next(i for i in issues if i.code == "BURST_FAMILY_DETECTED")
+    print(f"  message: {detected.message}")
+    assert "4/15" in detected.message, "the real pair-level fraction must appear in the message"
+    assert "27%" in detected.message
+    print("  PASS\n")
+
+
+def test_burst_family_exclusion_actually_applied_end_to_end_via_run():
+    print("=== 8b. REAL BUG regression: report.selected reflects the burst-family exclusion via the full run() path ===")
+    dates = ["2016-07-24", "2016-08-05", "2016-08-17", "2016-08-29", "2016-09-10", "2016-09-22"]
+    selected = [
+        FakeScene(datetime.strptime(d, "%Y-%m-%d"), track=143, satellite="SENTINEL-1A")
+        for d in dates
+    ]
+    search_report = {
+        "geometry_report": {"track": 143, "satellites": {"S1A"}, "dropped": {}},
+        "hit_max_results": False, "raw_result_count": 6,
+    }
+    gate = make_gate(attempt_real_burst_check=True)
+    gate.min_coverage_fraction = 0.0  # fake geometry isn't real AOI-shaped
+
+    fake_family_report = {
+        "good_dates": dates[:5], "bridge_only_dates": [dates[5]],
+        "used_majority_only": True, "sync_results": [],
+    }
+    gate._try_real_burst_family_check = MagicMock(return_value=(dates[:5], fake_family_report))
+
+    report = gate.run(selected, search_report)
+    result_dates = sorted(str(s.datetime)[:10] for s in report.selected)
+    print(f"  report.selected dates: {result_dates}")
+    assert result_dates == sorted(dates[:5]), (
+        "report.selected -- what a real caller actually downloads -- must reflect the "
+        "burst-family exclusion, not just the issue's message text"
+    )
+    assert "2016-09-22" not in result_dates
     print("  PASS\n")
 
 
@@ -192,12 +449,15 @@ def test_real_check_failure_falls_back_to_unassessed():
     gate = make_gate(attempt_real_burst_check=True)
     gate._try_real_burst_family_check = MagicMock(return_value=None)
 
-    issues = gate._screen_burst_families(selected, geometry_report)
+    filtered_selected, issues = gate._screen_burst_families(selected, geometry_report)
     codes = [i.code for i in issues]
     print(f"  issue codes: {codes}")
     assert "BURST_FAMILY_RISK_UNASSESSED" in codes
     unassessed = next(i for i in issues if i.code == "BURST_FAMILY_RISK_UNASSESSED")
     assert "attempted" in unassessed.message.lower() or "did not succeed" in unassessed.message.lower()
+    # When the real check fails, selected must pass through UNCHANGED --
+    # no filtering should happen based on a check that didn't succeed.
+    assert [s.datetime for s in filtered_selected] == [s.datetime for s in selected]
     print("  PASS\n")
 
 
@@ -210,7 +470,7 @@ def test_attempt_real_burst_check_false_skips_entirely():
     gate = make_gate(attempt_real_burst_check=False)
     gate._try_real_burst_family_check = MagicMock(return_value=("should not be used", {}))
 
-    issues = gate._screen_burst_families(selected, geometry_report)
+    _, issues = gate._screen_burst_families(selected, geometry_report)
     gate._try_real_burst_family_check.assert_not_called()
     codes = [i.code for i in issues]
     assert "BURST_FAMILY_RISK_UNASSESSED" in codes
@@ -310,7 +570,15 @@ if __name__ == "__main__":
     test_temporal_network_matches_generate_candidate_pairs()
     test_no_dead_yellow_to_green_function()
     test_full_run_end_to_end_mexico_city_scenario()
+    test_summary_reminds_caller_when_scenes_were_actually_excluded()
+    test_summary_stays_quiet_when_nothing_was_excluded()
+    test_original_count_not_confused_by_truncation_widening()
     test_real_check_success_produces_burst_family_detected()
+    test_compromise_case_uses_yellow_not_green_and_auto_fixed_false()
+    test_resolved_case_still_green_and_auto_fixed_true()
+    test_majority_internal_bridge_surfaced_in_preflight_message()
+    test_pair_level_fraction_reported_not_just_date_level_split()
+    test_burst_family_exclusion_actually_applied_end_to_end_via_run()
     test_real_check_failure_falls_back_to_unassessed()
     test_attempt_real_burst_check_false_skips_entirely()
     test_try_real_burst_family_check_orchestration_partial_failures()

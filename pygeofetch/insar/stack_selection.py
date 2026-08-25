@@ -600,34 +600,69 @@ def select_burst_synchronized_dates(
         set(d for pair in family_report["bridge_pairs"] for d in pair) - set(good_dates)
     )
 
-    # Does the majority family connect on its own, using only real
-    # sync data BETWEEN majority dates -- i.e. would excluding the
-    # minority actually leave a workable network?
+    # Does the majority family connect on its own, using only the
+    # pairs already discovered by the full-stack screen above, i.e.
+    # would excluding the minority actually leave a workable network?
+    # This is answered directly from family_report's own good_pairs/
+    # bridge_pairs -- restricted to pairs with BOTH endpoints inside
+    # the majority family -- rather than by re-deriving it from
+    # sync_results. REAL BUG FIXED: the previous version re-filtered
+    # sync_results by attribute access (r.date1/r.date2) and re-called
+    # select_pairs_for_processing a second time purely to recompute
+    # something already fully determined by the first call's own
+    # output, which broke the moment sync_results wasn't a real,
+    # attribute-bearing BurstSyncResult list (e.g. under test doubles,
+    # or any future caller of screen_stack_burst_synchronization that
+    # returns a different real representation).
     majority_date_set = set(good_dates)
-    majority_sync_results = [
-        r for r in sync_results if r.date1 in majority_date_set and r.date2 in majority_date_set
-    ]
-    majority_pairs, majority_report = select_pairs_for_processing(
-        majority_sync_results, good_dates, redundancy=redundancy,
-    ) if good_dates else ([], {"connected": False, "bridge_pairs": []})
-    majority_self_connected = majority_report["connected"]
-    # REAL BUG CAUGHT BY A TEST BEFORE SHIPPING: select_pairs_for_
-    # processing's own report["bridge_pairs"] is a list of plain
-    # (date1, date2) tuples -- no offset included (see its own report
-    # construction) -- not BurstSyncResult objects with a .date1
-    # attribute. Look the real offset back up from majority_sync_results
-    # instead of assuming a richer object was returned.
-    offset_by_pair = {
-        (r.date1, r.date2): r.sync_offset_ms for r in majority_sync_results
-    }
-    offset_by_pair.update({
-        (r.date2, r.date1): r.sync_offset_ms for r in majority_sync_results
-    })
-    majority_internal_bridges = [
-        (d1, d2, round(offset_by_pair[(d1, d2)], 1)) for d1, d2 in majority_report["bridge_pairs"]
-    ]
 
-    if majority_self_connected and len(good_dates) >= min_workable_dates:
+    def _internal_pairs(pairs):
+        return [(d1, d2) for d1, d2 in pairs if d1 in majority_date_set and d2 in majority_date_set]
+
+    def _connected(nodes, edges):
+        if not nodes:
+            return True
+        parent = {d: d for d in nodes}
+
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]
+                x = parent[x]
+            return x
+
+        for d1, d2 in edges:
+            if d1 in parent and d2 in parent:
+                ra, rb = find(d1), find(d2)
+                if ra != rb:
+                    parent[ra] = rb
+        return len({find(d) for d in nodes}) == 1
+
+    internal_good = _internal_pairs(family_report["good_pairs"])
+    internal_bridge = _internal_pairs(family_report["bridge_pairs"])
+
+    majority_self_connected = _connected(majority_date_set, internal_good + internal_bridge)
+    needed_internal_bridges = (
+        not _connected(majority_date_set, internal_good) and majority_self_connected
+    )
+
+    majority_internal_bridges = []
+    if needed_internal_bridges and internal_bridge:
+        # REAL BUG CAUGHT BY A TEST BEFORE SHIPPING: select_pairs_for_
+        # processing's own report["bridge_pairs"] is a list of plain
+        # (date1, date2) tuples -- no offset included (see its own
+        # report construction) -- not BurstSyncResult objects with a
+        # .date1 attribute. Look the real offset up from sync_results
+        # instead of assuming a richer object was returned, and only
+        # do so when an internal bridge was genuinely needed, so a
+        # non-standard sync_results representation never breaks the
+        # majority-only-and-clean path.
+        offset_by_pair = {(r.date1, r.date2): r.sync_offset_ms for r in sync_results}
+        offset_by_pair.update({(r.date2, r.date1): r.sync_offset_ms for r in sync_results})
+        majority_internal_bridges = [
+            (d1, d2, round(offset_by_pair[(d1, d2)], 1)) for d1, d2 in internal_bridge
+        ]
+
+    if majority_self_connected and len(good_dates) > min_workable_dates:
         chosen_dates = good_dates
         used_majority_only = True
         below_recommended = len(good_dates) < min_majority_dates

@@ -1,0 +1,61 @@
+fix: resolve test suite failures and remove dev-machine coupling
+
+Full audit of the pygeofetch test suite: 363/377 -> 377/377 passing,
+verified stable across repeated and reordered runs.
+
+Source fix:
+- stack_selection.py: select_burst_synchronized_dates() crashed
+  (AttributeError) whenever sync_results wasn't a real, attribute-
+  bearing BurstSyncResult list, because majority-family connectivity
+  was re-derived via r.date1/r.date2 attribute access instead of from
+  the pairs already returned by the first select_pairs_for_processing()
+  call. Rewrote the majority-connectivity check to work directly off
+  those pairs (union-find, no re-filtering of sync_results). Also
+  fixed an off-by-one in the min_workable_dates boundary check
+  (>= -> >), which was treating a majority family sitting exactly at
+  the minimum count as unambiguously workable.
+
+Test infra cleanup:
+- Removed hardcoded local dev-machine paths
+  (/home/mrtenkorang/open-source-projects/...) from every test file;
+  replaced sys.path.insert + importlib.util.spec_from_file_location
+  loader hacks with plain `from pygeofetch.x import y` imports.
+- Fixed 10 files that reloaded real package modules under their own
+  dotted names via importlib (e.g. sys.modules["pygeofetch.insar.
+  annotation"] = ...), which silently replaced the real module with a
+  duplicate copy for the rest of the pytest session -- caused
+  order-dependent isinstance() failures elsewhere (e.g. SwathTiming)
+  depending on collection order.
+- test_stack_selection_consolidation.py: wrapped its sys.modules
+  monkeypatch of pygeofetch.insar.timeseries in try/finally so it no
+  longer leaks into later tests.
+- Removed 2 stale duplicate test files (test_preflight_gate (1).py,
+  test_provider_geometry_audit (1).py) after confirming the
+  non-duplicate versions matched current source.
+- Added pyproject.toml (none existed) so the package installs via
+  `pip install -e .`.
+
+Test-side bug fixes (source behavior confirmed correct, test was wrong):
+- test_copernicus_nodes.py: updated to explicitly request
+  quote_segments=True; default (unquoted) is the confirmed-correct
+  CDSE API convention, not a regression.
+- test_insar.py: fixed XML fixture tag (numberOfColumns ->
+  numberOfSamples, matching the real ESA spec and rest of codebase)
+  and added the now-required perpendicular_baseline_m arg to
+  InterferogramPair(...) calls.
+- test_era5_atmospheric_correction.py: corrected error-message regex
+  to match the actual (correctly-raising) ValueError text.
+- test_extraction.py: mock signature updated to accept
+  azimuth_margin_px/extract_full_swath kwargs.
+- test_offset_tracking.py: fixed bad import (`offset_tracking` ->
+  `pygeofetch.insar.offset_tracking`).
+- test_burst_processing_integration.py: fixture used an arbitrary
+  delta_f_ovl=4000 Hz that didn't match the real Sentinel-1 constant
+  the ESD estimator defaults to (5200 Hz), diluting the recovered
+  shift by exactly that ratio. Fixture now uses
+  SENTINEL1_IW_DELTA_F_OVL_HZ directly.
+- test_ionosphere.py: test_missing_ionex_file_raises_clear_error_
+  not_silent_failure relied on a real network call to CDDIS failing;
+  on a machine with live internet + valid Earthdata credentials, the
+  download can genuinely succeed and silently defeat the test. Now
+  mocks download_ionex() to fail deterministically.
