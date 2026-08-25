@@ -9,7 +9,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from pygeofetch.core.engine import PyGeoFetch
 from pygeofetch.core.searcher import FederatedSearcher
 from pygeofetch.models.download_task import DownloadOptions
@@ -86,7 +85,9 @@ class TestDownloadFlow:
         mock_result.duration_seconds = 0.1
         mock_result.output_paths = []
 
-        with patch.object(engine.downloader, "download_many", return_value=[mock_result]) as mock_dl:
+        with patch.object(
+            engine.downloader, "download_many", return_value=[mock_result]
+        ) as mock_dl:
             results = engine.download_from_file(tmp_geojson, tmp_path, options)
             assert mock_dl.called
             assert results == [mock_result]

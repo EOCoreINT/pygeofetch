@@ -26,7 +26,6 @@ These tests do not claim to verify that part.
 
 import numpy as np
 import pytest
-
 from pygeofetch.insar.atmosphere import AtmosphericCorrector, _ztd_to_los_phase
 
 WAVELENGTH_M = 0.05546576
@@ -65,7 +64,8 @@ def test_closed_loop_removal_through_complex_wrapped_pathway():
 
     np.random.seed(11)
     true_deformation = 0.4 * np.exp(
-        -((np.arange(w)[None, :] - w / 2) ** 2 + (np.arange(h)[:, None] - h / 2) ** 2) / (w * 3)
+        -((np.arange(w)[None, :] - w / 2) ** 2 + (np.arange(h)[:, None] - h / 2) ** 2)
+        / (w * 3)
     )
     scene_amp = np.abs(np.random.randn(h, w) + 1j * np.random.randn(h, w))
     ref_complex = scene_amp * np.exp(1j * np.random.uniform(-np.pi, np.pi, (h, w)))
@@ -85,8 +85,18 @@ def test_era5_method_rejects_single_date_regression_for_the_real_fixed_bug():
     corrector = AtmosphericCorrector(method="era5")
     phase = np.random.uniform(-np.pi, np.pi, (10, 10)).astype(np.float32)
 
-    with pytest.raises(ValueError, match="ERA5 requires dem, reference_datetime, and secondary_datetime"):
-        corrector.correct(phase, dem="dummy.tif", reference_datetime="2024-11-08T12:00:00")
+    with pytest.raises(
+        ValueError,
+        match="ERA5 requires dem, reference_datetime, and secondary_datetime",
+    ):
+        corrector.correct(
+            phase, dem="dummy.tif", reference_datetime="2024-11-08T12:00:00"
+        )
 
-    with pytest.raises(ValueError, match="ERA5 requires dem, reference_datetime, and secondary_datetime"):
-        corrector.correct(phase, dem="dummy.tif", secondary_datetime="2024-11-20T12:00:00")
+    with pytest.raises(
+        ValueError,
+        match="ERA5 requires dem, reference_datetime, and secondary_datetime",
+    ):
+        corrector.correct(
+            phase, dem="dummy.tif", secondary_datetime="2024-11-20T12:00:00"
+        )

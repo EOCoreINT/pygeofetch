@@ -20,22 +20,29 @@ Two scenarios:
      anyway -- the same "stage 1 rough, stage 2 fixes it" pattern
      validated for the orbit_dem path.
 """
+
 import tempfile
 from pathlib import Path
 
 import numpy as np
 import rasterio
-from rasterio.transform import Affine, from_origin
-
 from pygeofetch.insar.interferogram import InterferogramGenerator
+from rasterio.transform import Affine, from_origin
 
 WORKDIR = Path(tempfile.mkdtemp(prefix="pygeofetch_raster_collocation_it_"))
 
 
 def write_complex_geotiff(path, array, transform, crs="EPSG:4326"):
     with rasterio.open(
-        path, "w", driver="GTiff", height=array.shape[0], width=array.shape[1],
-        count=1, dtype="complex64", crs=crs, transform=transform,
+        path,
+        "w",
+        driver="GTiff",
+        height=array.shape[0],
+        width=array.shape[1],
+        count=1,
+        dtype="complex64",
+        crs=crs,
+        transform=transform,
     ) as dst:
         dst.write(array.astype(np.complex64), 1)
 
@@ -48,7 +55,9 @@ def whole_image_coherence(ref, sec):
 
 def build_world(size=400, seed=0):
     rs = np.random.default_rng(seed)
-    return (rs.normal(size=(size, size)) + 1j * rs.normal(size=(size, size))).astype(np.complex64)
+    return (rs.normal(size=(size, size)) + 1j * rs.normal(size=(size, size))).astype(
+        np.complex64
+    )
 
 
 def test_accurate_transform():
@@ -56,18 +65,28 @@ def test_accurate_transform():
     world = build_world()
     n = 200
     ref_r0, ref_c0 = 80, 80
-    sec_r0, sec_c0 = 84, 76  # secondary genuinely covers a slightly different real footprint
+    sec_r0, sec_c0 = (
+        84,
+        76,
+    )  # secondary genuinely covers a slightly different real footprint
 
-    ref_arr = world[ref_r0:ref_r0 + n, ref_c0:ref_c0 + n]
-    sec_arr = world[sec_r0:sec_r0 + n, sec_c0:sec_c0 + n]
-    noise = (np.random.default_rng(1).normal(size=(n, n)) + 1j * np.random.default_rng(2).normal(size=(n, n))) * 0.1
+    ref_arr = world[ref_r0 : ref_r0 + n, ref_c0 : ref_c0 + n]
+    sec_arr = world[sec_r0 : sec_r0 + n, sec_c0 : sec_c0 + n]
+    noise = (
+        np.random.default_rng(1).normal(size=(n, n))
+        + 1j * np.random.default_rng(2).normal(size=(n, n))
+    ) * 0.1
     sec_arr = (sec_arr + noise).astype(np.complex64)
 
     px = 0.0002  # deg/pixel
     world_origin_lon, world_origin_lat = 10.0, 45.0  # world[0,0]
 
-    ref_transform = from_origin(world_origin_lon + ref_c0 * px, world_origin_lat - ref_r0 * px, px, px)
-    sec_transform = from_origin(world_origin_lon + sec_c0 * px, world_origin_lat - sec_r0 * px, px, px)
+    ref_transform = from_origin(
+        world_origin_lon + ref_c0 * px, world_origin_lat - ref_r0 * px, px, px
+    )
+    sec_transform = from_origin(
+        world_origin_lon + sec_c0 * px, world_origin_lat - sec_r0 * px, px, px
+    )
 
     ref_path = WORKDIR / "ref_a.tif"
     sec_path = WORKDIR / "sec_a.tif"
@@ -79,7 +98,8 @@ def test_accurate_transform():
 
     gen = InterferogramGenerator()
     result = gen.process_pair(
-        reference=ref_path, secondary=sec_path,
+        reference=ref_path,
+        secondary=sec_path,
         coregistration_method="raster_collocation",
         coregistration_refine_by_coherence=True,
     )
@@ -87,11 +107,15 @@ def test_accurate_transform():
     print(f"  mean coherence (full interferogram): {result.coherence.mean():.3f}")
 
     assert result.metadata["coregistration_method"] == "raster_collocation"
-    assert result.metadata["coregistration_collocation_coverage_fraction"] > 0.85, (
-        "accurate transforms should give near-complete real coverage"
-    )
-    assert result.coherence.mean() > coh_raw + 0.3, "collocation should substantially beat raw coherence"
-    assert result.coherence.mean() > 0.5, f"expected strong coherence, got {result.coherence.mean():.3f}"
+    assert (
+        result.metadata["coregistration_collocation_coverage_fraction"] > 0.85
+    ), "accurate transforms should give near-complete real coverage"
+    assert (
+        result.coherence.mean() > coh_raw + 0.3
+    ), "collocation should substantially beat raw coherence"
+    assert (
+        result.coherence.mean() > 0.5
+    ), f"expected strong coherence, got {result.coherence.mean():.3f}"
     print("  PASS\n")
 
 
@@ -102,16 +126,23 @@ def test_imprecise_transform_recovered_by_refinement():
     ref_r0, ref_c0 = 140, 140
     sec_r0, sec_c0 = 145, 133
 
-    ref_arr = world[ref_r0:ref_r0 + n, ref_c0:ref_c0 + n]
-    sec_arr = world[sec_r0:sec_r0 + n, sec_c0:sec_c0 + n]
-    noise = (np.random.default_rng(3).normal(size=(n, n)) + 1j * np.random.default_rng(4).normal(size=(n, n))) * 0.1
+    ref_arr = world[ref_r0 : ref_r0 + n, ref_c0 : ref_c0 + n]
+    sec_arr = world[sec_r0 : sec_r0 + n, sec_c0 : sec_c0 + n]
+    noise = (
+        np.random.default_rng(3).normal(size=(n, n))
+        + 1j * np.random.default_rng(4).normal(size=(n, n))
+    ) * 0.1
     sec_arr = (sec_arr + noise).astype(np.complex64)
 
     px = 0.0002
     world_origin_lon, world_origin_lat = 10.0, 45.0
 
-    ref_transform = from_origin(world_origin_lon + ref_c0 * px, world_origin_lat - ref_r0 * px, px, px)
-    true_sec_transform = from_origin(world_origin_lon + sec_c0 * px, world_origin_lat - sec_r0 * px, px, px)
+    ref_transform = from_origin(
+        world_origin_lon + ref_c0 * px, world_origin_lat - ref_r0 * px, px, px
+    )
+    true_sec_transform = from_origin(
+        world_origin_lon + sec_c0 * px, world_origin_lat - sec_r0 * px, px, px
+    )
 
     # Perturb the DECLARED secondary transform -- the array's real data
     # stays exactly where it is, but the file now claims a slightly
@@ -141,24 +172,32 @@ def test_imprecise_transform_recovered_by_refinement():
     gen = InterferogramGenerator()
 
     result_collocate_only = gen.process_pair(
-        reference=ref_path, secondary=sec_path,
+        reference=ref_path,
+        secondary=sec_path,
         coregistration_method="raster_collocation",
         coregistration_refine_by_coherence=False,
     )
-    print(f"  collocation ONLY (imprecise transform): "
-          f"coverage={result_collocate_only.metadata['coregistration_collocation_coverage_fraction']:.3f}, "
-          f"mean coherence={result_collocate_only.coherence.mean():.3f}")
+    print(
+        f"  collocation ONLY (imprecise transform): "
+        f"coverage={result_collocate_only.metadata['coregistration_collocation_coverage_fraction']:.3f}, "
+        f"mean coherence={result_collocate_only.coherence.mean():.3f}"
+    )
 
     result_refined = gen.process_pair(
-        reference=ref_path, secondary=sec_path,
+        reference=ref_path,
+        secondary=sec_path,
         coregistration_method="raster_collocation",
         coregistration_refine_by_coherence=True,
     )
-    print(f"  collocation + cross-correlation refinement: "
-          f"mean coherence={result_refined.coherence.mean():.3f}, "
-          f"metadata={result_refined.metadata}")
+    print(
+        f"  collocation + cross-correlation refinement: "
+        f"mean coherence={result_refined.coherence.mean():.3f}, "
+        f"metadata={result_refined.metadata}"
+    )
 
-    assert result_collocate_only.metadata["coregistration_method"] == "raster_collocation"
+    assert (
+        result_collocate_only.metadata["coregistration_method"] == "raster_collocation"
+    )
     assert result_refined.metadata["coregistration_refined_by_coherence"] is True
     assert result_refined.coherence.mean() > result_collocate_only.coherence.mean(), (
         "refinement should measurably improve on collocation-only under a realistic "
@@ -170,8 +209,10 @@ def test_imprecise_transform_recovered_by_refinement():
         f"expected the full chain to recover strong coherence despite the "
         f"imprecise transform, got {result_refined.coherence.mean():.3f}"
     )
-    print(f"  coherence recovered by refinement despite imprecise transform: "
-          f"{result_collocate_only.coherence.mean():.3f} -> {result_refined.coherence.mean():.3f}")
+    print(
+        f"  coherence recovered by refinement despite imprecise transform: "
+        f"{result_collocate_only.coherence.mean():.3f} -> {result_refined.coherence.mean():.3f}"
+    )
     print("  PASS\n")
 
 

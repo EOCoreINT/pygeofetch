@@ -18,21 +18,24 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
+from pygeofetch.insar import InterferogramGenerator
+from pygeofetch.insar.esd import SENTINEL1_IW_DELTA_F_OVL_HZ
 from rasterio.crs import CRS
 from rasterio.transform import from_bounds
 
-from pygeofetch.insar import InterferogramGenerator
-from pygeofetch.insar.esd import SENTINEL1_IW_DELTA_F_OVL_HZ
 
-
-def _make_annotation_xml(first_line_time, n_bursts=3, lines_per_burst=100, samples_per_burst=150):
+def _make_annotation_xml(
+    first_line_time, n_bursts=3, lines_per_burst=100, samples_per_burst=150
+):
     burst_interval_s = 90.0
     bursts_xml = []
     for i in range(n_bursts):
         base = datetime.fromisoformat(first_line_time)
         t = base + timedelta(seconds=i * burst_interval_s)
         first_valid = " ".join("0" for _ in range(lines_per_burst))
-        last_valid = " ".join(str(samples_per_burst - 1) for _ in range(lines_per_burst))
+        last_valid = " ".join(
+            str(samples_per_burst - 1) for _ in range(lines_per_burst)
+        )
         bursts_xml.append(
             f"<burst><azimuthTime>{t.isoformat()}</azimuthTime>"
             f"<sensingTime>{t.isoformat()}</sensingTime><byteOffset>{i * 1000}</byteOffset>"
@@ -57,19 +60,36 @@ def _make_annotation_xml(first_line_time, n_bursts=3, lines_per_burst=100, sampl
 </swathTiming></product>"""
 
 
-def _build_fixture(tmp_path, n_bursts=3, lines_per_burst=100, samples_per_burst=150,
-                    delta_f_ovl=SENTINEL1_IW_DELTA_F_OVL_HZ, true_shift_s=0.00001, seed=9):
+def _build_fixture(
+    tmp_path,
+    n_bursts=3,
+    lines_per_burst=100,
+    samples_per_burst=150,
+    delta_f_ovl=SENTINEL1_IW_DELTA_F_OVL_HZ,
+    true_shift_s=0.00001,
+    seed=9,
+):
     ref_zip = tmp_path / "ref.SAFE.zip"
     sec_zip = tmp_path / "sec.SAFE.zip"
     with zipfile.ZipFile(ref_zip, "w") as zf:
         zf.writestr(
             "ref.SAFE/annotation/s1a-iw2-slc-vv-ref.xml",
-            _make_annotation_xml("2024-11-08T18:18:20.000000", n_bursts, lines_per_burst, samples_per_burst),
+            _make_annotation_xml(
+                "2024-11-08T18:18:20.000000",
+                n_bursts,
+                lines_per_burst,
+                samples_per_burst,
+            ),
         )
     with zipfile.ZipFile(sec_zip, "w") as zf:
         zf.writestr(
             "sec.SAFE/annotation/s1a-iw2-slc-vv-sec.xml",
-            _make_annotation_xml("2024-11-20T18:18:20.000000", n_bursts, lines_per_burst, samples_per_burst),
+            _make_annotation_xml(
+                "2024-11-20T18:18:20.000000",
+                n_bursts,
+                lines_per_burst,
+                samples_per_burst,
+            ),
         )
 
     np.random.seed(seed)
@@ -82,18 +102,36 @@ def _build_fixture(tmp_path, n_bursts=3, lines_per_burst=100, samples_per_burst=
     f_bw, f_fw = -delta_f_ovl / 2, delta_f_ovl / 2
     overlap_row_len = 10
     for i in range(n_bursts - 1):
-        bw_rows = slice(i * lines_per_burst + (lines_per_burst - overlap_row_len), i * lines_per_burst + lines_per_burst)
-        fw_rows = slice((i + 1) * lines_per_burst, (i + 1) * lines_per_burst + overlap_row_len)
-        sec_data[bw_rows] = scene[bw_rows] * np.exp(-1j * 2 * np.pi * f_bw * true_shift_s)
-        sec_data[fw_rows] = scene[fw_rows] * np.exp(-1j * 2 * np.pi * f_fw * true_shift_s)
+        bw_rows = slice(
+            i * lines_per_burst + (lines_per_burst - overlap_row_len),
+            i * lines_per_burst + lines_per_burst,
+        )
+        fw_rows = slice(
+            (i + 1) * lines_per_burst, (i + 1) * lines_per_burst + overlap_row_len
+        )
+        sec_data[bw_rows] = scene[bw_rows] * np.exp(
+            -1j * 2 * np.pi * f_bw * true_shift_s
+        )
+        sec_data[fw_rows] = scene[fw_rows] * np.exp(
+            -1j * 2 * np.pi * f_fw * true_shift_s
+        )
     sec_data *= np.exp(-1j * 2 * np.pi * f_bw * true_shift_s)
 
     crs = CRS.from_epsg(4326)
     transform = from_bounds(-99.15, 19.30, -99.05, 19.40, w, h)
 
     def write_complex(path, data):
-        with rasterio.open(path, "w", driver="GTiff", dtype="float32", count=2,
-                            width=w, height=h, crs=crs, transform=transform) as ds:
+        with rasterio.open(
+            path,
+            "w",
+            driver="GTiff",
+            dtype="float32",
+            count=2,
+            width=w,
+            height=h,
+            crs=crs,
+            transform=transform,
+        ) as ds:
             ds.write(data.real.astype(np.float32), 1)
             ds.write(data.imag.astype(np.float32), 2)
 
@@ -106,27 +144,47 @@ def _build_fixture(tmp_path, n_bursts=3, lines_per_burst=100, samples_per_burst=
 
 def test_real_burst_processing_actually_runs_when_opted_in():
     with tempfile.TemporaryDirectory() as tmp:
-        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(Path(tmp))
+        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(
+            Path(tmp)
+        )
 
-        gen = InterferogramGenerator(esd_enabled=True, use_gpu=False, use_real_burst_processing=True)
+        gen = InterferogramGenerator(
+            esd_enabled=True, use_gpu=False, use_real_burst_processing=True
+        )
         result = gen.process_pair(
-            ref_path, sec_path, dem=None, reference_date="d1", secondary_date="d2",
-            reference_safe_zip=ref_zip, secondary_safe_zip=sec_zip,
+            ref_path,
+            sec_path,
+            dem=None,
+            reference_date="d1",
+            secondary_date="d2",
+            reference_safe_zip=ref_zip,
+            secondary_safe_zip=sec_zip,
         )
 
         assert result.metadata["deburst_applied"] is True
         assert result.metadata["esd_method"] == "real_per_burst_esd_and_deburst"
-        assert result.interferogram.shape[0] < h, "deburst must have removed real overlap rows"
+        assert (
+            result.interferogram.shape[0] < h
+        ), "deburst must have removed real overlap rows"
 
 
 def test_esd_shift_matches_known_deliberate_misregistration():
     with tempfile.TemporaryDirectory() as tmp:
-        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(Path(tmp))
+        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(
+            Path(tmp)
+        )
 
-        gen = InterferogramGenerator(esd_enabled=True, use_gpu=False, use_real_burst_processing=True)
+        gen = InterferogramGenerator(
+            esd_enabled=True, use_gpu=False, use_real_burst_processing=True
+        )
         result = gen.process_pair(
-            ref_path, sec_path, dem=None, reference_date="d1", secondary_date="d2",
-            reference_safe_zip=ref_zip, secondary_safe_zip=sec_zip,
+            ref_path,
+            sec_path,
+            dem=None,
+            reference_date="d1",
+            secondary_date="d2",
+            reference_safe_zip=ref_zip,
+            secondary_safe_zip=sec_zip,
         )
 
         # true_shift_s was injected in TIME; the real, recovered value
@@ -140,27 +198,46 @@ def test_default_behaviour_unaffected_when_not_opted_in():
     """use_real_burst_processing defaults to False -- existing callers
     must see exactly the previous whole-image ESD behaviour, no deburst."""
     with tempfile.TemporaryDirectory() as tmp:
-        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(Path(tmp))
+        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(
+            Path(tmp)
+        )
 
-        gen = InterferogramGenerator(esd_enabled=True, use_gpu=False)  # real_burst_processing NOT set
+        gen = InterferogramGenerator(
+            esd_enabled=True, use_gpu=False
+        )  # real_burst_processing NOT set
         result = gen.process_pair(
-            ref_path, sec_path, dem=None, reference_date="d1", secondary_date="d2",
-            reference_safe_zip=ref_zip, secondary_safe_zip=sec_zip,
+            ref_path,
+            sec_path,
+            dem=None,
+            reference_date="d1",
+            secondary_date="d2",
+            reference_safe_zip=ref_zip,
+            secondary_safe_zip=sec_zip,
         )
         assert result.metadata["deburst_applied"] is False
         assert result.metadata["esd_method"] == "whole_image_esd"
-        assert result.interferogram.shape[0] == h, "no rows should be removed without opting in"
+        assert (
+            result.interferogram.shape[0] == h
+        ), "no rows should be removed without opting in"
 
 
 def test_falls_back_gracefully_when_safe_zips_missing():
     """Opting in without supplying SAFE zips must not crash -- falls
     back to the existing whole-image ESD."""
     with tempfile.TemporaryDirectory() as tmp:
-        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(Path(tmp))
+        ref_path, sec_path, ref_zip, sec_zip, h, w, true_shift_s = _build_fixture(
+            Path(tmp)
+        )
 
-        gen = InterferogramGenerator(esd_enabled=True, use_gpu=False, use_real_burst_processing=True)
+        gen = InterferogramGenerator(
+            esd_enabled=True, use_gpu=False, use_real_burst_processing=True
+        )
         result = gen.process_pair(
-            ref_path, sec_path, dem=None, reference_date="d1", secondary_date="d2",
+            ref_path,
+            sec_path,
+            dem=None,
+            reference_date="d1",
+            secondary_date="d2",
             # no reference_safe_zip / secondary_safe_zip supplied
         )
         assert result.metadata["deburst_applied"] is False

@@ -15,17 +15,23 @@ import zipfile
 from pathlib import Path
 
 import pytest
-
 from pygeofetch.insar.annotation import parse_burst_info
 
 
-def _make_burst_safe_zip(path: Path, lines_per_burst=5, samples_per_burst=20, n_bursts=3):
+def _make_burst_safe_zip(
+    path: Path, lines_per_burst=5, samples_per_burst=20, n_bursts=3
+):
     def make_burst_xml(index, az_time, sensing_time, byte_offset):
         first_valid = " ".join(
-            str(2 if i in (0, lines_per_burst - 1) else 0) for i in range(lines_per_burst)
+            str(2 if i in (0, lines_per_burst - 1) else 0)
+            for i in range(lines_per_burst)
         )
         last_valid = " ".join(
-            str(samples_per_burst - 3 if i in (0, lines_per_burst - 1) else samples_per_burst - 1)
+            str(
+                samples_per_burst - 3
+                if i in (0, lines_per_burst - 1)
+                else samples_per_burst - 1
+            )
             for i in range(lines_per_burst)
         )
         return f"""<burst>
@@ -37,7 +43,12 @@ def _make_burst_safe_zip(path: Path, lines_per_burst=5, samples_per_burst=20, n_
         </burst>"""
 
     bursts_xml = "\n".join(
-        make_burst_xml(i, f"2024-11-08T18:18:2{i}.000000", f"2024-11-08T18:18:2{i}.500000", i * 10000)
+        make_burst_xml(
+            i,
+            f"2024-11-08T18:18:2{i}.000000",
+            f"2024-11-08T18:18:2{i}.500000",
+            i * 10000,
+        )
         for i in range(n_bursts)
     )
     xml_content = f"""<?xml version="1.0" encoding="UTF-8"?>
@@ -57,7 +68,9 @@ def _make_burst_safe_zip(path: Path, lines_per_burst=5, samples_per_burst=20, n_
 def test_parses_real_structured_burst_metadata():
     with tempfile.TemporaryDirectory() as tmp:
         zip_path = Path(tmp) / "test.SAFE.zip"
-        _make_burst_safe_zip(zip_path, lines_per_burst=5, samples_per_burst=20, n_bursts=3)
+        _make_burst_safe_zip(
+            zip_path, lines_per_burst=5, samples_per_burst=20, n_bursts=3
+        )
 
         result = parse_burst_info(zip_path)
         assert result.lines_per_burst == 5

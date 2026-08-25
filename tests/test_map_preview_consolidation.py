@@ -3,6 +3,7 @@ Validates bbox_to_geojson_path() and preview_search_results() -- the
 map-preview boilerplate consolidated out of every real project's
 notebook (Mexico City, Obuasi both hand-wrote this identically).
 """
+
 import json
 
 from pygeofetch.insar import stack_selection
@@ -10,7 +11,12 @@ from pygeofetch.insar import stack_selection
 
 class FakeBBox:
     def __init__(self, min_lon, min_lat, max_lon, max_lat):
-        self.min_lon, self.min_lat, self.max_lon, self.max_lat = min_lon, min_lat, max_lon, max_lat
+        self.min_lon, self.min_lat, self.max_lon, self.max_lat = (
+            min_lon,
+            min_lat,
+            max_lon,
+            max_lat,
+        )
 
 
 def test_bbox_to_geojson_path_correct_geometry():
@@ -28,7 +34,9 @@ def test_bbox_to_geojson_path_correct_geometry():
     assert feature["properties"]["name"] == "Test AOI"
     ring = feature["geometry"]["coordinates"][0]
     assert ring[0] == ring[-1], "ring must be closed (first point == last point)"
-    assert len(ring) == 5, "a rectangle ring should have 5 points (4 corners + closing point)"
+    assert (
+        len(ring) == 5
+    ), "a rectangle ring should have 5 points (4 corners + closing point)"
 
     lons = [p[0] for p in ring]
     lats = [p[1] for p in ring]
@@ -50,6 +58,7 @@ def test_bbox_to_geojson_path_no_collisions():
 
 class FakeMapViewer:
     """Records every call made to it, matching MapViewer's confirmed public API."""
+
     instances = []
 
     def __init__(self, center, zoom):
@@ -72,24 +81,38 @@ class FakeMapViewer:
 
 
 def test_preview_search_results_orchestration():
-    print("=== 3. preview_search_results calls MapViewer's real, confirmed methods in the right order ===")
+    print(
+        "=== 3. preview_search_results calls MapViewer's real, confirmed methods in the right order ==="
+    )
     FakeMapViewer.instances.clear()
     bbox = FakeBBox(min_lon=-1.76, min_lat=6.09, max_lon=-1.61, max_lat=6.27)
     results = ["scene1", "scene2"]
 
     mv = stack_selection.preview_search_results(
-        bbox, results, zoom=11, map_viewer_cls=FakeMapViewer,
+        bbox,
+        results,
+        zoom=11,
+        map_viewer_cls=FakeMapViewer,
     )
 
     assert mv is FakeMapViewer.instances[0], "should return the constructed viewer"
-    expected_center = ((bbox.min_lat + bbox.max_lat) / 2, (bbox.min_lon + bbox.max_lon) / 2)
-    assert mv.center == expected_center, f"expected center {expected_center}, got {mv.center}"
+    expected_center = (
+        (bbox.min_lat + bbox.max_lat) / 2,
+        (bbox.min_lon + bbox.max_lon) / 2,
+    )
+    assert (
+        mv.center == expected_center
+    ), f"expected center {expected_center}, got {mv.center}"
     assert mv.zoom == 11
 
     call_names = [c[0] for c in mv.calls]
     print(f"  call sequence: {call_names}")
-    assert call_names == ["add_basemap", "add_search_results", "add_vector", "show"], \
-        "must call basemap -> search results -> AOI vector -> show, in that order"
+    assert call_names == [
+        "add_basemap",
+        "add_search_results",
+        "add_vector",
+        "show",
+    ], "must call basemap -> search results -> AOI vector -> show, in that order"
     assert mv.calls[0][1] == "SATELLITE"
     assert mv.calls[1][1] == results
     assert mv.calls[2][2] == "AOI"
@@ -103,7 +126,10 @@ def test_preview_search_results_show_false_lets_caller_extend():
     bbox = FakeBBox(-1.0, -1.0, 1.0, 1.0)
 
     mv = stack_selection.preview_search_results(
-        bbox, [], show=False, map_viewer_cls=FakeMapViewer,
+        bbox,
+        [],
+        show=False,
+        map_viewer_cls=FakeMapViewer,
     )
     call_names = [c[0] for c in mv.calls]
     print(f"  call sequence: {call_names}")
@@ -124,7 +150,10 @@ def test_preview_search_results_custom_style():
     custom_style = {"color": "red", "fillOpacity": 0.2, "weight": 1}
 
     mv = stack_selection.preview_search_results(
-        bbox, [], aoi_style=custom_style, map_viewer_cls=FakeMapViewer,
+        bbox,
+        [],
+        aoi_style=custom_style,
+        map_viewer_cls=FakeMapViewer,
     )
     assert mv.calls[2][3] == custom_style
     print("  PASS\n")

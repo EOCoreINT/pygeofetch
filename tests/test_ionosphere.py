@@ -21,7 +21,6 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
-
 from pygeofetch.insar.ionosphere import (
     IonosphericCorrector,
     _compute_ipp_location,
@@ -31,8 +30,17 @@ from pygeofetch.insar.ionosphere import (
 )
 
 
-def _write_real_ionex(path, date_str, vtec_value, lat1=25.0, lat2=15.0, dlat=-5.0,
-                       lon1=-105.0, lon2=-95.0, dlon=5.0):
+def _write_real_ionex(
+    path,
+    date_str,
+    vtec_value,
+    lat1=25.0,
+    lat2=15.0,
+    dlat=-5.0,
+    lon1=-105.0,
+    lon2=-95.0,
+    dlon=5.0,
+):
     y, m, d = date_str.split("-")
     raw_val = int(vtec_value * 10)
     n_lats = round((lat2 - lat1) / dlat) + 1
@@ -131,10 +139,14 @@ def test_full_closed_loop_correction_recovers_true_signal():
         day_sec = datetime(2025, 1, 7).timetuple().tm_yday
 
         _write_real_ionex(
-            ionex_dir / f"IGS0OPSFIN_{2024}{day_ref:03d}0000_01D_02H_GIM.INX", "2024-12-26", vtec_ref
+            ionex_dir / f"IGS0OPSFIN_{2024}{day_ref:03d}0000_01D_02H_GIM.INX",
+            "2024-12-26",
+            vtec_ref,
         )
         _write_real_ionex(
-            ionex_dir / f"IGS0OPSFIN_{2025}{day_sec:03d}0000_01D_02H_GIM.INX", "2025-01-07", vtec_sec
+            ionex_dir / f"IGS0OPSFIN_{2025}{day_sec:03d}0000_01D_02H_GIM.INX",
+            "2025-01-07",
+            vtec_sec,
         )
 
         center_lat, center_lon = 19.36, -99.09
@@ -148,7 +160,11 @@ def test_full_closed_loop_correction_recovers_true_signal():
         np.random.seed(3)
         h, w = 20, 20
         true_deformation = 0.3 * np.exp(
-            -((np.arange(w)[None, :] - w / 2) ** 2 + (np.arange(h)[:, None] - h / 2) ** 2) / (w * 3)
+            -(
+                (np.arange(w)[None, :] - w / 2) ** 2
+                + (np.arange(h)[:, None] - h / 2) ** 2
+            )
+            / (w * 3)
         )
         total_true_phase = true_iono_phase + true_deformation
         wrapped_input = np.angle(np.exp(1j * total_true_phase)).astype(np.float32)
@@ -158,8 +174,10 @@ def test_full_closed_loop_correction_recovers_true_signal():
             wrapped_input,
             reference_datetime="2024-12-26T12:34:35",
             secondary_datetime="2025-01-07T12:34:34",
-            center_lat=center_lat, center_lon=center_lon,
-            incidence_angle_deg=incidence_deg, wavelength_m=wavelength_m,
+            center_lat=center_lat,
+            center_lon=center_lon,
+            incidence_angle_deg=incidence_deg,
+            wavelength_m=wavelength_m,
         )
 
         error = np.abs(np.angle(np.exp(1j * (corrected - true_deformation))))
@@ -182,7 +200,8 @@ def test_missing_ionex_file_raises_clear_error_not_silent_failure():
         # to fail so the missing-file error path is exercised
         # deterministically regardless of the environment.
         with patch.object(
-            IonosphericCorrector, "download_ionex",
+            IonosphericCorrector,
+            "download_ionex",
             side_effect=RuntimeError("no network access in this test"),
         ):
             with pytest.raises(FileNotFoundError, match="Real IONEX file not found"):
@@ -190,7 +209,8 @@ def test_missing_ionex_file_raises_clear_error_not_silent_failure():
                     phase,
                     reference_datetime="2024-12-26T12:34:35",
                     secondary_datetime="2025-01-07T12:34:34",
-                    center_lat=19.36, center_lon=-99.09,
+                    center_lat=19.36,
+                    center_lon=-99.09,
                 )
 
 
@@ -207,7 +227,9 @@ def test_download_uses_real_current_cddis_naming_and_gzip():
     from datetime import datetime
     from unittest.mock import MagicMock, patch
 
-    real_content = b"Real, genuine gzip-compressed IONEX-like content for testing.\n" * 3
+    real_content = (
+        b"Real, genuine gzip-compressed IONEX-like content for testing.\n" * 3
+    )
     real_gzip_bytes = gzip.compress(real_content)
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -261,7 +283,9 @@ def test_ipp_location_zenith_edge_case():
     equal the ground point, regardless of azimuth."""
     from pygeofetch.insar.ionosphere import _compute_ipp_location
 
-    lat, lon = _compute_ipp_location(19.36, -99.09, azimuth_deg=45.0, elevation_deg=90.0)
+    lat, lon = _compute_ipp_location(
+        19.36, -99.09, azimuth_deg=45.0, elevation_deg=90.0
+    )
     assert abs(lat - 19.36) < 1e-9
     assert abs(lon - (-99.09)) < 1e-9
 
@@ -301,18 +325,32 @@ def test_per_pixel_correction_recovers_spatially_varying_signal():
         shell_height_km = 450.0
         az_true, el_true = 90.0, 51.0
 
-        ipp_lat_r, ipp_lon_r = _compute_ipp_location(lat_grid, lon_grid, az_true, el_true, shell_height_km)
-        ipp_lat_s, ipp_lon_s = _compute_ipp_location(lat_grid, lon_grid, az_true, el_true, shell_height_km)
+        ipp_lat_r, ipp_lon_r = _compute_ipp_location(
+            lat_grid, lon_grid, az_true, el_true, shell_height_km
+        )
+        ipp_lat_s, ipp_lon_s = _compute_ipp_location(
+            lat_grid, lon_grid, az_true, el_true, shell_height_km
+        )
 
         maps_ref, lats_ref, lons_ref = parse_ionex(ionex_ref_path)
         maps_sec, lats_sec, lons_sec = parse_ionex(ionex_sec_path)
-        dt_ref, dt_sec = datetime(2024, 12, 26, 12, 34, 35), datetime(2025, 1, 7, 12, 34, 34)
+        dt_ref, dt_sec = datetime(2024, 12, 26, 12, 34, 35), datetime(
+            2025, 1, 7, 12, 34, 34
+        )
 
-        vtec_ref_grid = _interpolate_vtec_grid(maps_ref, lats_ref, lons_ref, dt_ref, ipp_lat_r, ipp_lon_r)
-        vtec_sec_grid = _interpolate_vtec_grid(maps_sec, lats_sec, lons_sec, dt_sec, ipp_lat_s, ipp_lon_s)
+        vtec_ref_grid = _interpolate_vtec_grid(
+            maps_ref, lats_ref, lons_ref, dt_ref, ipp_lat_r, ipp_lon_r
+        )
+        vtec_sec_grid = _interpolate_vtec_grid(
+            maps_sec, lats_sec, lons_sec, dt_sec, ipp_lat_s, ipp_lon_s
+        )
 
-        true_phase_ref = _tec_to_los_phase(vtec_ref_grid, 90.0 - el_true, wavelength_m, shell_height_km)
-        true_phase_sec = _tec_to_los_phase(vtec_sec_grid, 90.0 - el_true, wavelength_m, shell_height_km)
+        true_phase_ref = _tec_to_los_phase(
+            vtec_ref_grid, 90.0 - el_true, wavelength_m, shell_height_km
+        )
+        true_phase_sec = _tec_to_los_phase(
+            vtec_sec_grid, 90.0 - el_true, wavelength_m, shell_height_km
+        )
         true_iono_phase = true_phase_sec - true_phase_ref
 
         # Confirm the injected signal is GENUINELY spatially-varying,
@@ -321,26 +359,43 @@ def test_per_pixel_correction_recovers_spatially_varying_signal():
         assert (true_iono_phase.max() - true_iono_phase.min()) > 0.1
 
         true_deformation = 0.3 * np.exp(
-            -((np.arange(w)[None, :] - w / 2) ** 2 + (np.arange(h)[:, None] - h / 2) ** 2) / (w * 3)
+            -(
+                (np.arange(w)[None, :] - w / 2) ** 2
+                + (np.arange(h)[:, None] - h / 2) ** 2
+            )
+            / (w * 3)
         )
-        wrapped_input = np.angle(np.exp(1j * (true_iono_phase + true_deformation))).astype(np.float32)
+        wrapped_input = np.angle(
+            np.exp(1j * (true_iono_phase + true_deformation))
+        ).astype(np.float32)
 
-        with patch("pygeofetch.insar.geolocation.parse_orbit_file", return_value=(None, None, None)), \
-             patch("pygeofetch.insar.ionosphere._real_satellite_azimuth_elevation",
-                   side_effect=[(az_true, el_true), (az_true, el_true)]):
+        with (
+            patch(
+                "pygeofetch.insar.geolocation.parse_orbit_file",
+                return_value=(None, None, None),
+            ),
+            patch(
+                "pygeofetch.insar.ionosphere._real_satellite_azimuth_elevation",
+                side_effect=[(az_true, el_true), (az_true, el_true)],
+            ),
+        ):
             corrected = corrector.correct_per_pixel(
                 wrapped_input,
                 reference_datetime="2024-12-26T12:34:35",
                 secondary_datetime="2025-01-07T12:34:34",
-                lat_grid=lat_grid, lon_grid=lon_grid,
-                reference_orbit_file="dummy_ref.EOF", secondary_orbit_file="dummy_sec.EOF",
+                lat_grid=lat_grid,
+                lon_grid=lon_grid,
+                reference_orbit_file="dummy_ref.EOF",
+                secondary_orbit_file="dummy_sec.EOF",
             )
 
         error = np.abs(np.angle(np.exp(1j * (corrected - true_deformation))))
         assert error.max() < 1e-3
 
 
-def _write_real_ionex_with_gradient(path, date_str, vtec_base, vtec_gradient_per_deg_lat):
+def _write_real_ionex_with_gradient(
+    path, date_str, vtec_base, vtec_gradient_per_deg_lat
+):
     """A real IONEX file with genuine spatial structure (VTEC varies
     with latitude), used specifically to test that per-pixel
     correction can recover a spatially-varying signal."""

@@ -17,6 +17,7 @@ import pytest
 
 # ── shared real-geometry builder (mirrors the manual verification) ──────────
 
+
 def _build_geometry(lat_deg, lon_deg, dem_h=0.0, incl_deg=98.18, ascending=True):
     """Build a fully self-consistent, realistic satellite+ground-point test
     geometry — real orbital velocity direction, exact zero-Doppler
@@ -59,7 +60,9 @@ def _build_geometry(lat_deg, lon_deg, dem_h=0.0, incl_deg=98.18, ascending=True)
     tangent = tuple(c / tmag for c in tangent)
     sat_vel = tuple(c * 7500.0 for c in tangent)
 
-    d = sum(sat_vel[i] * (P_true[i] - sat_pos[i]) for i in range(3)) / sum(v**2 for v in sat_vel)
+    d = sum(sat_vel[i] * (P_true[i] - sat_pos[i]) for i in range(3)) / sum(
+        v**2 for v in sat_vel
+    )
     P_exact = tuple(P_true[i] - d * sat_vel[i] for i in range(3))
     los = tuple(sat_pos[i] - P_exact[i] for i in range(3))
     range_m = math.sqrt(sum(c**2 for c in los))
@@ -70,16 +73,16 @@ def _build_geometry(lat_deg, lon_deg, dem_h=0.0, incl_deg=98.18, ascending=True)
 class TestDataValidator:
     def test_valid_complex_slc_passes(self):
         import numpy as np
-
         from pygeofetch.insar.validate import DataValidator
 
-        slc = (np.random.randn(50, 50) + 1j * np.random.randn(50, 50)).astype(np.complex64)
+        slc = (np.random.randn(50, 50) + 1j * np.random.randn(50, 50)).astype(
+            np.complex64
+        )
         result = DataValidator.validate_slc(slc)
         assert result.valid
 
     def test_real_valued_slc_rejected(self):
         import numpy as np
-
         from pygeofetch.insar.validate import DataValidator
 
         real_data = np.random.rand(50, 50).astype(np.float32)
@@ -92,17 +95,18 @@ class TestDataValidator:
         amplitude-variation checks, but has zero imaginary part
         everywhere -- a signature real SAR phase never has."""
         import numpy as np
-
         from pygeofetch.insar.validate import DataValidator
 
         fake_complex = np.random.rand(50, 50).astype(np.float32).astype(np.complex64)
         result = DataValidator.validate_slc(fake_complex, name="test")
         assert not result.valid
-        assert any("zero imaginary" in e.lower() or "imaginary part" in e.lower() for e in result.errors)
+        assert any(
+            "zero imaginary" in e.lower() or "imaginary part" in e.lower()
+            for e in result.errors
+        )
 
     def test_all_zero_slc_rejected(self):
         import numpy as np
-
         from pygeofetch.insar.validate import DataValidator
 
         result = DataValidator.validate_slc(np.zeros((50, 50), dtype=np.complex64))
@@ -110,15 +114,15 @@ class TestDataValidator:
 
     def test_coherence_in_range_passes(self):
         import numpy as np
-
         from pygeofetch.insar.validate import DataValidator
 
-        result = DataValidator.validate_coherence(np.random.rand(50, 50).astype(np.float32))
+        result = DataValidator.validate_coherence(
+            np.random.rand(50, 50).astype(np.float32)
+        )
         assert result.valid
 
     def test_coherence_out_of_range_rejected(self):
         import numpy as np
-
         from pygeofetch.insar.validate import DataValidator
 
         bad = (np.random.rand(50, 50) * 2 - 0.5).astype(np.float32)
@@ -127,29 +131,35 @@ class TestDataValidator:
 
     def test_sbas_network_connected_passes(self):
         import numpy as np
-
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
 
         dates = ["2026-01-01", "2026-01-13", "2026-01-25"]
         pairs = [
-            InterferogramPair(dates[0], dates[1], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0),
-            InterferogramPair(dates[1], dates[2], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0),
+            InterferogramPair(
+                dates[0], dates[1], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0
+            ),
+            InterferogramPair(
+                dates[1], dates[2], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0
+            ),
         ]
         result = DataValidator.validate_sbas_network(pairs, dates)
         assert result.valid
 
     def test_sbas_network_disconnected_rejected(self):
         import numpy as np
-
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
 
         dates = ["2026-01-01", "2026-01-13", "2026-01-25", "2026-02-06"]
         # Two isolated sub-networks: {0,1} and {2,3}, no bridge
         pairs = [
-            InterferogramPair(dates[0], dates[1], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0),
-            InterferogramPair(dates[2], dates[3], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0),
+            InterferogramPair(
+                dates[0], dates[1], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0
+            ),
+            InterferogramPair(
+                dates[2], dates[3], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0
+            ),
         ]
         result = DataValidator.validate_sbas_network(pairs, dates)
         assert not result.valid
@@ -159,12 +169,15 @@ class TestDataValidator:
         development: the validator originally expected .date1/.date2,
         but InterferogramPair uses .reference_date/.secondary_date."""
         import numpy as np
-
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
 
         dates = ["2026-01-01", "2026-01-13"]
-        pairs = [InterferogramPair(dates[0], dates[1], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0)]
+        pairs = [
+            InterferogramPair(
+                dates[0], dates[1], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0
+            )
+        ]
         result = DataValidator.validate_sbas_network(pairs, dates)
         assert result.valid
         assert not result.errors
@@ -174,26 +187,45 @@ class TestDataValidator:
         point, not just available-but-unused."""
         import numpy as np
         import rasterio
+        from pygeofetch.insar import InterferogramGenerator
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
 
-        from pygeofetch.insar import InterferogramGenerator
-
         h, w = 20, 20
         bad_real = np.random.rand(h, w).astype(np.float32)
-        good_complex = (np.random.randn(h, w) + 1j * np.random.randn(h, w)).astype(np.complex64)
+        good_complex = (np.random.randn(h, w) + 1j * np.random.randn(h, w)).astype(
+            np.complex64
+        )
 
         crs = CRS.from_epsg(4326)
         transform = from_bounds(-1, 0, 1, 1, w, h)
 
         bad_path = tmp_path / "bad.tif"
-        with rasterio.open(bad_path, "w", driver="GTiff", dtype="float32", count=1,
-                            width=w, height=h, crs=crs, transform=transform) as ds:
+        with rasterio.open(
+            bad_path,
+            "w",
+            driver="GTiff",
+            dtype="float32",
+            count=1,
+            width=w,
+            height=h,
+            crs=crs,
+            transform=transform,
+        ) as ds:
             ds.write(bad_real, 1)
 
         good_path = tmp_path / "good.tif"
-        with rasterio.open(good_path, "w", driver="GTiff", dtype="complex64", count=1,
-                            width=w, height=h, crs=crs, transform=transform) as ds:
+        with rasterio.open(
+            good_path,
+            "w",
+            driver="GTiff",
+            dtype="complex64",
+            count=1,
+            width=w,
+            height=h,
+            crs=crs,
+            transform=transform,
+        ) as ds:
             ds.write(good_complex, 1)
 
         gen = InterferogramGenerator(esd_enabled=False)
@@ -225,7 +257,9 @@ class TestAnnotation:
 
         assert geom.n_lines == 1000
         assert geom.n_columns == 1500
-        assert geom.first_line_time == datetime.fromisoformat("2024-11-05T18:23:41.123456")
+        assert geom.first_line_time == datetime.fromisoformat(
+            "2024-11-05T18:23:41.123456"
+        )
 
     def test_azimuth_time_row_roundtrip_exact(self, tmp_path):
         from pygeofetch.insar.annotation import parse_slc_geometry
@@ -237,7 +271,9 @@ class TestAnnotation:
         for row in [0, 100, 500, 999]:
             t = geom.azimuth_time(row)
             row_back = geom.row_for_azimuth_time(t)
-            assert abs(row_back - row) < 0.001  # sub-millipixel: datetime microsecond resolution floor
+            assert (
+                abs(row_back - row) < 0.001
+            )  # sub-millipixel: datetime microsecond resolution floor
 
     def test_range_time_col_roundtrip_exact(self, tmp_path):
         from pygeofetch.insar.annotation import parse_slc_geometry
@@ -292,7 +328,9 @@ class TestGeolocation:
             theta = omega * i * 10
             times.append(t)
             positions.append((R * math.cos(theta), R * math.sin(theta), 0.0))
-            velocities.append((-R * omega * math.sin(theta), R * omega * math.cos(theta), 0.0))
+            velocities.append(
+                (-R * omega * math.sin(theta), R * omega * math.cos(theta), 0.0)
+            )
 
         pos, vel = interpolate_orbit_state(times, positions, velocities, times[10])
         assert math.isclose(pos[0], positions[10][0], abs_tol=1e-6)
@@ -321,7 +359,9 @@ class TestGeolocation:
         geometries are confirmed-passing cases from development."""
         from pygeofetch.insar.geolocation import solve_ground_point
 
-        sat_pos, sat_vel, range_time_s, P_true = _build_geometry(lat, lon, incl_deg=incl, ascending=ascending)
+        sat_pos, sat_vel, range_time_s, P_true = _build_geometry(
+            lat, lon, incl_deg=incl, ascending=ascending
+        )
         P_solved = solve_ground_point(sat_pos, sat_vel, range_time_s)
         error_m = math.sqrt(sum((P_solved[i] - P_true[i]) ** 2 for i in range(3)))
         assert error_m < 1.0
@@ -341,7 +381,9 @@ class TestGeolocation:
             theta = omega * i * 10
             times.append(t)
             positions.append((R * math.cos(theta), R * math.sin(theta), 0.0))
-            velocities.append((-R * omega * math.sin(theta), R * omega * math.cos(theta), 0.0))
+            velocities.append(
+                (-R * omega * math.sin(theta), R * omega * math.cos(theta), 0.0)
+            )
 
         true_time = t0 + timedelta(seconds=155.3)
         pos, vel = interpolate_orbit_state(times, positions, velocities, true_time)
@@ -350,7 +392,9 @@ class TestGeolocation:
 
         # Deliberately bad starting guess (30s off) -- confirmed robust in development
         guess = true_time + timedelta(seconds=30.0)
-        solved_time = find_zero_doppler_time(times, positions, velocities, ground_point, guess)
+        solved_time = find_zero_doppler_time(
+            times, positions, velocities, ground_point, guess
+        )
         error_s = abs((solved_time - true_time).total_seconds())
         assert error_s < 1e-6
 
@@ -365,7 +409,6 @@ class TestGeolocation:
 
     def test_los_to_vertical_works_on_arrays(self):
         import numpy as np
-
         from pygeofetch.insar.geolocation import los_to_vertical_displacement
 
         los = np.array([[-0.0155, -0.008], [0.002, -0.020]])
@@ -380,16 +423,17 @@ class TestCoregister:
         pixel-driven approach; must pass 49/49 with the DEM-driven one."""
         import numpy as np
         import rasterio
-        from rasterio.crs import CRS
-        from rasterio.transform import from_bounds
-
         from pygeofetch.insar.annotation import SLCGeometry
         from pygeofetch.insar.coregister import compute_offset_field_from_dem
         from pygeofetch.insar.geolocation import SPEED_OF_LIGHT
+        from rasterio.crs import CRS
+        from rasterio.transform import from_bounds
 
         sat_pos_ref, sat_vel_ref, _, P_center = _build_geometry(5.5, -1.7)
         t0_ref = datetime(2024, 11, 5, 18, 23, 41)
-        radial = tuple(c / math.sqrt(sum(x**2 for x in sat_pos_ref)) for c in sat_pos_ref)
+        radial = tuple(
+            c / math.sqrt(sum(x**2 for x in sat_pos_ref)) for c in sat_pos_ref
+        )
         sat_pos_sec = tuple(sat_pos_ref[i] + radial[i] * 150.0 for i in range(3))
         t0_sec = t0_ref + timedelta(days=12)
 
@@ -397,7 +441,9 @@ class TestCoregister:
             times, positions, velocities = [], [], []
             for i in range(-60, 61):
                 dt = i * 10.0
-                positions.append(tuple(center_pos[k] + center_vel[k] * dt for k in range(3)))
+                positions.append(
+                    tuple(center_pos[k] + center_vel[k] * dt for k in range(3))
+                )
                 times.append(center_time + timedelta(seconds=dt))
                 velocities.append(center_vel)
             return times, positions, velocities
@@ -406,36 +452,59 @@ class TestCoregister:
         sec_orbit = orbit_series(sat_pos_sec, sat_vel_ref, t0_sec)
 
         n = 1500
-        range_time_center = 2 * math.sqrt(sum((sat_pos_ref[i] - P_center[i]) ** 2 for i in range(3))) / SPEED_OF_LIGHT
+        range_time_center = (
+            2
+            * math.sqrt(sum((sat_pos_ref[i] - P_center[i]) ** 2 for i in range(3)))
+            / SPEED_OF_LIGHT
+        )
         ref_geom = SLCGeometry(
             first_line_time=t0_ref - timedelta(seconds=n / 2 * 0.002),
             azimuth_time_interval_s=0.002,
             near_range_time_s=range_time_center - (n / 2) * (1 / 6.4e7),
-            range_sampling_rate_hz=6.4e7, n_lines=n, n_columns=n,
+            range_sampling_rate_hz=6.4e7,
+            n_lines=n,
+            n_columns=n,
         )
         sec_geom = SLCGeometry(
             first_line_time=t0_sec - timedelta(seconds=n / 2 * 0.002),
             azimuth_time_interval_s=0.002,
             near_range_time_s=range_time_center - (n / 2) * (1 / 6.4e7),
-            range_sampling_rate_hz=6.4e7, n_lines=n, n_columns=n,
+            range_sampling_rate_hz=6.4e7,
+            n_lines=n,
+            n_columns=n,
         )
 
         dem_path = tmp_path / "dem.tif"
         dh, dw, margin = 50, 50, 0.05
-        with rasterio.open(dem_path, "w", driver="GTiff", dtype="float32", count=1,
-                            width=dw, height=dh, crs=CRS.from_epsg(4326),
-                            transform=from_bounds(-1.7 - margin, 5.5 - margin, -1.7 + margin, 5.5 + margin, dw, dh)) as ds:
+        with rasterio.open(
+            dem_path,
+            "w",
+            driver="GTiff",
+            dtype="float32",
+            count=1,
+            width=dw,
+            height=dh,
+            crs=CRS.from_epsg(4326),
+            transform=from_bounds(
+                -1.7 - margin, 5.5 - margin, -1.7 + margin, 5.5 + margin, dw, dh
+            ),
+        ) as ds:
             ds.write(np.full((dh, dw), 250.0, dtype=np.float32), 1)
 
         grid_rows, grid_cols, off_rows, off_cols = compute_offset_field_from_dem(
-            ref_geom, ref_orbit, sec_geom, sec_orbit, dem_path,
-            ref_scene_center_time=t0_ref, sec_scene_center_time=t0_sec, grid_points=7,
+            ref_geom,
+            ref_orbit,
+            sec_geom,
+            sec_orbit,
+            dem_path,
+            ref_scene_center_time=t0_ref,
+            sec_scene_center_time=t0_sec,
+            grid_points=7,
         )
         assert len(grid_rows) == 49  # every point must solve cleanly
 
     def test_polynomial_fit_and_resample_recovers_known_pattern(self):
         import numpy as np
-
         from pygeofetch.insar.coregister import (
             fit_offset_polynomial,
             resample_with_offset_field,
@@ -466,7 +535,6 @@ class TestGPU:
 
     def test_array_module_fallback_to_numpy_when_unavailable(self):
         import numpy as np
-
         from pygeofetch.insar.gpu import get_array_module
 
         xp, ndi, using_gpu = get_array_module(prefer_gpu=True)
@@ -475,7 +543,6 @@ class TestGPU:
 
     def test_prefer_gpu_false_always_uses_cpu(self):
         import numpy as np
-
         from pygeofetch.insar.gpu import get_array_module
 
         xp, ndi, using_gpu = get_array_module(prefer_gpu=False)
@@ -484,7 +551,6 @@ class TestGPU:
 
     def test_to_numpy_passthrough_for_numpy_arrays(self):
         import numpy as np
-
         from pygeofetch.insar.gpu import to_numpy
 
         arr = np.array([1, 2, 3])
@@ -494,17 +560,21 @@ class TestGPU:
 class TestAutoVisualize:
     def test_save_with_auto_visualize_produces_pngs(self, tmp_path):
         import numpy as np
+        from pygeofetch.insar.interferogram import InterferogramResult
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
 
-        from pygeofetch.insar.interferogram import InterferogramResult
-
         h, w = 20, 20
         result = InterferogramResult(
-            interferogram=(np.random.randn(h, w) + 1j * np.random.randn(h, w)).astype(np.complex64),
+            interferogram=(np.random.randn(h, w) + 1j * np.random.randn(h, w)).astype(
+                np.complex64
+            ),
             coherence=np.random.rand(h, w).astype(np.float32),
             amplitude=(np.random.rand(h, w) * 30).astype(np.float32),
-            profile={"crs": CRS.from_epsg(4326), "transform": from_bounds(-1, 0, 1, 1, w, h)},
+            profile={
+                "crs": CRS.from_epsg(4326),
+                "transform": from_bounds(-1, 0, 1, 1, w, h),
+            },
         )
         result.save(tmp_path, auto_visualize=True)
         pngs = list(tmp_path.glob("*.png"))
@@ -514,17 +584,21 @@ class TestAutoVisualize:
 
     def test_save_without_auto_visualize_produces_no_pngs(self, tmp_path):
         import numpy as np
+        from pygeofetch.insar.interferogram import InterferogramResult
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
 
-        from pygeofetch.insar.interferogram import InterferogramResult
-
         h, w = 20, 20
         result = InterferogramResult(
-            interferogram=(np.random.randn(h, w) + 1j * np.random.randn(h, w)).astype(np.complex64),
+            interferogram=(np.random.randn(h, w) + 1j * np.random.randn(h, w)).astype(
+                np.complex64
+            ),
             coherence=np.random.rand(h, w).astype(np.float32),
             amplitude=(np.random.rand(h, w) * 30).astype(np.float32),
-            profile={"crs": CRS.from_epsg(4326), "transform": from_bounds(-1, 0, 1, 1, w, h)},
+            profile={
+                "crs": CRS.from_epsg(4326),
+                "transform": from_bounds(-1, 0, 1, 1, w, h),
+            },
         )
         result.save(tmp_path)  # auto_visualize defaults to False
         assert len(list(tmp_path.glob("*.png"))) == 0
@@ -546,8 +620,17 @@ class TestRealCoregistrationWiring:
         sec = (np.random.randn(h, w) + 1j * np.random.randn(h, w)).astype(np.complex64)
         ref_path, sec_path = tmp_path / "ref.tif", tmp_path / "sec.tif"
         for p, d in [(ref_path, ref), (sec_path, sec)]:
-            with rasterio.open(p, "w", driver="GTiff", dtype="complex64", count=1,
-                                width=w, height=h, crs=crs, transform=transform) as ds:
+            with rasterio.open(
+                p,
+                "w",
+                driver="GTiff",
+                dtype="complex64",
+                count=1,
+                width=w,
+                height=h,
+                crs=crs,
+                transform=transform,
+            ) as ds:
                 ds.write(d, 1)
         return ref_path, sec_path
 
@@ -579,9 +662,12 @@ class TestRealCoregistrationWiring:
         ref_path, sec_path = self._write_complex_pair(tmp_path)
         gen = InterferogramGenerator(esd_enabled=False)
         result = gen.process_pair(
-            ref_path, sec_path,
+            ref_path,
+            sec_path,
             dem="nonexistent_dem.tif",
-            reference_safe_zip="nonexistent1.zip", secondary_safe_zip="nonexistent2.zip",
-            reference_orbit_file="nonexistent1.EOF", secondary_orbit_file="nonexistent2.EOF",
+            reference_safe_zip="nonexistent1.zip",
+            secondary_safe_zip="nonexistent2.zip",
+            reference_orbit_file="nonexistent1.EOF",
+            secondary_orbit_file="nonexistent2.EOF",
         )
         assert result.coherence.shape == (40, 40)

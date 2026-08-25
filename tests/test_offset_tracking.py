@@ -5,13 +5,12 @@ that the code runs.
 """
 
 import numpy as np
-from scipy.ndimage import shift as ndi_shift
-
 from pygeofetch.insar.offset_tracking import (
     compute_snr,
     normalized_cross_correlation,
     subpixel_peak_offset,
 )
+from scipy.ndimage import shift as ndi_shift
 
 
 def _make_textured_image(size=128, seed=0):
@@ -21,12 +20,15 @@ def _make_textured_image(size=128, seed=0):
     rng = np.random.default_rng(seed)
     img = rng.normal(0, 1, (size, size))
     from scipy.ndimage import gaussian_filter
+
     img = gaussian_filter(img, sigma=1.5)
     return img
 
 
 def test_ncc_matches_direct_definition():
-    print("=== 1. FFT-based NCC matches the direct, textbook sliding-window definition ===")
+    print(
+        "=== 1. FFT-based NCC matches the direct, textbook sliding-window definition ==="
+    )
     ref = _make_textured_image(16, seed=1)
     search = _make_textured_image(24, seed=2)
 
@@ -38,17 +40,19 @@ def test_ncc_matches_direct_definition():
     out_h, out_w = sh - rh + 1, sw - rw + 1
     direct = np.zeros((out_h, out_w))
     ref_c = ref - ref.mean()
-    ref_norm = np.sqrt(np.sum(ref_c ** 2))
+    ref_norm = np.sqrt(np.sum(ref_c**2))
     for y in range(out_h):
         for x in range(out_w):
-            win = search[y:y + rh, x:x + rw]
+            win = search[y : y + rh, x : x + rw]
             win_c = win - win.mean()
-            win_norm = np.sqrt(np.sum(win_c ** 2))
+            win_norm = np.sqrt(np.sum(win_c**2))
             direct[y, x] = np.sum(ref_c * win_c) / (ref_norm * win_norm)
 
     max_diff = np.max(np.abs(fast - direct))
     print(f"  max difference between FFT and direct NCC: {max_diff:.2e}")
-    assert max_diff < 1e-8, "FFT-accelerated NCC must match the direct definition to numerical precision"
+    assert (
+        max_diff < 1e-8
+    ), "FFT-accelerated NCC must match the direct definition to numerical precision"
     print("  PASS\n")
 
 
@@ -67,7 +71,7 @@ def test_recovers_known_integer_shift():
 
     true_dy, true_dx = 5, -3
     shifted = ndi_shift(base, shift=(true_dy, true_dx), order=1, mode="reflect")
-    search_patch = shifted[30 - 8:50 + 8, 30 - 8:50 + 8]
+    search_patch = shifted[30 - 8 : 50 + 8, 30 - 8 : 50 + 8]
 
     ncc = normalized_cross_correlation(ref_patch, search_patch)
     peak_y, peak_x, peak_val = subpixel_peak_offset(ncc)
@@ -82,12 +86,16 @@ def test_recovers_known_integer_shift():
     print(f"  peak correlation: {peak_val:.4f}")
     assert abs(recovered_dy - true_dy) < 0.15
     assert abs(recovered_dx - true_dx) < 0.15
-    assert peak_val > 0.90, "an exact integer shift of identical texture should correlate almost perfectly"
+    assert (
+        peak_val > 0.90
+    ), "an exact integer shift of identical texture should correlate almost perfectly"
     print("  PASS\n")
 
 
 def test_recovers_known_subpixel_shift():
-    print("=== 3. Recovers a known, precise SUB-PIXEL shift via parabolic interpolation ===")
+    print(
+        "=== 3. Recovers a known, precise SUB-PIXEL shift via parabolic interpolation ==="
+    )
     base = _make_textured_image(100, seed=4)
     ref_patch = base[40:64, 40:64]  # 24x24 template
 
@@ -97,7 +105,7 @@ def test_recovers_known_subpixel_shift():
     # a genuinely independent method from the NCC/parabolic-fit code being
     # tested, not circular.
     shifted = ndi_shift(base, shift=(true_dy, true_dx), order=3, mode="reflect")
-    search_patch = shifted[40 - 10:64 + 10, 40 - 10:64 + 10]
+    search_patch = shifted[40 - 10 : 64 + 10, 40 - 10 : 64 + 10]
 
     ncc = normalized_cross_correlation(ref_patch, search_patch)
     peak_y, peak_x, peak_val = subpixel_peak_offset(ncc)
@@ -111,23 +119,30 @@ def test_recovers_known_subpixel_shift():
     print(f"  recovered shift: ({recovered_dy:.3f}, {recovered_dx:.3f})")
     err_y, err_x = abs(recovered_dy - true_dy), abs(recovered_dx - true_dx)
     print(f"  error: ({err_y:.3f}, {err_x:.3f}) pixels")
-    assert err_y < 0.15 and err_x < 0.15, \
-        f"sub-pixel recovery error too large: ({err_y:.3f}, {err_x:.3f}) -- expected <0.15px"
+    assert (
+        err_y < 0.15 and err_x < 0.15
+    ), f"sub-pixel recovery error too large: ({err_y:.3f}, {err_x:.3f}) -- expected <0.15px"
     print("  PASS -- confirms real sub-pixel accuracy, not just whole-pixel matching\n")
 
 
 def test_uniform_patch_returns_zero_not_a_false_peak():
-    print("=== 4. A featureless (uniform) reference patch returns zero, not a spuriously confident match ===")
+    print(
+        "=== 4. A featureless (uniform) reference patch returns zero, not a spuriously confident match ==="
+    )
     ref = np.full((16, 16), 5.0)  # perfectly flat, like calm water
     search = np.random.default_rng(5).normal(5, 0.01, (24, 24))
     ncc = normalized_cross_correlation(ref, search)
     print(f"  max NCC value on a uniform reference: {ncc.max():.6f}")
-    assert np.allclose(ncc, 0.0), "a uniform reference patch has no real texture to match -- must not report a confident peak"
+    assert np.allclose(
+        ncc, 0.0
+    ), "a uniform reference patch has no real texture to match -- must not report a confident peak"
     print("  PASS\n")
 
 
 def test_snr_correctly_distinguishes_real_match_from_noise():
-    print("=== 5. SNR is high for a real, distinct match and low for pure noise (no real feature) ===")
+    print(
+        "=== 5. SNR is high for a real, distinct match and low for pure noise (no real feature) ==="
+    )
     base = _make_textured_image(80, seed=6)
     ref_patch = base[30:50, 30:50]
     search_patch = base[22:58, 22:58]  # contains a real, exact match at zero shift
@@ -153,13 +168,21 @@ def test_snr_correctly_distinguishes_real_match_from_noise():
     # (noise SNR is itself a random variable and can occasionally land
     # closer to 3.0 by chance). Removed rather than loosened arbitrarily,
     # since the real, meaningful claim is the threshold behavior below.
-    assert snr_real >= 3.0, "a real, exact match should clear the real SNR threshold from the spec"
-    assert snr_noise < 3.0, "pure noise (no real feature) should NOT clear the real SNR threshold"
-    print("  PASS -- confirms SNR thresholding correctly separates real matches from false ones at the spec's own threshold\n")
+    assert (
+        snr_real >= 3.0
+    ), "a real, exact match should clear the real SNR threshold from the spec"
+    assert (
+        snr_noise < 3.0
+    ), "pure noise (no real feature) should NOT clear the real SNR threshold"
+    print(
+        "  PASS -- confirms SNR thresholding correctly separates real matches from false ones at the spec's own threshold\n"
+    )
 
 
 def test_offset_tracker_recovers_spatially_varying_field():
-    print("=== 6. OffsetTracker recovers a real, SPATIALLY-VARYING displacement field across a full image ===")
+    print(
+        "=== 6. OffsetTracker recovers a real, SPATIALLY-VARYING displacement field across a full image ==="
+    )
     from pygeofetch.insar.offset_tracking import OffsetTracker
 
     size = 300
@@ -173,8 +196,10 @@ def test_offset_tracker_recovers_spatially_varying_field():
     cy, cx = size / 2, size / 2
     r = np.sqrt((yy - cy) ** 2 + (xx - cx) ** 2)
     max_shift = 6.0
-    shift_field_y = max_shift * np.exp(-(r ** 2) / (2 * 60 ** 2))
-    shift_field_x = 0.4 * shift_field_y  # a smaller, correlated range-direction component
+    shift_field_y = max_shift * np.exp(-(r**2) / (2 * 60**2))
+    shift_field_x = (
+        0.4 * shift_field_y
+    )  # a smaller, correlated range-direction component
 
     # Build the real secondary image via a genuine spatially-varying warp
     # (independent of the tracker/NCC code under test).
@@ -191,6 +216,7 @@ def test_offset_tracker_recovers_spatially_varying_field():
     # every window falsely marked "reliable" was actually showing --
     # confident, precise correlation against genuinely wrong ground truth.
     from scipy.ndimage import map_coordinates
+
     warped_yy = yy - shift_field_y
     warped_xx = xx - shift_field_x
     secondary = map_coordinates(base, [warped_yy, warped_xx], order=3, mode="reflect")
@@ -198,7 +224,9 @@ def test_offset_tracker_recovers_spatially_varying_field():
     tracker = OffsetTracker(search_window_size=48, step_size=24, chip_size=24)
     result = tracker.track(base, secondary, snr_threshold=3.0)
 
-    print(f"  grid shape: {result.azimuth_offset.shape}, reliable windows: {result.reliable.sum()}/{result.reliable.size}")
+    print(
+        f"  grid shape: {result.azimuth_offset.shape}, reliable windows: {result.reliable.sum()}/{result.reliable.size}"
+    )
 
     # Compare recovered offsets against the TRUE field, sampled at each
     # real window center -- only over reliable windows, matching how this
@@ -215,13 +243,23 @@ def test_offset_tracker_recovers_spatially_varying_field():
             errors_x.append(abs(result.range_offset[iy, ix] - true_x))
 
     errors_y, errors_x = np.array(errors_y), np.array(errors_x)
-    print(f"  mean abs error: azimuth={errors_y.mean():.3f}px, range={errors_x.mean():.3f}px")
-    print(f"  max abs error:  azimuth={errors_y.max():.3f}px, range={errors_x.max():.3f}px")
+    print(
+        f"  mean abs error: azimuth={errors_y.mean():.3f}px, range={errors_x.mean():.3f}px"
+    )
+    print(
+        f"  max abs error:  azimuth={errors_y.max():.3f}px, range={errors_x.max():.3f}px"
+    )
 
-    assert result.reliable.sum() > 0.7 * result.reliable.size, "most windows over real texture should be reliable"
-    assert errors_y.mean() < 0.5, f"mean azimuth error too large: {errors_y.mean():.3f}px"
+    assert (
+        result.reliable.sum() > 0.7 * result.reliable.size
+    ), "most windows over real texture should be reliable"
+    assert (
+        errors_y.mean() < 0.5
+    ), f"mean azimuth error too large: {errors_y.mean():.3f}px"
     assert errors_x.mean() < 0.5, f"mean range error too large: {errors_x.mean():.3f}px"
-    print("  PASS -- confirms the full grid recovers a real, spatially-varying field, not just a single global shift\n")
+    print(
+        "  PASS -- confirms the full grid recovers a real, spatially-varying field, not just a single global shift\n"
+    )
 
 
 if __name__ == "__main__":

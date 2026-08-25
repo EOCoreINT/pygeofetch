@@ -16,6 +16,7 @@ high R²), but with its true circular mean placed near the wraparound
 boundary (~pi) specifically to trigger the bug. Compares the buggy
 formula against the correct one on identical data.
 """
+
 import numpy as np
 
 rng = np.random.default_rng(0)
@@ -73,9 +74,13 @@ def fit_and_compare(label, true_slope, true_intercept, noise_std):
     naive_mean = float(np.mean(phase_v))
 
     print(f"=== {label} ===")
-    print(f"  true slope={true_slope:.5f} rad/m, recovered best_slope={best_slope:.5f} rad/m")
-    print(f"  true circular mean of phase: {true_circular_mean:.3f} rad "
-          f"(naive arithmetic mean: {naive_mean:.3f} rad, diff={abs(true_circular_mean-naive_mean):.3f})")
+    print(
+        f"  true slope={true_slope:.5f} rad/m, recovered best_slope={best_slope:.5f} rad/m"
+    )
+    print(
+        f"  true circular mean of phase: {true_circular_mean:.3f} rad "
+        f"(naive arithmetic mean: {naive_mean:.3f} rad, diff={abs(true_circular_mean-naive_mean):.3f})"
+    )
     print(f"  R² (buggy, naive mean):   {r2_buggy:.4f}")
     print(f"  R² (correct, circular mean): {r2_correct:.4f}")
     return r2_buggy, r2_correct, true_circular_mean, naive_mean
@@ -91,7 +96,9 @@ if __name__ == "__main__":
     # where the data actually sits.
     r2_buggy_a, r2_correct_a, tcm_a, nm_a = fit_and_compare(
         "Modest swing, arc straddling +-pi (realistic small-baseline case)",
-        true_slope=0.003, true_intercept=float(np.pi - 0.003 * 250), noise_std=0.2,
+        true_slope=0.003,
+        true_intercept=float(np.pi - 0.003 * 250),
+        noise_std=0.2,
     )
     print()
 
@@ -100,7 +107,9 @@ if __name__ == "__main__":
     # should closely agree, so buggy and correct R² should be close.
     r2_buggy_b, r2_correct_b, tcm_b, nm_b = fit_and_compare(
         "Modest swing, arc near 0 (no wraparound)",
-        true_slope=0.003, true_intercept=0.0, noise_std=0.2,
+        true_slope=0.003,
+        true_intercept=0.0,
+        noise_std=0.2,
     )
     print()
 
@@ -115,31 +124,43 @@ if __name__ == "__main__":
     # itself suspicious).
     r2_buggy_c, r2_correct_c, tcm_c, nm_c = fit_and_compare(
         "Weak/near-absent true relationship, arc near +-pi",
-        true_slope=0.0002, true_intercept=float(np.pi - 0.0002 * 250), noise_std=1.5,
+        true_slope=0.0002,
+        true_intercept=float(np.pi - 0.0002 * 250),
+        noise_std=1.5,
     )
     print()
 
     print("=== Verdict ===")
-    assert abs(tcm_a - nm_a) > 0.5, "test setup should actually trigger a large naive-vs-circular-mean gap"
+    assert (
+        abs(tcm_a - nm_a) > 0.5
+    ), "test setup should actually trigger a large naive-vs-circular-mean gap"
     assert abs(r2_buggy_a - r2_correct_a) > 0.1, (
         f"buggy and correct R² should meaningfully diverge in the wraparound case: "
         f"buggy={r2_buggy_a:.4f}, correct={r2_correct_a:.4f}"
     )
-    print(f"Wraparound case: buggy R²={r2_buggy_a:.4f} vs correct R²={r2_correct_a:.4f} -- "
-          f"a real, meaningful discrepancy from mis-centering the data before computing ss_tot. "
-          f"Note the DIRECTION isn't fixed: here the naive mean happens to inflate R² (makes the "
-          f"fit look better than it truly is); with different data it can just as easily deflate "
-          f"it. Either way the reported number is untrustworthy until fixed.")
-
-    assert abs(r2_buggy_b - r2_correct_b) < 0.1, (
-        "non-wraparound case should show buggy and correct R² close together"
+    print(
+        f"Wraparound case: buggy R²={r2_buggy_a:.4f} vs correct R²={r2_correct_a:.4f} -- "
+        f"a real, meaningful discrepancy from mis-centering the data before computing ss_tot. "
+        f"Note the DIRECTION isn't fixed: here the naive mean happens to inflate R² (makes the "
+        f"fit look better than it truly is); with different data it can just as easily deflate "
+        f"it. Either way the reported number is untrustworthy until fixed."
     )
-    print(f"Non-wraparound case: buggy R²={r2_buggy_b:.4f} vs correct R²={r2_correct_b:.4f} "
-          f"-- close, as expected (the bug is data-dependent: it's invisible whenever the true "
-          f"circular mean happens to sit away from the +-pi boundary, which is exactly why it "
-          f"wasn't caught by casual testing).")
 
-    print(f"\nWeak-signal + wraparound case: buggy R²={r2_buggy_c:.4f}, correct R²={r2_correct_c:.4f}")
+    assert (
+        abs(r2_buggy_b - r2_correct_b) < 0.1
+    ), "non-wraparound case should show buggy and correct R² close together"
+    print(
+        f"Non-wraparound case: buggy R²={r2_buggy_b:.4f} vs correct R²={r2_correct_b:.4f} "
+        f"-- close, as expected (the bug is data-dependent: it's invisible whenever the true "
+        f"circular mean happens to sit away from the +-pi boundary, which is exactly why it "
+        f"wasn't caught by casual testing)."
+    )
+
+    print(
+        f"\nWeak-signal + wraparound case: buggy R²={r2_buggy_c:.4f}, correct R²={r2_correct_c:.4f}"
+    )
     if r2_buggy_c < 0:
-        print("  Reproduces the negative-R² symptom actually seen in the real Mexico City logs.")
+        print(
+            "  Reproduces the negative-R² symptom actually seen in the real Mexico City logs."
+        )
     print("\nPASS: bug confirmed and characterized.")

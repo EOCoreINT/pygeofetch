@@ -7,7 +7,6 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
-
 from pygeofetch.models.download_task import (
     DownloadOptions,
     DownloadResult,
@@ -117,6 +116,7 @@ def mock_provider():
 @pytest.fixture
 def tmp_geojson(tmp_path, sample_results) -> Path:
     from pygeofetch.core.searcher import FederatedSearcher
+
     searcher = FederatedSearcher()
     path = tmp_path / "results.geojson"
     searcher.save_results(sample_results, path)

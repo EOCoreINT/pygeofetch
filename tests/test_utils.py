@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from pygeofetch.utils.file_utils import (
     compute_checksum,
     ensure_directory,
@@ -70,6 +69,7 @@ class TestGeoUtils:
         # point_in_bbox may take (lon, lat, bbox) or (point, bbox)
         # check the actual signature
         import inspect
+
         sig = inspect.signature(point_in_bbox)
         params = list(sig.parameters.keys())
         if len(params) == 2:
@@ -109,7 +109,7 @@ class TestFileUtils:
     def test_human_readable_size(self):
         assert "KB" in human_readable_size(2048)
         assert "MB" in human_readable_size(2 * 1024 * 1024)
-        assert "GB" in human_readable_size(2 * 1024 ** 3)
+        assert "GB" in human_readable_size(2 * 1024**3)
 
     def test_write_read_json(self, tmp_path):
         path = tmp_path / "data.json"

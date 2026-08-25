@@ -23,11 +23,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 import rasterio
+from pygeofetch.core.downloader import AdaptiveDownloader
 from rasterio.control import GroundControlPoint
 from rasterio.crs import CRS
 from rasterio.transform import Affine
-
-from pygeofetch.core.downloader import AdaptiveDownloader
 
 
 def _make_gcp_only_source(path: Path, h: int = 200, w: int = 300) -> None:
@@ -90,7 +89,9 @@ def test_no_georeferencing_at_all_raises_clearly_not_silently_corrupted(download
         with pytest.raises(RuntimeError):
             downloader._reproject_with_validation(src_path, target_path, "EPSG:32630")
 
-        assert not target_path.exists(), "no corrupted/partial file should be left on disk"
+        assert (
+            not target_path.exists()
+        ), "no corrupted/partial file should be left on disk"
 
 
 def test_widened_safety_net_catches_the_real_confirmed_garbage_variant(downloader):
@@ -102,10 +103,19 @@ def test_widened_safety_net_catches_the_real_confirmed_garbage_variant(downloade
         tmp = Path(tmp)
         garbage_path = tmp / "garbage.tif"
         h, w = 200, 300
-        garbage_transform = Affine(1.0, 0.0, 0.0, 0.0, -1.0, 200.0)  # real, non-zero-origin case
+        garbage_transform = Affine(
+            1.0, 0.0, 0.0, 0.0, -1.0, 200.0
+        )  # real, non-zero-origin case
         with rasterio.open(
-            garbage_path, "w", driver="GTiff", dtype="float32", count=1,
-            width=w, height=h, crs="EPSG:32630", transform=garbage_transform,
+            garbage_path,
+            "w",
+            driver="GTiff",
+            dtype="float32",
+            count=1,
+            width=w,
+            height=h,
+            crs="EPSG:32630",
+            transform=garbage_transform,
         ) as dst:
             dst.write((np.random.rand(h, w) * 1000).astype(np.float32), 1)
 
@@ -119,10 +129,19 @@ def test_widened_safety_net_has_no_false_positive_on_real_output(downloader):
         tmp = Path(tmp)
         real_path = tmp / "real.tif"
         h, w = 200, 300
-        real_transform = Affine(10.0, 0.0, 500000.0, 0.0, -10.0, 6000000.0)  # real 10m UTM
+        real_transform = Affine(
+            10.0, 0.0, 500000.0, 0.0, -10.0, 6000000.0
+        )  # real 10m UTM
         with rasterio.open(
-            real_path, "w", driver="GTiff", dtype="float32", count=1,
-            width=w, height=h, crs="EPSG:32630", transform=real_transform,
+            real_path,
+            "w",
+            driver="GTiff",
+            dtype="float32",
+            count=1,
+            width=w,
+            height=h,
+            crs="EPSG:32630",
+            transform=real_transform,
         ) as dst:
             dst.write((np.random.rand(h, w) * 1000).astype(np.float32), 1)
 

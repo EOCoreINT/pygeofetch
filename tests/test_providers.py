@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import pytest
-
 from pygeofetch.models.search_query import BoundingBox, SearchQuery
 from pygeofetch.providers import get_free_providers, get_provider, list_providers
 
@@ -49,6 +48,7 @@ class TestUSGSProvider:
     def test_search_without_auth_raises(self):
         p = get_provider("usgs")
         from pygeofetch.providers.base import AuthenticationError
+
         q = SearchQuery(
             bbox=BoundingBox(min_lon=-74.1, min_lat=40.6, max_lon=-73.7, max_lat=40.9),
             start_date="2024-01-01",

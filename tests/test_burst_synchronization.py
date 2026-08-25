@@ -18,14 +18,15 @@ covered by earlier test suites) -- this isolates and validates
 compute_burst_synchronization()'s own logic: the modulo-reduction to a
 single burst cycle and the threshold comparison.
 """
+
 from datetime import datetime, timedelta
 
 from pygeofetch.insar import annotation, esd
 
 GROUND_POINT = (0.0, 0.0, 0.0)
-VELOCITY = (7500.0, 0.0, 0.0)          # constant, straight-line motion
+VELOCITY = (7500.0, 0.0, 0.0)  # constant, straight-line motion
 POSITION_AT_T0 = (0.0, 0.0, 500000.0)  # perpendicular to VELOCITY, so
-                                        # doppler(t0) = V . (GP - P0) = 0 exactly
+# doppler(t0) = V . (GP - P0) = 0 exactly
 
 T0 = datetime(2016, 7, 24, 12, 25, 42)
 
@@ -46,23 +47,34 @@ def build_orbit(time_shift_s: float):
     return times, positions, velocities
 
 
-def build_swath_timing(first_burst_time: datetime, n_bursts: int, cycle_s: float, lines_per_burst: int = 1506):
+def build_swath_timing(
+    first_burst_time: datetime,
+    n_bursts: int,
+    cycle_s: float,
+    lines_per_burst: int = 1506,
+):
     bursts = [
         annotation.BurstInfo(
             burst_index=i,
             azimuth_time=first_burst_time + timedelta(seconds=i * cycle_s),
-            sensing_time=None, byte_offset=0,
-            first_valid_sample=None, last_valid_sample=None,
+            sensing_time=None,
+            byte_offset=0,
+            first_valid_sample=None,
+            last_valid_sample=None,
         )
         for i in range(n_bursts)
     ]
-    return annotation.SwathTiming(lines_per_burst=lines_per_burst, samples_per_burst=23674, bursts=bursts)
+    return annotation.SwathTiming(
+        lines_per_burst=lines_per_burst, samples_per_burst=23674, bursts=bursts
+    )
 
 
 CYCLE_S = 1506 * 0.002055563 * 0.9  # nominal ~10% overlap, matches real S1 IW
 
 
-def run_case(label, orbit_time_shift_s, expected_sync_offset_ms, expect_within_requirement):
+def run_case(
+    label, orbit_time_shift_s, expected_sync_offset_ms, expect_within_requirement
+):
     print(f"=== {label} ===")
     ref_orbit = build_orbit(0.0)
     sec_orbit = build_orbit(orbit_time_shift_s)
@@ -76,36 +88,55 @@ def run_case(label, orbit_time_shift_s, expected_sync_offset_ms, expect_within_r
     sec_burst_info = build_swath_timing(T0 - timedelta(seconds=15), 8, CYCLE_S)
 
     result = esd.compute_burst_synchronization(
-        ref_orbit, sec_orbit, ref_burst_info, sec_burst_info,
-        GROUND_POINT, ref_time_guess=T0, sec_time_guess=T0,
+        ref_orbit,
+        sec_orbit,
+        ref_burst_info,
+        sec_burst_info,
+        GROUND_POINT,
+        ref_time_guess=T0,
+        sec_time_guess=T0,
     )
 
-    print(f"  orbit_time_shift_s={orbit_time_shift_s}, burst_cycle_s={result['burst_cycle_s']:.4f}")
+    print(
+        f"  orbit_time_shift_s={orbit_time_shift_s}, burst_cycle_s={result['burst_cycle_s']:.4f}"
+    )
     print(f"  ref_zero_doppler_time={result['ref_zero_doppler_time']}")
     print(f"  sec_zero_doppler_time={result['sec_zero_doppler_time']}")
-    print(f"  sync_offset_ms={result['sync_offset_ms']:.4f} (expected ~{expected_sync_offset_ms:.4f})")
-    print(f"  within_esa_requirement={result['within_esa_requirement']} (expected {expect_within_requirement})")
+    print(
+        f"  sync_offset_ms={result['sync_offset_ms']:.4f} (expected ~{expected_sync_offset_ms:.4f})"
+    )
+    print(
+        f"  within_esa_requirement={result['within_esa_requirement']} (expected {expect_within_requirement})"
+    )
 
     # find_zero_doppler_time solves to ~1e-9s tolerance; allow generous
     # float slack for the modulo arithmetic itself.
-    assert abs(result["sync_offset_ms"] - expected_sync_offset_ms) < 0.01, (
-        f"sync_offset_ms off: got {result['sync_offset_ms']}, expected {expected_sync_offset_ms}"
-    )
+    assert (
+        abs(result["sync_offset_ms"] - expected_sync_offset_ms) < 0.01
+    ), f"sync_offset_ms off: got {result['sync_offset_ms']}, expected {expected_sync_offset_ms}"
     assert result["within_esa_requirement"] == expect_within_requirement
     print("  PASS\n")
 
 
 if __name__ == "__main__":
     # Case 1: near-perfect synchronization (0.2 ms raw offset, well within 5ms).
-    run_case("well-synchronized (0.2 ms)", orbit_time_shift_s=0.0002,
-              expected_sync_offset_ms=-0.2, expect_within_requirement=True)
+    run_case(
+        "well-synchronized (0.2 ms)",
+        orbit_time_shift_s=0.0002,
+        expected_sync_offset_ms=-0.2,
+        expect_within_requirement=True,
+    )
 
     # Case 2: badly desynchronized -- 40% of a burst cycle raw offset,
     # should reduce to -0.4*cycle (well outside 5ms). This is the
     # signature of a genuine "different burst family" pair.
     bad_shift = 0.4 * CYCLE_S
-    run_case("desynchronized (40% of burst cycle)", orbit_time_shift_s=bad_shift,
-              expected_sync_offset_ms=-0.4 * CYCLE_S * 1000, expect_within_requirement=False)
+    run_case(
+        "desynchronized (40% of burst cycle)",
+        orbit_time_shift_s=bad_shift,
+        expected_sync_offset_ms=-0.4 * CYCLE_S * 1000,
+        expect_within_requirement=False,
+    )
 
     # Case 3: the core thing this function has to get right -- a raw
     # offset of exactly 3 whole burst cycles PLUS a small 0.3ms residual
@@ -113,7 +144,11 @@ if __name__ == "__main__":
     # difference. This is the "whole-burst offset vs. fine residual"
     # distinction from Yagüe-Martínez et al. Section III-A.
     whole_cycles_plus_residual = 3 * CYCLE_S + 0.0003
-    run_case("3 whole burst cycles + 0.3ms residual", orbit_time_shift_s=whole_cycles_plus_residual,
-              expected_sync_offset_ms=-0.3, expect_within_requirement=True)
+    run_case(
+        "3 whole burst cycles + 0.3ms residual",
+        orbit_time_shift_s=whole_cycles_plus_residual,
+        expected_sync_offset_ms=-0.3,
+        expect_within_requirement=True,
+    )
 
     print("ALL TESTS PASSED")

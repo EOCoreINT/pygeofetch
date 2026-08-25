@@ -9,7 +9,6 @@ distributed synthetic scene, not built here).
 """
 
 import numpy as np
-
 from pygeofetch.insar.splitspectrum_diagnostic import (
     diagnose_dispersive_signal,
     extract_subband_slc,
@@ -27,7 +26,9 @@ def test_non_dispersive_signal_gives_zero_double_difference():
     in_band = np.abs(freqs) <= bw / 2
 
     spectrum_ref = np.where(in_band, 1.0 + 0j, 0.0)
-    spectrum_sec = np.where(in_band, np.exp(1j * 2.5), 0.0)  # constant, non-dispersive phase
+    spectrum_sec = np.where(
+        in_band, np.exp(1j * 2.5), 0.0
+    )  # constant, non-dispersive phase
 
     ref_slc = np.tile(np.fft.ifft(spectrum_ref), (n_azimuth, 1))
     sec_slc = np.tile(np.fft.ifft(spectrum_sec), (n_azimuth, 1))

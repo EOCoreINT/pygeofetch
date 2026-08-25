@@ -9,8 +9,8 @@ Runs standalone against the package on disk (no orbit/annotation/DEM
 inputs needed -- those are exercised at the interferogram.py wiring
 level separately).
 """
-import numpy as np
 
+import numpy as np
 from pygeofetch.insar import coregister
 
 fit_offset_polynomial = coregister.fit_offset_polynomial
@@ -40,8 +40,12 @@ def test_polynomial_degrees():
     # degree 1 (linear) should NOT perfectly fit a true quadratic field
     fn1 = fit_offset_polynomial(rows, cols, true, degree=1)
     rmse1 = float(np.sqrt(np.mean((fn1(rows, cols) - true) ** 2)))
-    assert rmse1 > 1e-3, "linear fit should show residual error against a quadratic field"
-    print(f"  degree=1 residual against true quadratic field: {rmse1:.4f} px (expected, nonzero)")
+    assert (
+        rmse1 > 1e-3
+    ), "linear fit should show residual error against a quadratic field"
+    print(
+        f"  degree=1 residual against true quadratic field: {rmse1:.4f} px (expected, nonzero)"
+    )
 
     # minimum-points guard
     try:
@@ -72,25 +76,44 @@ def test_robust_outlier_rejection():
     # Naive single-pass fit (old behaviour) for comparison.
     naive_row_fn = fit_offset_polynomial(rows, cols, noisy_row, degree=1)
     naive_col_fn = fit_offset_polynomial(rows, cols, noisy_col, degree=1)
-    naive_rmse = float(np.sqrt(np.mean(
-        (naive_row_fn(rows, cols) - true_row_offset) ** 2
-        + (naive_col_fn(rows, cols) - true_col_offset) ** 2
-    )))
+    naive_rmse = float(
+        np.sqrt(
+            np.mean(
+                (naive_row_fn(rows, cols) - true_row_offset) ** 2
+                + (naive_col_fn(rows, cols) - true_col_offset) ** 2
+            )
+        )
+    )
 
     row_fn, col_fn, quality = fit_offset_polynomial_robust(
-        rows, cols, noisy_row, noisy_col, degree=1, max_iterations=2,
+        rows,
+        cols,
+        noisy_row,
+        noisy_col,
+        degree=1,
+        max_iterations=2,
     )
-    robust_rmse = float(np.sqrt(np.mean(
-        (row_fn(rows, cols) - true_row_offset) ** 2
-        + (col_fn(rows, cols) - true_col_offset) ** 2
-    )))
+    robust_rmse = float(
+        np.sqrt(
+            np.mean(
+                (row_fn(rows, cols) - true_row_offset) ** 2
+                + (col_fn(rows, cols) - true_col_offset) ** 2
+            )
+        )
+    )
 
     print(f"  naive lstsq RMSE against ground truth:  {naive_rmse:.4f} px")
     print(f"  robust (outlier-rejected) RMSE:         {robust_rmse:.4f} px")
-    print(f"  quality: {quality.n_gcps_final}/{quality.n_gcps_initial} GCPs kept, "
-          f"{quality.iterations_used} iteration(s), fit RMS mean {quality.rms_mean:.4f} px")
-    assert robust_rmse < naive_rmse / 3, "robust fit should be substantially better than naive fit"
-    assert quality.n_gcps_final < quality.n_gcps_initial, "some outliers should have been rejected"
+    print(
+        f"  quality: {quality.n_gcps_final}/{quality.n_gcps_initial} GCPs kept, "
+        f"{quality.iterations_used} iteration(s), fit RMS mean {quality.rms_mean:.4f} px"
+    )
+    assert (
+        robust_rmse < naive_rmse / 3
+    ), "robust fit should be substantially better than naive fit"
+    assert (
+        quality.n_gcps_final < quality.n_gcps_initial
+    ), "some outliers should have been rejected"
     # NOTE: SNAP's own "eliminate anything above the mean RMS, repeat up
     # to 2x" rule is inherently aggressive -- for a roughly symmetric
     # residual distribution, close to half the points fall above the
@@ -98,7 +121,9 @@ def test_robust_outlier_rejection():
     # This is the documented, real behaviour of the algorithm being
     # matched, not a bug in this implementation; the meaningful check
     # is quality (RMSE) not raw survivor count.
-    assert quality.n_gcps_final >= 10, "should retain enough GCPs for a usable degree-1 fit"
+    assert (
+        quality.n_gcps_final >= 10
+    ), "should retain enough GCPs for a usable degree-1 fit"
     print("  PASS\n")
 
     # min_gcps guard: force degree 3 with too few points after rejection
@@ -110,7 +135,12 @@ def test_robust_outlier_rejection():
     tiny_col_off = true_col_offset[:10].copy()
     try:
         fit_offset_polynomial_robust(
-            tiny_rows, tiny_cols, tiny_row_off, tiny_col_off, degree=3, max_iterations=2,
+            tiny_rows,
+            tiny_cols,
+            tiny_row_off,
+            tiny_col_off,
+            degree=3,
+            max_iterations=2,
         )
         print("  (degree-3 fit on 10 points survived rejection -- also acceptable)")
     except RuntimeError as exc:
@@ -139,7 +169,10 @@ def make_speckle_pair(shape=(256, 256), true_shift=(2.35, -1.7), seed=1):
 
 def test_cross_correlation_refinement():
     print("=== 3. refine_offsets_by_coherence recovers a known sub-pixel shift ===")
-    true_shift = (2.35, -1.7)  # (row, col) -- secondary is this much offset vs reference
+    true_shift = (
+        2.35,
+        -1.7,
+    )  # (row, col) -- secondary is this much offset vs reference
     ref, sec = make_speckle_pair(shape=(256, 256), true_shift=true_shift)
 
     # Coherence BEFORE any refinement, at zero assumed offset (i.e. what
@@ -159,8 +192,15 @@ def test_cross_correlation_refinement():
     offset_cols = [true_shift[1] + initial_guess_error[1]]
 
     out_rows, out_cols, out_orow, out_ocol, coh = refine_offsets_by_coherence(
-        ref, sec, grid_rows, grid_cols, offset_rows, offset_cols,
-        window=48, coarse_search_radius=3, fine_search_radius=1.5,
+        ref,
+        sec,
+        grid_rows,
+        grid_cols,
+        offset_rows,
+        offset_cols,
+        window=48,
+        coarse_search_radius=3,
+        fine_search_radius=1.5,
         coherence_threshold=0.05,
     )
 
@@ -172,44 +212,76 @@ def test_cross_correlation_refinement():
     col_err = abs(refined_col_offset - true_shift[1])
 
     print(f"  true shift:            {true_shift}")
-    print(f"  initial (unrefined) guess: "
-          f"({offset_rows[0]:.3f}, {offset_cols[0]:.3f}) -- coherence at that guess: {coh_before:.3f}")
-    print(f"  refined offset:        ({refined_row_offset:.3f}, {refined_col_offset:.3f})")
+    print(
+        f"  initial (unrefined) guess: "
+        f"({offset_rows[0]:.3f}, {offset_cols[0]:.3f}) -- coherence at that guess: {coh_before:.3f}"
+    )
+    print(
+        f"  refined offset:        ({refined_row_offset:.3f}, {refined_col_offset:.3f})"
+    )
     print(f"  refined coherence:     {coh_after:.3f}")
     print(f"  |row error|={row_err:.3f} px, |col error|={col_err:.3f} px")
 
-    assert coh_after > coh_before, "refinement should raise coherence vs the unrefined guess"
-    assert row_err < 0.25, f"row offset should recover close to true shift, got err={row_err}"
-    assert col_err < 0.25, f"col offset should recover close to true shift, got err={col_err}"
+    assert (
+        coh_after > coh_before
+    ), "refinement should raise coherence vs the unrefined guess"
+    assert (
+        row_err < 0.25
+    ), f"row offset should recover close to true shift, got err={row_err}"
+    assert (
+        col_err < 0.25
+    ), f"col offset should recover close to true shift, got err={col_err}"
     print("  PASS\n")
 
     # Edge-drop + coherence-threshold behaviour: a point right at the
     # array edge should be dropped, and a point on pure noise (no real
     # correlation) should be dropped by the coherence threshold.
     print("  checking edge-drop and coherence-threshold rejection...")
-    edge_rows = [128, 2]              # second point is too close to edge
+    edge_rows = [128, 2]  # second point is too close to edge
     edge_cols = [128, 2]
     edge_orow = [true_shift[0] + initial_guess_error[0], 0.0]
     edge_ocol = [true_shift[1] + initial_guess_error[1], 0.0]
-    kept_rows, *_ , kept_coh = refine_offsets_by_coherence(
-        ref, sec, edge_rows, edge_cols, edge_orow, edge_ocol,
-        window=48, coarse_search_radius=3, fine_search_radius=1.5,
+    kept_rows, *_, kept_coh = refine_offsets_by_coherence(
+        ref,
+        sec,
+        edge_rows,
+        edge_cols,
+        edge_orow,
+        edge_ocol,
+        window=48,
+        coarse_search_radius=3,
+        fine_search_radius=1.5,
         coherence_threshold=0.05,
     )
-    assert len(kept_rows) == 1 and kept_rows[0] == 128, "edge point should have been dropped"
+    assert (
+        len(kept_rows) == 1 and kept_rows[0] == 128
+    ), "edge point should have been dropped"
     print(f"  edge point correctly dropped; {len(kept_rows)} GCP survived")
 
     # Pure decorrelated noise pair -> should be rejected by coherence_threshold
     rs2 = np.random.default_rng(99)
-    noise_ref = (rs2.normal(size=(256, 256)) + 1j * rs2.normal(size=(256, 256))).astype(np.complex64)
-    noise_sec = (rs2.normal(size=(256, 256)) + 1j * rs2.normal(size=(256, 256))).astype(np.complex64)
+    noise_ref = (rs2.normal(size=(256, 256)) + 1j * rs2.normal(size=(256, 256))).astype(
+        np.complex64
+    )
+    noise_sec = (rs2.normal(size=(256, 256)) + 1j * rs2.normal(size=(256, 256))).astype(
+        np.complex64
+    )
     try:
         refine_offsets_by_coherence(
-            noise_ref, noise_sec, [128], [128], [0.0], [0.0],
-            window=48, coarse_search_radius=3, fine_search_radius=1.5,
+            noise_ref,
+            noise_sec,
+            [128],
+            [128],
+            [0.0],
+            [0.0],
+            window=48,
+            coarse_search_radius=3,
+            fine_search_radius=1.5,
             coherence_threshold=0.5,
         )
-        raise AssertionError("expected RuntimeError: fully decorrelated noise should be rejected")
+        raise AssertionError(
+            "expected RuntimeError: fully decorrelated noise should be rejected"
+        )
     except RuntimeError as exc:
         print(f"  correctly rejected fully decorrelated pair: {exc}")
     print("  PASS\n")

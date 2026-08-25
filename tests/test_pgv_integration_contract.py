@@ -82,9 +82,9 @@ class TestBug1CredentialRoundtrip:
         # Must not raise AttributeError
         engine.add_credentials("usgs", username="testuser", password="testpass")
         providers = [item["provider"] for item in engine.auth.list()]
-        assert "usgs" in providers, (
-            "After add_credentials('usgs', ...), 'usgs' must appear in auth.list()"
-        )
+        assert (
+            "usgs" in providers
+        ), "After add_credentials('usgs', ...), 'usgs' must appear in auth.list()"
 
     def test_add_credentials_api_key(self):
         """Credential roundtrip for API key auth type."""
@@ -123,9 +123,9 @@ class TestBug1CredentialRoundtrip:
         engine.add_credentials("usgs", username="u1", password="p1")
         engine.add_credentials("usgs", username="u2", password="p2")
         usgs_entries = [i for i in engine.auth.list() if i["provider"] == "usgs"]
-        assert len(usgs_entries) == 1, (
-            "Calling add_credentials twice must update, not create duplicate"
-        )
+        assert (
+            len(usgs_entries) == 1
+        ), "Calling add_credentials twice must update, not create duplicate"
 
     def test_auth_manager_add_credentials_dict(self):
         """AuthManager.add_credentials(provider, dict) works directly (spec signature)."""
@@ -145,9 +145,9 @@ class TestBug1CredentialRoundtrip:
         with caplog.at_level(logging.DEBUG, logger="pygeofetch"):
             auth.add_credentials("usgs", {"username": "u", "password": "p"})
         # Spec: 'Stored credentials for provider: {provider}'
-        assert any("usgs" in r.message for r in caplog.records), (
-            "Expected DEBUG log containing provider name 'usgs'"
-        )
+        assert any(
+            "usgs" in r.message for r in caplog.records
+        ), "Expected DEBUG log containing provider name 'usgs'"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -199,9 +199,9 @@ class TestBug2DownloadContract:
         with patch.object(dm, "download", side_effect=fake_download):
             results = dm.download_many(items, tmp_path, DownloadOptions())
 
-        assert len(results) == len(items), (
-            f"Expected {len(items)} results, got {len(results)}"
-        )
+        assert len(results) == len(
+            items
+        ), f"Expected {len(items)} results, got {len(results)}"
 
     def test_order_contract(self, tmp_path):
         """results[i].data_id == items[i].id for all i."""
@@ -230,9 +230,9 @@ class TestBug2DownloadContract:
             results = dm.download_many(items, tmp_path, DownloadOptions())
 
         for r, item in zip(results, items):
-            assert r.data_id == item.id, (
-                f"Order mismatch: result.data_id={r.data_id!r} != item.id={item.id!r}"
-            )
+            assert (
+                r.data_id == item.id
+            ), f"Order mismatch: result.data_id={r.data_id!r} != item.id={item.id!r}"
 
     def test_all_results_have_bool_success(self, tmp_path):
         """Every result.success is a bool — never None."""
@@ -261,9 +261,9 @@ class TestBug2DownloadContract:
             results = dm.download_many(items, tmp_path, DownloadOptions())
 
         for r in results:
-            assert isinstance(r.success, bool), (
-                f"result.success must be bool, got {type(r.success).__name__}"
-            )
+            assert isinstance(
+                r.success, bool
+            ), f"result.success must be bool, got {type(r.success).__name__}"
 
     def test_failed_items_return_success_false_not_omitted(self, tmp_path):
         """Items that fail download are returned as success=False, not silently dropped."""
@@ -369,9 +369,9 @@ class TestBug4CrsIdentityTransform:
 
         dm = DownloadManager()
         bad_tif = _make_geotiff(tmp_path / "identity.tif", identity_transform=True)
-        assert dm._has_identity_transform(bad_tif), (
-            "Should detect identity transform (pixel=1m, origin=0,0, projected CRS)"
-        )
+        assert dm._has_identity_transform(
+            bad_tif
+        ), "Should detect identity transform (pixel=1m, origin=0,0, projected CRS)"
 
     def test_has_identity_transform_normal_file_ok(self, tmp_path):
         """A properly reprojected file does NOT trigger identity transform detection."""
@@ -380,9 +380,9 @@ class TestBug4CrsIdentityTransform:
 
         dm = DownloadManager()
         good_tif = _make_geotiff(tmp_path / "good.tif", crs_epsg=4326)
-        assert not dm._has_identity_transform(good_tif), (
-            "Normal GeoTIFF with correct transform should not be flagged"
-        )
+        assert not dm._has_identity_transform(
+            good_tif
+        ), "Normal GeoTIFF with correct transform should not be flagged"
 
     def test_reproject_with_validation_normal(self, tmp_path):
         """Valid reprojection completes without RuntimeError."""
@@ -400,7 +400,6 @@ class TestBug4CrsIdentityTransform:
         """After reprojection, output file has a real (non-identity) transform."""
         pytest.importorskip("rasterio")
         import rasterio as rio
-
         from pygeofetch.core.downloader import AdaptiveDownloader as DownloadManager
 
         dm = DownloadManager()
@@ -410,9 +409,9 @@ class TestBug4CrsIdentityTransform:
         with rio.open(dst) as ds:
             t = ds.transform
             # Real reprojection: pixel size should NOT be 1.0m at origin (0,0)
-            assert not (abs(t.a) == 1.0 and t.c == 0.0 and t.f == 0.0), (
-                "Reprojected file must not have identity transform"
-            )
+            assert not (
+                abs(t.a) == 1.0 and t.c == 0.0 and t.f == 0.0
+            ), "Reprojected file must not have identity transform"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -452,9 +451,9 @@ class TestCapability1SLCProductType:
         routed = engine._route_slc_providers(
             ["planetary_computer", "aws_earth", "element84"]
         )
-        assert "planetary_computer" not in routed, (
-            "planetary_computer does not host SLC — must be removed"
-        )
+        assert (
+            "planetary_computer" not in routed
+        ), "planetary_computer does not host SLC — must be removed"
         assert "aws_earth" not in routed
         assert "element84" not in routed
 
@@ -464,9 +463,9 @@ class TestCapability1SLCProductType:
 
         engine = PyGeoFetch(log_level="WARNING")
         routed = engine._route_slc_providers(["planetary_computer"])
-        assert "copernicus" in routed, (
-            "planetary_computer (GRD-only) should route to copernicus for SLC"
-        )
+        assert (
+            "copernicus" in routed
+        ), "planetary_computer (GRD-only) should route to copernicus for SLC"
 
     def test_slc_routing_preserves_capable_providers(self):
         """SLC-capable providers pass through routing unchanged."""
@@ -606,9 +605,9 @@ class TestCapability2S1Constellation:
             },
         }
         sd = SatelliteData.from_stac_item(item, provider="copernicus")
-        assert sd.satellite == "SENTINEL-1C", (
-            "S1C results must carry platform=SENTINEL-1C from STAC properties"
-        )
+        assert (
+            sd.satellite == "SENTINEL-1C"
+        ), "S1C results must carry platform=SENTINEL-1C from STAC properties"
 
     def test_warn_if_outdated_constellation_fires(self, caplog):
         """_warn_if_outdated_constellation() warns when only S1A/S1B returned after July 2026."""
@@ -655,9 +654,9 @@ class TestCapability2S1Constellation:
             for r in caplog.records
             if r.levelno == logging.WARNING and "decommission" in r.message.lower()
         ]
-        assert len(constellation_warnings) == 0, (
-            "Should not warn when S1C results are present"
-        )
+        assert (
+            len(constellation_warnings) == 0
+        ), "Should not warn when S1C results are present"
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -823,9 +822,9 @@ class TestCapability3OrbitFiles:
         from pygeofetch import PyGeoFetch
 
         engine = PyGeoFetch(log_level="WARNING")
-        assert hasattr(engine, "fetch_orbit_file"), (
-            "Engine must expose fetch_orbit_file() method"
-        )
+        assert hasattr(
+            engine, "fetch_orbit_file"
+        ), "Engine must expose fetch_orbit_file() method"
         assert callable(engine.fetch_orbit_file)
 
     def test_fetch_orbit_file_returns_none_for_invalid_name(self, tmp_path):
@@ -1130,7 +1129,6 @@ class TestFinalEngineSmoke:
     def test_pipeline_from_yaml_roundtrip(self, tmp_path):
         """ProcessingPipeline.from_yaml() loads and returns correct step count."""
         import yaml
-
         from pygeofetch import PyGeoFetch
         from pygeofetch.processing.pipeline import ProcessingPipeline
 

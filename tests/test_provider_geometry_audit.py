@@ -17,10 +17,15 @@ import pytest
 
 REAL_GEOMETRY = {
     "type": "Polygon",
-    "coordinates": [[
-        [-55.75, -21.28], [-55.66, -21.28],
-        [-55.66, -21.19], [-55.75, -21.19], [-55.75, -21.28],
-    ]],
+    "coordinates": [
+        [
+            [-55.75, -21.28],
+            [-55.66, -21.28],
+            [-55.66, -21.19],
+            [-55.75, -21.19],
+            [-55.75, -21.28],
+        ]
+    ],
 }
 
 
@@ -73,7 +78,9 @@ def test_shared_pattern_provider_populates_real_geometry(module_name, class_name
 
 
 @pytest.mark.parametrize("module_name,class_name", SHARED_PATTERN_PROVIDERS)
-def test_shared_pattern_provider_handles_missing_geometry_gracefully(module_name, class_name):
+def test_shared_pattern_provider_handles_missing_geometry_gracefully(
+    module_name, class_name
+):
     """A real item with no geometry field at all must leave geometry
     as None without raising -- the same graceful degradation as before
     this fix, just now also correctly populating it when available."""
@@ -93,8 +100,10 @@ def test_terrabotics_populates_real_geometry():
     key check) but the same real geometry fix."""
     provider = _make_provider("terrabotics", "TerraboticsProvider")
     item = {
-        "id": "scene1", "bbox": [-55.75, -21.28, -55.66, -21.19],
-        "geometry": REAL_GEOMETRY, "satellite": "SENTINEL-1B",
+        "id": "scene1",
+        "bbox": [-55.75, -21.28, -55.66, -21.19],
+        "geometry": REAL_GEOMETRY,
+        "satellite": "SENTINEL-1B",
     }
     result = provider._parse_item(item)
     assert result.geometry == REAL_GEOMETRY
@@ -142,13 +151,18 @@ def test_eodag_converts_real_shapely_geometry_to_geojson():
     class FakeProduct:
         def __init__(self):
             self.properties = {
-                "id": "scene1", "platform": "SENTINEL-1",
+                "id": "scene1",
+                "platform": "SENTINEL-1",
                 "processingLevel": "L1",
             }
-            self.geometry = Polygon([
-                (-55.75, -21.28), (-55.66, -21.28),
-                (-55.66, -21.19), (-55.75, -21.19),
-            ])
+            self.geometry = Polygon(
+                [
+                    (-55.75, -21.28),
+                    (-55.66, -21.28),
+                    (-55.66, -21.19),
+                    (-55.75, -21.19),
+                ]
+            )
             self.product_type = "S1_SAR_SLC"
             self.remote_location = "https://example.com/scene1"
 

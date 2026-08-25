@@ -4,6 +4,7 @@ persistent tracking across process restarts (real file-backed, not
 in-memory), idempotent re-processing, and real network-hash
 determinism.
 """
+
 import tempfile
 from pathlib import Path
 
@@ -15,7 +16,9 @@ network_topology_hash = state_mod.network_topology_hash
 
 
 def test_state_persists_across_real_process_restarts():
-    print("=== 1. State genuinely persists to disk -- a NEW ProjectState instance sees a previous instance's writes ===")
+    print(
+        "=== 1. State genuinely persists to disk -- a NEW ProjectState instance sees a previous instance's writes ==="
+    )
     with tempfile.TemporaryDirectory() as d:
         db_path = Path(d) / "state.db"
 
@@ -28,7 +31,9 @@ def test_state_persists_across_real_process_restarts():
         # cron invocation) reading the SAME real file on disk
         state2 = ProjectState(db_path)
         print(f"  processed dates seen by new instance: {state2.processed_dates()}")
-        print(f"  reference pixel seen by new instance: {state2.reference_pixel_coords}")
+        print(
+            f"  reference pixel seen by new instance: {state2.reference_pixel_coords}"
+        )
         assert state2.processed_dates() == ["2024-01-01", "2024-01-13"]
         assert state2.reference_pixel_coords == (120, 340)
         assert state2.last_download_timestamp == "2024-01-15T00:00:00Z"
@@ -36,19 +41,27 @@ def test_state_persists_across_real_process_restarts():
 
 
 def test_marking_same_date_twice_is_idempotent():
-    print("=== 2. Marking the same date processed twice is a real no-op, matching the spec's explicit idempotency requirement ===")
+    print(
+        "=== 2. Marking the same date processed twice is a real no-op, matching the spec's explicit idempotency requirement ==="
+    )
     with tempfile.TemporaryDirectory() as d:
         state = ProjectState(Path(d) / "state.db")
         state.mark_dates_processed(["2024-01-01"])
-        state.mark_dates_processed(["2024-01-01"])  # real duplicate call, e.g. a re-run after a crash
+        state.mark_dates_processed(
+            ["2024-01-01"]
+        )  # real duplicate call, e.g. a re-run after a crash
         dates = state.processed_dates()
         print(f"  processed dates after marking the same date twice: {dates}")
-        assert dates == ["2024-01-01"], "duplicate marking must not create a duplicate entry"
+        assert dates == [
+            "2024-01-01"
+        ], "duplicate marking must not create a duplicate entry"
     print("  PASS\n")
 
 
 def test_network_hash_is_deterministic_regardless_of_order():
-    print("=== 3. network_topology_hash is deterministic -- same real network hashes identically regardless of construction order ===")
+    print(
+        "=== 3. network_topology_hash is deterministic -- same real network hashes identically regardless of construction order ==="
+    )
     dates_a = ["2024-01-01", "2024-01-13", "2024-01-25"]
     pairs_a = [("2024-01-01", "2024-01-13"), ("2024-01-13", "2024-01-25")]
 
@@ -60,7 +73,9 @@ def test_network_hash_is_deterministic_regardless_of_order():
     hash_b = network_topology_hash(dates_b, pairs_b)
     print(f"  hash A: {hash_a[:16]}...")
     print(f"  hash B: {hash_b[:16]}...")
-    assert hash_a == hash_b, "the same real network must hash identically regardless of order"
+    assert (
+        hash_a == hash_b
+    ), "the same real network must hash identically regardless of order"
 
     # A genuinely DIFFERENT network must hash differently
     pairs_c = [("2024-01-01", "2024-01-13")]  # missing one real pair
@@ -73,7 +88,9 @@ def test_run_log_records_real_history():
     print("=== 4. run_log records real run history, queryable after the fact ===")
     with tempfile.TemporaryDirectory() as d:
         state = ProjectState(Path(d) / "state.db")
-        state.record_run(RunSummary(status="success", n_new_scenes=3, detail="3 new dates ingested"))
+        state.record_run(
+            RunSummary(status="success", n_new_scenes=3, detail="3 new dates ingested")
+        )
         state.record_run(RunSummary(status="no_new_scenes", n_new_scenes=0))
 
         history = state.run_history()
@@ -87,7 +104,9 @@ def test_run_log_records_real_history():
 
 
 def test_concurrent_access_does_not_corrupt_state():
-    print("=== 5. Two real, concurrent ProjectState instances writing to the same file don't corrupt each other ===")
+    print(
+        "=== 5. Two real, concurrent ProjectState instances writing to the same file don't corrupt each other ==="
+    )
     with tempfile.TemporaryDirectory() as d:
         db_path = Path(d) / "state.db"
         state_a = ProjectState(db_path)

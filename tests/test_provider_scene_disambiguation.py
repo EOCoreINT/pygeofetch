@@ -20,7 +20,6 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from pygeofetch.models.download_task import DownloadOptions
 from pygeofetch.models.satellite_data import SatelliteAsset, SatelliteData
 
@@ -61,7 +60,9 @@ def test_two_scenes_same_band_name_do_not_collide(provider_module, class_name):
 
     mod = importlib.import_module(provider_module)
     if not hasattr(mod, class_name):
-        pytest.skip(f"{class_name} not found in {provider_module} — check real class name")
+        pytest.skip(
+            f"{class_name} not found in {provider_module} — check real class name"
+        )
     provider_cls = getattr(mod, class_name)
 
     scene1 = _make_scene(
@@ -75,15 +76,22 @@ def test_two_scenes_same_band_name_do_not_collide(provider_module, class_name):
 
     with tempfile.TemporaryDirectory() as tmp:
         destination = Path(tmp)
-        options = DownloadOptions(overwrite=True) if _accepts_overwrite() else DownloadOptions()
+        options = (
+            DownloadOptions(overwrite=True)
+            if _accepts_overwrite()
+            else DownloadOptions()
+        )
 
         try:
             provider = provider_cls()
         except TypeError:
-            pytest.skip(f"{class_name} requires constructor args not covered by this test")
+            pytest.skip(
+                f"{class_name} requires constructor args not covered by this test"
+            )
 
-        with patch("httpx.stream") as mock_stream, patch.object(
-            provider_cls, "require_auth", return_value=None, create=True
+        with (
+            patch("httpx.stream") as mock_stream,
+            patch.object(provider_cls, "require_auth", return_value=None, create=True),
         ):
             mock_stream.side_effect = [
                 _mock_stream_response(b"scene1 band data"),
@@ -93,7 +101,9 @@ def test_two_scenes_same_band_name_do_not_collide(provider_module, class_name):
                 provider.download(scene1, destination, options)
                 provider.download(scene2, destination, options)
             except Exception as exc:
-                pytest.skip(f"{class_name}.download() needs additional setup not covered here: {exc}")
+                pytest.skip(
+                    f"{class_name}.download() needs additional setup not covered here: {exc}"
+                )
 
         files = sorted(p.name for p in destination.iterdir() if p.is_file())
         assert len(files) == 2, (
@@ -102,9 +112,17 @@ def test_two_scenes_same_band_name_do_not_collide(provider_module, class_name):
         )
         assert files[0] != files[1]
 
-        contents = {p.name: p.read_bytes() for p in destination.iterdir() if p.is_file()}
-        assert b"scene1" in list(contents.values())[0] or b"scene1" in list(contents.values())[1]
-        assert b"scene2" in list(contents.values())[0] or b"scene2" in list(contents.values())[1]
+        contents = {
+            p.name: p.read_bytes() for p in destination.iterdir() if p.is_file()
+        }
+        assert (
+            b"scene1" in list(contents.values())[0]
+            or b"scene1" in list(contents.values())[1]
+        )
+        assert (
+            b"scene2" in list(contents.values())[0]
+            or b"scene2" in list(contents.values())[1]
+        )
 
 
 def _accepts_overwrite():

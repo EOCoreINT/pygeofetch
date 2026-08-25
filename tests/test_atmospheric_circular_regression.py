@@ -27,18 +27,26 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
+from pygeofetch.insar.atmosphere import AtmosphericCorrector
 from rasterio.crs import CRS
 from rasterio.transform import from_bounds
-
-from pygeofetch.insar.atmosphere import AtmosphericCorrector
 
 
 def _make_dem(path, elevation):
     h, w = elevation.shape
     crs = CRS.from_epsg(4326)
     transform = from_bounds(-99.15, 19.30, -99.05, 19.40, w, h)
-    with rasterio.open(path, "w", driver="GTiff", dtype="float32", count=1,
-                        width=w, height=h, crs=crs, transform=transform) as ds:
+    with rasterio.open(
+        path,
+        "w",
+        driver="GTiff",
+        dtype="float32",
+        count=1,
+        width=w,
+        height=h,
+        crs=crs,
+        transform=transform,
+    ) as ds:
         ds.write(elevation.astype(np.float32), 1)
 
 
@@ -58,7 +66,9 @@ def test_detects_real_sub_cycle_correlation_that_old_method_would_also_catch():
         wrapped_phase = np.angle(np.exp(1j * true_phase)).astype(np.float32)
 
         corrector = AtmosphericCorrector(method="elevation")
-        corrected, meta = corrector.correct(wrapped_phase, dem=str(dem_path), return_metadata=True)
+        corrected, meta = corrector.correct(
+            wrapped_phase, dem=str(dem_path), return_metadata=True
+        )
 
         assert meta["correction_applied"] is True
         assert meta["r_squared"] > 0.7
@@ -84,7 +94,9 @@ def test_large_multi_cycle_relationship_is_now_correctly_detected():
         wrapped_phase = np.angle(np.exp(1j * true_phase)).astype(np.float32)
 
         corrector = AtmosphericCorrector(method="elevation")
-        corrected, meta = corrector.correct(wrapped_phase, dem=str(dem_path), return_metadata=True)
+        corrected, meta = corrector.correct(
+            wrapped_phase, dem=str(dem_path), return_metadata=True
+        )
 
         assert meta["correction_applied"] is True
         assert meta["r_squared"] > 0.7
@@ -102,7 +114,9 @@ def test_degenerate_flat_dem_is_rejected_not_silently_unstable():
 
         wrapped_phase = np.random.uniform(-np.pi, np.pi, (h, w)).astype(np.float32)
         corrector = AtmosphericCorrector(method="elevation")
-        corrected, meta = corrector.correct(wrapped_phase, dem=str(dem_path), return_metadata=True)
+        corrected, meta = corrector.correct(
+            wrapped_phase, dem=str(dem_path), return_metadata=True
+        )
 
         assert meta["correction_applied"] is False
         assert meta.get("reason") == "dem_no_variance"

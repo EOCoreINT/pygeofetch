@@ -77,16 +77,28 @@ def test_nodes_url_construction_and_escaping():
     # docstring), so quote_segments=True is passed explicitly here to
     # exercise the standard-OData quoted form this helper still
     # supports for direct callers who want it.
-    url = nodes_mod._nodes_url("UUID123", ["My.SAFE", "annotation"], list_children=True, quote_segments=True)
+    url = nodes_mod._nodes_url(
+        "UUID123", ["My.SAFE", "annotation"], list_children=True, quote_segments=True
+    )
     print(f"  listing url: {url}")
-    assert url == "https://download.dataspace.copernicus.eu/odata/v1/Products(UUID123)/Nodes('My.SAFE')/Nodes('annotation')/Nodes"
+    assert (
+        url
+        == "https://download.dataspace.copernicus.eu/odata/v1/Products(UUID123)/Nodes('My.SAFE')/Nodes('annotation')/Nodes"
+    )
 
-    url2 = nodes_mod._nodes_url("UUID123", ["My.SAFE", "annotation", "file.xml"], list_children=False, quote_segments=True)
+    url2 = nodes_mod._nodes_url(
+        "UUID123",
+        ["My.SAFE", "annotation", "file.xml"],
+        list_children=False,
+        quote_segments=True,
+    )
     print(f"  content url:  {url2}")
     assert url2.endswith("/Nodes('file.xml')/$value")
 
     # quote escaping
-    url3 = nodes_mod._nodes_url("UUID123", ["weird'name"], list_children=True, quote_segments=True)
+    url3 = nodes_mod._nodes_url(
+        "UUID123", ["weird'name"], list_children=True, quote_segments=True
+    )
     assert "weird''name" in url3, f"single quote should be OData-doubled, got: {url3}"
     print("  PASS\n")
 
@@ -95,7 +107,9 @@ def test_list_nodes_result_key():
     print("=== 5. list_nodes parses the real documented 'result' key ===")
     client = FakeClient({"copernicus": FakeAuthSession("tok")})
     fake_resp = MagicMock()
-    fake_resp.json.return_value = {"result": [{"Name": "annotation", "ChildrenNumber": 3}]}
+    fake_resp.json.return_value = {
+        "result": [{"Name": "annotation", "ChildrenNumber": 3}]
+    }
     fake_resp.raise_for_status.return_value = None
 
     with patch("httpx.get", return_value=fake_resp) as mock_get:
@@ -120,7 +134,9 @@ def test_list_nodes_value_key_fallback():
 
 
 def test_list_nodes_unknown_shape_raises_not_silent():
-    print("=== 7. list_nodes raises (doesn't silently return []) on an unrecognized response shape ===")
+    print(
+        "=== 7. list_nodes raises (doesn't silently return []) on an unrecognized response shape ==="
+    )
     client = FakeClient({"copernicus": FakeAuthSession("tok")})
     fake_resp = MagicMock()
     fake_resp.json.return_value = {"totally_unexpected_key": []}
@@ -135,20 +151,27 @@ def test_list_nodes_unknown_shape_raises_not_silent():
 
 
 def test_find_annotation_members_filters_correctly():
-    print("=== 8. find_annotation_members excludes calibration/RFI and filters by polarisation ===")
+    print(
+        "=== 8. find_annotation_members excludes calibration/RFI and filters by polarisation ==="
+    )
     client = FakeClient({"copernicus": FakeAuthSession("tok")})
     sat = FakeSatelliteData("UUID", "S1A_TEST.SAFE")
 
     responses = [
         {"result": [{"Name": "annotation", "ChildrenNumber": 6}]},  # top-level listing
-        {"result": [  # annotation folder listing
-            {"Name": "s1a-iw1-slc-vv-20190721.xml", "ChildrenNumber": 0},
-            {"Name": "s1a-iw2-slc-vv-20190721.xml", "ChildrenNumber": 0},
-            {"Name": "s1a-iw1-slc-vh-20190721.xml", "ChildrenNumber": 0},
-            {"Name": "calibration-s1a-iw1-slc-vv-20190721.xml", "ChildrenNumber": 0},
-            {"Name": "rfi-s1a-iw1-slc-vv-20190721.xml", "ChildrenNumber": 0},
-            {"Name": "not-an-xml.txt", "ChildrenNumber": 0},
-        ]},
+        {
+            "result": [  # annotation folder listing
+                {"Name": "s1a-iw1-slc-vv-20190721.xml", "ChildrenNumber": 0},
+                {"Name": "s1a-iw2-slc-vv-20190721.xml", "ChildrenNumber": 0},
+                {"Name": "s1a-iw1-slc-vh-20190721.xml", "ChildrenNumber": 0},
+                {
+                    "Name": "calibration-s1a-iw1-slc-vv-20190721.xml",
+                    "ChildrenNumber": 0,
+                },
+                {"Name": "rfi-s1a-iw1-slc-vv-20190721.xml", "ChildrenNumber": 0},
+                {"Name": "not-an-xml.txt", "ChildrenNumber": 0},
+            ]
+        },
     ]
 
     def fake_get(url, headers=None, timeout=None):
@@ -162,8 +185,10 @@ def test_find_annotation_members_filters_correctly():
 
     names = sorted(f for _, f in members)
     print(f"  found members: {names}")
-    assert names == ["s1a-iw1-slc-vv-20190721.xml", "s1a-iw2-slc-vv-20190721.xml"], \
-        "should keep only real VV, non-calibration, non-RFI XML files"
+    assert names == [
+        "s1a-iw1-slc-vv-20190721.xml",
+        "s1a-iw2-slc-vv-20190721.xml",
+    ], "should keep only real VV, non-calibration, non-RFI XML files"
     print("  PASS\n")
 
 
@@ -194,7 +219,9 @@ REAL_SHAPED_ANNOTATION_XML = """<?xml version="1.0" encoding="UTF-8"?>
 
 
 def test_end_to_end_zip_readable_by_real_parse_burst_info():
-    print("=== 9. END-TO-END: the produced mini-zip is readable by the REAL parse_burst_info(), unmodified ===")
+    print(
+        "=== 9. END-TO-END: the produced mini-zip is readable by the REAL parse_burst_info(), unmodified ==="
+    )
     client = FakeClient({"copernicus": FakeAuthSession("tok")})
     sat = FakeSatelliteData("UUID", "S1A_TEST_END2END.SAFE")
 
@@ -215,7 +242,9 @@ def test_end_to_end_zip_readable_by_real_parse_burst_info():
 
     with tempfile.TemporaryDirectory() as tmpdir:
         with patch("httpx.get", side_effect=fake_get):
-            zip_path = nodes_mod.fetch_annotation_zip(client, sat, tmpdir, polarisation="vv")
+            zip_path = nodes_mod.fetch_annotation_zip(
+                client, sat, tmpdir, polarisation="vv"
+            )
 
         print(f"  produced: {zip_path}")
         assert zip_path.exists()
@@ -224,11 +253,15 @@ def test_end_to_end_zip_readable_by_real_parse_burst_info():
         from pygeofetch.insar import annotation as annotation_mod
 
         swath_timing = annotation_mod.parse_burst_info(zip_path)
-        print(f"  real parse_burst_info() succeeded: {len(swath_timing.bursts)} bursts, "
-              f"linesPerBurst={swath_timing.lines_per_burst}")
+        print(
+            f"  real parse_burst_info() succeeded: {len(swath_timing.bursts)} bursts, "
+            f"linesPerBurst={swath_timing.lines_per_burst}"
+        )
         assert len(swath_timing.bursts) == 2
         assert swath_timing.lines_per_burst == 3
-    print("  PASS -- the real, unmodified annotation parser reads this mini-zip correctly\n")
+    print(
+        "  PASS -- the real, unmodified annotation parser reads this mini-zip correctly\n"
+    )
 
 
 if __name__ == "__main__":

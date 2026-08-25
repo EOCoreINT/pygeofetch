@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pytest
-
 from pygeofetch.models.download_task import (
     DownloadOptions,
     DownloadResult,
@@ -103,19 +102,26 @@ class TestDownloadOptions:
 class TestDownloadResult:
     def test_success_property(self):
         result = DownloadResult(
-            status=DownloadStatus.COMPLETED, data_id="X", provider="test",
+            status=DownloadStatus.COMPLETED,
+            data_id="X",
+            provider="test",
         )
         assert result.success is True
 
     def test_failed_property(self):
         result = DownloadResult(
-            status=DownloadStatus.FAILED, data_id="X", provider="test", error="Network error",
+            status=DownloadStatus.FAILED,
+            data_id="X",
+            provider="test",
+            error="Network error",
         )
         assert result.success is False
 
     def test_bytes_downloaded(self):
         result = DownloadResult(
-            status=DownloadStatus.COMPLETED, data_id="X", provider="test",
+            status=DownloadStatus.COMPLETED,
+            data_id="X",
+            provider="test",
             bytes_downloaded=10 * 1024 * 1024,
         )
         assert result.bytes_downloaded == 10 * 1024 * 1024
