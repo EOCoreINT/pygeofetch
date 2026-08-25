@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pytest
+
 from pygeofetch.models.download_task import (
     DownloadOptions,
     DownloadResult,

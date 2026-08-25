@@ -81,7 +81,8 @@ def generate_incremental_pairs(
         )
         neighbors = candidates_by_distance[:n_neighbors]
         for neighbor in neighbors:
-            pair = tuple(sorted([new_date, neighbor]))
+            a, b = sorted([new_date, neighbor])
+            pair: Tuple[str, str] = (a, b)
             if pair not in seen:
                 seen.add(pair)
                 pairs.append(pair)

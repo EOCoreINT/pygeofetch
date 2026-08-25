@@ -232,6 +232,10 @@ class TimeSeriesAnalyzer:
             if precomputed:
                 arr = _read_aligned(Path(entry), date, "index")  # type: ignore[arg-type]
             else:
+                assert si is not None, (
+                    "si is only None when precomputed=True, and this "
+                    "branch only runs when precomputed is falsy."
+                )
                 band_arrays = {}
                 for band_name, band_path in entry.items():
                     band_arrays[band_name.upper()] = _read_aligned(
@@ -249,6 +253,11 @@ class TimeSeriesAnalyzer:
             self.index_name,
             len(dates),
             stack.shape,
+        )
+        assert profile is not None, (
+            "profile is set on the first _read_aligned() call inside the "
+            "dates loop above, which always runs at least once for a "
+            "non-empty dates list."
         )
         return IndexTimeStack(stack, dates, profile, self.index_name)
 

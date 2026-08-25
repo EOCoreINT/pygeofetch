@@ -57,7 +57,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 logger = logging.getLogger("pygeofetch.insar.ionosphere")
 
@@ -173,14 +173,15 @@ def parse_ionex(path: Union[str, Path]) -> Tuple[Dict[datetime, Any], Any, Any]:
         if "START OF TEC MAP" in line:
             i += 1
             epoch_parts = list(map(int, data_lines[i].split()[:6]))
-            epoch = datetime(*epoch_parts)
+            ep_year, ep_month, ep_day, ep_hour, ep_minute, ep_second = epoch_parts
+            epoch = datetime(ep_year, ep_month, ep_day, ep_hour, ep_minute, ep_second)
             i += 1
             grid = np.zeros((n_lats, n_lons))
             row_idx = 0
             while "END OF TEC MAP" not in data_lines[i]:
                 if "LAT/LON1/LON2/DLON/H" in data_lines[i]:
                     i += 1
-                    values = []
+                    values: List[int] = []
                     while (
                         len(values) < n_lons
                         and "LAT/LON1/LON2/DLON/H" not in data_lines[i]
@@ -217,14 +218,14 @@ def _interpolate_vtec(
     grid = maps[nearest_epoch]
 
     # Real bilinear interpolation over the real lat/lon grid
-    lat_idx = (
+    lat_idx_raw = (
         np.searchsorted(-lats, -target_lat) - 1
         if lats[0] > lats[-1]
         else np.searchsorted(lats, target_lat) - 1
     )
-    lon_idx = np.searchsorted(lons, target_lon) - 1
-    lat_idx = max(0, min(lat_idx, len(lats) - 2))
-    lon_idx = max(0, min(lon_idx, len(lons) - 2))
+    lon_idx_raw = np.searchsorted(lons, target_lon) - 1
+    lat_idx: int = max(0, min(int(lat_idx_raw), len(lats) - 2))
+    lon_idx: int = max(0, min(int(lon_idx_raw), len(lons) - 2))
 
     lat0, lat1_ = lats[lat_idx], lats[lat_idx + 1]
     lon0, lon1_ = lons[lon_idx], lons[lon_idx + 1]
@@ -361,7 +362,9 @@ def _real_satellite_azimuth_elevation(
     zero_doppler_time = find_zero_doppler_time(
         orbit_data[0], orbit_data[1], orbit_data[2], ground_ecef, time_guess
     )
-    sat_ecef, _ = interpolate_orbit_state(*orbit_data, zero_doppler_time)
+    sat_ecef, _ = interpolate_orbit_state(
+        orbit_data[0], orbit_data[1], orbit_data[2], zero_doppler_time
+    )
 
     lat_rad, lon_rad = np.radians(ground_lat_deg), np.radians(ground_lon_deg)
     dx = np.array(sat_ecef) - np.array(ground_ecef)

@@ -89,6 +89,10 @@ class BandStacker:
                 if profile is None:
                     profile = src.profile.copy()
                     ref_shape = (src.height, src.width)
+                assert ref_shape is not None, (
+                    "ref_shape is always set on the first iteration above, "
+                    "since profile starts as None."
+                )
                 data = src.read(1).astype(np.float32)
                 if data.shape != ref_shape:
                     from scipy.ndimage import zoom

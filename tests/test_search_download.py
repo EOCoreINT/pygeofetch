@@ -9,6 +9,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from pygeofetch.core.engine import PyGeoFetch
 from pygeofetch.core.searcher import FederatedSearcher
 from pygeofetch.models.download_task import DownloadOptions

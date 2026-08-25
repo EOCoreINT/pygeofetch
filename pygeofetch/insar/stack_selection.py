@@ -20,6 +20,7 @@ from __future__ import annotations
 import logging
 import re
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
@@ -187,7 +188,9 @@ def select_consistent_geometry(
         if hasattr(r, "properties"):
             track = r.properties.get("relativeOrbitNumber")
         if track is None:
-            track = f"hour_{r.datetime.hour}"
+            track = (
+                f"hour_{r.datetime.hour}" if r.datetime is not None else "hour_unknown"
+            )
         by_track[track].append(r)
 
     track_available = None
@@ -215,7 +218,7 @@ def select_consistent_geometry(
     else:
         best_track = max(by_track, key=lambda k: len(by_track[k]))
 
-    kept = sorted(by_track[best_track], key=lambda r: r.datetime)
+    kept = sorted(by_track[best_track], key=lambda r: r.datetime or datetime.min)
 
     # Real, provider-agnostic satellite-unit refinement, applied within
     # the already-selected track. Uses the same real extraction logic
@@ -857,7 +860,9 @@ def preview_search_results(
         .show() themselves.
     """
     if map_viewer_cls is None:
-        from pygeofetch.viz.map import MapViewer as map_viewer_cls
+        from pygeofetch.viz.map import MapViewer
+
+        map_viewer_cls = MapViewer
 
     if aoi_style is None:
         aoi_style = {"color": "yellow", "fillOpacity": 0, "weight": 3}

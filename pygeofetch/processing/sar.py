@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Any, Dict
 
 from pygeofetch.processing.base import (
     ProcessingResult,
@@ -305,7 +306,7 @@ class SARProcessor:
             dst.write(result[None, :, :])
 
         logger.info("Flood map: %.1f%% water → %s", water_pct, out_path.name)
-        metadata = {
+        metadata: Dict[str, Any] = {
             "threshold_db": threshold,
             "water_pct": round(float(water_pct), 2),
         }

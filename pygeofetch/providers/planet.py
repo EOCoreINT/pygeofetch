@@ -107,10 +107,11 @@ class PlanetProvider(AbstractBaseProvider):
         """
         import httpx
 
-        api_key = credentials.api_key or credentials.password
-        if not api_key:
+        api_key_secret = credentials.api_key or credentials.password
+        if not api_key_secret:
             msg = "Planet Labs requires an API key. Get yours at: https://www.planet.com/account"
             raise AuthenticationError(msg)
+        api_key = api_key_secret.get_secret_value()
 
         # Validate the key by hitting the /auth/v1/experimental/public endpoint
         try:

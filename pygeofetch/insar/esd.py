@@ -54,7 +54,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from pygeofetch.insar.annotation import SwathTiming
 
@@ -357,8 +357,12 @@ def compute_burst_synchronization(
 
     from pygeofetch.insar.geolocation import find_zero_doppler_time
 
-    t_ref = find_zero_doppler_time(*ref_orbit, ground_point, ref_time_guess)
-    t_sec = find_zero_doppler_time(*sec_orbit, ground_point, sec_time_guess)
+    t_ref = find_zero_doppler_time(
+        ref_orbit[0], ref_orbit[1], ref_orbit[2], ground_point, ref_time_guess
+    )
+    t_sec = find_zero_doppler_time(
+        sec_orbit[0], sec_orbit[1], sec_orbit[2], ground_point, sec_time_guess
+    )
 
     def _local_burst_phase_s(t: datetime, burst_info: SwathTiming) -> float:
         """Offset (seconds) from t to the start of the nearest real
@@ -475,7 +479,7 @@ def estimate_esd_shift_per_burst_overlap(
     L = swath_timing.lines_per_burst
     ref_wins = overlap_time_windows(swath_timing, dt)
 
-    per_overlap_shifts = []
+    per_overlap_shifts: List[Optional[float]] = []
     skip_reasons = []
 
     for i, r_start, r_end in ref_wins:

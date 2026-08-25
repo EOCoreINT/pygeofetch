@@ -221,8 +221,11 @@ def auth_remove(provider: str, yes: bool) -> None:
         click.confirm(f"Remove credentials for {provider!r}?", abort=True)
 
     mgr = AuthManager()
-    mgr.remove_credentials(provider)
-    console.print(f"[green]Credentials for [bold]{provider}[/] removed.[/]")
+    removed = mgr.remove(provider)
+    if removed:
+        console.print(f"[green]Credentials for [bold]{provider}[/] removed.[/]")
+    else:
+        console.print(f"[yellow]No stored credentials found for {provider!r}.[/]")
 
 
 @auth.command(name="export")
@@ -250,7 +253,7 @@ def auth_export(provider: str | None, output: str) -> None:
     from pygeofetch.core.authenticator import AuthManager
 
     mgr = AuthManager()
-    data = mgr.export_credentials(provider_filter=provider)
+    data = mgr.export_credentials(providers=[provider] if provider else None)
 
     with open(output, "w") as f:
         json.dump(data, f, indent=2, default=str)

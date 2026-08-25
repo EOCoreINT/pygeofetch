@@ -270,9 +270,9 @@ def compute_flat_earth_phase(
 
     # Fit a real, smooth 2D polynomial to the sparse samples (matching
     # SNAP's own documented, standard practice), then evaluate densely.
-    grid_rows = np.array(grid_rows, dtype=np.float64)
-    grid_cols = np.array(grid_cols, dtype=np.float64)
-    grid_phase = np.array(grid_phase, dtype=np.float64)
+    grid_rows_arr = np.array(grid_rows, dtype=np.float64)
+    grid_cols_arr = np.array(grid_cols, dtype=np.float64)
+    grid_phase_arr = np.array(grid_phase, dtype=np.float64)
 
     terms = []
     term_powers = []
@@ -281,9 +281,9 @@ def compute_flat_earth_phase(
             col_power = total_degree - row_power
             term_powers.append((row_power, col_power))
     for row_power, col_power in term_powers:
-        terms.append((grid_rows**row_power) * (grid_cols**col_power))
+        terms.append((grid_rows_arr**row_power) * (grid_cols_arr**col_power))
     A = np.column_stack(terms)
-    coeffs, _, _, _ = np.linalg.lstsq(A, grid_phase, rcond=None)
+    coeffs, _, _, _ = np.linalg.lstsq(A, grid_phase_arr, rcond=None)
 
     h, w = shape
     row_idx, col_idx = np.mgrid[0:h, 0:w].astype(np.float64)

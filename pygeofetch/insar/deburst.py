@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 
@@ -55,8 +55,8 @@ def compute_burst_row_ranges(
         return [(0, lines_per_burst - 1)]
 
     # Real cut row, in each side's own local coordinates
-    cut_in_prev = [None] * n
-    cut_in_next = [None] * n
+    cut_in_prev: List[Optional[int]] = [None] * n
+    cut_in_next: List[Optional[int]] = [None] * n
 
     for i in range(n - 1):
         burst_i_last_line_time = bursts[i].azimuth_time + timedelta(
@@ -80,10 +80,26 @@ def compute_burst_row_ranges(
         cut_in_prev[i] = cut_row_in_i
         cut_in_next[i + 1] = cut_row_in_next
 
-    ranges = []
+    ranges: List[Tuple[int, int]] = []
     for i in range(n):
-        keep_start = 0 if i == 0 else cut_in_next[i] + 1
-        keep_end = (lines_per_burst - 1) if i == n - 1 else cut_in_prev[i]
+        if i == 0:
+            keep_start = 0
+        else:
+            next_cut = cut_in_next[i]
+            assert next_cut is not None, (
+                f"cut_in_next[{i}] must be set for all i > 0 "
+                f"(set unconditionally in the loop above)."
+            )
+            keep_start = next_cut + 1
+        if i == n - 1:
+            keep_end = lines_per_burst - 1
+        else:
+            prev_cut = cut_in_prev[i]
+            assert prev_cut is not None, (
+                f"cut_in_prev[{i}] must be set for all i < n - 1 "
+                f"(set unconditionally in the loop above)."
+            )
+            keep_end = prev_cut
         keep_start = max(0, min(keep_start, lines_per_burst - 1))
         keep_end = max(0, min(keep_end, lines_per_burst - 1))
 
@@ -160,6 +176,11 @@ def deburst_array(
         )
 
     debursted = np.concatenate(chunks, axis=0)
+
+    assert first_kept_full_scene_row is not None, (
+        "first_kept_full_scene_row must be set whenever chunks is "
+        "non-empty (set on the first appended chunk above)."
+    )
 
     logger.info(
         "Deburst: %d bursts -> %d output rows (input was %d rows)",

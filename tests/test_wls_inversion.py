@@ -7,6 +7,7 @@ influence on the solved displacement compared to full weight.
 """
 
 import numpy as np
+
 from pygeofetch.insar import timeseries as ts_mod
 from pygeofetch.insar import validate as validate_mod
 

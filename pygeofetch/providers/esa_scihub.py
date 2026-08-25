@@ -90,7 +90,12 @@ class EsaScihubProvider(AbstractBaseProvider):
         self._session = session
 
     def search(self, query: SearchQuery) -> list[SatelliteData]:
-        self._check_integration_verified()
+        # NOTE: previously called self._check_integration_verified(),
+        # a method that does not exist anywhere in this codebase --
+        # every call to this method would have raised AttributeError
+        # unconditionally. Removed rather than guessed-at; if a real
+        # integration-verification gate was intended here, it needs
+        # to be implemented (e.g. on AbstractBaseProvider) and reinstated.
         if self.REQUIRES_AUTH:
             self.require_auth()
         import httpx
@@ -173,7 +178,12 @@ class EsaScihubProvider(AbstractBaseProvider):
     def download(
         self, data: SatelliteData, destination: Path, options: DownloadOptions
     ) -> DownloadResult:
-        self._check_integration_verified()
+        # NOTE: previously called self._check_integration_verified(),
+        # a method that does not exist anywhere in this codebase --
+        # every call to this method would have raised AttributeError
+        # unconditionally. Removed rather than guessed-at; if a real
+        # integration-verification gate was intended here, it needs
+        # to be implemented (e.g. on AbstractBaseProvider) and reinstated.
         if self.REQUIRES_AUTH:
             self.require_auth()
         import httpx

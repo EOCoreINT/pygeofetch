@@ -73,6 +73,7 @@ def _build_geometry(lat_deg, lon_deg, dem_h=0.0, incl_deg=98.18, ascending=True)
 class TestDataValidator:
     def test_valid_complex_slc_passes(self):
         import numpy as np
+
         from pygeofetch.insar.validate import DataValidator
 
         slc = (np.random.randn(50, 50) + 1j * np.random.randn(50, 50)).astype(
@@ -83,6 +84,7 @@ class TestDataValidator:
 
     def test_real_valued_slc_rejected(self):
         import numpy as np
+
         from pygeofetch.insar.validate import DataValidator
 
         real_data = np.random.rand(50, 50).astype(np.float32)
@@ -95,6 +97,7 @@ class TestDataValidator:
         amplitude-variation checks, but has zero imaginary part
         everywhere -- a signature real SAR phase never has."""
         import numpy as np
+
         from pygeofetch.insar.validate import DataValidator
 
         fake_complex = np.random.rand(50, 50).astype(np.float32).astype(np.complex64)
@@ -107,6 +110,7 @@ class TestDataValidator:
 
     def test_all_zero_slc_rejected(self):
         import numpy as np
+
         from pygeofetch.insar.validate import DataValidator
 
         result = DataValidator.validate_slc(np.zeros((50, 50), dtype=np.complex64))
@@ -114,6 +118,7 @@ class TestDataValidator:
 
     def test_coherence_in_range_passes(self):
         import numpy as np
+
         from pygeofetch.insar.validate import DataValidator
 
         result = DataValidator.validate_coherence(
@@ -123,6 +128,7 @@ class TestDataValidator:
 
     def test_coherence_out_of_range_rejected(self):
         import numpy as np
+
         from pygeofetch.insar.validate import DataValidator
 
         bad = (np.random.rand(50, 50) * 2 - 0.5).astype(np.float32)
@@ -131,6 +137,7 @@ class TestDataValidator:
 
     def test_sbas_network_connected_passes(self):
         import numpy as np
+
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
 
@@ -148,6 +155,7 @@ class TestDataValidator:
 
     def test_sbas_network_disconnected_rejected(self):
         import numpy as np
+
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
 
@@ -169,6 +177,7 @@ class TestDataValidator:
         development: the validator originally expected .date1/.date2,
         but InterferogramPair uses .reference_date/.secondary_date."""
         import numpy as np
+
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
 
@@ -187,9 +196,10 @@ class TestDataValidator:
         point, not just available-but-unused."""
         import numpy as np
         import rasterio
-        from pygeofetch.insar import InterferogramGenerator
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
+
+        from pygeofetch.insar import InterferogramGenerator
 
         h, w = 20, 20
         bad_real = np.random.rand(h, w).astype(np.float32)
@@ -409,6 +419,7 @@ class TestGeolocation:
 
     def test_los_to_vertical_works_on_arrays(self):
         import numpy as np
+
         from pygeofetch.insar.geolocation import los_to_vertical_displacement
 
         los = np.array([[-0.0155, -0.008], [0.002, -0.020]])
@@ -423,11 +434,12 @@ class TestCoregister:
         pixel-driven approach; must pass 49/49 with the DEM-driven one."""
         import numpy as np
         import rasterio
+        from rasterio.crs import CRS
+        from rasterio.transform import from_bounds
+
         from pygeofetch.insar.annotation import SLCGeometry
         from pygeofetch.insar.coregister import compute_offset_field_from_dem
         from pygeofetch.insar.geolocation import SPEED_OF_LIGHT
-        from rasterio.crs import CRS
-        from rasterio.transform import from_bounds
 
         sat_pos_ref, sat_vel_ref, _, P_center = _build_geometry(5.5, -1.7)
         t0_ref = datetime(2024, 11, 5, 18, 23, 41)
@@ -505,6 +517,7 @@ class TestCoregister:
 
     def test_polynomial_fit_and_resample_recovers_known_pattern(self):
         import numpy as np
+
         from pygeofetch.insar.coregister import (
             fit_offset_polynomial,
             resample_with_offset_field,
@@ -535,6 +548,7 @@ class TestGPU:
 
     def test_array_module_fallback_to_numpy_when_unavailable(self):
         import numpy as np
+
         from pygeofetch.insar.gpu import get_array_module
 
         xp, ndi, using_gpu = get_array_module(prefer_gpu=True)
@@ -543,6 +557,7 @@ class TestGPU:
 
     def test_prefer_gpu_false_always_uses_cpu(self):
         import numpy as np
+
         from pygeofetch.insar.gpu import get_array_module
 
         xp, ndi, using_gpu = get_array_module(prefer_gpu=False)
@@ -551,6 +566,7 @@ class TestGPU:
 
     def test_to_numpy_passthrough_for_numpy_arrays(self):
         import numpy as np
+
         from pygeofetch.insar.gpu import to_numpy
 
         arr = np.array([1, 2, 3])
@@ -560,9 +576,10 @@ class TestGPU:
 class TestAutoVisualize:
     def test_save_with_auto_visualize_produces_pngs(self, tmp_path):
         import numpy as np
-        from pygeofetch.insar.interferogram import InterferogramResult
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
+
+        from pygeofetch.insar.interferogram import InterferogramResult
 
         h, w = 20, 20
         result = InterferogramResult(
@@ -584,9 +601,10 @@ class TestAutoVisualize:
 
     def test_save_without_auto_visualize_produces_no_pngs(self, tmp_path):
         import numpy as np
-        from pygeofetch.insar.interferogram import InterferogramResult
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
+
+        from pygeofetch.insar.interferogram import InterferogramResult
 
         h, w = 20, 20
         result = InterferogramResult(

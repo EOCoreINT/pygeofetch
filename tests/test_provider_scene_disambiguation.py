@@ -20,6 +20,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from pygeofetch.models.download_task import DownloadOptions
 from pygeofetch.models.satellite_data import SatelliteAsset, SatelliteData
 

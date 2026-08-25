@@ -37,7 +37,7 @@ import datetime as _dt
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Callable, Dict, Literal
 
 import numpy as np
 import xarray as xr
@@ -584,9 +584,11 @@ class RiskMapper:
                 np.std(synthetic, axis=0) + 1e-10
             )
 
-        risk_samples = risk_samples.reshape(n_simulations, height, width)
+        risk_samples_3d = risk_samples.reshape(n_simulations, height, width)
 
-        return self._compute_risk_statistics(risk_samples, confidence_level, "bayesian")
+        return self._compute_risk_statistics(
+            risk_samples_3d, confidence_level, "bayesian"
+        )
 
     def _bayesian_linear_regression(
         self,
@@ -686,10 +688,10 @@ class RiskMapper:
             risk = risk_function(perturbed_data, time_years)
             risk_samples.append(risk)
 
-        risk_samples = np.stack(risk_samples, axis=0)
+        risk_samples_arr = np.stack(risk_samples, axis=0)
 
         return self._compute_risk_statistics(
-            risk_samples, confidence_level, "monte_carlo"
+            risk_samples_arr, confidence_level, "monte_carlo"
         )
 
     def _bootstrap_risk(
@@ -749,10 +751,10 @@ class RiskMapper:
             risk = risk_function(resampled_data, time_years)
             risk_samples.append(risk)
 
-        risk_samples = np.stack(risk_samples, axis=0)
+        risk_samples_arr = np.stack(risk_samples, axis=0)
 
         return self._compute_risk_statistics(
-            risk_samples, confidence_level, "bootstrap"
+            risk_samples_arr, confidence_level, "bootstrap"
         )
 
     def _analytical_risk(
@@ -847,7 +849,7 @@ class RiskMapper:
         if metrics is None:
             metrics = ["rmse", "mae", "r2", "coverage", "sharpness"]
 
-        results = {}
+        results: Dict[str, Any] = {}
         valid = None
 
         if validation_data is not None:
@@ -912,7 +914,7 @@ class RiskMapper:
 def create_risk_map(
     time_series_result: Any,
     output_dir: str | Path = "./risk_maps",
-    method: str = "bayesian",
+    method: Literal["bayesian", "monte_carlo", "bootstrap", "analytical"] = "bayesian",
     confidence_level: float = 0.95,
     n_simulations: int = 1000,
     **kwargs,

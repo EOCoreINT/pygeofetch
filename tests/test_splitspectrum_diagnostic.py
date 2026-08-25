@@ -9,6 +9,7 @@ distributed synthetic scene, not built here).
 """
 
 import numpy as np
+
 from pygeofetch.insar.splitspectrum_diagnostic import (
     diagnose_dispersive_signal,
     extract_subband_slc,

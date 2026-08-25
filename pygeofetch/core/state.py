@@ -128,7 +128,7 @@ class ProjectState:
     # ── processed dates ─────────────────────────────────────────────
 
     def mark_dates_processed(
-        self, dates: List[str], scene_ids: Optional[List[str]] = None
+        self, dates: List[str], scene_ids: Optional[List[Optional[str]]] = None
     ):
         """Real, idempotent insert -- re-marking an already-processed date is a no-op, not an error."""
         now = datetime.now(timezone.utc).isoformat()

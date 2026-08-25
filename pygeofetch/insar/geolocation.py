@@ -107,12 +107,20 @@ def parse_orbit_file(eof_path: Union[str, Path]):
         utc_str = utc_str.rstrip("Z")
         t = datetime.fromisoformat(utc_str)
 
-        x = float(osv.find("X").text)
-        y = float(osv.find("Y").text)
-        z = float(osv.find("Z").text)
-        vx = float(osv.find("VX").text)
-        vy = float(osv.find("VY").text)
-        vz = float(osv.find("VZ").text)
+        def _get_required_float(tag: str) -> float:
+            elem = osv.find(tag)
+            if elem is None or elem.text is None:
+                raise ValueError(
+                    f"{eof_path}: OSV entry missing required <{tag}> value."
+                )
+            return float(elem.text)
+
+        x = _get_required_float("X")
+        y = _get_required_float("Y")
+        z = _get_required_float("Z")
+        vx = _get_required_float("VX")
+        vy = _get_required_float("VY")
+        vz = _get_required_float("VZ")
 
         times.append(t)
         positions.append((x, y, z))
@@ -515,7 +523,14 @@ def solve_ground_point(
     # in the correct (right-looking, matching real Sentinel-1 and most
     # SAR imaging geometry) solution's basin of attraction instead.
     sat_r = math.sqrt(sum(c**2 for c in sat_pos))
-    nadir = tuple(c * ((WGS84_A + dem_height_m) / sat_r) for c in sat_pos)
+    nadir_scale = (WGS84_A + dem_height_m) / sat_r
+    nadir: Tuple[float, float, float] = (
+        sat_pos[0] * nadir_scale,
+        sat_pos[1] * nadir_scale,
+        sat_pos[2] * nadir_scale,
+    )
+
+    p: Tuple[float, float, float]
 
     if initial_guess is not None and not _retry:
         # Warm start: a known-nearby already-solved point (e.g. an
@@ -534,17 +549,33 @@ def solve_ground_point(
         altitude_approx = sat_r - (WGS84_A + dem_height_m)
         ground_range_approx = math.sqrt(max(range_m**2 - altitude_approx**2, 0.0))
 
-        radial = tuple(c / sat_r for c in sat_pos)
+        radial: Tuple[float, float, float] = (
+            sat_pos[0] / sat_r,
+            sat_pos[1] / sat_r,
+            sat_pos[2] / sat_r,
+        )
         vel_mag_for_guess = math.sqrt(sum(v**2 for v in sat_vel)) or 1.0
-        vel_unit = tuple(v / vel_mag_for_guess for v in sat_vel)
-        cross = (
+        vel_unit: Tuple[float, float, float] = (
+            sat_vel[0] / vel_mag_for_guess,
+            sat_vel[1] / vel_mag_for_guess,
+            sat_vel[2] / vel_mag_for_guess,
+        )
+        cross: Tuple[float, float, float] = (
             vel_unit[1] * radial[2] - vel_unit[2] * radial[1],
             vel_unit[2] * radial[0] - vel_unit[0] * radial[2],
             vel_unit[0] * radial[1] - vel_unit[1] * radial[0],
         )
         cross_mag = math.sqrt(sum(c**2 for c in cross)) or 1.0
-        cross_unit = tuple(c / cross_mag for c in cross)
-        p = tuple(nadir[i] + cross_unit[i] * ground_range_approx for i in range(3))
+        cross_unit: Tuple[float, float, float] = (
+            cross[0] / cross_mag,
+            cross[1] / cross_mag,
+            cross[2] / cross_mag,
+        )
+        p = (
+            nadir[0] + cross_unit[0] * ground_range_approx,
+            nadir[1] + cross_unit[1] * ground_range_approx,
+            nadir[2] + cross_unit[2] * ground_range_approx,
+        )
 
     a2 = (WGS84_A + dem_height_m) ** 2
     b2 = (WGS84_B + dem_height_m) ** 2
@@ -735,7 +766,7 @@ def select_reference_minimizing_baselines(
             f"Need at least 2 candidate scenes to select a reference, got {len(labels)}."
         )
 
-    all_baselines = {label: {} for label in labels}
+    all_baselines: dict = {label: {} for label in labels}
     for i, label_i in enumerate(labels):
         for label_j in labels[i + 1 :]:
             b_perp = perpendicular_baseline(

@@ -14,6 +14,7 @@ matplotlib.use("Agg")
 class TestPlotterArraySupport:
     def test_plot_raster_accepts_array_directly(self, tmp_path):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -25,6 +26,7 @@ class TestPlotterArraySupport:
 
     def test_plot_raster_with_extent(self, tmp_path):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -37,9 +39,10 @@ class TestPlotterArraySupport:
     def test_plot_raster_still_accepts_file_path(self, tmp_path):
         rasterio = pytest.importorskip("rasterio")
         import numpy as np
-        from pygeofetch.viz import Plotter
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
+
+        from pygeofetch.viz import Plotter
 
         tif_path = tmp_path / "test.tif"
         with rasterio.open(
@@ -65,6 +68,7 @@ class TestPlotterArraySupport:
 class TestPlotComparison:
     def test_three_panel_comparison(self, tmp_path):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -81,6 +85,7 @@ class TestPlotComparison:
 
     def test_per_panel_overrides(self, tmp_path):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -97,6 +102,7 @@ class TestPlotComparison:
 
     def test_single_panel(self, tmp_path):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -108,6 +114,7 @@ class TestPlotComparison:
 class TestPlotClassification:
     def test_classification_plot_with_legend(self, tmp_path):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -125,6 +132,7 @@ class TestPlotClassification:
     def test_classification_percentages_sum_reasonably(self, tmp_path):
         """Sanity check: class percentages shown should reflect actual pixel counts."""
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -143,6 +151,7 @@ class TestPlotClassification:
     def test_two_class_flood_map(self, tmp_path):
         """Matches the intended flood/no-flood use case directly."""
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -178,6 +187,7 @@ class TestQuicklook:
 
     def test_ndvi_like_detected_as_index(self, caplog):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -186,6 +196,7 @@ class TestQuicklook:
 
     def test_sar_like_detected_as_sar(self, caplog):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -194,6 +205,7 @@ class TestQuicklook:
 
     def test_classification_detected_as_categorical(self, caplog):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -202,6 +214,7 @@ class TestQuicklook:
 
     def test_generic_continuous_detected_as_continuous(self, caplog):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -211,9 +224,10 @@ class TestQuicklook:
     def test_multiband_file_triggers_rgb(self, tmp_path):
         rasterio = pytest.importorskip("rasterio")
         import numpy as np
-        from pygeofetch.viz import Plotter
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
+
+        from pygeofetch.viz import Plotter
 
         path = tmp_path / "multiband.tif"
         with rasterio.open(
@@ -238,10 +252,11 @@ class TestQuicklook:
     def test_resolves_download_result(self, tmp_path):
         rasterio = pytest.importorskip("rasterio")
         import numpy as np
-        from pygeofetch.models.download_task import DownloadResult, DownloadStatus
-        from pygeofetch.viz import Plotter
         from rasterio.crs import CRS
         from rasterio.transform import from_bounds
+
+        from pygeofetch.models.download_task import DownloadResult, DownloadStatus
+        from pygeofetch.viz import Plotter
 
         path = tmp_path / "single.tif"
         with rasterio.open(
@@ -285,6 +300,7 @@ class TestQuicklook:
     def test_mode_override_respected(self, caplog):
         """Explicit mode= should bypass auto-detection entirely."""
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()
@@ -296,6 +312,7 @@ class TestQuicklook:
 
     def test_empty_data_raises_clear_error(self):
         import numpy as np
+
         from pygeofetch.viz import Plotter
 
         pl = Plotter()

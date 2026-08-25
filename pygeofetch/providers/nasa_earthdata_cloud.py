@@ -108,7 +108,7 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
         try:
             resp = httpx.post(
                 f"{self.EDL_URL}/api/users/tokens",
-                auth=(credentials.username, credentials.password),
+                auth=(credentials.username, credentials.password.get_secret_value()),
                 timeout=30,
             )
             if resp.status_code == 401:

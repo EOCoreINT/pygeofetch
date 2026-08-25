@@ -5,6 +5,7 @@ notebook (Mexico City, Obuasi both hand-wrote this identically).
 """
 
 import json
+from typing import ClassVar, List
 
 from pygeofetch.insar import stack_selection
 
@@ -59,7 +60,7 @@ def test_bbox_to_geojson_path_no_collisions():
 class FakeMapViewer:
     """Records every call made to it, matching MapViewer's confirmed public API."""
 
-    instances = []
+    instances: ClassVar[List["FakeMapViewer"]] = []
 
     def __init__(self, center, zoom):
         self.center = center

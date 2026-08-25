@@ -272,6 +272,10 @@ class SpectralIndex:
         result = self.compute(index, **band_arrays)
 
         if output and profile:
+            assert ref_shape is not None, (
+                "ref_shape is always set together with profile in the "
+                "band-loading loop above."
+            )
             out_profile = {
                 "driver": "GTiff",
                 "dtype": "float32",

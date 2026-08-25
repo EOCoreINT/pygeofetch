@@ -5,6 +5,7 @@ version and showing the fix resolves it.
 """
 
 import numpy as np
+
 from pygeofetch.insar import analysis as rm
 
 # Realistic irregular acquisition gaps, matching this project's own

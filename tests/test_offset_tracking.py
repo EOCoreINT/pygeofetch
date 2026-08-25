@@ -5,12 +5,13 @@ that the code runs.
 """
 
 import numpy as np
+from scipy.ndimage import shift as ndi_shift
+
 from pygeofetch.insar.offset_tracking import (
     compute_snr,
     normalized_cross_correlation,
     subpixel_peak_offset,
 )
-from scipy.ndimage import shift as ndi_shift
 
 
 def _make_textured_image(size=128, seed=0):

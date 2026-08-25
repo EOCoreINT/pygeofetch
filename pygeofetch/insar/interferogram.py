@@ -195,6 +195,8 @@ class InterferogramResult:
         paths = self.save(tmp_dir, auto_visualize=False)
         raster_path = paths[band]
 
+        vmin: Optional[float]
+        vmax: Optional[float]
         if band == "wrapped_phase":
             vmin, vmax = -np.pi, np.pi  # real, physical bound -- not a guess
         elif band == "coherence":
@@ -902,7 +904,7 @@ class InterferogramGenerator:
             "whole_image_esd_fallback") so process_pair()'s own
             metadata can honestly report which path actually ran.
         """
-        metadata = {
+        metadata: Dict[str, Any] = {
             "method": "whole_image_esd_fallback",
             "esd_shift_px": None,
             "deburst_applied": False,
@@ -1525,7 +1527,10 @@ class InterferogramGenerator:
 
         # ── Step 2: ESD + Deburst (on FULL data, burst overlaps intact) ──
         esd_shift = None
-        burst_metadata = {"method": "whole_image_esd", "deburst_applied": False}
+        burst_metadata: Dict[str, Any] = {
+            "method": "whole_image_esd",
+            "deburst_applied": False,
+        }
 
         if (
             self._use_real_burst_processing
@@ -1652,7 +1657,7 @@ class InterferogramGenerator:
         # the RESIDUAL -> unwrap. Moved flat-earth and topographic
         # removal (Step 5 below) BEFORE Goldstein filtering (now after
         # Step 5) to match.
-        flat_earth_metadata = {"applied": False}
+        flat_earth_metadata: Dict[str, Any] = {"applied": False}
         if self._remove_flat_earth_phase and all(
             x is not None
             for x in (
@@ -1667,6 +1672,11 @@ class InterferogramGenerator:
                 from pygeofetch.insar.coregister import read_matched_swath
                 from pygeofetch.insar.flatearth import compute_flat_earth_phase
                 from pygeofetch.insar.geolocation import parse_orbit_file
+
+                assert reference_safe_zip is not None
+                assert secondary_safe_zip is not None
+                assert reference_orbit_file is not None
+                assert secondary_orbit_file is not None
 
                 ref_swath_hint = (
                     read_matched_swath(reference) if reference is not None else None

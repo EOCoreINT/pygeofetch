@@ -88,9 +88,10 @@ class TestSLCExtractor:
 
         import numpy as np
         import rasterio
+        from rasterio.transform import from_origin
+
         from pygeofetch.insar import SLCExtractor
         from pygeofetch.models.search_query import BoundingBox
-        from rasterio.transform import from_origin
 
         real_heights = {"2016-08-28": 3042, "2016-08-22": 3064, "2016-08-27": 22935}
         real_paths = {}
@@ -149,6 +150,7 @@ class TestSLCExtractor:
         iw3, preferred_swath must force the named sub-swath even though
         the automatic search would be free to pick either."""
         import rasterio
+
         from pygeofetch.insar import SLCExtractor
         from pygeofetch.models.search_query import BoundingBox
 

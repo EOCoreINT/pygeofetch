@@ -87,10 +87,11 @@ class TerraboticsProvider(AbstractBaseProvider):
         """
         import httpx
 
-        api_key = credentials.api_key or credentials.password
-        if not api_key:
+        api_key_secret = credentials.api_key or credentials.password
+        if not api_key_secret:
             msg = "TerraBotics requires an API key. Contact support at: https://terrabotics.earth"
             raise AuthenticationError(msg)
+        api_key = api_key_secret.get_secret_value()
 
         try:
             resp = httpx.get(

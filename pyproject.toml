@@ -197,8 +197,10 @@ select = ["E", "F", "W", "I"]
 ignore = ["E501"]
 
 [tool.mypy]
-python_version        = "3.11"
+python_version        = "3.12"
 ignore_missing_imports = true
+exclude = '^(venv|\.venv|env|build|dist)/'
+plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

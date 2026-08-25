@@ -92,10 +92,12 @@ class SLCGeometry:
         ramp from first_line_time otherwise.
         """
         if self._has_burst_timing():
-            L = self.lines_per_burst
-            b = max(0, min(int(row // L), len(self.burst_azimuth_times) - 1))
-            return self.burst_azimuth_times[b] + timedelta(
-                seconds=(row - b * L) * self.azimuth_time_interval_s
+            azimuth_times = self.burst_azimuth_times
+            lines_per_burst = self.lines_per_burst
+            assert azimuth_times is not None and lines_per_burst is not None
+            b = max(0, min(int(row // lines_per_burst), len(azimuth_times) - 1))
+            return azimuth_times[b] + timedelta(
+                seconds=(row - b * lines_per_burst) * self.azimuth_time_interval_s
             )
         return self.first_line_time + timedelta(
             seconds=row * self.azimuth_time_interval_s
@@ -122,13 +124,14 @@ class SLCGeometry:
         drift described in the class docstring above.
         """
         if self._has_burst_timing():
-            L = self.lines_per_burst
-            b = bisect.bisect_right(self.burst_azimuth_times, t) - 1
-            b = max(0, min(b, len(self.burst_azimuth_times) - 1))
+            azimuth_times = self.burst_azimuth_times
+            lines_per_burst = self.lines_per_burst
+            assert azimuth_times is not None and lines_per_burst is not None
+            b = bisect.bisect_right(azimuth_times, t) - 1
+            b = max(0, min(b, len(azimuth_times) - 1))
             return (
-                b * L
-                + (t - self.burst_azimuth_times[b]).total_seconds()
-                / self.azimuth_time_interval_s
+                b * lines_per_burst
+                + (t - azimuth_times[b]).total_seconds() / self.azimuth_time_interval_s
             )
         return (t - self.first_line_time).total_seconds() / self.azimuth_time_interval_s
 
@@ -164,7 +167,7 @@ def _extract_burst_timing_from_root(root: ET.Element) -> list[dict]:
     """
     Extract azimuth and sensing times from the burstList in the annotation XML.
     """
-    burst_timings = []
+    burst_timings: list[dict] = []
 
     # Navigate to the burstList based on the ESA Sentinel-1 schema
     burst_list = root.find(".//swathTiming/burstList")
@@ -239,8 +242,8 @@ def parse_slc_geometry(
 
         # 2. Resolve burst timing (Single pass, explicit fallback)
         burst_note = ""
-        burst_azimuth_times = []
-        lines_per_burst = None
+        burst_azimuth_times: Optional[List[datetime]] = []
+        lines_per_burst: Optional[int] = None
 
         try:
             # Extract lines per burst directly from the XML tree
@@ -257,14 +260,16 @@ def parse_slc_geometry(
                 raise ValueError("burstList is empty or missing")
 
             # Parse azimuth times from the dictionaries into datetime objects
+            parsed_times: List[datetime] = []
             for b in timing_dicts:
                 az_str = b.get("azimuthTime")
                 if az_str:
-                    burst_azimuth_times.append(datetime.fromisoformat(az_str.strip()))
+                    parsed_times.append(datetime.fromisoformat(az_str.strip()))
 
-            if not burst_azimuth_times:
+            if not parsed_times:
                 raise ValueError("No valid azimuthTime entries found in bursts")
 
+            burst_azimuth_times = parsed_times
             burst_note = f", {len(burst_azimuth_times)} bursts (burst-aware timing)"
 
         except (ValueError, KeyError, TypeError, AttributeError) as e:
@@ -476,7 +481,12 @@ def parse_burst_info(
             )
             first_valid_elem = burst_elem.find("firstValidSample")
             last_valid_elem = burst_elem.find("lastValidSample")
-            if first_valid_elem is None or last_valid_elem is None:
+            if (
+                first_valid_elem is None
+                or last_valid_elem is None
+                or first_valid_elem.text is None
+                or last_valid_elem.text is None
+            ):
                 raise ValueError(
                     f"{safe_zip_path}: burst {i} missing firstValidSample/"
                     f"lastValidSample."

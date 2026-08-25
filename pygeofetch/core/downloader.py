@@ -25,7 +25,7 @@ import hashlib
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, cast
 
 from pygeofetch.core.logging import DownloadProgress, get_logger
 from pygeofetch.models.download_task import (
@@ -374,7 +374,10 @@ class AdaptiveDownloader:
             if r and r.success and r.bytes_downloaded
         )
         # summary printed by DownloadProgress footer
-        return results
+        # The loop above has already replaced every None slot with a
+        # real DownloadResult (failure placeholder), so this is
+        # genuinely list[DownloadResult] at this point.
+        return cast(List[DownloadResult], results)
 
     def _get_provider(self, provider_id: str) -> Any:
         """Get a provider instance with a fresh authenticated session."""
@@ -938,6 +941,12 @@ class AdaptiveDownloader:
                 if src.nodata is not None:
                     arr = np.where(arr == src.nodata, np.nan, arr)
             band_arrays[band_name] = arr
+
+        assert ref_shape is not None and profile is not None, (
+            f"{index_name}: required_bands was empty or the loop never "
+            f"ran -- ref_shape/profile must be set by the first band "
+            f"processed above."
+        )
 
         si = SpectralIndex(prefer_spyndex=False)
         index_arr = np.asarray(si.compute(index_name, **band_arrays), dtype=np.float32)

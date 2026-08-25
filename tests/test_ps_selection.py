@@ -6,6 +6,7 @@ shouldn't, and real residuals with a known temporal coherence.
 """
 
 import numpy as np
+
 from pygeofetch.insar import ps_selection as ps_mod
 
 

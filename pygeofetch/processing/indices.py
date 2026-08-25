@@ -432,6 +432,11 @@ class SpectralIndices:
         W = eigenvectors[:, :n_components]
         explained = eigenvalues[idx[:n_components]] / (eigenvalues.sum() + 1e-10) * 100
 
+        assert ref_shape is not None, (
+            "ref_shape is set together with profile on the first "
+            "iteration of the inputs loop above, so it is always set "
+            "here for a non-empty inputs list."
+        )
         h, w = ref_shape
         pcs = np.full((n_components, h * w), np.nan, dtype=np.float32)
         pcs[:, valid] = (X_std @ W).T

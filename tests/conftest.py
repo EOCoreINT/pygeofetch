@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+
 from pygeofetch.models.download_task import (
     DownloadOptions,
     DownloadResult,

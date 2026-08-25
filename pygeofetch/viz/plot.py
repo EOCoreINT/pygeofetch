@@ -558,6 +558,7 @@ class Plotter:
 
         plt = _require_matplotlib()
 
+        plot_extent: Optional[list]
         if isinstance(data, (str, Path)):
             try:
                 import rasterio
@@ -771,14 +772,17 @@ class Plotter:
             if mode == "categorical":
                 # Categorical panel
                 codes = sorted(np.unique(arr[~np.isnan(arr)]).astype(int))
+                resolved_colors: List[Any]
                 if classification_colors is None:
                     import matplotlib.cm as cm
 
                     palette = cm.get_cmap("tab10")
-                    classification_colors = [
+                    resolved_colors = [
                         palette(i / max(len(codes) - 1, 1)) for i in range(len(codes))
                     ]
-                cmap = ListedColormap(classification_colors[: len(codes)])
+                else:
+                    resolved_colors = list(classification_colors)
+                cmap = ListedColormap(resolved_colors[: len(codes)])
                 im = ax.imshow(arr, cmap=cmap, extent=extent, aspect="auto")
 
                 if classification_labels:
@@ -790,14 +794,10 @@ class Plotter:
                             pct = 100 * np.sum(arr == c) / total
                             label = f"{label} ({pct:.1f}%)"
                         color_idx = (
-                            c
-                            if c < len(classification_colors)
-                            else c % len(classification_colors)
+                            c if c < len(resolved_colors) else c % len(resolved_colors)
                         )
                         legend_elements.append(
-                            Patch(
-                                facecolor=classification_colors[color_idx], label=label
-                            )
+                            Patch(facecolor=resolved_colors[color_idx], label=label)
                         )
                     ax.legend(handles=legend_elements, loc="lower right", fontsize=10)
 
@@ -886,6 +886,7 @@ class Plotter:
             axes = [axes]
 
         for ax, (panel_title, item) in zip(axes, panels.items()):
+            panel_extent: Optional[list]
             if isinstance(item, (str, Path)):
                 try:
                     import rasterio
@@ -1237,12 +1238,12 @@ class Plotter:
                 nodata = src.nodata
                 if nodata is not None:
                     arr = np.where(arr == nodata, np.nan, arr)
-                extent = [
+                extent: Optional[Tuple[float, float, float, float]] = (
                     src.bounds.left,
                     src.bounds.right,
                     src.bounds.bottom,
                     src.bounds.top,
-                ]
+                )
         else:
             arr = np.asarray(source, dtype=np.float32)
             extent = None

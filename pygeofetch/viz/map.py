@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 logger = logging.getLogger("pygeofetch.viz.map")
 
@@ -151,7 +151,7 @@ class MapViewer:
         left_p, right_p = Path(left_path), Path(right_path)
         m = lm.Map(center=self._center, zoom=self._zoom)
 
-        raster_args = {"colormap": colormap}
+        raster_args: Dict[str, Any] = {"colormap": colormap}
         if vmin is not None:
             raster_args["vmin"] = vmin
         if vmax is not None:

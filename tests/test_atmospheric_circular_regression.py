@@ -27,9 +27,10 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
-from pygeofetch.insar.atmosphere import AtmosphericCorrector
 from rasterio.crs import CRS
 from rasterio.transform import from_bounds
+
+from pygeofetch.insar.atmosphere import AtmosphericCorrector
 
 
 def _make_dem(path, elevation):

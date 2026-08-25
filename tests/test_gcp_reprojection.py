@@ -23,10 +23,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 import rasterio
-from pygeofetch.core.downloader import AdaptiveDownloader
 from rasterio.control import GroundControlPoint
 from rasterio.crs import CRS
 from rasterio.transform import Affine
+
+from pygeofetch.core.downloader import AdaptiveDownloader
 
 
 def _make_gcp_only_source(path: Path, h: int = 200, w: int = 300) -> None:

@@ -285,7 +285,6 @@ class Preprocessor:
 
         # Resize dem arrays to match image shape
         if dem_data.shape != data[0].shape:
-            import rasterio.transform
             from rasterio.enums import Resampling
 
             with rasterio.open(dem_path) as dem_src:

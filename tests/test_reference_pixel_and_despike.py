@@ -9,6 +9,7 @@ of ad-hoc notebook code.
 """
 
 import numpy as np
+
 from pygeofetch.insar import timeseries
 from pygeofetch.insar import unwrap as unwrap_mod
 

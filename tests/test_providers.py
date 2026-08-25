@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+
 from pygeofetch.models.search_query import BoundingBox, SearchQuery
 from pygeofetch.providers import get_free_providers, get_provider, list_providers
 

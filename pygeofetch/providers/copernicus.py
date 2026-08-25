@@ -1025,7 +1025,9 @@ class CopernicusProvider(AbstractBaseProvider):
                 return None
 
             file_size = output_file.stat().st_size
-            self._logger.info(f"cdse fallback succeeded for {data.id}")
+            self._logger.info(
+                f"cdse fallback succeeded for {data.id} (via cdse package)"
+            )
             return DownloadResult(
                 status=DownloadStatus.COMPLETED,
                 data_id=data.id,
@@ -1034,7 +1036,6 @@ class CopernicusProvider(AbstractBaseProvider):
                 output_paths=[output_file],
                 bytes_downloaded=file_size,
                 duration_seconds=duration,
-                metadata={"fallback": "cdse"},
             )
         except Exception as exc:
             self._logger.warning(f"cdse fallback also failed for {data.id}: {exc}")

@@ -400,6 +400,7 @@ class TestBug4CrsIdentityTransform:
         """After reprojection, output file has a real (non-identity) transform."""
         pytest.importorskip("rasterio")
         import rasterio as rio
+
         from pygeofetch.core.downloader import AdaptiveDownloader as DownloadManager
 
         dm = DownloadManager()
@@ -1129,6 +1130,7 @@ class TestFinalEngineSmoke:
     def test_pipeline_from_yaml_roundtrip(self, tmp_path):
         """ProcessingPipeline.from_yaml() loads and returns correct step count."""
         import yaml
+
         from pygeofetch import PyGeoFetch
         from pygeofetch.processing.pipeline import ProcessingPipeline
 

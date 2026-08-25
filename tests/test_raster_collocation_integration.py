@@ -26,8 +26,9 @@ from pathlib import Path
 
 import numpy as np
 import rasterio
-from pygeofetch.insar.interferogram import InterferogramGenerator
 from rasterio.transform import Affine, from_origin
+
+from pygeofetch.insar.interferogram import InterferogramGenerator
 
 WORKDIR = Path(tempfile.mkdtemp(prefix="pygeofetch_raster_collocation_it_"))
 

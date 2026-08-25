@@ -84,8 +84,8 @@ class InSARProject:
 
         query = SearchQuery(
             bbox=self.aoi,
-            start_date=start_date,
-            end_date=end_date,
+            start_date=date.fromisoformat(start_date),
+            end_date=date.fromisoformat(end_date),
             product_type="SLC",
             max_results=max_results,
         )
@@ -202,6 +202,13 @@ class InSARProject:
         )
 
         for label, dl_result in self.download_results.items():
+            if dl_result.output_path is None:
+                logger.warning(
+                    "Skipping extraction for %s: no output_path on its "
+                    "download result (the download likely failed).",
+                    label,
+                )
+                continue
             extracted_path = self._extractor.extract_scene(
                 zip_path=dl_result.output_path,
                 aoi=self.aoi,
