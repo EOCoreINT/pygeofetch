@@ -212,6 +212,19 @@ line-length = 88
 select = ["E", "F", "W", "I"]
 ignore = ["E501"]
 
+[tool.ruff.lint.per-file-ignores]
+# These test files intentionally do `x = pytest.importorskip("x")` before
+# `from x.submodule import y`, so the optional dependency is skipped
+# cleanly instead of erroring out collection when it's not installed
+# (see tests/test_extraction.py for the original pattern this follows).
+# That assignment is what triggers E402 on every import after it — it's
+# the deliberate shape of the guard, not disorganized imports.
+"tests/test_atmospheric_circular_regression.py" = ["E402"]
+"tests/test_burst_processing_integration.py" = ["E402"]
+"tests/test_gcp_reprojection.py" = ["E402"]
+"tests/test_offset_tracking.py" = ["E402"]
+"tests/test_raster_collocation_integration.py" = ["E402"]
+
 [tool.mypy]
 python_version        = "3.12"
 ignore_missing_imports = true
