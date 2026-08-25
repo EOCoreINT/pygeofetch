@@ -87,6 +87,12 @@ insar = [
     # must be declared here or `pip install "pygeofetch[insar]"` (as the
     # module's own docstring instructs) leaves the package unimportable.
     "shapely>=2.0",
+    # Required by pygeofetch.insar.analysis (hard top-level `import xarray`,
+    # used for risk-mapping output). This used to be satisfied for free as
+    # a transitive dependency of sarxarray when sarxarray was still bundled
+    # into this extra — now that sarxarray lives in the separate `sar`
+    # extra above, it has to be declared here directly.
+    "xarray>=2024.1",
 ]
 
 # Tier 5c: SAR processing (heavy — requires SNAP)
