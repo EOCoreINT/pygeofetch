@@ -253,7 +253,9 @@ class TestAnnotation:
 <numberOfLines>{n_lines}</numberOfLines><numberOfSamples>{n_cols}</numberOfSamples>
 </imageInformation></imageAnnotation>
 <generalAnnotation><productInformation><rangeSamplingRate>6.434900e+07</rangeSamplingRate></productInformation></generalAnnotation>
-</product>""".format(n_lines=n_lines, n_cols=n_cols)
+</product>""".format(
+            n_lines=n_lines, n_cols=n_cols
+        )
         with zipfile.ZipFile(path, "w") as zf:
             zf.writestr("test.SAFE/annotation/s1a-iw1-slc-vv.xml", ann_xml)
 
