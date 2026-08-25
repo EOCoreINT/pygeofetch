@@ -5,15 +5,15 @@ N nearest neighbors (not the full candidate pool), and real
 idempotency -- running twice with no new scenes does nothing the
 second time.
 """
+import tempfile
+from pathlib import Path
+
 from pygeofetch.core import monitor as monitor_mod
 from pygeofetch.core import state as state_mod
 
 generate_incremental_pairs = monitor_mod.generate_incremental_pairs
 plan_monitoring_run = monitor_mod.plan_monitoring_run
 ProjectState = state_mod.ProjectState
-
-import tempfile
-from pathlib import Path
 
 
 def test_new_date_connects_to_n_nearest_existing_neighbors():

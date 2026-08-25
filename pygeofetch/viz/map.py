@@ -197,9 +197,9 @@ class MapViewer:
     def _static_split_fallback(self, left_p, right_p, left_label, right_label, colormap, vmin, vmax):
         """Server-free side-by-side raster comparison (matplotlib), used
         when leafmap's dynamic split view can't start a local tile server."""
+        import matplotlib.pyplot as plt
         import numpy as np
         import rasterio
-        import matplotlib.pyplot as plt
 
         with rasterio.open(left_p) as src:
             left_arr = src.read(1).astype(float)

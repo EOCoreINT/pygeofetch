@@ -8,12 +8,9 @@ Everything here uses mocked HTTP responses (via unittest.mock) -- no
 live network calls. See the module's own docstring for what that does
 and doesn't confirm about the real, live CDSE API.
 """
-import sys
 
-from unittest.mock import patch, MagicMock
-from pathlib import Path
 import tempfile
-
+from unittest.mock import MagicMock, patch
 
 import pygeofetch.providers.copernicus_nodes as nodes_mod
 

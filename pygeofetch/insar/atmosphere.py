@@ -21,7 +21,7 @@ Three strategies are implemented:
      the gold standard for single-interferogram correction.
 
 References:
-  Jolivet, R., et al. (2011). Systematic InSAR tropospheric phase delay 
+  Jolivet, R., et al. (2011). Systematic InSAR tropospheric phase delay
     corrections from global meteorological reanalysis data. GRL, 38(17).
   Zhao, Y. et al. (2023). Evaluation of InSAR Tropospheric Delay Correction
     Methods in a Low-Latitude Alpine Canyon Region. Remote Sensing, 15(4), 990.
@@ -67,7 +67,7 @@ class AtmosphericCorrector:
         # 1. Elevation-correlated (with spatial filtering to protect deformation)
         corrector = AtmosphericCorrector(method="elevation")
         corrected_phase = corrector.correct(
-            wrapped_phase, dem="dem.tif", 
+            wrapped_phase, dem="dem.tif",
             poly_degree=2, spatial_filter_m=2000, profile=result.profile
         )
 
@@ -78,12 +78,12 @@ class AtmosphericCorrector:
             reference_datetime="2026-06-01T18:16:00",
             secondary_datetime="2026-06-13T18:16:00",
         )
-        
+
         # 3. GACOS-based (requires downloaded GACOS .tif files)
         corrector = AtmosphericCorrector(method="gacos")
         corrected_phase = corrector.correct(
-            wrapped_phase, 
-            gacos_ref="gacos_20260601.tif", 
+            wrapped_phase,
+            gacos_ref="gacos_20260601.tif",
             gacos_sec="gacos_20260613.tif"
         )
     """
@@ -148,14 +148,14 @@ class AtmosphericCorrector:
             secondary_datetime:   ISO datetime (required for 'era5').
             incidence_angle_deg:  Radar incidence angle (default 38° for S1 IW).
             wavelength_m:         Radar wavelength (default 0.0554m for S1 C-band).
-            profile:              Rasterio profile dict (crs, transform) for the phase 
+            profile:              Rasterio profile dict (crs, transform) for the phase
                                   array. Crucial for spatial filtering and DEM reprojection.
             poly_degree:          Polynomial degree for elevation regression (1=linear, 2=quadratic).
                                   Captures non-linear stratification. Default 1.
-            spatial_filter_m:     If set, applies a Gaussian low-pass filter (in meters) to the 
-                                  phase before regression. Prevents localized deformation from 
+            spatial_filter_m:     If set, applies a Gaussian low-pass filter (in meters) to the
+                                  phase before regression. Prevents localized deformation from
                                   biasing the atmospheric estimate. Highly recommended.
-            unwrapped:            Set to True if the input `phase` is already unwrapped. 
+            unwrapped:            Set to True if the input `phase` is already unwrapped.
                                   Bypasses circular regression for faster, more robust polynomial fitting.
             gacos_ref:            Path to GACOS ZTD GeoTIFF for reference date.
             gacos_sec:            Path to GACOS ZTD GeoTIFF for secondary date.
@@ -169,11 +169,11 @@ class AtmosphericCorrector:
             if not dem or not reference_datetime or not secondary_datetime:
                 raise ValueError("ERA5 requires dem, reference_datetime, and secondary_datetime.")
             result = self._correct_era5(
-                phase, dem, reference_datetime, secondary_datetime, 
+                phase, dem, reference_datetime, secondary_datetime,
                 incidence_angle_deg, wavelength_m
             )
             metadata["correction_applied"] = True
-            
+
         elif self._method == "gacos":
             if not gacos_ref or not gacos_sec:
                 raise ValueError("GACOS requires gacos_ref and gacos_sec paths.")
@@ -181,7 +181,7 @@ class AtmosphericCorrector:
                 phase, gacos_ref, gacos_sec, incidence_angle_deg, wavelength_m
             )
             metadata["correction_applied"] = True
-            
+
         else:  # elevation
             if not dem:
                 raise ValueError("Elevation method requires a DEM path.")
@@ -201,7 +201,7 @@ class AtmosphericCorrector:
     ) -> Any:
         """
         Remove the phase component correlated with elevation.
-        Now supports polynomial fitting and spatial filtering to protect 
+        Now supports polynomial fitting and spatial filtering to protect
         localized deformation signals from being absorbed by the correction.
         """
         np = self._np()
@@ -212,7 +212,7 @@ class AtmosphericCorrector:
 
         with rasterio.open(dem) as src:
             if profile is not None and profile.get("crs") is not None and profile.get("transform") is not None:
-                from rasterio.warp import reproject, Resampling
+                from rasterio.warp import Resampling, reproject
                 dem_data = np.empty(phase.shape, dtype=np.float32)
                 reproject(
                     source=rasterio.band(src, 1), destination=dem_data,
@@ -238,23 +238,23 @@ class AtmosphericCorrector:
 
         # ── Spatial Filtering (Crucial for protecting deformation) ────────────
         # If a deformation signal (e.g. subsidence) sits on a mountain, a global
-        # regression will mistake it for atmospheric stratification. Low-pass 
+        # regression will mistake it for atmospheric stratification. Low-pass
         # filtering the phase isolates the broad atmospheric trend.
         if spatial_filter_m and profile and profile.get("transform"):
             from scipy.ndimage import gaussian_filter
             pixel_size = abs(profile["transform"].a)
             sigma_pixels = spatial_filter_m / pixel_size
-            
+
             # Create a full-size array for filtering, fill with NaNs where invalid
             phase_full = np.full(phase.shape, np.nan, dtype=np.float32)
             phase_full[valid] = phase_v
-            
+
             # Gaussian filter ignores NaNs if we handle them, but standard gaussian_filter
-            # propagates NaNs. A quick workaround is to replace NaNs with 0, filter, 
+            # propagates NaNs. A quick workaround is to replace NaNs with 0, filter,
             # and then we only use the filtered values at the valid pixels.
             phase_temp = np.nan_to_num(phase_full, nan=0.0)
             phase_smooth_full = gaussian_filter(phase_temp, sigma=sigma_pixels)
-            
+
             # Update phase_v with the smoothed long-wavelength phase
             phase_v = phase_smooth_full[valid]
             logger.info(f"Applied spatial low-pass filter ({spatial_filter_m}m) before regression.")
@@ -267,12 +267,12 @@ class AtmosphericCorrector:
                 poly_degree = 3
             coeffs = np.polyfit(dem_v, phase_v, poly_degree)
             tropo_phase = np.polyval(coeffs, dem_data)
-            
+
             # Calculate R²
             ss_res = np.sum((phase_v - np.polyval(coeffs, dem_v))**2)
             ss_tot = np.sum((phase_v - np.mean(phase_v))**2)
             r_squared = 1 - (ss_res / ss_tot) if ss_tot > 1e-10 else 0.0
-            
+
         else:
             # Wrapped phase requires circular regression
             if poly_degree > 1:
@@ -312,7 +312,7 @@ class AtmosphericCorrector:
             intercept = float(np.angle(np.mean(np.exp(1j * residual_v))))
 
             tropo_phase = np.angle(np.exp(1j * (best_slope * dem_data + intercept)))
-            
+
             # R² calculation
             fitted_phase_v = np.angle(np.exp(1j * (best_slope * dem_v + intercept)))
             residual = np.angle(np.exp(1j * (phase_v - fitted_phase_v)))
@@ -359,20 +359,20 @@ class AtmosphericCorrector:
             dem_bounds = src.bounds
 
         cols, rows = np.meshgrid(np.arange(dem_width), np.arange(dem_height))
-        
+
         # rasterio.transform.xy returns (xs, ys) corresponding to (lons, lats)
         xs, ys = rasterio.transform.xy(dem_transform, rows, cols)
         lon_grid = np.array(xs, dtype=np.float32).reshape(dem_height, dem_width)
         lat_grid = np.array(ys, dtype=np.float32).reshape(dem_height, dem_width)
 
         # FIX: Pad bounding box by 0.5 degrees (~50km). ERA5 is coarse (0.25 deg).
-        # Without padding, PyAPS interpolates from far outside the scene, causing 
+        # Without padding, PyAPS interpolates from far outside the scene, causing
         # severe edge artifacts and "Longitude array size mismatch" errors.
         pad = 0.5
         snwe = [
-            dem_bounds.bottom - pad, 
-            dem_bounds.top + pad, 
-            dem_bounds.left - pad, 
+            dem_bounds.bottom - pad,
+            dem_bounds.top + pad,
+            dem_bounds.left - pad,
             dem_bounds.right + pad
         ]
 
@@ -435,7 +435,7 @@ class AtmosphericCorrector:
             raise ImportError('rasterio required: pip install "pygeofetch[geo]"')
 
         logger.info("Loading GACOS ZTD maps: %s and %s", gacos_ref, gacos_sec)
-        
+
         with rasterio.open(gacos_ref) as src:
             ztd_ref = src.read(1).astype(np.float32)
         with rasterio.open(gacos_sec) as src:

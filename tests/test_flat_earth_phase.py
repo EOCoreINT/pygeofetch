@@ -12,9 +12,7 @@ correct.
 """
 
 import math
-import sys
 from datetime import datetime, timedelta
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -25,8 +23,8 @@ from pygeofetch.insar.geolocation import (
     SPEED_OF_LIGHT,
     WGS84_A,
     WGS84_B,
-    geodetic_to_ecef,
     find_zero_doppler_time,
+    geodetic_to_ecef,
     interpolate_orbit_state,
 )
 

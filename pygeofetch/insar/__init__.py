@@ -96,32 +96,6 @@ PS-InSAR densification and offset tracking::
     offsets = tracker.track(reference_amplitude, secondary_amplitude)
 """
 
-from pygeofetch.insar.atmosphere import AtmosphericCorrector
-from pygeofetch.insar.extraction import SLCExtractor
-from pygeofetch.insar.gpu import gpu_available
-from pygeofetch.insar.interferogram import InterferogramGenerator, InterferogramResult
-from pygeofetch.insar.timeseries import (
-    SBASTimeSeries, PairCandidate, build_sbas_network,
-    BurstSyncResult, generate_candidate_pairs,
-    screen_stack_burst_synchronization, select_pairs_for_processing,
-    select_reliable_reference_pixel, despike_velocity,
-    InterferogramPair, TimeSeriesResult,
-)
-from pygeofetch.insar.unwrap import PhaseUnwrapper, multilook, goldstein_filter, bridge_unwrap_regions
-from pygeofetch.insar.synthetic import (
-    okada_surface_deformation,
-    displacement_to_los,
-    spatially_correlated_field,
-    generate_synthetic_interferogram,
-    SyntheticInterferogramResult,
-)
-from pygeofetch.insar.validate import DataValidator, ValidationResult, PairClassification
-from pygeofetch.insar.visualize import (
-    visualize_interferogram,
-    visualize_timeseries,
-    visualize_unwrapped,
-)
-
 # Real, orbit-based coregistration components. All exported here are
 # individually verified against known ground truth (see each module's
 # docstring for specifics): annotation.py against ESA's own field-path
@@ -132,39 +106,69 @@ from pygeofetch.insar.visualize import (
 # here — it has a known, unresolved reliability gap and is not
 # recommended as a primary coregistration path; use
 # compute_offset_field_from_dem() instead, which avoids it entirely.
-from pygeofetch.insar.annotation import SLCGeometry, parse_slc_geometry, BurstInfo, SwathTiming, parse_burst_info
-from pygeofetch.insar.deburst import compute_burst_row_ranges, deburst_array
-from pygeofetch.insar.flatearth import compute_flat_earth_phase
-from pygeofetch.insar.workflow import InSARProject
-from pygeofetch.insar.ionosphere import IonosphericCorrector, parse_ionex
-from pygeofetch.insar.stack_selection import (
-    select_consistent_geometry, search_and_select_consistent_stack,
-    select_burst_synchronized_dates, bbox_to_geojson_path, preview_search_results,
+from pygeofetch.insar.annotation import (
+    BurstInfo,
+    SLCGeometry,
+    SwathTiming,
+    parse_burst_info,
+    parse_slc_geometry,
 )
-from pygeofetch.insar.preflight import PreflightGate, PreflightReport, PreflightIssue
-from pygeofetch.insar.esd import (
-    compute_overlap_row_ranges,
-    estimate_esd_shift_per_burst_overlap,
-    SENTINEL1_IW_DELTA_F_OVL_HZ,
-)
-from pygeofetch.insar.geolocation import (
-    geodetic_to_ecef,
-    find_zero_doppler_time,
-    parse_orbit_file,
-    interpolate_orbit_state,
-    los_to_vertical_displacement,
-    range_offset_to_vertical_displacement,
-)
+from pygeofetch.insar.atmosphere import AtmosphericCorrector
 from pygeofetch.insar.coregister import (
+    CoregistrationQuality,
+    collocate_by_geocoding,
     compute_offset_field_from_dem,
     fit_offset_polynomial,
     fit_offset_polynomial_robust,
     refine_offsets_by_coherence,
     resample_with_offset_field,
-    collocate_by_geocoding,
-    CoregistrationQuality,
+)
+from pygeofetch.insar.deburst import compute_burst_row_ranges, deburst_array
+from pygeofetch.insar.esd import (
+    SENTINEL1_IW_DELTA_F_OVL_HZ,
+    compute_overlap_row_ranges,
+    estimate_esd_shift_per_burst_overlap,
+)
+from pygeofetch.insar.extraction import SLCExtractor
+from pygeofetch.insar.flatearth import compute_flat_earth_phase
+from pygeofetch.insar.geolocation import (
+    find_zero_doppler_time,
+    geodetic_to_ecef,
+    interpolate_orbit_state,
+    los_to_vertical_displacement,
+    parse_orbit_file,
+    range_offset_to_vertical_displacement,
+)
+from pygeofetch.insar.gpu import gpu_available
+from pygeofetch.insar.interferogram import InterferogramGenerator, InterferogramResult
+from pygeofetch.insar.ionosphere import IonosphericCorrector, parse_ionex
+
+# Range/azimuth pixel offsets to ground East/North/Up displacement. The
+# math is verified (solve_enu_displacement agrees with
+# range_offset_to_vertical_displacement to 9 decimal places on the same
+# known scenario, in both operating modes). heading_angle_deg is NOT
+# verified against any real product's orbit metadata — every test this
+# session used a typical Sentinel-1 descending value (190 deg). Pull the
+# real value from real product metadata before using this in production;
+# see this module's own docstring for the full caveat.
+from pygeofetch.insar.offset_geometry import (
+    pixel_to_physical_offsets,
+    solve_enu_displacement,
 )
 
+# Amplitude-based offset tracking. NCC verified to machine precision
+# against the direct textbook definition; sub-pixel refinement verified
+# to <0.06px on a blind synthetic shift; the full OffsetTracker windowing
+# class verified on a spatially-VARYING synthetic field, not just a
+# uniform shift.
+from pygeofetch.insar.offset_tracking import (
+    OffsetTracker,
+    OffsetTrackingResult,
+    compute_snr,
+    normalized_cross_correlation,
+    subpixel_peak_offset,
+)
+from pygeofetch.insar.preflight import PreflightGate, PreflightIssue, PreflightReport
 from pygeofetch.insar.provenance import write_provenance_manifest
 
 # Persistent Scatterer InSAR (Ferretti, Prati & Rocca 2001). Real, tested
@@ -176,34 +180,55 @@ from pygeofetch.insar.provenance import write_provenance_manifest
 from pygeofetch.insar.ps_selection import (
     PSSelectionResult,
     compute_amplitude_dispersion_index,
+    estimate_atmospheric_phase_screen,
+    refine_ps_mask_with_temporal_coherence,
     select_persistent_scatterers,
     temporal_coherence,
-    refine_ps_mask_with_temporal_coherence,
-    estimate_atmospheric_phase_screen,
 )
-
-# Amplitude-based offset tracking. NCC verified to machine precision
-# against the direct textbook definition; sub-pixel refinement verified
-# to <0.06px on a blind synthetic shift; the full OffsetTracker windowing
-# class verified on a spatially-VARYING synthetic field, not just a
-# uniform shift.
-from pygeofetch.insar.offset_tracking import (
-    OffsetTrackingResult,
-    OffsetTracker,
-    normalized_cross_correlation,
-    subpixel_peak_offset,
-    compute_snr,
+from pygeofetch.insar.stack_selection import (
+    bbox_to_geojson_path,
+    preview_search_results,
+    search_and_select_consistent_stack,
+    select_burst_synchronized_dates,
+    select_consistent_geometry,
 )
-
-# Range/azimuth pixel offsets to ground East/North/Up displacement. The
-# math is verified (solve_enu_displacement agrees with
-# range_offset_to_vertical_displacement to 9 decimal places on the same
-# known scenario, in both operating modes). heading_angle_deg is NOT
-# verified against any real product's orbit metadata — every test this
-# session used a typical Sentinel-1 descending value (190 deg). Pull the
-# real value from real product metadata before using this in production;
-# see this module's own docstring for the full caveat.
-from pygeofetch.insar.offset_geometry import pixel_to_physical_offsets, solve_enu_displacement
+from pygeofetch.insar.synthetic import (
+    SyntheticInterferogramResult,
+    displacement_to_los,
+    generate_synthetic_interferogram,
+    okada_surface_deformation,
+    spatially_correlated_field,
+)
+from pygeofetch.insar.timeseries import (
+    BurstSyncResult,
+    InterferogramPair,
+    PairCandidate,
+    SBASTimeSeries,
+    TimeSeriesResult,
+    build_sbas_network,
+    despike_velocity,
+    generate_candidate_pairs,
+    screen_stack_burst_synchronization,
+    select_pairs_for_processing,
+    select_reliable_reference_pixel,
+)
+from pygeofetch.insar.unwrap import (
+    PhaseUnwrapper,
+    bridge_unwrap_regions,
+    goldstein_filter,
+    multilook,
+)
+from pygeofetch.insar.validate import (
+    DataValidator,
+    PairClassification,
+    ValidationResult,
+)
+from pygeofetch.insar.visualize import (
+    visualize_interferogram,
+    visualize_timeseries,
+    visualize_unwrapped,
+)
+from pygeofetch.insar.workflow import InSARProject
 
 __all__ = [
     "InterferogramGenerator",

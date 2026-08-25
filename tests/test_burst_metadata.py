@@ -10,9 +10,9 @@ representation, and SNAP's own Java source for its S-1 TOPS Deburst
 operator).
 """
 
-from pathlib import Path
 import tempfile
 import zipfile
+from pathlib import Path
 
 import pytest
 

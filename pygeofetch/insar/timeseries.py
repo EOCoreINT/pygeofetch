@@ -22,15 +22,14 @@ Install: pip install "pygeofetch[insar]"
 
 from __future__ import annotations
 
-import logging
 import itertools
-from dataclasses import dataclass, field
+import logging
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
-from scipy import linalg
 
 logger = logging.getLogger("pygeofetch.insar.timeseries")
 
@@ -486,9 +485,9 @@ def screen_stack_burst_synchronization(
     """
     from itertools import combinations
 
-    from pygeofetch.insar.annotation import parse_slc_geometry, parse_burst_info
-    from pygeofetch.insar.geolocation import parse_orbit_file
+    from pygeofetch.insar.annotation import parse_burst_info, parse_slc_geometry
     from pygeofetch.insar.esd import compute_burst_synchronization
+    from pygeofetch.insar.geolocation import parse_orbit_file
 
     swath_hints = swath_hints or {}
     geoms: Dict[str, Any] = {}
@@ -981,8 +980,8 @@ def despike_velocity(velocity: Any, valid_mask: Optional[Any] = None, size: int 
 class SBASTimeSeries:
     """
     Native SBAS Inversion Engine with Advanced Corrections.
-    
-    Replaces the need for MintPy's smallbaselineApp by operating directly 
+
+    Replaces the need for MintPy's smallbaselineApp by operating directly
     on pygeofetch's native InterferogramPair objects.
     """
 
@@ -1004,7 +1003,7 @@ class SBASTimeSeries:
     ) -> TimeSeriesResult:
         """
         Invert the SBAS network with optional advanced corrections.
-        
+
         Args:
             pairs: List of InterferogramPair objects.
             coherence_threshold: Minimum coherence for a pixel to be included.
@@ -1013,11 +1012,11 @@ class SBASTimeSeries:
             reference_pixel: (row, col) of a stable reference pixel.
         """
         from pygeofetch.insar.validate import DataValidator
-        
+
         # 1. Validate Network
         all_dates = sorted({p.reference_date for p in pairs} | {p.secondary_date for p in pairs})
         DataValidator.validate_sbas_network(pairs, all_dates).raise_if_invalid()
-        
+
         # Deep copy to avoid mutating original data during corrections
         working_pairs = [
             InterferogramPair(
@@ -1029,16 +1028,16 @@ class SBASTimeSeries:
             )
             for p in pairs
         ]
-        
+
         # 2. Apply Advanced Corrections (Order matters: Unwrap -> DEM)
         if correct_unwrap:
             logger.info("Applying native unwrapping error correction (Phase Closure)...")
             working_pairs = self._correct_unwrapping_errors(working_pairs, all_dates)
-            
+
         if correct_dem:
             logger.info("Applying native DEM error correction...")
             working_pairs = self._correct_dem_error(working_pairs, all_dates)
-            
+
         # 3. Final Native Inversion
         return self._invert_native(working_pairs, coherence_threshold, reference_pixel)
 
@@ -1046,22 +1045,22 @@ class SBASTimeSeries:
     # ADVANCED CORRECTION 1: UNWRAPPING ERROR (PHASE CLOSURE)
     # ═══════════════════════════════════════════════════════════════════
     def _correct_unwrapping_errors(
-        self, 
-        pairs: List[InterferogramPair], 
-        dates: List[str], 
+        self,
+        pairs: List[InterferogramPair],
+        dates: List[str],
         max_iterations: int = 3,
         closure_threshold_rad: float = np.pi / 2
     ) -> List[InterferogramPair]:
         """
         Greedy phase closure correction (MintPy style).
-        
-        Physics: In a closed triangle of interferograms (i->j, j->k, i->k), 
-        the sum of phases should be zero modulo 2*pi. If not, an unwrapping 
+
+        Physics: In a closed triangle of interferograms (i->j, j->k, i->k),
+        the sum of phases should be zero modulo 2*pi. If not, an unwrapping
         error (integer 2*pi jump) exists in the pair with the lowest coherence.
         """
         n_dates = len(dates)
         date_idx = {d: i for i, d in enumerate(dates)}
-        
+
         # Build adjacency and find all triangles
         adj = np.zeros((n_dates, n_dates), dtype=bool)
         pair_idx_map = {}
@@ -1070,23 +1069,23 @@ class SBASTimeSeries:
             adj[i1, i2] = adj[i2, i1] = True
             pair_idx_map[(i1, i2)] = i
             pair_idx_map[(i2, i1)] = i
-            
+
         triangles = [
             (i, j, k) for i, j, k in itertools.combinations(range(n_dates), 3)
             if adj[i, j] and adj[j, k] and adj[i, k]
         ]
-        
+
         if not triangles:
             logger.warning("No closed triangles found. Skipping unwrap correction.")
             return pairs
-            
+
         logger.info("Found %d closed triangles for phase closure.", len(triangles))
-        
+
         # Stack for vectorized math
         phase_stack = np.stack([p.unwrapped_phase for p in pairs], axis=0)
         coh_stack = np.stack([p.coherence for p in pairs], axis=0)
         h, w = phase_stack.shape[1], phase_stack.shape[2]
-        
+
         for iteration in range(max_iterations):
             corrections_made = 0
             # Process in chunks to save memory
@@ -1095,38 +1094,39 @@ class SBASTimeSeries:
                 r_end = min(r_start + chunk_size, h * w)
                 phases_chunk = phase_stack.reshape(len(pairs), -1)[:, r_start:r_end]
                 cohs_chunk = coh_stack.reshape(len(pairs), -1)[:, r_start:r_end]
-                
+
                 for i, j, k in triangles:
                     idx_ij = pair_idx_map[(i, j)]
                     idx_jk = pair_idx_map[(j, k)]
                     idx_ik = pair_idx_map[(i, k)]
-                    
+
                     # Closure phase: phi_ij + phi_jk - phi_ik
                     phi_closure = phases_chunk[idx_ij] + phases_chunk[idx_jk] - phases_chunk[idx_ik]
                     phi_closure_wrapped = np.mod(phi_closure + np.pi, 2 * np.pi) - np.pi
-                    
+
                     mask = np.abs(phi_closure_wrapped) > closure_threshold_rad
-                    if not np.any(mask): continue
-                    
+                    if not np.any(mask):
+                        continue
+
                     # Find the pair with lowest coherence in this triangle
                     cohs_tri = np.stack([cohs_chunk[idx_ij], cohs_chunk[idx_jk], cohs_chunk[idx_ik]], axis=0)
                     min_coh_idx = np.argmin(cohs_tri, axis=0)
-                    
+
                     n_jumps = np.round(phi_closure_wrapped / (2 * np.pi))
                     signs = np.array([1.0, 1.0, -1.0]) # Signs in the closure equation
-                    
+
                     for target_idx, (pair_idx, sign) in enumerate(zip([idx_ij, idx_jk, idx_ik], signs)):
                         mask_to_correct = (min_coh_idx == target_idx) & mask
                         if np.any(mask_to_correct):
                             phases_chunk[pair_idx, mask_to_correct] -= sign * n_jumps[mask_to_correct] * 2 * np.pi
                             corrections_made += np.sum(mask_to_correct)
-                            
+
                 phase_stack.reshape(len(pairs), -1)[:, r_start:r_end] = phases_chunk
-                
+
             if corrections_made == 0:
                 logger.info("Phase closure converged at iteration %d.", iteration + 1)
                 break
-                
+
         # Update pairs
         return [
             InterferogramPair(p.reference_date, p.secondary_date, phase_stack[i], p.coherence, p.perpendicular_baseline_m)
@@ -1137,57 +1137,57 @@ class SBASTimeSeries:
     # ADVANCED CORRECTION 2: DEM ERROR
     # ═══════════════════════════════════════════════════════════════════
     def _correct_dem_error(
-        self, 
-        pairs: List[InterferogramPair], 
-        dates: List[str], 
+        self,
+        pairs: List[InterferogramPair],
+        dates: List[str],
         max_iterations: int = 2
     ) -> List[InterferogramPair]:
         """
         DEM Error Correction via weighted linear regression.
-        
-        Physics: DEM errors cause a phase ramp proportional to the perpendicular 
-        baseline (B_perp). We regress the residual phase against B_perp to 
+
+        Physics: DEM errors cause a phase ramp proportional to the perpendicular
+        baseline (B_perp). We regress the residual phase against B_perp to
         estimate and remove this error.
         """
         working_pairs = [
-            InterferogramPair(p.reference_date, p.secondary_date, 
-                              np.array(p.unwrapped_phase, copy=True), 
-                              np.array(p.coherence, copy=True), 
+            InterferogramPair(p.reference_date, p.secondary_date,
+                              np.array(p.unwrapped_phase, copy=True),
+                              np.array(p.coherence, copy=True),
                               p.perpendicular_baseline_m)
             for p in pairs
         ]
-        
+
         for iteration in range(max_iterations):
             logger.info("DEM error correction iteration %d/%d...", iteration + 1, max_iterations)
-            
+
             # 1. Quick native inversion to get current residuals
             result = self._invert_native(working_pairs, coherence_threshold=0.3, reference_pixel=None)
             date_idx = {d: i for i, d in enumerate(result.dates)}
-            ref_idx = date_idx[result.reference_date]
-            
+            date_idx[result.reference_date]
+
             # 2. Reconstruct phases from the time series
             h, w = working_pairs[0].unwrapped_phase.shape
             reconstructed_phases = np.zeros((len(working_pairs), h, w), dtype=np.float32)
-            
+
             for i, p in enumerate(working_pairs):
                 i1, i2 = date_idx[p.reference_date], date_idx[p.secondary_date]
                 disp_diff = result.displacement[i2] - result.displacement[i1]
                 reconstructed_phases[i] = disp_diff * (4 * np.pi / self._wavelength)
-                
+
             # 3. Compute residual phase
             residual_phases = np.stack([p.unwrapped_phase for p in working_pairs], axis=0) - reconstructed_phases
             b_perp_array = np.array([p.perpendicular_baseline_m for p in working_pairs], dtype=np.float64)
             coh_array = np.stack([p.coherence for p in working_pairs], axis=0)
-            
+
             # 4. WLS Regression: residual = beta * B_perp
             weights = coh_array ** 2
             weights = np.where(np.isnan(weights), 0.0, weights)
-            
+
             numerator = np.sum(weights * b_perp_array[:, None, None] * residual_phases, axis=0)
             denominator = np.sum(weights * (b_perp_array[:, None, None] ** 2), axis=0)
-            
+
             beta = np.where(denominator > 1e-6, numerator / denominator, 0.0)
-            
+
             # 5. Correct the interferogram phases
             corrections_made = 0
             for i, p in enumerate(working_pairs):
@@ -1196,9 +1196,9 @@ class SBASTimeSeries:
                 if np.any(valid_mask):
                     corrections_made += np.sum(valid_mask)
                     p.unwrapped_phase[valid_mask] -= correction[valid_mask]
-                    
+
             logger.info("DEM correction applied to %d pixels.", corrections_made)
-            
+
         return working_pairs
 
     # ═══════════════════════════════════════════════════════════════════
@@ -1505,8 +1505,8 @@ class SBASTimeSeries:
     # CORE NATIVE INVERSION (Weighted Least Squares)
     # ═══════════════════════════════════════════════════════════════════
     def _invert_native(
-        self, 
-        pairs: List[InterferogramPair], 
+        self,
+        pairs: List[InterferogramPair],
         coherence_threshold: float,
         reference_pixel: Optional[Tuple[int, int]] = None
     ) -> TimeSeriesResult:
@@ -1516,74 +1516,74 @@ class SBASTimeSeries:
         n_pairs = len(pairs)
         date_idx = {d: i for i, d in enumerate(dates)}
         ref_date = self._reference_date or dates[0]
-        
+
         h, w = pairs[0].unwrapped_phase.shape
-        
+
         # Design Matrix A
         A = np.zeros((n_pairs, n_dates), dtype=np.float64)
         for i, pair in enumerate(pairs):
             A[i, date_idx[pair.reference_date]] = -1
             A[i, date_idx[pair.secondary_date]] = 1
-            
+
         ref_col = date_idx[ref_date]
         keep_cols = [c for c in range(n_dates) if c != ref_col]
         keep_cols_arr = np.array(keep_cols)
         n_keep = len(keep_cols)
-        
+
         phase_stack = np.stack([p.unwrapped_phase for p in pairs], axis=0).astype(np.float64)
         disp_stack = (phase_stack * self._wavelength / (4 * np.pi))
         coh_stack = np.stack([p.coherence for p in pairs], axis=0).astype(np.float64)
-        
+
         # Group pixels by their valid-pair pattern for efficient batch solving
         usable_mask = np.isfinite(coh_stack) & (coh_stack >= coherence_threshold)
         pattern = np.zeros((h, w), dtype=np.int64)
         for i in range(n_pairs):
             pattern += usable_mask[i].astype(np.int64) << i
-            
+
         displacement = np.full((n_dates, h, w), np.nan, dtype=np.float32)
         residual_rms = np.full((h, w), np.nan, dtype=np.float32)
         n_underdetermined = 0
-        
+
         for p_val in np.unique(pattern):
             pixel_mask = pattern == p_val
             valid_pair_idx = [i for i in range(n_pairs) if (int(p_val) >> i) & 1]
             n_valid = len(valid_pair_idx)
-            
+
             if n_valid < n_keep:
                 n_underdetermined += int(pixel_mask.sum())
                 continue
-                
+
             A_sub = A[valid_pair_idx][:, keep_cols_arr]
             rows, cols = np.where(pixel_mask)
             n_group = len(rows)
-            
+
             coh_sub = coh_stack[valid_pair_idx][:, rows, cols].transpose(1, 0)
             w_sub = coh_sub ** 2
             b_sub = disp_stack[valid_pair_idx][:, rows, cols].transpose(1, 0)
-            
+
             # WLS Normal Equations: (A^T W A) v = A^T W b
             M = np.einsum("pi,ij,ik->pjk", w_sub, A_sub, A_sub)
             rhs = np.einsum("pi,ij,pi->pj", w_sub, A_sub, b_sub)
-            
+
             try:
                 est = np.linalg.solve(M, rhs[..., None])[..., 0]
             except np.linalg.LinAlgError:
                 est = np.full((n_group, n_keep), np.nan)
-                
+
             displacement[keep_cols_arr[:, None], rows, cols] = est.T
             predicted = np.einsum("ij,pj->pi", A_sub, est)
             residuals = b_sub - predicted
             residual_rms[rows, cols] = np.sqrt(np.mean(residuals ** 2, axis=1))
-            
+
         displacement[ref_col] = 0.0
-        
+
         if n_underdetermined > 0:
             logger.warning("%d/%d pixels had too few usable pairs.", n_underdetermined, h * w)
-            
+
         # Calculate velocity
         t_years = np.array([self._days_between(ref_date, d) / 365.25 for d in dates], dtype=np.float32)
         velocity = self._fit_velocity(displacement, t_years)
-        
+
         return TimeSeriesResult(
             dates=dates, displacement=displacement, velocity=velocity,
             residual_rms=residual_rms, reference_date=ref_date,
@@ -1596,7 +1596,8 @@ class SBASTimeSeries:
         t_mean = t_years.mean()
         t_centered = t_years - t_mean
         denom = np.sum(t_centered**2)
-        if denom == 0: return np.zeros((h, w), dtype=np.float32)
+        if denom == 0:
+            return np.zeros((h, w), dtype=np.float32)
         disp_mean = displacement.mean(axis=0)
         numer = np.tensordot(t_centered, displacement - disp_mean, axes=([0], [0]))
         return (numer / denom).astype(np.float32)

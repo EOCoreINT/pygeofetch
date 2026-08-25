@@ -445,6 +445,7 @@ class IonosphericCorrector:
         just a filename patch.
         """
         import gzip
+
         import requests
 
         day_of_year = dt.timetuple().tm_yday

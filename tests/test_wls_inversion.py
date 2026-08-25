@@ -5,9 +5,10 @@ untouched OLS invert() -- the two most important real properties:
 (2) a down-weighted bridge pair must have measurably reduced
 influence on the solved displacement compared to full weight.
 """
-from pygeofetch.insar import timeseries as ts_mod, validate as validate_mod
-
 import numpy as np
+
+from pygeofetch.insar import timeseries as ts_mod
+from pygeofetch.insar import validate as validate_mod
 
 SBASTimeSeries = ts_mod.SBASTimeSeries
 InterferogramPair = ts_mod.InterferogramPair

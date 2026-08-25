@@ -113,8 +113,8 @@ def compute_flat_earth_phase(
     """
     import numpy as np
 
-    from pygeofetch.insar.geolocation import geodetic_to_ecef, find_zero_doppler_time
-    from pygeofetch.insar.coregister import _interpolate, _distance, _linspace
+    from pygeofetch.insar.coregister import _distance, _interpolate, _linspace
+    from pygeofetch.insar.geolocation import find_zero_doppler_time, geodetic_to_ecef
 
     if dem_path is not None:
         import rasterio

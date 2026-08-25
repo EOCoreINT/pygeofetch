@@ -84,10 +84,12 @@ class TestSLCExtractor:
         uncropped swath -- verified directly against the exact real row
         counts observed in this project's own Amatrice run (a genuine
         crop around 3000 rows vs a real full-swath fallback of 22935)."""
+        from unittest.mock import patch
+
+        import numpy as np
         import rasterio
         from rasterio.transform import from_origin
-        import numpy as np
-        from unittest.mock import patch
+
         from pygeofetch.insar import SLCExtractor
         from pygeofetch.models.search_query import BoundingBox
 
@@ -126,9 +128,10 @@ class TestSLCExtractor:
         With a real, deliberately ambiguous AOI overlapping BOTH iw1 and
         iw3, preferred_swath must force the named sub-swath even though
         the automatic search would be free to pick either."""
+        import rasterio
+
         from pygeofetch.insar import SLCExtractor
         from pygeofetch.models.search_query import BoundingBox
-        import rasterio
 
         footprints = {
             "iw1": (13.0, 42.0, 13.3, 42.3),

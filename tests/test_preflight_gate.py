@@ -5,10 +5,9 @@ reproduction of the exact real scenario (Mexico City's within-track
 cross-family split) that the original, buggy version would have
 missed.
 """
-import sys
 
 from datetime import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pygeofetch.insar.preflight as preflight
 

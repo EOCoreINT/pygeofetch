@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 class RiskMap:
     """
     Container for risk map with uncertainty quantification.
-    
+
     Attributes
     ----------
     risk : np.ndarray

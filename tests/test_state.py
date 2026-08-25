@@ -4,13 +4,14 @@ persistent tracking across process restarts (real file-backed, not
 in-memory), idempotent re-processing, and real network-hash
 determinism.
 """
+import tempfile
+from pathlib import Path
+
 from pygeofetch.core import state as state_mod
+
 ProjectState = state_mod.ProjectState
 RunSummary = state_mod.RunSummary
 network_topology_hash = state_mod.network_topology_hash
-
-import tempfile
-from pathlib import Path
 
 
 def test_state_persists_across_real_process_restarts():

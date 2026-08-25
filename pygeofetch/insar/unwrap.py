@@ -5,15 +5,16 @@ PhaseUnwrapper — production-grade phase unwrapping via SNAPHU.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import logging
 import os
 import platform
+import shutil
 import subprocess
 import sys
+import tempfile
 import urllib.request
 import zipfile
-import shutil
-import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
@@ -59,10 +60,10 @@ KNOWN_HASHES = {
 @dataclass
 class UnwrapResult:
     """Result of phase unwrapping for one interferogram pair."""
-    unwrapped_phase: Any      
-    conncomp: Any             
-    coherence: Any            
-    profile: Dict[str, Any]   
+    unwrapped_phase: Any
+    conncomp: Any
+    coherence: Any
+    profile: Dict[str, Any]
     reference_date: Optional[str] = None
     secondary_date: Optional[str] = None
     nlooks: float = 1.0
@@ -105,12 +106,13 @@ class UnwrapResult:
             paths[name] = path
 
         logger.info("Unwrap products saved → %s (reliable=%.1f%%)", out_dir, self.reliable_fraction * 100)
-        if save_png: self._save_pngs(out_dir)
+        if save_png:
+            self._save_pngs(out_dir)
         return paths
 
     def _save_pngs(self, out_dir: Path) -> None:
-        import numpy as np
         import matplotlib
+        import numpy as np
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
 
@@ -146,20 +148,21 @@ def _verify_sha256(filepath: Path, expected_hash: Optional[str]) -> bool:
 def _download_with_progress(url: str, dest_path: Path, timeout: int = 60):
     logger.info(f"Downloading {url}...")
     req = urllib.request.Request(url, headers={'User-Agent': 'PyGeoFetch/1.0'})
-    
+
     with urllib.request.urlopen(req, timeout=timeout) as response:
         total_size = int(response.info().get('Content-Length', -1))
         downloaded = 0
         block_size = 8192
         last_logged_pct = -1
-        
+
         with open(dest_path, 'wb') as f:
             while True:
                 buffer = response.read(block_size)
-                if not buffer: break
+                if not buffer:
+                    break
                 downloaded += len(buffer)
                 f.write(buffer)
-                
+
                 if total_size > 0:
                     pct = int((downloaded / total_size) * 100)
                     if pct // 25 > last_logged_pct:
@@ -179,58 +182,62 @@ def _check_url_alive(url: str) -> bool:
 def _ensure_snaphu_cli() -> str:
     exe_name = "snaphu.exe" if platform.system() == "Windows" else "snaphu"
     path = shutil.which(exe_name)
-    if path: return path
-        
+    if path:
+        return path
+
     bin_dir = SNAPHU_DIR
     bin_dir.mkdir(parents=True, exist_ok=True)
     local_exe = bin_dir / exe_name
     version_file = bin_dir / ".snaphu_version"
-    
+
     # Check cache
     if local_exe.exists() and version_file.exists():
         if version_file.read_text().strip() == EXPECTED_VERSION:
             return str(local_exe)
-        
+
     if platform.system() == "Windows":
         logger.info("SNAPHU executable not found or outdated. Downloading pre-compiled binary...")
-        
+
         primary_url = "https://github.com/marsfan/SNAPHU-win/releases/download/2.0.7/snaphu-v2.0.7.zip"
         esa_url = "https://forum.step.esa.int/uploads/short-url/lwqYDwx4aN76w3C0SZZWLCQ84he.zip"
-        
+
         urls_to_try = [primary_url]
         if _check_url_alive(esa_url):
             urls_to_try.append(esa_url)
-            
+
         for url in urls_to_try:
             try:
                 with tempfile.TemporaryDirectory() as tmp_dir:
                     zip_path = Path(tmp_dir) / "snaphu.zip"
                     _download_with_progress(url, zip_path)
-                    
+
                     if not _verify_sha256(zip_path, KNOWN_HASHES.get(Path(url).name)):
                         raise ValueError("Checksum verification failed! File may be corrupted or tampered with.")
-                        
+
                     with zipfile.ZipFile(zip_path, 'r') as zf:
                         for file_info in zf.infolist():
-                            if file_info.is_dir(): continue
+                            if file_info.is_dir():
+                                continue
                             target_path = bin_dir / Path(file_info.filename).name
                             with zf.open(file_info) as src, open(target_path, "wb") as dst:
                                 shutil.copyfileobj(src, dst)
-                        
+
                         exe_files = [f for f in zf.namelist() if f.lower().endswith(".exe") and "snaphu" in f.lower()]
-                        if not exe_files: exe_files = [f for f in zf.namelist() if f.lower().endswith(".exe")]
-                        if not exe_files: raise RuntimeError("Downloaded zip did not contain any .exe file.")
-                            
+                        if not exe_files:
+                            exe_files = [f for f in zf.namelist() if f.lower().endswith(".exe")]
+                        if not exe_files:
+                            raise RuntimeError("Downloaded zip did not contain any .exe file.")
+
                         local_exe = bin_dir / Path(exe_files[0]).name
                         version_file.write_text(EXPECTED_VERSION)
-                        
+
                 logger.info(f"SNAPHU downloaded successfully to {local_exe}")
                 return str(local_exe)
             except Exception as e:
                 logger.warning(f"Failed to download from {url}: {e}")
-                
+
         raise RuntimeError("Failed to download/extract SNAPHU executable from all sources.")
-            
+
     raise RuntimeError(
         "SNAPHU executable not found in PATH.\n"
         "Please install it using your system package manager:\n"
@@ -251,20 +258,25 @@ def goldstein_filter(interferogram, alpha: float = 0.5, tile_size: int = 32, ove
     weight_sum = np.zeros((h, w), dtype=np.float32)
     row_starts = list(range(0, max(1, h - tile_size + 1), step))
     col_starts = list(range(0, max(1, w - tile_size + 1), step))
-    if not row_starts or row_starts[-1] + tile_size < h: row_starts.append(max(0, h - tile_size))
-    if not col_starts or col_starts[-1] + tile_size < w: col_starts.append(max(0, w - tile_size))
+    if not row_starts or row_starts[-1] + tile_size < h:
+        row_starts.append(max(0, h - tile_size))
+    if not col_starts or col_starts[-1] + tile_size < w:
+        col_starts.append(max(0, w - tile_size))
     for row_start in row_starts:
         for col_start in col_starts:
             r_end = min(row_start + tile_size, h)
             c_end = min(col_start + tile_size, w)
             tile = interferogram[row_start:r_end, col_start:c_end]
             th, tw = tile.shape
-            if th < 2 or tw < 2: continue
+            if th < 2 or tw < 2:
+                continue
             spectrum = np.fft.fft2(tile)
             magnitude = np.abs(spectrum)
             peak = magnitude.max()
-            if peak > 0: filtered_spectrum = spectrum * (magnitude ** alpha) / (peak ** alpha)
-            else: filtered_spectrum = spectrum
+            if peak > 0:
+                filtered_spectrum = spectrum * (magnitude ** alpha) / (peak ** alpha)
+            else:
+                filtered_spectrum = spectrum
             filtered_tile = np.fft.ifft2(filtered_spectrum)
             tile_window = window_2d[:th, :tw]
             output[row_start:r_end, col_start:c_end] += filtered_tile * tile_window
@@ -282,7 +294,8 @@ def bridge_unwrap_regions(unwrapped_phase, conncomp, bridge_radius: int = 50, mi
     labels = labels[labels != 0]
     region_sizes = {lbl: int(np.sum(conncomp == lbl)) for lbl in labels}
     valid_labels = [lbl for lbl in labels if region_sizes[lbl] >= min_region_size]
-    if not valid_labels: return unwrapped_phase.copy(), {}
+    if not valid_labels:
+        return unwrapped_phase.copy(), {}
     valid_labels.sort(key=lambda lbl: region_sizes[lbl], reverse=True)
     if reference_pixel is not None:
         rp_row, rp_col = reference_pixel
@@ -306,7 +319,8 @@ def bridge_unwrap_regions(unwrapped_phase, conncomp, bridge_radius: int = 50, mi
                 min_i = int(np.argmin(dist))
                 if best is None or dist[min_i] < best[0]:
                     best = (dist[min_i], lbl, resolved_lbl, lbl_points[min_i], ref_points[idx[min_i]])
-        if best is None: break
+        if best is None:
+            break
         _, lbl, target_lbl, point_a, point_b = best
         def _local_median(point, region_mask):
             r, c = point
@@ -348,19 +362,22 @@ def multilook(data: Any, looks_azimuth: int = 4, looks_range: int = 1, wrapped_p
 class PhaseUnwrapper:
     def __init__(self, cost_mode: str = "defo", init_method: str = "mcf") -> None:
         valid_costs = ("topo", "defo", "smooth", "nostatcosts")
-        if cost_mode not in valid_costs: raise ValueError(f"cost_mode must be one of {valid_costs}")
+        if cost_mode not in valid_costs:
+            raise ValueError(f"cost_mode must be one of {valid_costs}")
         valid_inits = ("mcf", "mst")
-        if init_method not in valid_inits: raise ValueError(f"init_method must be one of {valid_inits}")
+        if init_method not in valid_inits:
+            raise ValueError(f"init_method must be one of {valid_inits}")
         self._cost_mode = cost_mode
         self._init_method = init_method
 
     def _unwrap_cli(self, igram, corr, nlooks, min_conncomp_frac, min_region_size):
-        import numpy as np
         import os
+
+        import numpy as np
         cli_path = _ensure_snaphu_cli()
         height, width = igram.shape
         bin_dir = Path(cli_path).parent
-        
+
         def _run_snaphu(tmp_dir):
             tmp = Path(tmp_dir)
             igram_path = tmp / "igram.cpx"
@@ -371,7 +388,7 @@ class PhaseUnwrapper:
             igram.tofile(str(igram_path))
             corr.tofile(str(corr_path))
             nlooks_int = max(1, int(nlooks))
-            
+
             conf_text = f"""INFILE            igram.cpx
 INFILEFORMAT      COMPLEX_DATA
 CORRFILE          corr.cor
@@ -392,26 +409,26 @@ NLOOKSAZ          {nlooks_int}
 
         with tempfile.TemporaryDirectory() as tmp_dir:
             result, unw_path, cc_path = _run_snaphu(tmp_dir)
-            
+
             if result.returncode in (3221225781, -1073741515):
                 logger.warning("SNAPHU crashed with STATUS_DLL_NOT_FOUND (0xC0000135). Auto-bundling runtime DLLs...")
                 self._ensure_runtime_dlls(bin_dir)
                 logger.info("Retrying SNAPHU with bundled DLLs...")
                 result, unw_path, cc_path = _run_snaphu(tmp_dir)
-                
+
             if result.returncode != 0:
                 raise RuntimeError(f"SNAPHU CLI failed with code {result.returncode}: {result.stderr}")
-                
+
             # ═══════════════════════════════════════════════════════════════
             # SMART FILE READER (Handles Windows Port Quirks)
             # ═══════════════════════════════════════════════════════════════
             expected_pixels = height * width
-            
+
             # 1. Read Unwrapped Phase (Usually FLOAT_DATA = 4 bytes)
             unw_size = os.path.getsize(str(unw_path))
             unw_dtype = np.float32 if unw_size <= expected_pixels * 4 else np.float64
             unw = np.fromfile(str(unw_path), dtype=unw_dtype)
-            
+
             # 2. Read Connected Components (Adapts to 1-byte, 2-byte, or 4-byte formats)
             cc_size = os.path.getsize(str(cc_path))
             if cc_size >= expected_pixels * 4:
@@ -420,9 +437,9 @@ NLOOKSAZ          {nlooks_int}
                 cc_dtype = np.uint16
             else:
                 cc_dtype = np.uint8  # The Windows port default
-                
+
             conncomp = np.fromfile(str(cc_path), dtype=cc_dtype)
-            
+
             # 3. Auto-heal the Windows "off-by-one" truncation bug
             if conncomp.size < expected_pixels:
                 logger.warning(
@@ -432,7 +449,7 @@ NLOOKSAZ          {nlooks_int}
                 conncomp = np.pad(conncomp, (0, expected_pixels - conncomp.size), mode='constant', constant_values=0)
             elif conncomp.size > expected_pixels:
                 conncomp = conncomp[:expected_pixels]
-                
+
             if unw.size < expected_pixels:
                 unw = np.pad(unw, (0, expected_pixels - unw.size), mode='constant', constant_values=0)
             elif unw.size > expected_pixels:
@@ -440,32 +457,37 @@ NLOOKSAZ          {nlooks_int}
 
             unw = unw.reshape((height, width))
             conncomp = conncomp.reshape((height, width))
-            
+
         total_pixels = height * width
         labels, counts = np.unique(conncomp, return_counts=True)
         for lbl, count in zip(labels, counts):
-            if lbl == 0: continue
+            if lbl == 0:
+                continue
             if count < min_region_size or (count / total_pixels) < min_conncomp_frac:
                 conncomp[conncomp == lbl] = 0
         return unw, conncomp.astype(np.int32)
-    
+
 
     def _ensure_runtime_dlls(self, bin_dir: Path):
-        import shutil, zipfile, io, urllib.request
-        
+        import io
+        import shutil
+        import urllib.request
+        import zipfile
+
         required_dlls = ["msys-2.0.dll", "libgcc_s_seh-1.dll", "libstdc++-6.dll", "libwinpthread-1.dll", "vcruntime140.dll", "msvcp140.dll"]
         missing = [dll for dll in required_dlls if not (bin_dir / dll).exists()]
-        if not missing: return
-        
+        if not missing:
+            return
+
         logger.info(f"SNAPHU requires {missing}. Searching for runtime DLLs...")
         found_dlls = self._find_git_dlls(missing)
-                        
+
         if len(found_dlls) >= len([d for d in missing if d.startswith("lib") or d.startswith("msys")]):
             logger.info("Found MinGW/MSYS DLLs in Git for Windows installation. Copying to SNAPHU bin...")
             for dll, src in found_dlls.items():
                 shutil.copy2(src, bin_dir / dll)
             return
-            
+
         logger.info("Downloading MSVC runtime from NuGet (no admin required)...")
         nuget_url = "https://www.nuget.org/api/v2/package/VCRuntime.140"
         try:
@@ -483,7 +505,7 @@ NLOOKSAZ          {nlooks_int}
             return
         except Exception as e:
             logger.warning(f"Failed to download MSVC DLLs: {e}")
-            
+
         esa_url = "https://forum.step.esa.int/uploads/short-url/lwqYDwx4aN76w3C0SZZWLCQ84he.zip"
         if _check_url_alive(esa_url):
             logger.info("Attempting to download self-contained ESA STEP SNAPHU build...")
@@ -505,7 +527,8 @@ NLOOKSAZ          {nlooks_int}
                         raise ValueError("Checksum verification failed! File may be corrupted or tampered with.")
                     with zipfile.ZipFile(zip_path, 'r') as zf:
                         for file_info in zf.infolist():
-                            if file_info.is_dir(): continue
+                            if file_info.is_dir():
+                                continue
                             filename = Path(file_info.filename).name
                             target_path = bin_dir / filename
                             with zf.open(file_info) as src, open(target_path, "wb") as dst:
@@ -514,7 +537,7 @@ NLOOKSAZ          {nlooks_int}
                     return
             except Exception as e:
                 logger.warning(f"Failed to download ESA build: {e}")
-                
+
         # Platform Debug Info
         logger.error(
             "SNAPHU failed to run after all repair attempts.\n"
@@ -537,8 +560,9 @@ NLOOKSAZ          {nlooks_int}
             Path("C:\\Git"),
         ]
         git_env = os.environ.get("GIT_INSTALL_ROOT")
-        if git_env: search_roots.append(Path(git_env))
-            
+        if git_env:
+            search_roots.append(Path(git_env))
+
         path_dirs = os.environ.get("PATH", "").split(os.pathsep)
         for p in path_dirs:
             git_exe = Path(p) / "git.exe"
@@ -546,13 +570,14 @@ NLOOKSAZ          {nlooks_int}
                 potential_root = git_exe.parent.parent
                 if (potential_root / "mingw64").exists():
                     search_roots.append(potential_root)
-                    
+
         search_roots = list(set([r for r in search_roots if r.exists()]))
-        
+
         for git_root in search_roots:
             search_dirs = [git_root / "mingw64" / "bin", git_root / "usr" / "bin", git_root / "bin"]
             for dll in missing_dlls:
-                if dll in found: continue
+                if dll in found:
+                    continue
                 for d in search_dirs:
                     if (d / dll).exists():
                         found[dll] = d / dll
@@ -561,10 +586,13 @@ NLOOKSAZ          {nlooks_int}
 
     def unwrap(self, interferogram: Any, coherence: Any, nlooks: float = 1.0, mask: Optional[Any] = None, min_conncomp_frac: float = 0.01, min_region_size: int = 100) -> Tuple[Any, Any]:
         np = self._np()
-        if np.iscomplexobj(interferogram): igram = interferogram.astype(np.complex64)
-        else: igram = np.exp(1j * interferogram).astype(np.complex64)
+        if np.iscomplexobj(interferogram):
+            igram = interferogram.astype(np.complex64)
+        else:
+            igram = np.exp(1j * interferogram).astype(np.complex64)
         corr = np.clip(coherence, 0.0, 1.0).astype(np.float32)
-        if mask is not None: corr = np.where(mask, corr, 0.0).astype(np.float32)
+        if mask is not None:
+            corr = np.where(mask, corr, 0.0).astype(np.float32)
         corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
         logger.info("Unwrapping %s pixels (cost=%s, init=%s, nlooks=%.1f)", f"{igram.shape[0]}x{igram.shape[1]}", self._cost_mode, self._init_method, nlooks)
         try:
@@ -578,8 +606,10 @@ NLOOKSAZ          {nlooks_int}
 
         n_unreliable = int(np.sum(conncomp == 0))
         pct = 100 * n_unreliable / conncomp.size
-        if pct > 30: logger.warning("%.1f%% of pixels are in the unreliable connected component (conncomp==0).", pct)
-        else: logger.info("Unwrapping complete — %.1f%% unreliable pixels", pct)
+        if pct > 30:
+            logger.warning("%.1f%% of pixels are in the unreliable connected component (conncomp==0).", pct)
+        else:
+            logger.info("Unwrapping complete — %.1f%% unreliable pixels", pct)
         return unwrapped.astype(np.float32), conncomp
 
     def unwrap_pair(self, interferogram: Any, coherence: Any, profile: Dict[str, Any], reference_date: Optional[str] = None, secondary_date: Optional[str] = None, nlooks: float = 1.0, looks_azimuth: int = 1, looks_range: int = 1, mask: Optional[Any] = None, min_conncomp_frac: float = 0.001, min_region_size: int = 100) -> UnwrapResult:
@@ -597,8 +627,10 @@ NLOOKSAZ          {nlooks_int}
 
     def unwrap_files(self, interferogram_path: Union[str, Path], coherence_path: Union[str, Path], output_path: Union[str, Path], nlooks: float = 1.0, mask_path: Optional[Union[str, Path]] = None) -> Path:
         np = self._np()
-        try: import rasterio
-        except ImportError: raise ImportError('rasterio required: pip install "pygeofetch[geo]"')
+        try:
+            import rasterio
+        except ImportError:
+            raise ImportError('rasterio required: pip install "pygeofetch[geo]"')
         with rasterio.open(interferogram_path) as src:
             profile = src.profile.copy()
             phase = src.read(1).astype(np.float32)
@@ -606,7 +638,8 @@ NLOOKSAZ          {nlooks_int}
             coherence = src.read(1).astype(np.float32)
         mask = None
         if mask_path:
-            with rasterio.open(mask_path) as src: mask = src.read(1).astype(bool)
+            with rasterio.open(mask_path) as src:
+                mask = src.read(1).astype(bool)
         unwrapped, conncomp = self.unwrap(phase, coherence, nlooks=nlooks, mask=mask)
         out_path = Path(output_path)
         out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -624,18 +657,11 @@ NLOOKSAZ          {nlooks_int}
     def _np(self):
         import numpy as np
         return np
-    
 
-import shutil
-import subprocess
-import logging
-import sys
-
-logger = logging.getLogger(__name__)
 
 def verify_snaphu_ready():
     """
-    Proactively checks for snaphu availability to assure the user 
+    Proactively checks for snaphu availability to assure the user
     that no manual installation is required.
     """
     # 1. Check for the standard SNAPHU binary in the system PATH
@@ -644,28 +670,25 @@ def verify_snaphu_ready():
         # Optional: Verify the binary actually executes and isn't just a broken alias
         try:
             subprocess.run(
-                ["snaphu"], 
-                stdout=subprocess.DEVNULL, 
-                stderr=subprocess.DEVNULL, 
+                ["snaphu"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 timeout=3
             )
         except Exception:
             pass  # Snaphu without args prints usage to stderr and exits; this is expected.
-            
+
         msg = f"✅ Success: snaphu binary detected at '{snaphu_bin}'. No manual installation needed."
         print(msg)
         logger.info(msg)
         return True
 
     # 2. Fallback: Check if it's available as a Python package/module
-    try:
-        import snaphu  # or pysnaphu, depending on your wrapper
+    if importlib.util.find_spec("snaphu") is not None:
         msg = "✅ Success: snaphu Python module detected. No manual installation needed."
         print(msg)
         logger.info(msg)
         return True
-    except ImportError:
-        pass
 
     # 3. If neither is found, handle the failure gracefully
     msg = "❌ snaphu not found in PATH or Python environment. Phase unwrapping will fail."
@@ -678,4 +701,4 @@ snaphu_is_ready = verify_snaphu_ready()
 
 if not snaphu_is_ready:
     # Decide how to handle the missing dependency (see questions below)
-    pass 
+    pass

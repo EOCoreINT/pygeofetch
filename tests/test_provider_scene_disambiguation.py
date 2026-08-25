@@ -15,14 +15,14 @@ disk with distinct content -- the real, concrete symptom of the bug,
 not just that the code runs without error.
 """
 
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 import tempfile
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pygeofetch.models.satellite_data import SatelliteData, SatelliteAsset
 from pygeofetch.models.download_task import DownloadOptions
+from pygeofetch.models.satellite_data import SatelliteAsset, SatelliteData
 
 
 def _make_scene(scene_id: str, band_url: str) -> SatelliteData:

@@ -199,7 +199,7 @@ class TimeSeriesAnalyzer:
                         f"(the default) to align automatically."
                     )
 
-                from rasterio.warp import reproject, Resampling
+                from rasterio.warp import Resampling, reproject
 
                 logger.info(
                     "%s/%s: grid %s differs from the first date's %s — "

@@ -10,7 +10,10 @@ distributed synthetic scene, not built here).
 
 import numpy as np
 
-from pygeofetch.insar.splitspectrum_diagnostic import diagnose_dispersive_signal, extract_subband_slc
+from pygeofetch.insar.splitspectrum_diagnostic import (
+    diagnose_dispersive_signal,
+    extract_subband_slc,
+)
 
 
 def test_non_dispersive_signal_gives_zero_double_difference():

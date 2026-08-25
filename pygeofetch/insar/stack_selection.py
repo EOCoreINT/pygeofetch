@@ -381,7 +381,8 @@ def search_and_select_consistent_stack(
                     selection, or from this function itself if the
                     real search returns zero results at all.
     """
-    from shapely.geometry import shape, box
+    from shapely.geometry import box, shape
+
     from pygeofetch.models.search_query import SearchQuery
 
     if providers is None:
@@ -583,7 +584,8 @@ def select_burst_synchronized_dates(
                      for callers who want the full picture.
     """
     from pygeofetch.insar.timeseries import (
-        screen_stack_burst_synchronization, select_pairs_for_processing,
+        screen_stack_burst_synchronization,
+        select_pairs_for_processing,
     )
 
     dates_for_screening = sorted(set(safe_zips) & set(orbit_files) & set(dates))

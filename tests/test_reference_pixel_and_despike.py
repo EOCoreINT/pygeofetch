@@ -10,10 +10,10 @@ of ad-hoc notebook code.
 import numpy as np
 
 from pygeofetch.insar import timeseries
+from pygeofetch.insar import unwrap as unwrap_mod
+
 select_reliable_reference_pixel = timeseries.select_reliable_reference_pixel
 despike_velocity = timeseries.despike_velocity
-
-from pygeofetch.insar import unwrap as unwrap_mod
 bridge_unwrap_regions = unwrap_mod.bridge_unwrap_regions
 
 

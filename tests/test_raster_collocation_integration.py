@@ -20,14 +20,12 @@ Two scenarios:
      anyway -- the same "stage 1 rough, stage 2 fixes it" pattern
      validated for the orbit_dem path.
 """
-import sys
 import tempfile
 from pathlib import Path
 
-
 import numpy as np
 import rasterio
-from rasterio.transform import from_origin, Affine
+from rasterio.transform import Affine, from_origin
 
 from pygeofetch.insar.interferogram import InterferogramGenerator
 

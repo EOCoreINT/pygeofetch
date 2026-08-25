@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from builtins import str
 import logging
+from builtins import str
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union,Dict, List
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import numpy as np
 
 logger = logging.getLogger("pygeofetch.viz.plot")
@@ -322,8 +323,8 @@ class Plotter:
 
         return self._save_or_show(fig, output)
 
-    
-    
+
+
     def plot_terrain_summary(
         self,
         dem: Union[str, Path, np.ndarray],
@@ -379,7 +380,6 @@ class Plotter:
             )
         """
         import numpy as np
-        import matplotlib.pyplot as plt
         from matplotlib.colors import LightSource
 
         plt = _require_matplotlib()
@@ -552,7 +552,7 @@ class Plotter:
         plt.tight_layout()
 
         return self._save_or_show(fig, output)
-    
+
 
 
 
@@ -656,7 +656,6 @@ class Plotter:
             )
         """
         import numpy as np
-        import matplotlib.pyplot as plt
         from matplotlib.colors import ListedColormap
         from matplotlib.patches import Patch
 

@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from shapely.geometry import shape, box
+from shapely.geometry import box, shape
 
 logger = logging.getLogger("pygeofetch.insar.preflight")
 
@@ -443,7 +443,9 @@ class PreflightGate:
 
         nodes_version = "unknown"
         try:
-            from pygeofetch.providers.copernicus_nodes import MODULE_VERSION as nodes_version
+            from pygeofetch.providers.copernicus_nodes import (
+                MODULE_VERSION as nodes_version,
+            )
         except Exception:
             pass
 
@@ -609,9 +611,9 @@ class PreflightGate:
         means "fall back to the honest BURST_FAMILY_RISK_UNASSESSED
         advisory," never "risk confirmed absent."
         """
-        import tempfile
-        import shutil
         import importlib
+        import shutil
+        import tempfile
         try:
             for _mod_name in (
                 "pygeofetch.providers.copernicus_nodes", "pygeofetch.core.orbits",
@@ -659,10 +661,10 @@ class PreflightGate:
         every real exit path here -- including the early returns --
         without duplicating the rmtree call at each one.
         """
-        from pygeofetch.providers.copernicus_nodes import fetch_annotation_zip
         from pygeofetch.core.orbits import fetch_orbit_file
-        from pygeofetch.insar.stack_selection import select_burst_synchronized_dates
         from pygeofetch.insar.geolocation import geodetic_to_ecef
+        from pygeofetch.insar.stack_selection import select_burst_synchronized_dates
+        from pygeofetch.providers.copernicus_nodes import fetch_annotation_zip
 
         safe_zips: Dict[str, Any] = {}
         orbit_files: Dict[str, Any] = {}
@@ -681,7 +683,7 @@ class PreflightGate:
                     continue
 
                 # ── FIX: ORBIT CASCADING ──
-                # Previously, this only tried "precise". If precise wasn't 
+                # Previously, this only tried "precise". If precise wasn't
                 # available (e.g., recent acquisitions), the date was dropped.
                 # Now it cascades: Precise -> Restituted -> Predicted.
                 orbit_file = None
@@ -704,7 +706,7 @@ class PreflightGate:
                 if orbit_file is None:
                     logger.info("Real pre-download burst check: no orbit file (any type) for %s.", date)
                     continue
-                    
+
                 orbit_files[date] = orbit_file
             except Exception as exc:
                 logger.info("Real pre-download burst check: orbit cascade failed for %s (%s).", date, exc)
@@ -743,7 +745,7 @@ class PreflightGate:
         issues: List[PreflightIssue],
     ) -> Dict[str, Any]:
         # ── FIX: BANDWIDTH & DOWNLOAD MANIFEST ──
-        # Calculate estimated bandwidth and build a concrete manifest of 
+        # Calculate estimated bandwidth and build a concrete manifest of
         # what will actually be downloaded, preventing surprise disk fills.
         ESTIMATED_GB_PER_SLC_SCENE = 7.5  # Sentinel-1 IW SLC average size
         estimated_bandwidth_gb = len(selected) * ESTIMATED_GB_PER_SLC_SCENE

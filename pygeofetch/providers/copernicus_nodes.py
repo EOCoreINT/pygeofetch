@@ -8,7 +8,7 @@ Real, documented capability of the CDSE OData API:
     Products(<UUID>)/Nodes(<name>)/Nodes(<name>)/$value   -- fetch one file's bytes
 
 (https://documentation.dataspace.copernicus.eu/APIs/OData.html;
- response shape for a Nodes listing -- {"result": [{"Name": ..., 
+ response shape for a Nodes listing -- {"result": [{"Name": ...,
  "ContentLength": ..., "ChildrenNumber": ...}, ...]} -- confirmed via
  CDSE's own sibling documentation, the CREODIAS EOData Catalogue API
  manual, which documents the same OData Nodes schema.)

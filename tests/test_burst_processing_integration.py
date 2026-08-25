@@ -11,10 +11,10 @@ test_burst_metadata.py, test_deburst.py, test_esd.py) -- this file
 verifies the pieces are actually wired together correctly.
 """
 
-from datetime import datetime, timedelta
-from pathlib import Path
 import tempfile
 import zipfile
+from datetime import datetime, timedelta
+from pathlib import Path
 
 import numpy as np
 import rasterio

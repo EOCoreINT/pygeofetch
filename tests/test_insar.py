@@ -15,14 +15,13 @@ from datetime import datetime, timedelta
 
 import pytest
 
-
 # ── shared real-geometry builder (mirrors the manual verification) ──────────
 
 def _build_geometry(lat_deg, lon_deg, dem_h=0.0, incl_deg=98.18, ascending=True):
     """Build a fully self-consistent, realistic satellite+ground-point test
     geometry — real orbital velocity direction, exact zero-Doppler
     projection — used across the geolocation/coregister tests below."""
-    from pygeofetch.insar.geolocation import WGS84_A, WGS84_B, SPEED_OF_LIGHT
+    from pygeofetch.insar.geolocation import SPEED_OF_LIGHT, WGS84_A, WGS84_B
 
     lat, lon = math.radians(lat_deg), math.radians(lon_deg)
     e2 = 1 - ((WGS84_B + dem_h) ** 2 / (WGS84_A + dem_h) ** 2)
@@ -127,9 +126,10 @@ class TestDataValidator:
         assert not result.valid
 
     def test_sbas_network_connected_passes(self):
+        import numpy as np
+
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
-        import numpy as np
 
         dates = ["2026-01-01", "2026-01-13", "2026-01-25"]
         pairs = [
@@ -140,9 +140,10 @@ class TestDataValidator:
         assert result.valid
 
     def test_sbas_network_disconnected_rejected(self):
+        import numpy as np
+
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
-        import numpy as np
 
         dates = ["2026-01-01", "2026-01-13", "2026-01-25", "2026-02-06"]
         # Two isolated sub-networks: {0,1} and {2,3}, no bridge
@@ -157,9 +158,10 @@ class TestDataValidator:
         """Regression test for the real integration bug found during
         development: the validator originally expected .date1/.date2,
         but InterferogramPair uses .reference_date/.secondary_date."""
+        import numpy as np
+
         from pygeofetch.insar.timeseries import InterferogramPair
         from pygeofetch.insar.validate import DataValidator
-        import numpy as np
 
         dates = ["2026-01-01", "2026-01-13"]
         pairs = [InterferogramPair(dates[0], dates[1], np.zeros((4, 4)), np.ones((4, 4)) * 0.8, 100.0)]
@@ -325,7 +327,11 @@ class TestGeolocation:
         assert error_m < 1.0
 
     def test_find_zero_doppler_time_exact_recovery(self):
-        from pygeofetch.insar.geolocation import find_zero_doppler_time, interpolate_orbit_state, WGS84_A
+        from pygeofetch.insar.geolocation import (
+            WGS84_A,
+            find_zero_doppler_time,
+            interpolate_orbit_state,
+        )
 
         t0 = datetime(2024, 11, 5, 18, 23, 41)
         R, omega = 7071000.0, 7.5e3 / 7071000.0
@@ -430,7 +436,10 @@ class TestCoregister:
     def test_polynomial_fit_and_resample_recovers_known_pattern(self):
         import numpy as np
 
-        from pygeofetch.insar.coregister import fit_offset_polynomial, resample_with_offset_field
+        from pygeofetch.insar.coregister import (
+            fit_offset_polynomial,
+            resample_with_offset_field,
+        )
 
         grid_rows = [0, 0, 50, 50]
         grid_cols = [0, 50, 0, 50]

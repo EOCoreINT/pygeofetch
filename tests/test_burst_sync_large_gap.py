@@ -13,9 +13,8 @@ the actual Mexico City stack) plus a small, KNOWN synchronization
 residual -- so the correct answer is known by construction.
 """
 from datetime import datetime, timedelta
-import bisect
 
-from pygeofetch.insar import annotation, geolocation, esd
+from pygeofetch.insar import annotation, esd
 
 VELOCITY = (7500.0, 0.0, 0.0)
 POSITION_AT_T0 = (0.0, 0.0, 500000.0)

@@ -22,8 +22,8 @@ matching the same fix applied to interferogram.py's own
 _remove_topographic_phase().
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 import numpy as np
 import rasterio

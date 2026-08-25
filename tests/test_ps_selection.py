@@ -4,9 +4,9 @@ refinement against synthetic data with a KNOWN ground truth -- real
 stable pixels that should be selected, real noisy pixels that
 shouldn't, and real residuals with a known temporal coherence.
 """
-from pygeofetch.insar import ps_selection as ps_mod
-
 import numpy as np
+
+from pygeofetch.insar import ps_selection as ps_mod
 
 
 def test_adi_correctly_ranks_stable_vs_noisy_pixels():
@@ -61,9 +61,9 @@ def test_selection_correctly_separates_real_ps_from_bright_noisy_and_dim_stable(
     print(f"  ADI at test pixels: {result.adi[0, :3]}")
     print(f"  mean amplitude at test pixels: {result.mean_amplitude[0, :3]}")
 
-    assert result.ps_mask[0, 0] == True, "the real, bright, stable pixel should be selected"
-    assert result.ps_mask[0, 1] == False, "the bright-but-noisy pixel should be rejected on ADI"
-    assert result.ps_mask[0, 2] == False, "the dim-but-stable pixel should be rejected on the amplitude floor"
+    assert result.ps_mask[0, 0], "the real, bright, stable pixel should be selected"
+    assert not result.ps_mask[0, 1], "the bright-but-noisy pixel should be rejected on ADI"
+    assert not result.ps_mask[0, 2], "the dim-but-stable pixel should be rejected on the amplitude floor"
     print("  PASS -- confirms BOTH real criteria (ADI ceiling AND amplitude floor) are actually enforced, not just one\n")
 
 
@@ -127,8 +127,8 @@ def test_refine_correctly_demotes_ps_candidate_with_poor_temporal_coherence():
     refined = ps_mod.refine_ps_mask_with_temporal_coherence(ps_result, residuals, wavelength_m, coherence_threshold=0.7)
     print(f"  before refinement: {ps_result.ps_mask[0]}")
     print(f"  after refinement:  {refined.ps_mask[0]}")
-    assert refined.ps_mask[0, 0] == True, "the pixel with real, consistent residuals should survive refinement"
-    assert refined.ps_mask[0, 1] == False, "the pixel with poor real temporal coherence should be demoted"
+    assert refined.ps_mask[0, 0], "the pixel with real, consistent residuals should survive refinement"
+    assert not refined.ps_mask[0, 1], "the pixel with poor real temporal coherence should be demoted"
     print("  PASS -- confirms the AND is real: amplitude-only selection alone is not enough to survive refinement\n")
 
 

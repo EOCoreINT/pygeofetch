@@ -9,7 +9,7 @@ test_burst_synchronization.py and test_burst_sync_large_gap.py.
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from pygeofetch.insar import annotation, geolocation, esd, timeseries
+from pygeofetch.insar import annotation, geolocation, timeseries
 
 VELOCITY = (7500.0, 0.0, 0.0)
 POSITION_AT_T0 = (0.0, 0.0, 500000.0)

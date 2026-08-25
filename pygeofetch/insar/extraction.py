@@ -445,19 +445,19 @@ class SLCExtractor:
         for label, zip_path in scenes.items():
             if label == reference_label:
                 continue
-                
+
             extracted_path = self.extract_scene(
                 zip_path=zip_path, aoi=aoi, output_dir=output_dir / label,
                 label=label, resume=resume, preferred_swath=reference_swath,
                 azimuth_margin_px=azimuth_margin_px,
                 extract_full_swath=extract_full_swath, # <--- PASS FLAG
             )
-            
+
             if extracted_path is None:
                 excluded[label] = "no real sub-swath overlaps this AOI"
                 logger.warning("  %s: excluded — %s", label, excluded[label])
                 continue
-                
+
             # Only enforce the crop-ratio check if we are actually cropping
             if not extract_full_swath:
                 with rasterio.open(extracted_path) as src:
@@ -469,10 +469,10 @@ class SLCExtractor:
                     )
                     logger.warning("  %s: excluded — %s", label, excluded[label])
                     continue
-                    
+
             kept[label] = extracted_path
             logger.info("  %s: extracted (%s)", label, "FULL SWATH" if extract_full_swath else f"{src.height} rows")
-            
+
 
         report = {
             "reference": reference_label,
@@ -601,7 +601,7 @@ class SLCExtractor:
         aoi_tuple: Tuple[float, float, float, float],
         out_path: Path,
         margin_frac: float = 0.15,
-        azimuth_margin_px: float = 0.0, 
+        azimuth_margin_px: float = 0.0,
     ) -> Optional[Path]:
         """
         Crop a zipped Sentinel-1 measurement TIFF to the AOI, reading
@@ -630,9 +630,9 @@ class SLCExtractor:
             rather than fail outright.
         """
         import rasterio
+        from rasterio.crs import CRS
         from rasterio.transform import from_gcps
         from rasterio.windows import Window
-        from rasterio.crs import CRS
 
         vsi_path = f"/vsizip/{zip_path}/{member_name}"
         try:
@@ -844,7 +844,7 @@ class SLCExtractor:
             if swath in lower:
                 return swath.upper()
         return "?"
-    
+
 
 
 
@@ -858,23 +858,24 @@ def subset_continuous_raster(
     Apply AOI crop to a continuous, debursted SLC (or coherence/interferogram).
     Uses GCPs to find the correct pixel window.
     """
+    import logging
+
     import rasterio
     from rasterio.transform import from_gcps
     from rasterio.windows import Window
-    import logging
-    
+
     logger = logging.getLogger("pygeofetch.insar.subset")
-    
+
     with rasterio.open(continuous_raster_path) as src:
         gcps, crs = src.gcps
         if not gcps or len(gcps) < 4:
             logger.warning("No GCPs found in continuous raster, cannot subset geographically.")
             return None
-            
+
         # Fit an approximate affine transform from the GCPs
         approx_transform = from_gcps(gcps)
         inv_transform = ~approx_transform
-        
+
         min_lon, min_lat, max_lon, max_lat = aoi.min_lon, aoi.min_lat, aoi.max_lon, aoi.max_lat
         corners = [
             (min_lon, min_lat), (min_lon, max_lat),
@@ -885,27 +886,27 @@ def subset_continuous_raster(
             col, row = inv_transform * (lon, lat)
             cols.append(col)
             rows.append(row)
-            
+
         # Add a safety margin
         pad_w = max((max(cols) - min(cols)) * margin_frac, 50)
         pad_h = max((max(rows) - min(rows)) * margin_frac, 50)
-        
+
         col_off = max(0, int(min(cols) - pad_w))
         row_off = max(0, int(min(rows) - pad_h))
         width = min(src.width - col_off, int(max(cols) - min(cols) + 2 * pad_w))
         height = min(src.height - row_off, int(max(rows) - min(rows) + 2 * pad_h))
-        
+
         if width <= 0 or height <= 0:
             logger.warning("AOI falls entirely outside the continuous raster extent.")
             return None
-            
+
         window = Window(col_off, row_off, width, height)
         data = src.read(1, window=window)
         crop_transform = rasterio.windows.transform(window, approx_transform)
-        
+
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with rasterio.open(
             output_path, "w", driver="GTiff",
             dtype=data.dtype, count=1,
@@ -914,6 +915,6 @@ def subset_continuous_raster(
             compress="deflate"
         ) as dst:
             dst.write(data, 1)
-            
+
     logger.info(f"Subset continuous raster: {src.width}x{src.height} -> {data.shape[1]}x{data.shape[0]}")
     return output_path

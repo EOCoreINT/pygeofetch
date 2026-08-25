@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import bisect
 import logging
+import xml.etree.ElementTree as ET
 import zipfile
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -153,29 +154,27 @@ def _parse_swath_timing(root) -> tuple[Optional[List[datetime]], Optional[int]]:
         return None, None
 
 
-import xml.etree.ElementTree as ET
-
 def _extract_burst_timing_from_root(root: ET.Element) -> list[dict]:
     """
     Extract azimuth and sensing times from the burstList in the annotation XML.
     """
     burst_timings = []
-    
+
     # Navigate to the burstList based on the ESA Sentinel-1 schema
     burst_list = root.find(".//swathTiming/burstList")
     if burst_list is None:
         return burst_timings
-        
+
     for burst in burst_list.findall("burst"):
         az_time_str = burst.findtext("azimuthTime")
         sensing_time_str = burst.findtext("sensingTime")
-        
+
         burst_timings.append({
             "azimuthTime": az_time_str,
             "sensingTime": sensing_time_str,
             # Add other fields like byteOffset, firstValidSample, etc. if needed
         })
-        
+
     return burst_timings
 
 def parse_slc_geometry(
@@ -195,13 +194,13 @@ def parse_slc_geometry(
             filtered = [n for n in candidates if member_hint.lower() in n.lower()]
             if filtered:
                 candidates = filtered
-                
+
         if not candidates:
             raise ValueError(
                 f"{safe_zip_path}: no annotation XML found — this doesn't "
                 f"look like a real Sentinel-1 SAFE archive."
             )
-            
+
         with zf.open(candidates[0]) as f:
             root = ET.parse(f).getroot()
 
@@ -225,7 +224,7 @@ def parse_slc_geometry(
         burst_note = ""
         burst_azimuth_times = []
         lines_per_burst = None
-        
+
         try:
             # Extract lines per burst directly from the XML tree
             lpb_elem = root.find(".//swathTiming/linesPerBurst")
@@ -235,8 +234,8 @@ def parse_slc_geometry(
                 raise ValueError("linesPerBurst missing from swathTiming")
 
             # _extract_burst_timing_from_root returns a list[dict], not an object
-            timing_dicts = _extract_burst_timing_from_root(root) 
-            
+            timing_dicts = _extract_burst_timing_from_root(root)
+
             if not timing_dicts:
                 raise ValueError("burstList is empty or missing")
 
@@ -245,12 +244,12 @@ def parse_slc_geometry(
                 az_str = b.get("azimuthTime")
                 if az_str:
                     burst_azimuth_times.append(datetime.fromisoformat(az_str.strip()))
-                    
+
             if not burst_azimuth_times:
                 raise ValueError("No valid azimuthTime entries found in bursts")
 
             burst_note = f", {len(burst_azimuth_times)} bursts (burst-aware timing)"
-            
+
         except (ValueError, KeyError, TypeError, AttributeError) as e:
             # Expected fallback for Stripmap or malformed XML
             # Added AttributeError and TypeError to catch the exact failure mode you experienced
@@ -383,8 +382,9 @@ def parse_burst_info(
      /product/swathTiming/burstList/burst/firstValidSample
      /product/swathTiming/burstList/burst/lastValidSample
     """
-    import numpy as np
     import xml.etree.ElementTree as ET
+
+    import numpy as np
 
     with zipfile.ZipFile(safe_zip_path) as zf:
         candidates = [

@@ -20,7 +20,7 @@ single burst cycle and the threshold comparison.
 """
 from datetime import datetime, timedelta
 
-from pygeofetch.insar import geolocation, annotation, esd
+from pygeofetch.insar import annotation, esd
 
 GROUND_POINT = (0.0, 0.0, 0.0)
 VELOCITY = (7500.0, 0.0, 0.0)          # constant, straight-line motion

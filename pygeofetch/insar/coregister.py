@@ -254,7 +254,7 @@ def collocate_by_geocoding(
         a shape-only assumption.
     """
     import numpy as np
-    from rasterio.warp import reproject, Resampling
+    from rasterio.warp import Resampling, reproject
 
     resampling_map = {
         "nearest": Resampling.nearest,
@@ -420,7 +420,7 @@ def compute_offset_field_from_dem(
     import numpy as np
     import rasterio
 
-    from pygeofetch.insar.geolocation import geodetic_to_ecef, find_zero_doppler_time
+    from pygeofetch.insar.geolocation import find_zero_doppler_time, geodetic_to_ecef
 
     with rasterio.open(dem_path) as src:
         dem = src.read(1)
@@ -575,7 +575,7 @@ def compute_offset_field(
         "solve_ground_point() at all. This function is kept only for "
         "the case where no real DEM is available."
     )
-    from pygeofetch.insar.geolocation import solve_ground_point, find_zero_doppler_time
+    from pygeofetch.insar.geolocation import find_zero_doppler_time, solve_ground_point
 
     rows, cols = image_shape
     row_samples = [int(r) for r in _linspace(0, rows - 1, grid_points)]
@@ -1163,7 +1163,7 @@ def resample_with_offset_field(
     # halves the footprint on its own; chunking bounds peak memory to
     # one row-block regardless of total crop size.
 
-        
+
     h, w = data.shape
     out_real = np.empty((h, w), dtype=np.float32)
     out_imag = np.empty((h, w), dtype=np.float32)
@@ -1171,38 +1171,38 @@ def resample_with_offset_field(
     data_imag = data.imag
 
     # Process in 2D tiles for cache locality and strict memory bounding
-    tile_h, tile_w = 1024, 1024 
-    
+    tile_h, tile_w = 1024, 1024
+
     for r_start in range(0, h, tile_h):
         r_end = min(r_start + tile_h, h)
         for c_start in range(0, w, tile_w):
             c_end = min(c_start + tile_w, w)
-            
+
             # Use ogrid to create broadcastable 1D arrays instead of full 2D mgrid matrices
             row_idx = np.arange(r_start, r_end, dtype=np.float32)[:, None]
             col_idx = np.arange(c_start, c_end, dtype=np.float32)[None, :]
-            
+
             ref_global_row = row_idx + ref_row_offset
             ref_global_col = col_idx + ref_col_offset
-            
+
             # Evaluate polynomial (broadcasts automatically, minimal memory)
             offset_row = row_offset_fn(ref_global_row, ref_global_col)
             offset_col = col_offset_fn(ref_global_row, ref_global_col)
-            
+
             sample_rows = ref_global_row + offset_row - sec_row_offset
             sample_cols = ref_global_col + offset_col - sec_col_offset
-            
+
             # Broadcast to 2D for map_coordinates
             sample_rows_2d = np.broadcast_to(sample_rows, (r_end - r_start, c_end - c_start))
             sample_cols_2d = np.broadcast_to(sample_cols, (r_end - r_start, c_end - c_start))
-            
+
             out_real[r_start:r_end, c_start:c_end] = map_coordinates(
                 data_real, [sample_rows_2d, sample_cols_2d], order=1, mode="constant", cval=0.0
             )
             out_imag[r_start:r_end, c_start:c_end] = map_coordinates(
                 data_imag, [sample_rows_2d, sample_cols_2d], order=1, mode="constant", cval=0.0
             )
-            
+
             del sample_rows_2d, sample_cols_2d, offset_row, offset_col
 
     return (out_real + 1j * out_imag).astype(np.complex64)

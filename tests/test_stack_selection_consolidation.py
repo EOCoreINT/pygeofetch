@@ -7,12 +7,11 @@ zero-coverage dedup bug; Mexico City's duplicate-slice dedup bug;
 Mexico City's cross-family burst-sync issue).
 """
 import sys
-
 from datetime import datetime, timedelta
 from types import SimpleNamespace
 
-from pygeofetch.models import BoundingBox
 from pygeofetch.insar import stack_selection
+from pygeofetch.models import BoundingBox
 
 
 class FakeScene:

@@ -22,10 +22,13 @@ Both facts together mean: positive range_offset_px (away from the
 satellite) must produce NEGATIVE vertical displacement (subsidence).
 """
 
-from pygeofetch.insar import geolocation as geo, offset_geometry as offgeo, annotation as annot
+import math
 
 import numpy as np
-import math
+
+from pygeofetch.insar import annotation as annot
+from pygeofetch.insar import geolocation as geo
+from pygeofetch.insar import offset_geometry as offgeo
 
 
 def test_slant_range_confirms_positive_column_means_increasing_range():

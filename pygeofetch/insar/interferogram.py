@@ -378,7 +378,7 @@ class InterferogramGenerator:
 
         with rasterio.open(path) as src:
             profile = src.profile.copy()
-            
+
             # FIX: Full sub-swath files are GCP-georeferenced and lack an affine
             # transform. Downstream steps (flat-earth, topo phase, AOI crop)
             # require a transform. Fit an approximate one from the GCPs.
@@ -480,7 +480,6 @@ class InterferogramGenerator:
             downstream georeferencing adjustments.
         """
         try:
-            import rasterio
             from rasterio.transform import rowcol
         except ImportError:
             logger.warning(
@@ -672,7 +671,7 @@ class InterferogramGenerator:
             # Reproject DEM to interferogram grid (full size, unavoidable)
             with rasterio.open(dem_path) as dem_src:
                 if interferogram_crs is not None and interferogram_transform is not None:
-                    from rasterio.warp import reproject, Resampling
+                    from rasterio.warp import Resampling, reproject
                     dem = np.empty(interferogram.shape, dtype=np.float32)
                     reproject(
                         source=rasterio.band(dem_src, 1),
@@ -860,10 +859,10 @@ class InterferogramGenerator:
         }
 
         try:
-            from pygeofetch.insar.annotation import parse_slc_geometry, parse_burst_info
-            from pygeofetch.insar.esd import estimate_esd_shift_per_burst_overlap
-            from pygeofetch.insar.deburst import deburst_array
+            from pygeofetch.insar.annotation import parse_burst_info, parse_slc_geometry
             from pygeofetch.insar.coregister import read_crop_offset, read_matched_swath
+            from pygeofetch.insar.deburst import deburst_array
+            from pygeofetch.insar.esd import estimate_esd_shift_per_burst_overlap
 
             ref_swath_hint = (
                 read_matched_swath(reference_extracted_path)
@@ -937,9 +936,13 @@ class InterferogramGenerator:
             metadata["burst_sync_within_requirement"] = None
             if reference_orbit_file is not None and secondary_orbit_file is not None:
                 try:
-                    from pygeofetch.insar.geolocation import parse_orbit_file, geodetic_to_ecef
-                    from pygeofetch.insar.esd import compute_burst_synchronization
                     import rasterio as _rasterio
+
+                    from pygeofetch.insar.esd import compute_burst_synchronization
+                    from pygeofetch.insar.geolocation import (
+                        geodetic_to_ecef,
+                        parse_orbit_file,
+                    )
 
                     ref_orbit = parse_orbit_file(reference_orbit_file)
                     sec_orbit = parse_orbit_file(secondary_orbit_file)
@@ -1069,8 +1072,8 @@ class InterferogramGenerator:
             # FIX: Use ref_burst_info for the secondary as well.
             # Because sec_complex has already been resampled onto the reference's
             # grid by the swath-level coregistration, its burst boundaries in
-            # pixel coordinates now perfectly match the reference's. Using 
-            # sec_burst_info applies the secondary's original, un-warped timing, 
+            # pixel coordinates now perfectly match the reference's. Using
+            # sec_burst_info applies the secondary's original, un-warped timing,
             # which cuts out the wrong rows and destroys coherence at burst edges.
             sec_debursted, _ = deburst_array(
                 sec_complex, ref_burst_info, azimuth_time_interval_s,
@@ -1509,9 +1512,9 @@ class InterferogramGenerator:
         ):
             try:
                 from pygeofetch.insar.annotation import parse_slc_geometry
-                from pygeofetch.insar.geolocation import parse_orbit_file
-                from pygeofetch.insar.flatearth import compute_flat_earth_phase
                 from pygeofetch.insar.coregister import read_matched_swath
+                from pygeofetch.insar.flatearth import compute_flat_earth_phase
+                from pygeofetch.insar.geolocation import parse_orbit_file
 
                 ref_swath_hint = read_matched_swath(reference) if reference is not None else None
                 sec_swath_hint = read_matched_swath(secondary) if secondary is not None else None
@@ -1690,7 +1693,7 @@ class InterferogramGenerator:
 
         with rasterio.open(path) as src:
             profile = src.profile.copy()
-            
+
             # FIX: Full sub-swath files are GCP-georeferenced and lack an affine
             # transform. Fit an approximate one from the GCPs so downstream
             # steps (flat-earth, topo phase, AOI crop) have a valid transform.
@@ -1776,17 +1779,18 @@ class InterferogramGenerator:
             "mean_coherence".
         """
         try:
+            import rasterio
+
             from pygeofetch.insar.annotation import parse_slc_geometry
-            from pygeofetch.insar.geolocation import parse_orbit_file
             from pygeofetch.insar.coregister import (
                 compute_offset_field_from_dem,
                 fit_offset_polynomial_robust,
-                refine_offsets_by_coherence,
-                resample_with_offset_field,
                 read_crop_offset,
                 read_matched_swath,
+                refine_offsets_by_coherence,
+                resample_with_offset_field,
             )
-            import rasterio
+            from pygeofetch.insar.geolocation import parse_orbit_file
 
             ref_swath_hint = (
                 read_matched_swath(reference_extracted_path)
@@ -1829,11 +1833,11 @@ class InterferogramGenerator:
             sample_bounds = None
             if reference_extracted_path and Path(reference_extracted_path).exists():
                 with rasterio.open(reference_extracted_path) as src:
-                    # FIX: Handle GCP-only files (full sub-swath). src.bounds 
-                    # returns pixel coordinates for GCP-only files. Fit an 
+                    # FIX: Handle GCP-only files (full sub-swath). src.bounds
+                    # returns pixel coordinates for GCP-only files. Fit an
                     # approximate transform from GCPs to get real lon/lat bounds.
                     if src.transform.is_identity and src.gcps[0]:
-                        from rasterio.transform import from_gcps, array_bounds
+                        from rasterio.transform import array_bounds, from_gcps
                         approx_transform = from_gcps(src.gcps[0])
                         left, bottom, right, top = array_bounds(src.height, src.width, approx_transform)
                         sample_bounds = (left, bottom, right, top)
@@ -1976,11 +1980,11 @@ class InterferogramGenerator:
         """
         try:
             from pygeofetch.insar.coregister import (
-                collocate_by_geocoding,
-                refine_offsets_by_coherence,
-                fit_offset_polynomial_robust,
-                resample_with_offset_field,
                 _regular_grid_points,
+                collocate_by_geocoding,
+                fit_offset_polynomial_robust,
+                refine_offsets_by_coherence,
+                resample_with_offset_field,
             )
 
             collocated, coverage_fraction, valid_mask = collocate_by_geocoding(
@@ -2142,7 +2146,7 @@ class InterferogramGenerator:
 
             with rasterio.open(dem_path) as dem_src:
                 if interferogram_crs is not None and interferogram_transform is not None:
-                    from rasterio.warp import reproject, Resampling
+                    from rasterio.warp import Resampling, reproject
                     dem = np.empty(interferogram.shape, dtype=np.float32)
                     reproject(
                         source=rasterio.band(dem_src, 1),

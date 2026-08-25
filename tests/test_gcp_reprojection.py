@@ -17,8 +17,8 @@ rasterio's warp math shifting it by the image height. A fixed-origin
 check missed this real, observed variant entirely.
 """
 
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 import numpy as np
 import pytest
