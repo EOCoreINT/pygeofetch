@@ -154,6 +154,7 @@ dev = [
     "pytest-cov>=4.1",
     "pytest-mock>=3.12",
     "ruff>=0.3",
+    "black>=24.0",
     "mypy>=1.8",
     "build>=1.0",
     "twine>=5.0",
