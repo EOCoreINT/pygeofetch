@@ -68,9 +68,19 @@ providers = [
     "eodag>=3.0",
 ]
 
-# Tier 5: SAR processing (lightweight)
-insar = [
+# Tier 5: lightweight SAR backend (pygeofetch.sar) — matches the
+# "pip install pygeofetch[sar]" instruction in pygeofetch/sar/__init__.py.
+# Not required by pygeofetch.insar (nothing there imports sarxarray), and
+# not exercised by any test, so it's kept separate rather than bundled
+# into insar below. sarxarray currently has no released version
+# supporting Python 3.9, which broke CI on that interpreter when this was
+# still folded into insar/test.
+sar = [
     "sarxarray>=0.1",
+]
+
+# Tier 5b: interferometric SAR processing (pygeofetch.insar)
+insar = [
     "scipy>=1.12",
     # Required by pygeofetch.insar.preflight for AOI-vs-footprint coverage
     # checks; pygeofetch.insar's __init__ imports preflight eagerly, so this
@@ -79,7 +89,7 @@ insar = [
     "shapely>=2.0",
 ]
 
-# Tier 5b: SAR processing (heavy — requires SNAP)
+# Tier 5c: SAR processing (heavy — requires SNAP)
 ost = [
     "opensartoolkit>=3.0",
 ]
@@ -180,8 +190,9 @@ insar-full = [
     "scipy>=1.12",
 ]
 
-# Everything that reliably installs across platforms — keplergl is
-# deliberately excluded (see viz-3d above); add it explicitly if you need it.
+# Everything that reliably installs across platforms — keplergl (see
+# viz-3d above) and sarxarray (see sar above, no Python 3.9 release) are
+# deliberately excluded; add them explicitly if you need them.
 full = [
     "pygeofetch[geo,processor,providers,insar,viz,cloud,notebook,schedule]",
 ]
