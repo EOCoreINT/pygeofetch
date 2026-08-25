@@ -1,12 +1,40 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it using the metadata below."
+message: "If you use this software in your research, please cite it using the metadata below to support open-source geospatial science."
 type: software
 title: "PyGeoFetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing"
 version: "2.6.2"
 date-released: "2026-08-24"
+doi: "10.5281/zenodo.22087230"
 license: MIT
 repository-code: "https://github.com/EOCoreINT/pygeofetch"
+url: "https://appiahkubis14.github.io/pygeofetch-docs/"
+
+abstract: >
+  PyGeoFetch is a production-ready, open-source Python framework that unifies 
+  satellite data acquisition, pre-download quality control, and advanced 
+  geospatial processing. It eliminates the fragmentation of multi-provider 
+  satellite APIs while introducing the first pure-Python, Windows-native 
+  end-to-end InSAR processing chain. Designed for reproducibility and 
+  accessibility, it empowers researchers, government analysts, and students, 
+  particularly in the Global South, to execute complex Earth Observation 
+  workflows without relying on expensive commercial software or Linux 
+  high-performance computing infrastructure.
+
 authors:
   - family-names: "Appiah Kubi"
     given-names: "Samuel"
+    orcid: "https://orcid.org/0009-0002-1376-108X"  # <-- REPLACE WITH YOUR REAL ORCID
     affiliation: "EOCoreINT, Accra, Ghana"
+    email: "appiahkubis14@gmail.com"
+
+keywords:
+  - earth observation
+  - remote sensing
+  - synthetic aperture radar
+  - InSAR
+  - SBAS
+  - satellite data acquisition
+  - geospatial analysis
+  - Python
+  - reproducible research
+  - Global South
