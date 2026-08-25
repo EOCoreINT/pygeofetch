@@ -39,6 +39,12 @@ dependencies = [
     "anyio>=4.2",
     "numpy>=1.26",
     "tqdm>=4.66",
+    # pygeofetch/models/*.py uses PEP 604 unions (`str | None`), native
+    # only from Python 3.10. On 3.9, pydantic v2 needs this backport to
+    # evaluate those annotations at runtime — without it, importing any
+    # model (SatelliteAsset, etc.) raises TypeError at class-definition
+    # time. Only actually needed below 3.10; harmless no-op above it.
+    "eval_type_backport>=0.2; python_version < '3.10'",
 ]
 
 [project.optional-dependencies]
