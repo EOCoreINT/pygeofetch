@@ -31,7 +31,7 @@ jobs:
         run: ruff check pygeofetch/
 
       - name: Check formatting with black
-        run: black --check pygeofetch/ tests/
+        run: black --target-version py311 --check pygeofetch/ tests/  # <-- FIXED HERE
 
       - name: Type check with mypy
         run: mypy pygeofetch/ --ignore-missing-imports
