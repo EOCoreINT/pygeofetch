@@ -328,18 +328,23 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
         # Get authentication headers
         headers = self._get_auth_headers()
 
-        # Determine what to download
-        assets_to_download = []
+        # Determine what to download.
+        # NOTE: data.data_assets and data.assets both return
+        # dict[str, SatelliteAsset] (Pydantic model instances), never plain
+        # dicts, so we pull .href off the model rather than treating it as
+        # a dict.
+        assets_to_download: list[tuple[str, dict[str, Any]]] = []
 
-        # Check if we have data_assets
+        # Check if we have data_assets (primary, non-thumbnail assets)
         if data.data_assets:
             for key, asset in data.data_assets.items():
-                if isinstance(asset, dict) and asset.get("href"):
-                    assets_to_download.append((key, asset))
+                if asset.href:
+                    assets_to_download.append((key, {"href": asset.href}))
         elif data.assets:
+            # Fall back to all assets if there are no primary data assets.
             for key, asset in data.assets.items():
-                if isinstance(asset, dict) and asset.get("href"):
-                    assets_to_download.append((key, asset))
+                if asset.href:
+                    assets_to_download.append((key, {"href": asset.href}))
 
         # If no assets, try to get download from properties
         if not assets_to_download and data.properties:
@@ -356,8 +361,11 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
             )
 
         # Download each asset
-        for key, asset in assets_to_download:
-            href = asset.get("href")
+        # NOTE: named asset_info (not "asset") to avoid mypy treating this
+        # as re-binding the earlier `asset: SatelliteAsset` loop variable
+        # above to a new, incompatible dict[str, Any] type.
+        for key, asset_info in assets_to_download:
+            href = asset_info.get("href")
             if not href:
                 continue
 
