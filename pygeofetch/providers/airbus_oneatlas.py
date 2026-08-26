@@ -172,7 +172,9 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
             try:
                 self.require_auth()
             except AuthenticationError:
-                self._logger.warning("Not authenticated, attempting to use stored credentials")
+                self._logger.warning(
+                    "Not authenticated, attempting to use stored credentials"
+                )
                 if not self._session:
                     raise AuthenticationError(
                         f"{self.DISPLAY_NAME} requires authentication. "
@@ -250,7 +252,9 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
         cloud_cover = float(cloud_raw) if cloud_raw is not None else None
 
         # Determine satellite/platform
-        satellite = properties.get("platform") or properties.get("constellation", "unknown")
+        satellite = properties.get("platform") or properties.get(
+            "constellation", "unknown"
+        )
 
         # Extract acquisition date
         acq_date = properties.get("acquisitionDate")
@@ -266,7 +270,7 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
                 assets["download"] = {
                     "href": download_href,
                     "type": "application/octet-stream",
-                    "title": "Download"
+                    "title": "Download",
                 }
 
         # Add quicklook/thumbnail if available
@@ -276,7 +280,7 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
                 assets["quicklook"] = {
                     "href": quicklook_href,
                     "type": "image/jpeg",
-                    "title": "Quicklook"
+                    "title": "Quicklook",
                 }
 
         return SatelliteData(
