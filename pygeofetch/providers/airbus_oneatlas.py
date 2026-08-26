@@ -36,6 +36,17 @@ def _plain(v) -> str:
     return str(v)
 
 
+def _bbox4(v):
+    """Normalise bbox to (float, float, float, float) or None."""
+    if v is None:
+        return None
+    try:
+        t = [float(x) for x in list(v)[:4]]
+        return tuple(t) if len(t) == 4 else None
+    except Exception:
+        return None
+
+
 class AirbusOneatlasProvider(AbstractBaseProvider):
     PROVIDER_ID = "airbus_oneatlas"
     DISPLAY_NAME = "Airbus OneAtlas"
@@ -236,9 +247,16 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
         # Extract ID - prefer properties.id as it's more reliable
         item_id = str(properties.get("id", item.get("id", "")))
 
-        # Parse bbox from geometry if available
+        # Prefer an explicit top-level bbox on the item (matches the
+        # shared pattern used by the other providers), falling back to
+        # deriving one from the geometry's polygon coordinates when no
+        # top-level bbox is present -- real OneAtlas API responses don't
+        # always include one.
         bbox = None
-        if geometry and geometry.get("coordinates"):
+        raw_bbox = item.get("bbox")
+        if isinstance(raw_bbox, (list, tuple)) and len(raw_bbox) == 4:
+            bbox = _bbox4(raw_bbox)
+        elif geometry and geometry.get("coordinates"):
             coords = geometry.get("coordinates", [])
             if coords and coords[0]:
                 points = coords[0]
