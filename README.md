@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22087230.svg)](https://doi.org/10.5281/zenodo.22087230)
 [![Tests](https://github.com/EOCoreINT/pygeofetch/actions/workflows/tests.yml/badge.svg)](https://github.com/EOCoreINT/pygeofetch/actions/workflows/tests.yml)
-[![codecov](https://codecov.io/gh/appiahkubis14/pygeofetch/graph/badge.svg?token=2PS2A2VZL6)](https://codecov.io/gh/appiahkubis14/pygeofetch)
+[![Coverage](https://codecov.io/gh/appiahkubis14/pygeofetch/branch/main/graph/badge.svg)](https://codecov.io/gh/appiahkubis14/pygeofetch)
 
 **A unified satellite data and geospatial processing platform — one CLI, one Python API, 24 providers, and a fully verified InSAR chain.**
 
