@@ -54,7 +54,7 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
     REQUIRES_AUTH = True
     DESCRIPTION = "Pleiades and SPOT 6/7 imagery via Airbus Defence and Space."
     SATELLITES = ["Pleiades-1A", "Pleiades-1B", "SPOT-6", "SPOT-7"]
-    BASE_URL = "https://access.foundation.api.oneatlas.airbus.com"
+    BASE_URL = "https://search.foundation.api.oneatlas.airbus.com/api/v2/"
     INTEGRATION_VERIFIED = False  # see UnverifiedIntegrationError docstring — not confirmed against the live API
 
     def authenticate(self, credentials: Credentials) -> AuthSession:
@@ -122,7 +122,7 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
                 headers["Authorization"] = f"Bearer {self._session.access_token}"
         try:
             resp = httpx.get(
-                f"{self.BASE_URL}/search",
+                f"{self.BASE_URL}/opensearch",
                 params=params,
                 headers=headers,
                 timeout=self.config.get("timeout", 60),
