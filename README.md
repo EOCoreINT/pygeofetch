@@ -40,8 +40,8 @@ Where pygeofetch goes further than most data-access libraries is in its **InSAR 
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/main/docs/images/trend_map.png" width="48%" />
-  <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/main/docs/images/trend_classification.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/refs/heads/main/docs/static/download.png" width="48%" />
+  <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/refs/heads/main/docs/static/download%20(1).png" width="48%" />
 </p>
 <p align="center"><em>NDVI trend (2018–2024) and severity classification for the Obuasi Municipal District, Ghana — computed end-to-end with pygeofetch from boundary-clipped USGS Landsat data.</em></p>
 
