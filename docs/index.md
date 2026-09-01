@@ -1,4 +1,9 @@
-# pygeofetch
+# PyGeoFetch Official Documentation
+
+
+<br>
+<img src="icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
+<br>
 
 **A universal satellite data pipeline.** One CLI, one Python API, 24
 provider integrations — federated search, authenticated downloads,
