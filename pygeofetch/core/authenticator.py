@@ -170,14 +170,20 @@ class CredentialStore:
         once ``credentials.enc`` exists) rather than deleted, in case a
         user needs to roll back.
         """
-        if self._cred_file.exists() or not self._legacy_cred_file.exists() or self._migrating:
+        if (
+            self._cred_file.exists()
+            or not self._legacy_cred_file.exists()
+            or self._migrating
+        ):
             return
         self._migrating = True
         try:
             try:
                 legacy_data = json.loads(self._legacy_cred_file.read_text())
             except Exception as exc:
-                logger.warning(f"Could not read legacy credentials file for migration: {exc}")
+                logger.warning(
+                    f"Could not read legacy credentials file for migration: {exc}"
+                )
                 return
 
             migrated = 0
@@ -189,7 +195,9 @@ class CredentialStore:
                     for k in self._SENSITIVE_FIELDS:
                         if k in plain:
                             try:
-                                plain[k] = base64.b64decode(str(plain[k]).encode()).decode()
+                                plain[k] = base64.b64decode(
+                                    str(plain[k]).encode()
+                                ).decode()
                             except Exception:
                                 pass
                 self._save_file(provider, plain)
@@ -224,7 +232,9 @@ class CredentialStore:
         existing[provider] = {"__encrypted": True, **encrypted}
         self._cred_file.write_text(json.dumps(existing, indent=2))
         self._cred_file.chmod(0o600)
-        logger.debug(f"Credentials for {provider!r} saved to {self._cred_file} (encrypted)")
+        logger.debug(
+            f"Credentials for {provider!r} saved to {self._cred_file} (encrypted)"
+        )
 
     def _load_file(self, provider: str) -> dict[str, Any] | None:
         self._migrate_legacy_file_if_needed()
@@ -538,9 +548,11 @@ class AuthManager:
                 {
                     "provider": provider,
                     "has_session": session is not None and session.is_valid,
-                    "session_expires": session.expires_at.isoformat()
-                    if session and session.expires_at
-                    else None,
+                    "session_expires": (
+                        session.expires_at.isoformat()
+                        if session and session.expires_at
+                        else None
+                    ),
                 }
             )
         return result

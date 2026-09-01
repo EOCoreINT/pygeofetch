@@ -257,7 +257,11 @@ def download_run(
 
     sb = PyGeoFetch()
 
-    if validate_optical and (optical_max_cloud_cover, optical_min_coverage, optical_required_bands) != (None, None, None):
+    if validate_optical and (
+        optical_max_cloud_cover,
+        optical_min_coverage,
+        optical_required_bands,
+    ) != (None, None, None):
         from pygeofetch.validation import OpticalValidationConfig
 
         overrides = {}
@@ -266,7 +270,9 @@ def download_run(
         if optical_min_coverage is not None:
             overrides["min_coverage_ratio"] = optical_min_coverage
         if optical_required_bands is not None:
-            overrides["required_bands"] = [b.strip() for b in optical_required_bands.split(",")]
+            overrides["required_bands"] = [
+                b.strip() for b in optical_required_bands.split(",")
+            ]
         sb.optical_validation_config = OpticalValidationConfig(**overrides)
 
     # Load data
@@ -324,7 +330,10 @@ def download_run(
 
         # Use sb.download() with the already-sliced data_list (respects --max-items)
         results = sb.download(
-            data_list, Path(output), options, item_done_callback=on_item_done,
+            data_list,
+            Path(output),
+            options,
+            item_done_callback=on_item_done,
             validate_optical=validate_optical,
         )
 

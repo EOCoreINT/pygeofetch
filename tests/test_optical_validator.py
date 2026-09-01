@@ -12,15 +12,18 @@ would be worse than no validator at all.
 from __future__ import annotations
 
 import pytest
-from shapely.geometry import Polygon, box
+from shapely.geometry import box
 
-from pygeofetch.models.satellite_data import ProcessingLevel, SatelliteAsset, SatelliteData
+from pygeofetch.models.satellite_data import (
+    ProcessingLevel,
+    SatelliteAsset,
+    SatelliteData,
+)
 from pygeofetch.validation.optical_validator import (
+    SEVERITY_WARNING,
     OpticalPreflightValidator,
     OpticalValidationConfig,
     OpticalValidationError,
-    SEVERITY_ERROR,
-    SEVERITY_WARNING,
 )
 
 # A consistent AOI used across most tests: a small rectangle over NYC.
@@ -72,7 +75,9 @@ def make_real_scene(
         cloud_cover=cloud_cover,
         processing_level=processing_level,
         assets={
-            b: SatelliteAsset(key=b, href=f"https://example.com/{b}.tif", roles=["data"])
+            b: SatelliteAsset(
+                key=b, href=f"https://example.com/{b}.tif", roles=["data"]
+            )
             for b in bands
         },
     )
@@ -174,7 +179,9 @@ class TestCloudCoverFailure:
         assert issue.code == "CLOUD_COVER_EXCEEDED"
         assert issue.severity == SEVERITY_WARNING
 
-    def test_high_cloud_cover_still_appears_in_run_preflight_output_by_default(self, validator):
+    def test_high_cloud_cover_still_appears_in_run_preflight_output_by_default(
+        self, validator
+    ):
         safe = validator.run_preflight([make_scene(cloud_cover=45.0)], AOI)
         assert len(safe) == 1  # kept, just logged
 
@@ -271,7 +278,9 @@ class TestAoiCoverageFailure:
     def test_validate_aoi_coverage_returns_approximately_ten_percent(self, validator):
         # Build a scene footprint that covers roughly the left 10% of the AOI.
         aoi_width = AOI.bounds[2] - AOI.bounds[0]
-        narrow = box(AOI.bounds[0], AOI.bounds[1], AOI.bounds[0] + aoi_width * 0.1, AOI.bounds[3])
+        narrow = box(
+            AOI.bounds[0], AOI.bounds[1], AOI.bounds[0] + aoi_width * 0.1, AOI.bounds[3]
+        )
         coverage = validator.validate_aoi_coverage(narrow, AOI)
         assert coverage == pytest.approx(0.1, abs=0.01)
 
@@ -287,7 +296,9 @@ class TestAoiCoverageFailure:
         cfg = OpticalValidationConfig(min_coverage_ratio=0.05)
         validator = OpticalPreflightValidator(cfg)
         aoi_width = AOI.bounds[2] - AOI.bounds[0]
-        narrow = box(AOI.bounds[0], AOI.bounds[1], AOI.bounds[0] + aoi_width * 0.1, AOI.bounds[3])
+        box(
+            AOI.bounds[0], AOI.bounds[1], AOI.bounds[0] + aoi_width * 0.1, AOI.bounds[3]
+        )
         scene = make_scene()
         report = validator.validate_scene(scene, AOI)
         # sanity: default full-coverage scene still passes with a lax threshold
@@ -316,7 +327,9 @@ class TestAoiCoverageFailure:
         assert report.errors[0].code == "MISSING_BANDS"
 
     def test_run_preflight_accepts_none_aoi(self, validator):
-        safe = validator.run_preflight([make_scene(), make_scene(bands=["B02"])], aoi=None)
+        safe = validator.run_preflight(
+            [make_scene(), make_scene(bands=["B02"])], aoi=None
+        )
         assert len(safe) == 1
 
 
@@ -417,14 +430,17 @@ class TestNodataMargins:
         assert not any(i.code == "NODATA_MARGIN_RISK" for i in report.issues)
 
     def test_aoi_well_inside_footprint_is_safe(self):
-        cfg = OpticalValidationConfig(check_nodata_margins=True, nodata_margin_buffer_deg=0.01)
+        cfg = OpticalValidationConfig(
+            check_nodata_margins=True, nodata_margin_buffer_deg=0.01
+        )
         validator = OpticalPreflightValidator(cfg)
         big_footprint = box(-75, 39, -73, 42)  # comfortably contains the AOI
         assert validator.validate_nodata_margins(big_footprint, AOI) is True
 
     def test_aoi_mostly_in_the_margin_is_flagged(self):
         cfg = OpticalValidationConfig(
-            check_nodata_margins=True, nodata_margin_buffer_deg=0.15,
+            check_nodata_margins=True,
+            nodata_margin_buffer_deg=0.15,
             nodata_margin_min_aoi_fraction=0.5,
         )
         validator = OpticalPreflightValidator(cfg)

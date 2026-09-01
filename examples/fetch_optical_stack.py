@@ -72,7 +72,9 @@ def fetch_optical_stack(
         in a big search never abort the whole run.
     """
     pf = PyGeoFetch()
-    validator = OpticalPreflightValidator(validation_config or OpticalValidationConfig())
+    validator = OpticalPreflightValidator(
+        validation_config or OpticalValidationConfig()
+    )
 
     minx, miny, maxx, maxy = aoi.bounds
     results = pf.search(

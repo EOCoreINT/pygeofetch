@@ -14,17 +14,21 @@ by preflight and never actually attempted.
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from pygeofetch import PyGeoFetch
 from pygeofetch.models.download_task import DownloadResult, DownloadStatus
-from pygeofetch.models.satellite_data import ProcessingLevel, SatelliteAsset, SatelliteData
-from pygeofetch.models.search_query import BoundingBox, SearchQuery
+from pygeofetch.models.satellite_data import (
+    ProcessingLevel,
+    SatelliteAsset,
+    SatelliteData,
+)
+from pygeofetch.models.search_query import SearchQuery
 
 
-def make_scene(scene_id: str, bands: list[str] | None = None, cloud_cover: float = 5.0) -> SatelliteData:
+def make_scene(
+    scene_id: str, bands: list[str] | None = None, cloud_cover: float = 5.0
+) -> SatelliteData:
     bands = bands if bands is not None else ["B02", "B03", "B04", "B08", "SCL"]
     return SatelliteData(
         id=scene_id,
@@ -33,7 +37,9 @@ def make_scene(scene_id: str, bands: list[str] | None = None, cloud_cover: float
         cloud_cover=cloud_cover,
         processing_level=ProcessingLevel.L2A,
         assets={
-            b: SatelliteAsset(key=b, href=f"https://example.com/{b}.tif", roles=["data"])
+            b: SatelliteAsset(
+                key=b, href=f"https://example.com/{b}.tif", roles=["data"]
+            )
             for b in bands
         },
     )
@@ -85,7 +91,9 @@ class TestSearchWiring:
         pf = PyGeoFetch(validate_optical=False)
         bad = make_scene("bad", bands=["B02"])
         with patch.object(pf.searcher, "search", return_value=[bad]):
-            results = pf.search(SearchQuery(bbox=(-74.1, 40.6, -73.7, 40.9)), validate_optical=True)
+            results = pf.search(
+                SearchQuery(bbox=(-74.1, 40.6, -73.7, 40.9)), validate_optical=True
+            )
         assert results == []
 
     def test_per_call_override_false(self):
@@ -93,7 +101,9 @@ class TestSearchWiring:
         pf = PyGeoFetch(validate_optical=True)
         bad = make_scene("bad", bands=["B02"])
         with patch.object(pf.searcher, "search", return_value=[bad]):
-            results = pf.search(SearchQuery(bbox=(-74.1, 40.6, -73.7, 40.9)), validate_optical=False)
+            results = pf.search(
+                SearchQuery(bbox=(-74.1, 40.6, -73.7, 40.9)), validate_optical=False
+            )
         assert results == [bad]
 
     def test_aoi_derived_automatically_from_query_bbox(self):
@@ -120,7 +130,9 @@ class TestSearchWiring:
 
         pf = PyGeoFetch(
             validate_optical=True,
-            optical_validation_config=OpticalValidationConfig(check_required_bands=False),
+            optical_validation_config=OpticalValidationConfig(
+                check_required_bands=False
+            ),
         )
         no_bands_scene = make_scene("no_bands", bands=[])
         with patch.object(pf.searcher, "search", return_value=[no_bands_scene]):
@@ -138,8 +150,12 @@ class TestDownloadWiring:
     def test_disabled_by_default_download_unaffected(self):
         pf = PyGeoFetch()
         bad = make_scene("bad", bands=[])
-        fake_result = DownloadResult(status=DownloadStatus.COMPLETED, data_id="bad", provider="aws_earth")
-        with patch.object(pf.downloader, "download_many", return_value=[fake_result]) as mock_dl:
+        fake_result = DownloadResult(
+            status=DownloadStatus.COMPLETED, data_id="bad", provider="aws_earth"
+        )
+        with patch.object(
+            pf.downloader, "download_many", return_value=[fake_result]
+        ) as mock_dl:
             results = pf.download(bad, Path("/tmp/out"))
         mock_dl.assert_called_once()
         assert results == [fake_result]
@@ -148,8 +164,12 @@ class TestDownloadWiring:
         pf = PyGeoFetch(validate_optical=True)
         good = make_scene("good")
         bad = make_scene("bad", bands=["B02"])
-        fake_result = DownloadResult(status=DownloadStatus.COMPLETED, data_id="good", provider="aws_earth")
-        with patch.object(pf.downloader, "download_many", return_value=[fake_result]) as mock_dl:
+        fake_result = DownloadResult(
+            status=DownloadStatus.COMPLETED, data_id="good", provider="aws_earth"
+        )
+        with patch.object(
+            pf.downloader, "download_many", return_value=[fake_result]
+        ) as mock_dl:
             pf.download([good, bad], Path("/tmp/out"))
         called_ids = [item.id for item in mock_dl.call_args[0][0]]
         assert called_ids == ["good"]
@@ -162,8 +182,12 @@ class TestDownloadWiring:
         bad = make_scene("bad", bands=["B02"])
         good2 = make_scene("good2")
         fake_real = [
-            DownloadResult(status=DownloadStatus.COMPLETED, data_id="good1", provider="aws_earth"),
-            DownloadResult(status=DownloadStatus.COMPLETED, data_id="good2", provider="aws_earth"),
+            DownloadResult(
+                status=DownloadStatus.COMPLETED, data_id="good1", provider="aws_earth"
+            ),
+            DownloadResult(
+                status=DownloadStatus.COMPLETED, data_id="good2", provider="aws_earth"
+            ),
         ]
         with patch.object(pf.downloader, "download_many", return_value=fake_real):
             results = pf.download([good1, bad, good2], Path("/tmp/out"))
@@ -205,7 +229,9 @@ class TestDownloadWiring:
         skipped without it (not a crash)."""
         pf = PyGeoFetch(validate_optical=True)
         good = make_scene("good")
-        fake_result = DownloadResult(status=DownloadStatus.COMPLETED, data_id="good", provider="aws_earth")
+        fake_result = DownloadResult(
+            status=DownloadStatus.COMPLETED, data_id="good", provider="aws_earth"
+        )
         with patch.object(pf.downloader, "download_many", return_value=[fake_result]):
             results = pf.download([good], Path("/tmp/out"))  # no aoi kwarg given
         assert results[0].status == DownloadStatus.COMPLETED

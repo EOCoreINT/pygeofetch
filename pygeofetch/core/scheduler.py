@@ -301,7 +301,9 @@ class PipelineRunner:
                 if ":" in token:
                     name, _, val = token.partition(":")
                     pp_actions.append(
-                        PostProcessAction(action=name.strip(), params={"value": val.strip()})
+                        PostProcessAction(
+                            action=name.strip(), params={"value": val.strip()}
+                        )
                     )
                 else:
                     pp_actions.append(PostProcessAction(action=token.strip()))
@@ -494,7 +496,9 @@ class PipelineRunner:
             elif isinstance(target, str) and target.startswith("http"):
                 url = target
             else:
-                logger.debug(f"    export: skipping non-webhook notify target: {target}")
+                logger.debug(
+                    f"    export: skipping non-webhook notify target: {target}"
+                )
                 continue
             try:
                 httpx.post(url, json=payload, timeout=10)

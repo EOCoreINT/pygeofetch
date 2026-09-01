@@ -227,14 +227,22 @@ class PyGeoFetch:
         results = self.searcher.search(query, providers=_effective, use_cache=use_cache)
         self._warn_if_outdated_constellation(results, query)
 
-        effective_validate = self.validate_optical if validate_optical is None else validate_optical
+        effective_validate = (
+            self.validate_optical if validate_optical is None else validate_optical
+        )
         if effective_validate and results:
             results = self._run_optical_preflight(
-                results, aoi=self._derive_aoi_polygon(query),
+                results,
+                aoi=self._derive_aoi_polygon(query),
                 start_date=getattr(query, "start_date", None),
                 end_date=getattr(query, "end_date", None),
             )
         return results
+
+    from pygeofetch.validation.optical_validator import (
+        OpticalPreflightValidator,
+        OpticalValidationConfig,
+    )
 
     def _get_optical_validator(self) -> "OpticalPreflightValidator":
         """Lazily build (and cache) the OpticalPreflightValidator.
@@ -274,7 +282,9 @@ class PyGeoFetch:
             try:
                 return shape(geometry)
             except Exception as exc:
-                logger.warning(f"Could not build AOI polygon from query.geometry: {exc}")
+                logger.warning(
+                    f"Could not build AOI polygon from query.geometry: {exc}"
+                )
         if bbox is not None:
             try:
                 return box(bbox.min_lon, bbox.min_lat, bbox.max_lon, bbox.max_lat)
@@ -297,7 +307,9 @@ class PyGeoFetch:
                 "checks will be skipped; other checks still run."
             )
         validator = self._get_optical_validator()
-        return validator.run_preflight(results, aoi, start_date=start_date, end_date=end_date)
+        return validator.run_preflight(
+            results, aoi, start_date=start_date, end_date=end_date
+        )
 
     def search_and_save(
         self,
@@ -458,7 +470,9 @@ class PyGeoFetch:
         if isinstance(data, SatelliteData):
             data = [data]
 
-        effective_validate = self.validate_optical if validate_optical is None else validate_optical
+        effective_validate = (
+            self.validate_optical if validate_optical is None else validate_optical
+        )
         if effective_validate and data:
             return self._download_with_optical_preflight(
                 data, destination, options, item_done_callback, aoi
@@ -519,7 +533,10 @@ class PyGeoFetch:
 
         real_results = (
             self.downloader.download_many(
-                safe_items, Path(destination), options, item_done_callback=item_done_callback
+                safe_items,
+                Path(destination),
+                options,
+                item_done_callback=item_done_callback,
             )
             if safe_items
             else []

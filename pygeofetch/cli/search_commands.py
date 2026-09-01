@@ -67,7 +67,7 @@ def search() -> None:
 @click.option(
     "--polarisation",
     default=None,
-    help='SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as --product-type.',
+    help="SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as --product-type.",
 )
 @click.option("--max-results", "-n", default=100, show_default=True)
 @click.option(
@@ -100,7 +100,9 @@ def search() -> None:
     show_default=True,
     help="How to handle provider failures.",
 )
-@click.option("--timeout", default=60, show_default=True, help="Per-provider timeout in seconds.")
+@click.option(
+    "--timeout", default=60, show_default=True, help="Per-provider timeout in seconds."
+)
 @click.option("--no-cache", is_flag=True, default=False, help="Bypass result cache.")
 @click.option(
     "--validate-optical",
@@ -280,7 +282,11 @@ def search_run(
 
     sb = PyGeoFetch()
 
-    if validate_optical and (optical_max_cloud_cover, optical_min_coverage, optical_required_bands) != (None, None, None):
+    if validate_optical and (
+        optical_max_cloud_cover,
+        optical_min_coverage,
+        optical_required_bands,
+    ) != (None, None, None):
         from pygeofetch.validation import OpticalValidationConfig
 
         overrides = {}
@@ -289,14 +295,18 @@ def search_run(
         if optical_min_coverage is not None:
             overrides["min_coverage_ratio"] = optical_min_coverage
         if optical_required_bands is not None:
-            overrides["required_bands"] = [b.strip() for b in optical_required_bands.split(",")]
+            overrides["required_bands"] = [
+                b.strip() for b in optical_required_bands.split(",")
+            ]
         sb.optical_validation_config = OpticalValidationConfig(**overrides)
 
     with console.status(
         f"[cyan]Searching {len(provider_list or [])} provider(s)...[/]"
     ):
         results = sb.search(
-            query, providers=provider_list, use_cache=not no_cache,
+            query,
+            providers=provider_list,
+            use_cache=not no_cache,
             validate_optical=validate_optical,
         )
 

@@ -314,7 +314,7 @@ class AirbusOneatlasProvider(AbstractBaseProvider):
             name = entry.get("name") or entry.get("resourceId") or "image"
             assets[name] = SatelliteAsset(
                 key=name,
-                href=href, 
+                href=href,
                 title=name,
                 media_type="image/jp2",
                 roles=["data"],
