@@ -1,6 +1,6 @@
 # PyGeoFetch Official Documentation
 
-<div align="center">
+
 <br>
 <img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/refs/heads/main/icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
 <br>
