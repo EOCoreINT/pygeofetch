@@ -9,7 +9,7 @@
 
 **A unified satellite data and geospatial processing platform — one CLI, one Python API, 24 providers, and a fully verified InSAR chain.**
 
-[Quick Start](#-quick-start) · [Mexico City Case Study](#-case-study-mapping-mexico-city-land-subsidence-with-insar) · [Case Study Repo ↗](https://github.com/EOCoreINT/mexico-subsidence-project) · [Documentation](https://appiahkubis14.github.io/pygeofetch-docs/) · [Notebooks](#-notebooks)
+[Quick Start](#-quick-start) · [Mexico City Case Study](#-case-study-mapping-mexico-city-land-subsidence-with-insar) · [Case Study Repo ↗](https://github.com/EOCoreINT/mexico-subsidence-project) · [Documentation](https://pygeofetch.readthedocs.io/en/latest/) · [Notebooks](#-notebooks)
 
 <br>
 <img src="icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
@@ -185,7 +185,7 @@ The full, runnable notebook — real search and download throughout, no syntheti
 
 **InSAR** (`pygeofetch.insar`): `SLCExtractor` · `InterferogramGenerator` · `AtmosphericCorrector` (elevation-correlated or real ERA5) · `IonosphericCorrector` (real IONEX/CDDIS) · `PhaseUnwrapper` (SNAPHU) · `SBASTimeSeries` · `DataValidator` · `InSARProject` (high-level, search-to-interferogram wrapper)
 
-Full method signatures and options are in the [documentation](https://appiahkubis14.github.io/pygeofetch-docs/) and [`pygeofetch/insar/README.md`](pygeofetch/insar/README.md).
+Full method signatures and options are in the [documentation](https://pygeofetch.readthedocs.io/en/latest/) and [`pygeofetch/insar/README.md`](pygeofetch/insar/README.md).
 
 ---
 
@@ -229,7 +229,7 @@ Every capability above is also exposed as a CLI command, grouped by area:
 | `proc-pipeline` / `pipeline` | `pygeofetch pipeline schedule weekly.yaml` | YAML pipeline execution and scheduling |
 | `cache` / `config` | `pygeofetch cache prune --max-size 1GB` | Cache and configuration management |
 
-Run `pygeofetch --help` or any subcommand with `--help` for the complete, current option list, or see the [CLI reference docs](https://appiahkubis14.github.io/pygeofetch-docs/).
+Run `pygeofetch --help` or any subcommand with `--help` for the complete, current option list, or see the [CLI reference docs](https://pygeofetch.readthedocs.io/en/latest/).
 
 ---
 
@@ -252,7 +252,7 @@ If you use PyGeoFetch in your research or operational work, please cite it using
 
 ## Documentation
 
-Full documentation: **https://appiahkubis14.github.io/pygeofetch-docs/** — CLI reference, provider auth guides, pipeline configuration, post-processing catalogue, and InSAR verification methodology.
+Full documentation: **https://pygeofetch.readthedocs.io/en/latest/** — CLI reference, provider auth guides, pipeline configuration, post-processing catalogue, and InSAR verification methodology.
 
 ## Contributing
 

@@ -233,7 +233,7 @@ pygeofetch = "pygeofetch.cli.main:cli"
 
 [project.urls]
 Homepage      = "https://www.eocoreint.com/"
-Documentation = "https://appiahkubis14.github.io/pygeofetch-docs/"
+Documentation = "https://pygeofetch.readthedocs.io/en/latest/"
 Repository    = "https://github.com/EOCoreINT/pygeofetch"
 "Bug Tracker" = "https://github.com/EOCoreINT/pygeofetch/issues"
 

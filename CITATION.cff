@@ -7,7 +7,7 @@ date-released: "2026-08-24"
 doi: "10.5281/zenodo.22087230"
 license: MIT
 repository-code: "https://github.com/EOCoreINT/pygeofetch"
-url: "https://appiahkubis14.github.io/pygeofetch-docs/"
+url: "https://pygeofetch.readthedocs.io/en/latest/"
 
 abstract: >
   PyGeoFetch is a production-ready, open-source Python framework that unifies 
