@@ -170,7 +170,7 @@ class Plotter:
         # exactly what `colormap`/`drape_colormap` (both plain `str`
         # parameters on this method) already are. Not a real type error.
         plotter.add_mesh(warped, scalars=scalars_name, cmap=cmap, show_scalar_bar=True)  # type: ignore[arg-type]
-        plotter.set_background("white")
+        plotter.set_background(color="white")
 
         if output is not None:
             out_path = Path(output)
