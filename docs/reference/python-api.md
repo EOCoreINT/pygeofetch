@@ -167,6 +167,17 @@ Clears the in-memory search result cache; returns entries cleared.
 **`fetch_orbit_file(product_name: str, output_dir: str = "./orbits/", orbit_type: str = "precise") -> str | None`**
 Downloads a Sentinel-1 precise/restituted orbit file, extracts the `.EOF` automatically.
 
+**`pipeline(name: str) -> ProcessingPipeline`**
+Creates a chainable processing pipeline over one file — see
+{doc}`/reference/pipelines`'s "Python Processing Pipeline" section for
+the full guide. Not related to the YAML acquisition-pipeline
+mechanism (`pygeofetch pipeline run`) despite the shared name.
+
+**`batch_process(inputs, chain, output_dir=".", parallel=2) -> list[ProcessingResult]`**
+Runs the same processing chain over many files in parallel —
+shorthand for `client.batch.process(...)`. See
+{doc}`/reference/pipelines`'s "Batch Processing" section.
+
 ```{note}
 `PyGeoFetch` has **no** `.providers()` method. List providers via
 `pygeofetch.providers.list_providers()` / `list_provider_info()` — see

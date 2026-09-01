@@ -65,6 +65,10 @@ pygeofetch search run \
 | `--on-provider-failure` | choice | `skip`, `abort`, `retry`. |
 | `--timeout` | int | Per-provider timeout in seconds. Default 60. |
 | `--no-cache` | flag | Bypass the in-memory result cache. |
+| `--validate-optical` | flag | Run optical preflight validation on results before returning them (AOI coverage, cloud cover, required bands, processing level, temporal bounds). See {doc}`/core-features/optical-validation`. Not appropriate for SAR/InSAR searches. |
+| `--optical-max-cloud-cover` | float | Override the max cloud cover threshold used by `--validate-optical` (default 20.0). |
+| `--optical-min-coverage` | float | Override the min AOI coverage ratio used by `--validate-optical`, 0-1 (default 0.8). |
+| `--optical-required-bands` | string | Comma-separated required bands for `--validate-optical` (default `B02,B03,B04,B08,SCL`). |
 
 ## Output formats
 

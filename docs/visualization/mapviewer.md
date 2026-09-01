@@ -54,3 +54,11 @@ VPNs) with a `ServerDownError`. When that happens,
 `add_split_comparison()` automatically falls back to a static
 side-by-side comparison that needs no server at all.
 ```
+
+## Inspecting and saving
+
+```python
+mv.layers          # list of dicts describing every layer added so far
+mv.show()           # render inline (Jupyter)
+mv.save("map.html")  # write a standalone HTML file
+```

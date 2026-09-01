@@ -1,9 +1,4 @@
-# PyGeoFetch Official Documentation
-
-
-<br>
-<img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/refs/heads/main/icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
-<br>
+# pygeofetch
 
 **A universal satellite data pipeline.** One CLI, one Python API, 24
 provider integrations — federated search, authenticated downloads,
@@ -35,6 +30,7 @@ examples for the corrected, working forms.
 - {doc}`core-features/providers` — all 24 providers, honest per-provider status
 - {doc}`core-features/optical-validation` — pre-download quality gates for optical imagery
 - {doc}`processing/insar` — the pure-Python InSAR chain (no SNAP/ISCE required)
+- {doc}`processing/insar-mexico-city-tutorial` — a complete, real, cell-by-cell InSAR run (search to validated subsidence map)
 - {doc}`reference/cli` — full command reference
 
 ```{toctree}
@@ -62,6 +58,7 @@ core-features/optical-validation
 :caption: Processing & Analysis
 
 processing/insar
+processing/insar-mexico-city-tutorial
 processing/sar
 processing/spectral-indices
 processing/landsat

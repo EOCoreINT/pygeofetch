@@ -1,4 +1,22 @@
-# YAML Pipeline Orchestration
+# Pipelines & Batch Processing
+
+```{note}
+**Two genuinely different things share the word "pipeline" in this
+codebase** — this page covers both, clearly separated:
+
+1. **YAML pipeline orchestration** (below) — `search` → `filter` →
+   `download` → `process` → `export`, run ad-hoc or on a cron
+   schedule via the CLI. Built for *acquisition* workflows.
+2. **The Python fluent processing pipeline** (`client.pipeline(...)`,
+   further down this page) — a chainable builder over
+   preprocessing/index/postprocessing/SAR operations
+   (`.clip().reproject().ndvi().cog().run(...)`). Built for
+   *processing* workflows on files you already have.
+
+There's also a third, simpler option for "run this same processing
+chain over many files in parallel" that isn't either of the above —
+see "Batch Processing" at the bottom of this page.
+```
 
 Define recurring satellite data workflows in a single YAML file.
 Schedule on cron, run ad-hoc, validate before committing, watch live
@@ -113,3 +131,132 @@ pygeofetch pipeline run weekly-sentinel2.yaml --step download
 Windows Task Scheduler on Windows. Run `pygeofetch pipeline
 list-scheduled` to confirm registration.
 ```
+
+---
+
+## Python Processing Pipeline — `client.pipeline(...)`
+
+A genuinely different capability from the YAML orchestration above: a
+**chainable builder** over the processing operations documented
+throughout {doc}`/processing/preprocessing`,
+{doc}`/processing/spectral-indices`, {doc}`/processing/postprocessing`,
+and {doc}`/processing/sar` — for processing files you already have,
+not for search/download orchestration.
+
+```python
+from pygeofetch import PyGeoFetch
+
+client = PyGeoFetch()
+
+result = (
+    client.pipeline("my-ndvi")
+    .clip(bbox=(-74.1, 40.6, -73.7, 40.9))
+    .reproject(crs="EPSG:4326")
+    .ndvi(red="B04", nir="B08")
+    .cog()
+    .run(input="scene.tif")
+)
+
+print(result.outputs)   # list of output paths, one per step
+```
+
+Each step's output feeds directly into the next step as input — a
+real chain, not independent calls that happen to be written
+sequentially. `.run(input=...)` executes every queued step in order
+and returns a `PipelineRunResult` with per-step status, output paths,
+and timing.
+
+### Every real, chainable step
+
+Nearly every operation documented elsewhere on this site is available
+as a pipeline step, grouped by where it's documented in full:
+
+| Category | Steps |
+|---|---|
+| Preprocessing ({doc}`/processing/preprocessing`) | `clip`, `reproject`, `resample`, `cloud_mask`, `cloud_fill`, `atmos`, `composite`, `mosaic`, `topo_correct`, `pansharpen`, `tile` |
+| Spectral indices ({doc}`/processing/spectral-indices`) | `ndvi`, `evi`, `ndwi`, `ndbi`, `ndsi`, `ndmi`, `nbr`, `dnbr`, `savi`, `mndwi`, `tct`, `pca`, `lst`, `albedo`, `band_math`, `stack`, `texture` |
+| Postprocessing ({doc}`/processing/postprocessing`) | `vectorize`, `smooth`, `regularize`, `zonal_stats`, `buffer`, `centroids`, `add_geometry_metrics`, `compress`, `cog` |
+| SAR ({doc}`/processing/sar`) | `despeckle`, `calibrate`, `flood_map`, `coherence` |
+
+Each step method accepts the exact same keyword arguments as its
+corresponding `client.preprocess`/`client.indices`/`client.post`/
+`client.sar` method documented on those pages — `.clip(bbox=...)`,
+`.ndvi(red=..., nir=...)`, etc. — since the pipeline builder is a thin
+queuing layer over those same real implementations, not a separate
+reimplementation.
+
+### From YAML
+
+```python
+from pygeofetch.processing.pipeline import ProcessingPipeline
+
+pl = ProcessingPipeline.from_yaml("ndvi_workflow.yaml", engine=client)
+result = pl.run(input="scene.tif")
+```
+
+```{danger}
+**Real bug found in the source's own docstring, verified by testing
+directly**: `ProcessingPipeline`'s class docstring shows
+`client.pipeline.from_yaml("ndvi_workflow.yaml").run()` as the usage
+example. `from_yaml` is a real `@classmethod` on `ProcessingPipeline`
+itself — `client.pipeline` is a bound *method* (it returns a new
+`ProcessingPipeline` instance when called), and Python methods don't
+have a `.from_yaml` attribute. Calling it exactly as the docstring
+shows raises `AttributeError: 'function' object has no attribute
+'from_yaml'` — confirmed by running it. The working form is
+`ProcessingPipeline.from_yaml(path, engine=client)`, shown above.
+```
+
+```{warning}
+This YAML format (a chain of processing steps for one file) is **not
+the same YAML format** as the acquisition-pipeline YAML at the top of
+this page (`search`/`filter`/`download`/`process`/`export` for a
+recurring cron job). Don't mix the two — a
+`weekly-sentinel2.yaml`-style file passed to
+`ProcessingPipeline.from_yaml()` won't produce the steps you expect,
+and vice versa.
+```
+
+---
+
+## Batch Processing — `client.batch`
+
+For "run the same processing chain over many files, in parallel" —
+simpler than either pipeline concept above when there's no need for
+scheduling or acquisition steps, just parallel fan-out over a file
+list.
+
+```python
+results = client.batch_process(
+    inputs=["scene1.tif", "scene2.tif", "scene3.tif"],
+    chain=[
+        ("clip", {"bbox": (-74.1, 40.6, -73.7, 40.9)}),
+        ("ndvi", {"red": "B04", "nir": "B08"}),
+        ("cog", {}),
+    ],
+    output_dir="./processed/",
+    parallel=4,
+)
+```
+
+`chain` is an ordered list of `(step_type, kwargs)` tuples — the same
+step names as the fluent pipeline builder above, applied to every
+input file independently (not chained *between* files, chained
+*within* each file). `on_error` (via `client.batch.process(...,
+on_error="skip")`, not exposed on the `client.batch_process(...)`
+shortcut) controls whether one failing file aborts the whole batch or
+is skipped so the rest still complete — default `"skip"`.
+
+### Arbitrary custom functions
+
+```python
+def my_proc(inp, out_dir, threshold=0.3):
+    # your own processing logic
+    return result
+
+results = client.batch.apply(my_proc, inputs, threshold=0.5, parallel=4)
+```
+
+`apply()` runs any function of your own — `(input_path, output_dir,
+**kwargs) -> result` — across a file list in parallel, for processing
+steps that don't already exist as a named pipeline step.

@@ -98,9 +98,9 @@ cfg = OpticalValidationConfig(
 | `check_snow_ice_cover` | `False` | Off by default — most providers don't report it consistently, and it's irrelevant to most AOIs. |
 | `max_snow_ice_pct` | `10.0` | Snow/ice cover threshold, percent. |
 | `check_required_bands` | `True` | Reject scenes missing any `required_bands`. |
-| `required_bands` | `["B02","B03","B04","B08","SCL"]` | Matched case-insensitively against the scene's asset keys. |
+| `required_bands` | `["B02","B03","B04","B08","SCL"]` | Matched via pygeofetch's real band-alias table — see the note below, not just a case-insensitive string match. |
 | `check_processing_level` | `True` | Reject scenes not at `expected_level`. |
-| `expected_level` | `"Level-2A"` | Matched loosely — `"L2A"`, `"Level-2A"`, `"S2MSI2A"`, and pygeofetch's own `ProcessingLevel.L2A` all compare equal. |
+| `expected_level` | `"Level-2A"` | Matched loosely — `"L2A"`, `"Level-2A"`, `"S2MSI2A"`, pygeofetch's own `ProcessingLevel.L2A`, and a STAC collection id like `"sentinel-2-l2a"` all compare equal — see the note below. |
 | `check_nodata_margins` | `False` | Heuristic: flag scenes where the AOI sits mostly in the scene's edge margin. Off by default to avoid false positives on legitimately edge-adjacent AOIs — see the note below. |
 | `nodata_margin_buffer_deg` | `0.01` | How far to shrink the footprint inward (degrees, ~1 km at the equator) before checking AOI overlap. |
 | `nodata_margin_min_aoi_fraction` | `0.5` | Minimum fraction of the AOI that must fall within the shrunk footprint to be considered safe. |
@@ -122,6 +122,63 @@ It catches the common "AOI clips the corner of the swath" case, not
 cloud-masked interior gaps — that's not a margin issue and isn't this
 check's job.
 ```
+
+```{danger}
+**Two real bugs, found from a real CLI run against real providers, are
+fixed as of this pass — both affected every result from every
+STAC-based provider (aws_earth, element84, planetary_computer,
+sentinel_hub) before the fix, causing `--validate-optical` to reject
+100% of real scenes regardless of actual quality.**
+
+1. **Band matching**: real Earth Search v1 / AWS Earth items expose
+   Sentinel-2 bands under semantic asset keys (`"red"`, `"green"`,
+   `"blue"`, `"nir"`, `"scl"`), not `"B04"`/`"B03"`/`"B02"`/`"B08"`/
+   `"SCL"`. `required_bands` matching now goes through pygeofetch's own
+   real band-alias table (`pygeofetch.models.satellite_data.
+   _ALIAS_TO_CANONICAL` — the same table `resolve_band_keys()` uses for
+   downloads), so `"red"` is correctly recognised as `"B04"`, etc.
+2. **Processing level**: `SatelliteData.from_stac_item()` never set
+   `processing_level` at all for any STAC provider — it silently
+   stayed `ProcessingLevel.UNKNOWN`. The validator's own fallback then
+   matched the wrong properties key (`s2:processing_baseline`, a
+   *version* string like `"05.10"`, not a level) as if it were the
+   processing level, since real Sentinel-2 STAC items don't reliably
+   expose a genuine `processing:level` field. Both are fixed: the
+   model now derives a real `ProcessingLevel` from the STAC collection
+   id (e.g. `"sentinel-2-l2a"` → `L2A`) when no explicit level
+   property exists, and the validator's fallback no longer touches
+   `s2:processing_baseline` at all.
+
+Neither fix changes `required_bands`/`expected_level`'s public
+defaults — real Sentinel-2 L2A scenes from these providers now
+correctly pass validation with the same default config that
+previously rejected all of them.
+```
+
+## AOI coverage and multi-tile satellites — not a bug, a real geometric fact
+
+If `check_aoi_coverage` rejects every result from a wide-swath,
+tiled satellite (Sentinel-2's MGRS tiles, Landsat's WRS-2 scenes), and
+your AOI spans a tile boundary, **this is the check working
+correctly, not a bug**. A single Sentinel-2 tile covering only the
+western half of your AOI genuinely cannot reach 80% AOI coverage on
+its own — no matter how good the actual scene is — because the other
+half of the AOI is served by a *different* tile entirely. Confirmed
+directly: a real search returning results from tiles `18TXK`,
+`18TXL`, `18TWK`, and `18TWL` for one bbox means that bbox spans a
+2×2 grid of tiles, and each individual scene's low coverage number is
+an accurate description of real geometry, not a defect.
+
+For AOIs that legitimately span multiple tiles:
+- Lower `min_coverage_ratio` to reflect that no single scene will ever
+  fully cover the AOI (e.g. `0.15`–`0.3` depending on how many tiles
+  the AOI spans), and rely on `--max-items`/multiple downloads to
+  build a full mosaic, **or**
+- Disable `check_aoi_coverage` for multi-tile searches and rely on the
+  other checks (bands, cloud cover, processing level, date range)
+  instead, **or**
+- Use a smaller AOI that fits within a single tile when the workflow
+  genuinely needs one scene, not a mosaic.
 
 ## Hard failures vs. warnings
 

@@ -4,6 +4,14 @@
 pip install "pygeofetch[insar]"
 ```
 
+```{tip}
+Looking for a complete, real, cell-by-cell worked example rather than
+an API reference? See
+{doc}`/processing/insar-mexico-city-tutorial` — a full search-to-
+validated-subsidence-map run, cross-referenced against a published
+result (Cigna & Tapete 2021).
+```
+
 Coregistration, interferogram formation, phase unwrapping, and SBAS
 time series inversion, in pure Python. No SNAP or ISCE required for
 the core pipeline.
@@ -191,6 +199,60 @@ gen = InterferogramGenerator(use_gpu=True)  # auto-detects; falls back to CPU cl
 Optional CuPy backend for coherence estimation and SBAS inversion's
 large matrix solve. `use_gpu` defaults to `False` — opt-in, not
 opt-out.
+
+## Risk mapping with real uncertainty quantification
+
+```python
+from pygeofetch.insar.analysis import RiskMapper
+
+mapper = RiskMapper(ts_result)   # a TimeSeriesResult from SBASTimeSeries.invert()
+risk_map = mapper.compute_risk(method="bayesian", confidence_level=0.95)
+
+mapper.plot_risk_map(risk_map, output="risk_map.png")
+mapper.export_geotiff("risk_map.tif")
+mapper.export_uncertainty("risk_uncertainty.tif")
+
+metrics = mapper.validate_risk_map(risk_map, validation_data=ground_truth_array)
+# {"rmse": ..., "mae": ..., "r2": ..., "coverage": ..., "sharpness": ...}
+```
+
+Four real, distinct uncertainty-quantification methods, not one
+formula presented four ways:
+
+| `method=` | Real basis |
+|---|---|
+| `"bayesian"` (default) | Genuine conjugate Normal-Normal Bayesian update on the trend/slope |
+| `"monte_carlo"` | Monte Carlo simulation, `n_simulations` draws |
+| `"bootstrap"` | **Residual** bootstrap resampling — not naive time-index resampling, which would double-count temporal autocorrelation in the residuals |
+| `"analytical"` | Closed-form analytical uncertainty propagation |
+
+`risk_function` defaults to a trend-magnitude-over-variability ratio
+but accepts any `(data_array, time_years) -> risk_array` callable, so
+a domain-specific risk definition (e.g. weighting recent
+acceleration more heavily) can be substituted directly.
+
+```{note}
+**Real bug fixed**: an earlier version resolved the input time series
+by *mutating the caller's own `ts_result` object* (setting new
+`.data`/`.times` attributes on it as a side effect of just
+constructing a `RiskMapper`) — a real risk of silently corrupting the
+caller's own code if that same `ts_result` object was reused
+elsewhere afterward. `RiskMapper.__init__` no longer mutates its
+input.
+```
+
+`RiskMapper` accepts a `TimeSeriesResult` from `SBASTimeSeries.invert()`
+directly (matches its `.displacement`/`.dates` attributes), or any
+object/dict exposing a 3D `(time, y, x)` array under one of
+`data`/`displacement`/`deformation`/`timeseries`/`stack` and a
+matching per-time-step label under one of
+`times`/`dates`/`time`/`date`/`acquisition_dates`/`date_list`.
+
+`validate_risk_map()` compares a computed risk map against real
+ground truth or reference data — `rmse`, `mae`, `r2` for accuracy,
+plus `coverage` and `sharpness` for calibration quality (does the
+stated confidence interval actually contain the true value the stated
+fraction of the time, and how tight is it).
 
 ## InSARProject — search to interferogram in a handful of calls
 

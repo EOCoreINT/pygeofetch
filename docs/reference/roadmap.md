@@ -48,6 +48,26 @@ have since been fixed, with real tests added for each:
   matplotlib type stubs) and a latent type mismatch it had been
   masking.
 
+## Found during this documentation pass, not yet fixed
+
+- **`monitor` CLI command group is real but completely unreachable** —
+  `pygeofetch/cli/monitor_commands.py` defines a working `monitor run`
+  / `monitor history` group, but it's never registered in
+  `pygeofetch/cli/main.py` (`cli.add_command(monitor)` is simply
+  missing). Confirmed by running `pygeofetch --help` directly — no
+  `monitor` entry appears. See {doc}`/reference/cli`.
+- **Two more real architectural duplications**, following the same
+  pattern as the `SARProcessor` one found earlier: `client.indices`
+  (`pygeofetch.processing.indices.SpectralIndices`, wired in) vs. the
+  standalone `pygeofetch.processor.indices.SpectralIndex` (spyndex-
+  backed, not wired in) have different call shapes entirely. See
+  {doc}`/processing/spectral-indices`.
+- **A real bug in `ProcessingPipeline`'s own class docstring**: its
+  usage example (`client.pipeline.from_yaml(...)`) doesn't work —
+  confirmed by running it (`AttributeError`). The real, working form
+  is `ProcessingPipeline.from_yaml(path, engine=client)`. See
+  {doc}`/reference/pipelines`.
+
 ## Added since this documentation audit
 
 - **Optical data validation and preflight system**

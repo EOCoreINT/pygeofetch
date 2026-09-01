@@ -67,6 +67,10 @@ pygeofetch download run \
 | `--overwrite` | flag | Overwrite existing files. Default: skip existing. |
 | `--notify` | string | `webhook:URL` or `email:ADDRESS`. Repeatable. |
 | `--json` | flag | Output results summary as JSON. |
+| `--validate-optical` | flag | Run optical preflight validation as a final gate before downloading. Rejected items are never attempted -- a `FAILED` result explaining why is returned in their place, at their original position, so output length always matches input. See {doc}`/core-features/optical-validation`. |
+| `--optical-max-cloud-cover` | float | Override the max cloud cover threshold used by `--validate-optical` (default 20.0). |
+| `--optical-min-coverage` | float | Override the min AOI coverage ratio used by `--validate-optical`, 0-1 (default 0.8). |
+| `--optical-required-bands` | string | Comma-separated required bands for `--validate-optical` (default `B02,B03,B04,B08,SCL`). |
 
 ## Band selection for Sentinel-2
 
