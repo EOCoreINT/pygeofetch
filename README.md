@@ -12,7 +12,7 @@
 [Quick Start](#-quick-start) · [Mexico City Case Study](#-case-study-mapping-mexico-city-land-subsidence-with-insar) · [Case Study Repo ↗](https://github.com/EOCoreINT/mexico-subsidence-project) · [Documentation](https://pygeofetch.readthedocs.io/en/latest/) · [Notebooks](#-notebooks)
 
 <br>
-<img src="icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
+<img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/refs/heads/main/icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
 <br>
 
 </div>
@@ -244,7 +244,7 @@ If you use PyGeoFetch in your research or operational work, please cite it using
   title        = {PyGeoFetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing},
   year         = {2026},
   publisher    = {Zenodo},
-  version      = {2.6.2.1},
+  version      = {2.6.2.3},
   doi          = {10.5281/zenodo.22087230},
   url          = {https://doi.org/10.5281/zenodo.22087230}
 }
