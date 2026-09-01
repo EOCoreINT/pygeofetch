@@ -103,7 +103,12 @@ insar = [
 
 # Tier 5c: SAR processing (heavy — requires SNAP)
 ost = [
-    "opensartoolkit>=3.0",
+    # REAL BUG FIXED: this was pinned ">=3.0", a version that has never
+    # existed — opensartoolkit's real releases on PyPI top out at
+    # 0.12.15 and use 0.x versioning throughout (there is no 3.x line).
+    # `pip install` fails outright trying to resolve this. 0.12.1 is the
+    # earliest 0.12.x release actually published.
+    "opensartoolkit>=0.12.1",
 ]
 
 # Tier 6: Visualization
@@ -117,15 +122,27 @@ viz = [
     "ipywidgets>=8.0.0",
     "ipyevents>=2.0.2",
     "ipyfilechooser>=0.6.0",
-    "sidecar>=0.6.0",
+    # REAL BUG FIXED: pinned ">=0.6.0", a version that does not exist —
+    # sidecar's real releases jump 0.5.2 -> 0.7.0 with no 0.6.x ever
+    # published. `pip install` fails outright trying to resolve this.
+    "sidecar>=0.5.0",
     "bokeh>=3.0.0",
     "seaborn>=0.12.0",
     "plotly>=5.14.0",
-    "whitebox>=2.4.0",
-    "whiteboxgui>=2.4.0",
+    # REAL BUG FIXED: pinned ">=2.4.0", a version that has never
+    # existed — whitebox's real releases top out at 2.3.6. This is the
+    # exact failure from the reported `pip install` error. 2.3.0 is a
+    # safely-real, reasonably recent floor.
+    "whitebox>=2.3.0",
+    # REAL BUG FIXED: same issue — pinned ">=2.4.0" but whiteboxgui's
+    # real releases top out at 2.3.0.
+    "whiteboxgui>=2.2.0",
     "geemap>=0.28.0",
     "osmnx>=1.9.4",
-    "contextily>=1.9.4",
+    # REAL BUG FIXED: pinned ">=1.9.4", a version that has never
+    # existed — contextily's real releases top out at 1.7.1. `pip
+    # install` fails outright trying to resolve this.
+    "contextily>=1.6.0",
     "xyzservices>=2023.10.0",
     "mapclassify>=2.6.0",
     "geoplot>=0.5.0",

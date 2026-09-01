@@ -114,6 +114,36 @@ def download() -> None:
     help='Comma-separated band names to download e.g. "B02,B03,B04" (default: all data assets).',
 )
 @click.option("--json", "as_json", is_flag=True, help="Output results summary as JSON.")
+@click.option(
+    "--validate-optical",
+    is_flag=True,
+    default=False,
+    help=(
+        "Run optical preflight validation as a final gate before "
+        "downloading (AOI coverage, cloud cover, required bands, "
+        "processing level, temporal bounds). Items that fail are "
+        "never attempted -- a failed result explaining why is "
+        "returned in their place, same position, so output length "
+        "always matches input."
+    ),
+)
+@click.option(
+    "--optical-max-cloud-cover",
+    default=None,
+    type=float,
+    help="Override the max cloud cover threshold used by --validate-optical (default 20.0).",
+)
+@click.option(
+    "--optical-min-coverage",
+    default=None,
+    type=float,
+    help="Override the min AOI coverage ratio used by --validate-optical, 0-1 (default 0.8).",
+)
+@click.option(
+    "--optical-required-bands",
+    default=None,
+    help="Comma-separated required bands for --validate-optical (default B02,B03,B04,B08,SCL).",
+)
 def download_run(
     from_search,
     scene_ids,
@@ -132,6 +162,10 @@ def download_run(
     overwrite,
     bands,
     as_json,
+    validate_optical,
+    optical_max_cloud_cover,
+    optical_min_coverage,
+    optical_required_bands,
 ) -> None:
     """
     Download satellite data products from a search results file or scene IDs.
@@ -151,6 +185,11 @@ def download_run(
           --notify webhook:https://hooks.slack.com/T01/B01/XYZ \\
           --notify email:user@example.com \\
           --on-failure skip
+
+      # With optical preflight validation as a final gate before downloading
+      pygeofetch download run \\
+          --from-search results.geojson --output ./data/ \\
+          --validate-optical --optical-max-cloud-cover 10
     """
     from pygeofetch.core.engine import PyGeoFetch
     from pygeofetch.core.searcher import FederatedSearcher
@@ -218,6 +257,18 @@ def download_run(
 
     sb = PyGeoFetch()
 
+    if validate_optical and (optical_max_cloud_cover, optical_min_coverage, optical_required_bands) != (None, None, None):
+        from pygeofetch.validation import OpticalValidationConfig
+
+        overrides = {}
+        if optical_max_cloud_cover is not None:
+            overrides["max_cloud_cover_pct"] = optical_max_cloud_cover
+        if optical_min_coverage is not None:
+            overrides["min_coverage_ratio"] = optical_min_coverage
+        if optical_required_bands is not None:
+            overrides["required_bands"] = [b.strip() for b in optical_required_bands.split(",")]
+        sb.optical_validation_config = OpticalValidationConfig(**overrides)
+
     # Load data
     if from_search:
         data_list = FederatedSearcher.load_results(Path(from_search))
@@ -273,7 +324,8 @@ def download_run(
 
         # Use sb.download() with the already-sliced data_list (respects --max-items)
         results = sb.download(
-            data_list, Path(output), options, item_done_callback=on_item_done
+            data_list, Path(output), options, item_done_callback=on_item_done,
+            validate_optical=validate_optical,
         )
 
     succeeded = [r for r in results if r.success]

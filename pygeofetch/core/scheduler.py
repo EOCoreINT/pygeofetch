@@ -261,19 +261,246 @@ class PipelineRunner:
         return results
 
     def _step_process(self, config: dict[str, Any], context: dict[str, Any]) -> Any:
-        """Placeholder for processing actions (atmospheric correction, NDVI, etc.)."""
-        actions = config if isinstance(config, list) else config.get("actions", [])
+        """
+        Run post-processing actions (reproject, NDVI, COG, clip, etc.) on
+        the files produced by a prior ``download`` step.
+
+        Reuses the exact same action executor the CLI's ``--post-process``
+        flag and ``DownloadOptions.post_process`` use
+        (``AdaptiveDownloader._run_post_process`` /
+        ``_apply_action``) — this is real processing, not a placeholder.
+        Accepts the same syntax as the CLI: a comma-separated string
+        (``"reproject:EPSG:4326,cog"``), a list of such strings, or a
+        list of dicts/``PostProcessAction`` objects.
+        """
+        from pygeofetch.models.download_task import DownloadOptions, PostProcessAction
+
+        items = context.get("download") or []
+        if not items:
+            logger.warning(
+                "    process: no downloaded items to process — run a "
+                "download step first"
+            )
+            return []
+
+        raw = config if isinstance(config, (list, str)) else config.get("actions", [])
+        if isinstance(raw, str):
+            tokens: list[Any] = [t.strip() for t in raw.split(",") if t.strip()]
+        elif isinstance(raw, list):
+            tokens = raw
+        else:
+            tokens = []
+
+        pp_actions: list[PostProcessAction] = []
+        for token in tokens:
+            if isinstance(token, PostProcessAction):
+                pp_actions.append(token)
+            elif isinstance(token, dict):
+                pp_actions.append(PostProcessAction(**token))
+            elif isinstance(token, str):
+                if ":" in token:
+                    name, _, val = token.partition(":")
+                    pp_actions.append(
+                        PostProcessAction(action=name.strip(), params={"value": val.strip()})
+                    )
+                else:
+                    pp_actions.append(PostProcessAction(action=token.strip()))
+
+        if not pp_actions:
+            logger.warning("    process: no actions configured — nothing to do")
+            return items
+
+        options = DownloadOptions(post_process=pp_actions)
+        processed = []
+        for result in items:
+            if not getattr(result, "success", True):
+                processed.append(result)
+                continue
+            try:
+                updated = self.engine.downloader._run_post_process(result, options)
+                processed.append(updated)
+            except Exception as exc:
+                logger.error(
+                    f"    process: failed for "
+                    f"{getattr(result, 'data_id', '<unknown>')}: {exc}"
+                )
+                processed.append(result)
+
         logger.info(
-            f"    process: {len(actions)} actions (stub — integrate custom processors)"
+            f"    process: {[a.action for a in pp_actions]} applied to "
+            f"{len(processed)} items"
         )
-        return {"actions": actions, "status": "stub"}
+        return processed
 
     def _step_export(self, config: dict[str, Any], context: dict[str, Any]) -> Any:
-        """Placeholder for export step."""
+        """
+        Push processed/downloaded files to their real destination — local
+        disk, S3 (``s3://``), GCS (``gs://``), and/or a webhook
+        notification. Real transfers, not a placeholder.
+        """
+        items = context.get("process") or context.get("download") or []
         destination = config.get("destination", "./export")
-        fmt = config.get("format", "geotiff")
-        logger.info(f"    export: format={fmt!r} → {destination} (stub)")
-        return {"format": fmt, "destination": destination, "status": "stub"}
+        fmt = config.get("format", "original")
+
+        if not items:
+            logger.warning("    export: no items to export")
+            return {"exported": 0, "destination": destination, "status": "empty"}
+
+        all_paths: list[Path] = []
+        for result in items:
+            paths = getattr(result, "output_paths", None) or (
+                [result.output_path] if getattr(result, "output_path", None) else []
+            )
+            all_paths.extend(Path(p) for p in paths if p is not None)
+
+        if not all_paths:
+            logger.warning("    export: items had no output files to export")
+            return {"exported": 0, "destination": destination, "status": "empty"}
+
+        if destination.startswith("s3://"):
+            exported = self._export_to_s3(all_paths, destination)
+        elif destination.startswith("gs://"):
+            exported = self._export_to_gcs(all_paths, destination)
+        else:
+            exported = self._export_to_local(all_paths, destination)
+
+        logger.info(
+            f"    export: {len(exported)}/{len(all_paths)} files → "
+            f"{destination} (format={fmt!r})"
+        )
+
+        notify_cfg = config.get("notify")
+        if notify_cfg:
+            self._send_export_notifications(
+                notify_cfg, destination, len(exported), len(all_paths)
+            )
+
+        return {
+            "format": fmt,
+            "destination": destination,
+            "exported": len(exported),
+            "total": len(all_paths),
+            "status": "completed" if exported else "failed",
+        }
+
+    @staticmethod
+    def _export_to_local(paths: list[Path], destination: str) -> list[str]:
+        import shutil
+
+        dest_dir = Path(destination).expanduser()
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        exported = []
+        for p in paths:
+            if not p.exists():
+                logger.warning(f"    export: source file missing, skipping: {p}")
+                continue
+            target = dest_dir / p.name
+            try:
+                shutil.copy2(p, target)
+                exported.append(str(target))
+            except Exception as exc:
+                logger.warning(f"    export: failed to copy {p.name}: {exc}")
+        return exported
+
+    @staticmethod
+    def _export_to_s3(paths: list[Path], destination: str) -> list[str]:
+        try:
+            import boto3
+        except ImportError:
+            logger.error(
+                "    export: boto3 not installed — install with `pip "
+                "install boto3` to export to S3"
+            )
+            return []
+
+        without_scheme = destination[len("s3://") :]
+        bucket, _, prefix = without_scheme.partition("/")
+        if not bucket:
+            logger.error(
+                f"    export: invalid S3 destination {destination!r} — "
+                "expected s3://bucket/prefix/"
+            )
+            return []
+
+        s3 = boto3.client("s3")
+        exported = []
+        for p in paths:
+            if not p.exists():
+                logger.warning(f"    export: source file missing, skipping: {p}")
+                continue
+            key = f"{prefix.rstrip('/')}/{p.name}" if prefix else p.name
+            try:
+                s3.upload_file(str(p), bucket, key)
+                exported.append(f"s3://{bucket}/{key}")
+            except Exception as exc:
+                logger.warning(f"    export: failed to upload {p.name} to S3: {exc}")
+        return exported
+
+    @staticmethod
+    def _export_to_gcs(paths: list[Path], destination: str) -> list[str]:
+        try:
+            from google.cloud import storage
+        except ImportError:
+            logger.error(
+                "    export: google-cloud-storage not installed — install "
+                "with `pip install google-cloud-storage` to export to GCS. "
+                "This is not currently a pygeofetch dependency."
+            )
+            return []
+
+        without_scheme = destination[len("gs://") :]
+        bucket_name, _, prefix = without_scheme.partition("/")
+        if not bucket_name:
+            logger.error(
+                f"    export: invalid GCS destination {destination!r} — "
+                "expected gs://bucket/prefix/"
+            )
+            return []
+
+        client = storage.Client()
+        bucket = client.bucket(bucket_name)
+        exported = []
+        for p in paths:
+            if not p.exists():
+                logger.warning(f"    export: source file missing, skipping: {p}")
+                continue
+            key = f"{prefix.rstrip('/')}/{p.name}" if prefix else p.name
+            try:
+                blob = bucket.blob(key)
+                blob.upload_from_filename(str(p))
+                exported.append(f"gs://{bucket_name}/{key}")
+            except Exception as exc:
+                logger.warning(f"    export: failed to upload {p.name} to GCS: {exc}")
+        return exported
+
+    @staticmethod
+    def _send_export_notifications(
+        notify_cfg: Any, destination: str, exported_count: int, total_count: int
+    ) -> None:
+        import httpx
+
+        targets = notify_cfg if isinstance(notify_cfg, list) else [notify_cfg]
+        payload = {
+            "event": "pipeline_export_complete",
+            "destination": destination,
+            "exported": exported_count,
+            "total": total_count,
+        }
+        for target in targets:
+            if isinstance(target, dict) and "webhook" in target:
+                url = target["webhook"]
+            elif isinstance(target, str) and target.startswith("webhook:"):
+                url = target[len("webhook:") :]
+            elif isinstance(target, str) and target.startswith("http"):
+                url = target
+            else:
+                logger.debug(f"    export: skipping non-webhook notify target: {target}")
+                continue
+            try:
+                httpx.post(url, json=payload, timeout=10)
+                logger.info(f"    export: notified {url}")
+            except Exception as exc:
+                logger.warning(f"    export: notification to {url} failed: {exc}")
 
     # ------------------------------------------------------------------
     # Helpers

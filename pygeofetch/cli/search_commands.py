@@ -67,7 +67,7 @@ def search() -> None:
 @click.option(
     "--polarisation",
     default=None,
-    help="SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as --product-type.",
+    help='SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as --product-type.',
 )
 @click.option("--max-results", "-n", default=100, show_default=True)
 @click.option(
@@ -100,10 +100,36 @@ def search() -> None:
     show_default=True,
     help="How to handle provider failures.",
 )
-@click.option(
-    "--timeout", default=60, show_default=True, help="Per-provider timeout in seconds."
-)
+@click.option("--timeout", default=60, show_default=True, help="Per-provider timeout in seconds.")
 @click.option("--no-cache", is_flag=True, default=False, help="Bypass result cache.")
+@click.option(
+    "--validate-optical",
+    is_flag=True,
+    default=False,
+    help=(
+        "Run optical preflight validation (AOI coverage, cloud cover, "
+        "required bands, processing level, temporal bounds) on results "
+        "before returning them. Not appropriate for SAR/InSAR searches "
+        "-- the default required bands are optical band names."
+    ),
+)
+@click.option(
+    "--optical-max-cloud-cover",
+    default=None,
+    type=float,
+    help="Override the max cloud cover threshold used by --validate-optical (default 20.0).",
+)
+@click.option(
+    "--optical-min-coverage",
+    default=None,
+    type=float,
+    help="Override the min AOI coverage ratio used by --validate-optical, 0-1 (default 0.8).",
+)
+@click.option(
+    "--optical-required-bands",
+    default=None,
+    help="Comma-separated required bands for --validate-optical (default B02,B03,B04,B08,SCL).",
+)
 def search_run(
     bbox,
     geometry_file,
@@ -125,6 +151,10 @@ def search_run(
     on_provider_failure,
     timeout,
     no_cache,
+    validate_optical,
+    optical_max_cloud_cover,
+    optical_min_coverage,
+    optical_required_bands,
 ) -> None:
     """
     Search for satellite imagery across one or more providers.
@@ -146,6 +176,11 @@ def search_run(
           --geometry-file area.geojson \\
           --cql2 "eo:cloud_cover < 5 AND platform = 'sentinel-2b'" \\
           --format geoparquet --output results.parquet
+
+      # With optical preflight validation (skip cloudy/off-target/wrong-level scenes)
+      pygeofetch search run \\
+          --bbox "-74,40,-73,41" --cloud-cover 0-100 \\
+          --validate-optical --optical-max-cloud-cover 10 --optical-min-coverage 0.9
     """
     from pygeofetch.core.engine import PyGeoFetch
     from pygeofetch.models.search_query import BoundingBox, SearchQuery
@@ -245,10 +280,25 @@ def search_run(
 
     sb = PyGeoFetch()
 
+    if validate_optical and (optical_max_cloud_cover, optical_min_coverage, optical_required_bands) != (None, None, None):
+        from pygeofetch.validation import OpticalValidationConfig
+
+        overrides = {}
+        if optical_max_cloud_cover is not None:
+            overrides["max_cloud_cover_pct"] = optical_max_cloud_cover
+        if optical_min_coverage is not None:
+            overrides["min_coverage_ratio"] = optical_min_coverage
+        if optical_required_bands is not None:
+            overrides["required_bands"] = [b.strip() for b in optical_required_bands.split(",")]
+        sb.optical_validation_config = OpticalValidationConfig(**overrides)
+
     with console.status(
         f"[cyan]Searching {len(provider_list or [])} provider(s)...[/]"
     ):
-        results = sb.search(query, providers=provider_list, use_cache=not no_cache)
+        results = sb.search(
+            query, providers=provider_list, use_cache=not no_cache,
+            validate_optical=validate_optical,
+        )
 
     if not results:
         console.print("[yellow]No results found.[/]")

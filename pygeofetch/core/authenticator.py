@@ -30,6 +30,8 @@ from pygeofetch.models.user_auth import AuthSession, AuthType, Credentials
 if TYPE_CHECKING:
     import builtins
 
+    from cryptography.fernet import Fernet
+
 logger = get_logger(__name__)
 
 
@@ -45,8 +47,12 @@ class CredentialStore:
     def __init__(self, storage_backend: str = "keyring") -> None:
         self.storage_backend = storage_backend
         self._config_dir = Path.home() / ".pygeofetch"
-        self._cred_file = self._config_dir / "credentials.json"
+        self._cred_file = self._config_dir / "credentials.enc"
+        self._legacy_cred_file = self._config_dir / "credentials.json"
+        self._key_file = self._config_dir / "credentials.key"
         self._in_memory: dict[str, dict[str, Any]] = {}
+        self._fernet: Fernet | None = None  # lazily initialized — see _get_fernet()
+        self._migrating = False  # re-entrancy guard for _migrate_legacy_file_if_needed
 
     def save(self, provider: str, credentials: dict[str, Any]) -> None:
         """Persist credentials for a provider."""
@@ -126,7 +132,80 @@ class CredentialStore:
         except Exception:
             return self._delete_file(provider)
 
+    _SENSITIVE_FIELDS = ("password", "api_key", "token", "secret_key", "client_secret")
+
+    def _get_fernet(self) -> Fernet:
+        """
+        Return a cached Fernet instance, generating and persisting a new
+        local encryption key on first use.
+
+        REAL BUG FIXED: this file backend previously used
+        ``base64.b64encode`` on sensitive fields with a comment stating
+        outright "Basic obfuscation (not encryption)" -- base64 is
+        trivially reversible by anyone who can read the file, with no
+        key required, and the docs previously (and inaccurately) claimed
+        this path used Fernet AES-128-CBC. It now genuinely does.
+        """
+        if self._fernet is not None:
+            return self._fernet
+        from cryptography.fernet import Fernet
+
+        self._config_dir.mkdir(parents=True, exist_ok=True)
+        if self._key_file.exists():
+            key = self._key_file.read_bytes()
+        else:
+            key = Fernet.generate_key()
+            self._key_file.write_bytes(key)
+            self._key_file.chmod(0o600)
+        self._fernet = Fernet(key)
+        return self._fernet
+
+    def _migrate_legacy_file_if_needed(self) -> None:
+        """
+        One-time transparent migration from the old base64-"obfuscated"
+        ``credentials.json`` to the new Fernet-encrypted
+        ``credentials.enc``, so existing users don't lose stored
+        credentials when upgrading. Runs at most once: after migration,
+        the legacy file is left in place but unused (never read again
+        once ``credentials.enc`` exists) rather than deleted, in case a
+        user needs to roll back.
+        """
+        if self._cred_file.exists() or not self._legacy_cred_file.exists() or self._migrating:
+            return
+        self._migrating = True
+        try:
+            try:
+                legacy_data = json.loads(self._legacy_cred_file.read_text())
+            except Exception as exc:
+                logger.warning(f"Could not read legacy credentials file for migration: {exc}")
+                return
+
+            migrated = 0
+            for provider, creds in legacy_data.items():
+                if not isinstance(creds, dict):
+                    continue
+                plain = dict(creds)
+                if plain.pop("__obfuscated", False):
+                    for k in self._SENSITIVE_FIELDS:
+                        if k in plain:
+                            try:
+                                plain[k] = base64.b64decode(str(plain[k]).encode()).decode()
+                            except Exception:
+                                pass
+                self._save_file(provider, plain)
+                migrated += 1
+            if migrated:
+                logger.info(
+                    f"Migrated {migrated} provider credential(s) from the old "
+                    f"{self._legacy_cred_file.name} (base64) to the new "
+                    f"{self._cred_file.name} (Fernet-encrypted). The old file "
+                    "was left in place, unused, and can be deleted manually."
+                )
+        finally:
+            self._migrating = False
+
     def _save_file(self, provider: str, credentials: dict[str, Any]) -> None:
+        self._migrate_legacy_file_if_needed()
         self._config_dir.mkdir(parents=True, exist_ok=True)
         existing: dict[str, Any] = {}
         if self._cred_file.exists():
@@ -134,19 +213,21 @@ class CredentialStore:
                 existing = json.loads(self._cred_file.read_text())
             except Exception:
                 pass
-        # Basic obfuscation (not encryption) - passwords stored as b64
-        obfuscated = {}
+
+        fernet = self._get_fernet()
+        encrypted = {}
         for k, v in credentials.items():
-            if k in ("password", "api_key", "token", "secret_key", "client_secret"):
-                obfuscated[k] = base64.b64encode(str(v).encode()).decode()
+            if k in self._SENSITIVE_FIELDS:
+                encrypted[k] = fernet.encrypt(str(v).encode()).decode()
             else:
-                obfuscated[k] = v
-        existing[provider] = {"__obfuscated": True, **obfuscated}
+                encrypted[k] = v
+        existing[provider] = {"__encrypted": True, **encrypted}
         self._cred_file.write_text(json.dumps(existing, indent=2))
         self._cred_file.chmod(0o600)
-        logger.debug(f"Credentials for {provider!r} saved to {self._cred_file}")
+        logger.debug(f"Credentials for {provider!r} saved to {self._cred_file} (encrypted)")
 
     def _load_file(self, provider: str) -> dict[str, Any] | None:
+        self._migrate_legacy_file_if_needed()
         if not self._cred_file.exists():
             return None
         try:
@@ -154,19 +235,29 @@ class CredentialStore:
             creds = data.get(provider)
             if not creds:
                 return None
+            if creds.get("__encrypted"):
+                creds = {k: v for k, v in creds.items() if k != "__encrypted"}
+                fernet = self._get_fernet()
+                decoded = {}
+                for k, v in creds.items():
+                    if k in self._SENSITIVE_FIELDS:
+                        try:
+                            decoded[k] = fernet.decrypt(str(v).encode()).decode()
+                        except Exception:
+                            decoded[k] = v
+                    else:
+                        decoded[k] = v
+                return decoded
+            # Legacy plain/base64 entries encountered directly in
+            # credentials.enc (shouldn't normally happen, but handled
+            # rather than silently failing).
             if creds.get("__obfuscated"):
                 creds = {k: v for k, v in creds.items() if k != "__obfuscated"}
                 decoded = {}
                 for k, v in creds.items():
-                    if k in (
-                        "password",
-                        "api_key",
-                        "token",
-                        "secret_key",
-                        "client_secret",
-                    ):
+                    if k in self._SENSITIVE_FIELDS:
                         try:
-                            decoded[k] = base64.b64decode(v.encode()).decode()
+                            decoded[k] = base64.b64decode(str(v).encode()).decode()
                         except Exception:
                             decoded[k] = v
                     else:
@@ -447,11 +538,9 @@ class AuthManager:
                 {
                     "provider": provider,
                     "has_session": session is not None and session.is_valid,
-                    "session_expires": (
-                        session.expires_at.isoformat()
-                        if session and session.expires_at
-                        else None
-                    ),
+                    "session_expires": session.expires_at.isoformat()
+                    if session and session.expires_at
+                    else None,
                 }
             )
         return result

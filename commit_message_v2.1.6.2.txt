@@ -1,0 +1,148 @@
+fix: real provider integrations, pipeline execution, credential encryption, and dependency pins
+
+This covers the work completed and verified so far toward v2.1.6.2.
+It does NOT include the remaining provider audit (digitalglobe,
+earth_explorer_additional, geoserver_generic, inpe_cbers,
+isro_bhuvan, jaxa_earth, alaska_satellite_facility, maxar_gbdx still
+need the same treatment) -- that continues in a follow-up.
+
+Pipeline execution (pygeofetch/core/scheduler.py):
+- _step_process and _step_export were stub implementations that
+  logged a message and returned {"status": "stub"} without doing any
+  real work. Both now delegate to real, tested logic: process reuses
+  the same action executor (AdaptiveDownloader._run_post_process /
+  _apply_action) that DownloadOptions.post_process and the CLI's
+  --post-process flag already use; export genuinely copies files to
+  local disk, uploads to S3 (boto3) or GCS (google-cloud-storage,
+  clear error if not installed), and can POST a webhook notification
+  on completion.
+- Added tests/test_pipeline_process_export.py (11 tests) verifying
+  real files land on disk, not just that the code runs without
+  raising.
+
+Circuit breaker (pygeofetch/core/searcher.py):
+- CircuitBreaker was instantiated per-provider but never invoked
+  anywhere in the request path -- contributed zero actual resilience.
+  Root cause was two-fold: the breaker itself was never called, AND
+  get_provider() constructed a brand-new provider instance (with a
+  fresh, always-zeroed breaker) on every single search call, so
+  failure counts could never have accumulated even if something had
+  called it. Fixed both together: FederatedSearcher now actually uses
+  its own _provider_instances cache (previously declared but unused)
+  so provider instances -- and their breakers -- persist across
+  calls, and _search_provider() wraps the real provider.search(...)
+  call in `with provider._circuit_breaker:`.
+- Added tests/test_circuit_breaker_wiring.py (6 tests), including one
+  that drives 5 real failures through the actual code path and
+  confirms the breaker opens and fails fast (CircuitBreakerOpenError)
+  on the 6th call, and one confirming a tripped breaker degrades
+  gracefully in the full multi-provider search() path rather than
+  crashing it.
+
+Credential encryption (pygeofetch/core/authenticator.py):
+- The file-backend credential store's own source comment read "Basic
+  obfuscation (not encryption) - passwords stored as b64" -- base64
+  is trivially reversible by anyone who can read the file, with no
+  key required. Replaced with real Fernet symmetric encryption: a
+  random key is generated on first use and stored separately at
+  ~/.pygeofetch/credentials.key (chmod 0600), credentials move from
+  credentials.json to credentials.enc (chmod 0600), and existing
+  users' old base64-stored credentials are migrated transparently on
+  first use (old file left in place, unused, deletable manually).
+- PyGeoFetch()'s default auth_backend is still "file" (unchanged) --
+  only what that backend actually does to protect stored data
+  changed. auth_backend="keyring" remains preferable where a real OS
+  keyring is available.
+- Added tests/test_credential_encryption.py (8 tests), including one
+  that proves the stored secret is NOT recoverable via a bare base64
+  decode (the old scheme's exact failure mode), and migration tests.
+  Also fixed a real infinite-recursion bug found while writing these
+  tests: the migration guard checked file existence, but the file
+  didn't exist yet on the first recursive _save_file call during
+  migration itself -- fixed with a proper re-entrancy flag.
+
+Airbus OneAtlas provider (pygeofetch/providers/airbus_oneatlas.py):
+- Full rewrite grounded in Airbus's real, verified OneAtlas Data
+  Living Library API (auth token endpoint, real /opensearch search
+  endpoint and parameters, real response shapes for both dict and
+  list forms of imagesGetBuffer). Previously: authenticate() never
+  called any real endpoint (wrapped the raw API key as a fake bearer
+  token), search() hit a fictional endpoint on the wrong host with
+  parameter names the real API doesn't recognise, and the result
+  parser never populated `assets` at all -- so download() always
+  failed with "No assets downloaded" regardless of credentials.
+- Added tests/test_airbus_oneatlas.py (11 tests) using response
+  payloads taken directly from Airbus's own documented examples.
+
+NOAA Big Data provider (pygeofetch/providers/noaa_big_data.py):
+- Full rewrite. Previously called a fictional "/search" REST endpoint
+  on the bucket's own hostname (a plain public S3 bucket is not a
+  search API) and never populated a downloadable asset. Now lists
+  real S3 object keys (public, unsigned/anonymous requests via boto3)
+  under the real year/julian-day/hour partition layout, with real
+  filename parsing and a genuine, directly-downloadable HTTPS href
+  per result.
+- Added tests/test_noaa_big_data.py (8 tests), including one
+  confirming the real documented filename format parses correctly.
+
+Crash bug affecting esa_scihub and google_earth_engine:
+- Both providers called self._check_integration_verified(), a method
+  that does not exist anywhere in this codebase -- every single call
+  to search() or download() on either provider crashed with
+  AttributeError, unconditionally, regardless of credentials.
+- esa_scihub: its real target (Copernicus Open Access Hub,
+  apihub.copernicus.eu) is a confirmed-decommissioned service
+  (2023-11-02). Rather than fake a working integration against a dead
+  host, it now fails fast with a clear message pointing to the
+  `copernicus` provider instead.
+- google_earth_engine: Earth Engine's real API is structurally
+  different from the simple REST search+download template this file
+  was copied from (Google service-account JWT auth, an asset/
+  computation API rather than a "/search" endpoint). Rather than
+  rush an unverified integration, it now fails immediately with a
+  clear message describing exactly what real integration work
+  remains, instead of either crashing or silently pretending to work.
+- Added tests/test_esa_scihub.py (6 tests) and
+  tests/test_google_earth_engine.py (6 tests) confirming the crash is
+  gone and both fail honestly rather than silently.
+
+Shared test infrastructure (tests/test_provider_geometry_audit.py):
+- Removed airbus_oneatlas and noaa_big_data from the shared,
+  parametrized SHARED_PATTERN_PROVIDERS list: both now have bespoke,
+  real-API-grounded parsers (Airbus's real response has no flat
+  top-level bbox field; NOAA's "items" are S3 keys, not GeoJSON
+  features) and no longer share the generic dict-based _parse_item()
+  shape this test suite assumes. Same precedent already established
+  for terrabotics in this same file.
+
+Dependency pins (pyproject.toml):
+- 5 packages were pinned to minimum versions that have never existed
+  on PyPI, breaking `pip install` outright for anyone installing the
+  affected extras (this is the exact failure the user hit with
+  whitebox>=2.4.0):
+    whitebox        >=2.4.0  -> >=2.3.0  (real max 2.3.6)
+    whiteboxgui     >=2.4.0  -> >=2.2.0  (real max 2.3.0)
+    sidecar         >=0.6.0  -> >=0.5.0  (0.6.0 never existed; jumps 0.5.2 -> 0.7.0)
+    contextily      >=1.9.4  -> >=1.6.0  (real max 1.7.1)
+    opensartoolkit  >=3.0    -> >=0.12.1 (real package has never used 3.x versioning; max 0.12.15)
+- Verified with a real `pip install --dry-run` across every extra
+  combined (full, viz-3d, test, insar-full, ost) -- confirmed a
+  complete, successful dependency resolution, not just individually
+  plausible version numbers.
+
+Documentation:
+- Full 28-page Read the Docs site built (Getting Started, Core
+  Features, Processing & Analysis, Visualization, Reference), with
+  every code example checked against real source rather than copied
+  from the previous marketing site. Corrected several examples that
+  would have failed if copy-pasted (lowercase pygeofetch() vs real
+  PyGeoFetch class; SearchQuery/DownloadOptions field names that
+  don't exist; PostProcessAction construction).
+- Updated the pipeline/security/error-handling/roadmap pages to
+  describe the fixes above as resolved rather than as open bugs.
+- Added .readthedocs.yaml + docs/conf.py (Sphinx, MyST, autodoc with
+  mocked heavy optional deps) -- verified with a real sphinx-build
+  from a fresh checkout, not just written and assumed correct.
+
+Full test suite: 429 passed, 0 failed, stable across repeated runs
+(up from 377 at the start of this pass).

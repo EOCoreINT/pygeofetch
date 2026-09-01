@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import logging
 from builtins import str
+import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
-
+from typing import Any, Optional, Tuple, Union,Dict, List
 import numpy as np
 
 logger = logging.getLogger("pygeofetch.viz.plot")
@@ -105,9 +104,9 @@ class Plotter:
             import pyvista as pv
         except ImportError as exc:
             raise ImportError(
-                "plot_3d_terrain_interactive() requires PyVista: "
+                'plot_3d_terrain_interactive() requires PyVista: '
                 'pip install "pyvista[jupyter]" (the [jupyter] extra is '
-                "needed for HTML export via output=...)"
+                'needed for HTML export via output=...)'
             ) from exc
 
         def _load(source):
@@ -161,8 +160,13 @@ class Plotter:
 
         warped = grid.warp_by_scalar("elevation", factor=vert_exaggeration)
 
-        plotter = pv.Plotter(off_screen=output is not None, window_size=window_size)
-        plotter.add_mesh(warped, scalars=scalars_name, cmap=cmap, show_scalar_bar=True)
+        plotter = pv.Plotter(off_screen=output is not None, window_size=list(window_size))
+        # PyVista's own type stub narrows `cmap` to a fixed Literal set of
+        # known colormap names for editor autocomplete -- at runtime it
+        # accepts any registered matplotlib colormap name string, which is
+        # exactly what `colormap`/`drape_colormap` (both plain `str`
+        # parameters on this method) already are. Not a real type error.
+        plotter.add_mesh(warped, scalars=scalars_name, cmap=cmap, show_scalar_bar=True)  # type: ignore[arg-type]
         plotter.set_background("white")
 
         if output is not None:
@@ -245,12 +249,7 @@ class Plotter:
                     nodata = src.nodata
                     if nodata is not None:
                         arr = np.where(arr == nodata, np.nan, arr)
-                    ext = [
-                        src.bounds.left,
-                        src.bounds.right,
-                        src.bounds.bottom,
-                        src.bounds.top,
-                    ]
+                    ext = [src.bounds.left, src.bounds.right, src.bounds.bottom, src.bounds.top]
                 return arr, ext
             return np.asarray(source, dtype=np.float32), None
 
@@ -298,18 +297,11 @@ class Plotter:
         lon_mesh, lat_mesh = np.meshgrid(lon, lat)
 
         ls = LightSource(azdeg=azimuth, altdeg=altitude)
-        rgb = ls.shade(
-            dem_ds,
-            cmap=plt.get_cmap(colormap),
-            vert_exag=vert_exaggeration,
-            blend_mode="soft",
-        )
+        rgb = ls.shade(dem_ds, cmap=plt.get_cmap(colormap), vert_exag=vert_exaggeration, blend_mode="soft")
 
         if drape_arr is not None:
             drape_ds = drape_arr[::step, ::step]
-            drape_norm = plt.Normalize(
-                vmin=np.nanmin(drape_ds), vmax=np.nanmax(drape_ds)
-            )
+            drape_norm = plt.Normalize(vmin=np.nanmin(drape_ds), vmax=np.nanmax(drape_ds))
             drape_rgba = plt.get_cmap(drape_colormap)(drape_norm(drape_ds))
             valid = ~np.isnan(drape_ds)
             blended_rgb = np.where(
@@ -322,14 +314,8 @@ class Plotter:
         fig = plt.figure(figsize=self._figsize)
         ax = fig.add_subplot(111, projection="3d")
         ax.plot_surface(
-            lon_mesh,
-            lat_mesh,
-            dem_ds,
-            facecolors=rgb,
-            rstride=1,
-            cstride=1,
-            antialiased=True,
-            shade=False,
+            lon_mesh, lat_mesh, dem_ds, facecolors=rgb,
+            rstride=1, cstride=1, antialiased=True, shade=False,
         )
         ax.set_title(title or "3D Terrain", fontsize=13)
         if plot_extent is not None:
@@ -341,6 +327,8 @@ class Plotter:
 
         return self._save_or_show(fig, output)
 
+    
+    
     def plot_terrain_summary(
         self,
         dem: Union[str, Path, np.ndarray],
@@ -396,6 +384,7 @@ class Plotter:
             )
         """
         import numpy as np
+        import matplotlib.pyplot as plt
         from matplotlib.colors import LightSource
 
         plt = _require_matplotlib()
@@ -413,12 +402,7 @@ class Plotter:
                     nodata = _s.nodata
                     if nodata is not None:
                         arr = np.where(arr == nodata, np.nan, arr)
-                    extent = [
-                        _s.bounds.left,
-                        _s.bounds.right,
-                        _s.bounds.bottom,
-                        _s.bounds.top,
-                    ]
+                    extent = [_s.bounds.left, _s.bounds.right, _s.bounds.bottom, _s.bounds.top]
                     return arr, extent
             arr = np.asarray(src, dtype=np.float32)
             return arr, None
@@ -426,9 +410,7 @@ class Plotter:
         # ─── Load DEM ──────────────────────────────────────────────────────────
         dem_arr, dem_extent = _load_raster(dem)
         if dem_extent is None:
-            raise ValueError(
-                "DEM extent could not be determined. Provide a GeoTIFF for the DEM."
-            )
+            raise ValueError("DEM extent could not be determined. Provide a GeoTIFF for the DEM.")
 
         # ─── Hillshade ─────────────────────────────────────────────────────────
         if hillshade is not None:
@@ -449,11 +431,7 @@ class Plotter:
             slope_arr = np.degrees(np.arctan(np.sqrt(grad_x**2 + grad_y**2)))
 
         # ─── Steep percentage ──────────────────────────────────────────────────
-        steep_pct = (
-            100
-            * np.sum((slope_arr > steep_threshold) & np.isfinite(slope_arr))
-            / np.sum(np.isfinite(slope_arr))
-        )
+        steep_pct = 100 * np.sum((slope_arr > steep_threshold) & np.isfinite(slope_arr)) / np.sum(np.isfinite(slope_arr))
 
         # ─── Load diff(s) ─────────────────────────────────────────────────────
         diff_data = {}
@@ -471,48 +449,26 @@ class Plotter:
         axes[0, 0].set_title(f"Hillshade ({primary_source.upper()})", fontsize=13)
         if summit_points:
             for name, (lon, lat) in summit_points.items():
-                marker = (
-                    "r^" if "Afadjato" in name else "b^" if "Aduadu" in name else "g^"
-                )
+                marker = "r^" if "Afadjato" in name else "b^" if "Aduadu" in name else "g^"
                 axes[0, 0].plot(lon, lat, marker, markersize=12, label=name)
             axes[0, 0].legend(loc="upper right")
 
         # ─── Panel 2: Elevation ──────────────────────────────────────────────
-        im1 = axes[0, 1].imshow(
-            dem_arr, cmap=colormap_elevation, extent=dem_extent, aspect="auto"
-        )
+        im1 = axes[0, 1].imshow(dem_arr, cmap=colormap_elevation, extent=dem_extent, aspect="auto")
         axes[0, 1].set_title("Elevation (m)", fontsize=13)
         plt.colorbar(im1, ax=axes[0, 1], fraction=0.04, pad=0.02)
 
         # ─── Panel 3: Slope ──────────────────────────────────────────────────
-        im2 = axes[1, 0].imshow(
-            slope_arr,
-            cmap=colormap_slope,
-            extent=dem_extent,
-            aspect="auto",
-            vmin=0,
-            vmax=45,
-        )
-        axes[1, 0].set_title(
-            f"Slope — {steep_pct:.1f}% exceeds {steep_threshold}°", fontsize=13
-        )
+        im2 = axes[1, 0].imshow(slope_arr, cmap=colormap_slope, extent=dem_extent, aspect="auto", vmin=0, vmax=45)
+        axes[1, 0].set_title(f"Slope — {steep_pct:.1f}% exceeds {steep_threshold}°", fontsize=13)
         plt.colorbar(im2, ax=axes[1, 0], fraction=0.04, pad=0.02)
 
         # ─── Panel 4: Difference ──────────────────────────────────────────────
         if diff_data:
             first_label = list(diff_data.keys())[0]
             first_arr = diff_data[first_label]
-            im3 = axes[1, 1].imshow(
-                first_arr,
-                cmap=colormap_diff,
-                extent=dem_extent,
-                aspect="auto",
-                vmin=vmin_diff,
-                vmax=vmax_diff,
-            )
-            axes[1, 1].set_title(
-                f"{first_label.upper()} vs {primary_source.upper()} (m)", fontsize=13
-            )
+            im3 = axes[1, 1].imshow(first_arr, cmap=colormap_diff, extent=dem_extent, aspect="auto", vmin=vmin_diff, vmax=vmax_diff)
+            axes[1, 1].set_title(f"{first_label.upper()} vs {primary_source.upper()} (m)", fontsize=13)
             plt.colorbar(im3, ax=axes[1, 1], fraction=0.04, pad=0.02)
         else:
             axes[1, 1].axis("off")
@@ -558,7 +514,6 @@ class Plotter:
 
         plt = _require_matplotlib()
 
-        plot_extent: Optional[list]
         if isinstance(data, (str, Path)):
             try:
                 import rasterio
@@ -602,6 +557,10 @@ class Plotter:
         plt.tight_layout()
 
         return self._save_or_show(fig, output)
+    
+
+
+
 
     def plot_multi_panel_comparison(
         self,
@@ -612,7 +571,7 @@ class Plotter:
         colormap: str = "RdYlGn_r",
         vmin: Optional[float] = None,
         vmax: Optional[float] = None,
-        classification_colors: Optional[List[str]] = None,
+        classification_colors: Optional[List[Union[str, Tuple[float, ...]]]] = None,
         classification_labels: Optional[Dict[int, str]] = None,
         suptitle: str = "Multi-Panel Comparison",
         colorbar_label: str = "Value",
@@ -702,6 +661,7 @@ class Plotter:
             )
         """
         import numpy as np
+        import matplotlib.pyplot as plt
         from matplotlib.colors import ListedColormap
         from matplotlib.patches import Patch
 
@@ -725,12 +685,7 @@ class Plotter:
         def _get_extent(src):
             if isinstance(src, (str, Path)):
                 with rasterio.open(src) as _s:
-                    return [
-                        _s.bounds.left,
-                        _s.bounds.right,
-                        _s.bounds.bottom,
-                        _s.bounds.top,
-                    ]
+                    return [_s.bounds.left, _s.bounds.right, _s.bounds.bottom, _s.bounds.top]
             return extent
 
         # ─── Load all data ─────────────────────────────────────────────────────
@@ -772,17 +727,14 @@ class Plotter:
             if mode == "categorical":
                 # Categorical panel
                 codes = sorted(np.unique(arr[~np.isnan(arr)]).astype(int))
-                resolved_colors: List[Any]
                 if classification_colors is None:
-                    import matplotlib.cm as cm
+                    import matplotlib as mpl
 
-                    palette = cm.get_cmap("tab10")
-                    resolved_colors = [
+                    palette = mpl.colormaps["tab10"]
+                    classification_colors = [
                         palette(i / max(len(codes) - 1, 1)) for i in range(len(codes))
                     ]
-                else:
-                    resolved_colors = list(classification_colors)
-                cmap = ListedColormap(resolved_colors[: len(codes)])
+                cmap = ListedColormap(classification_colors[:len(codes)])
                 im = ax.imshow(arr, cmap=cmap, extent=extent, aspect="auto")
 
                 if classification_labels:
@@ -793,11 +745,9 @@ class Plotter:
                         if show_percentages:
                             pct = 100 * np.sum(arr == c) / total
                             label = f"{label} ({pct:.1f}%)"
-                        color_idx = (
-                            c if c < len(resolved_colors) else c % len(resolved_colors)
-                        )
+                        color_idx = c if c < len(classification_colors) else c % len(classification_colors)
                         legend_elements.append(
-                            Patch(facecolor=resolved_colors[color_idx], label=label)
+                            Patch(facecolor=classification_colors[color_idx], label=label)
                         )
                     ax.legend(handles=legend_elements, loc="lower right", fontsize=10)
 
@@ -830,6 +780,10 @@ class Plotter:
         plt.tight_layout()
 
         return self._save_or_show(fig, output)
+
+
+
+
 
     def plot_comparison(
         self,
@@ -886,7 +840,6 @@ class Plotter:
             axes = [axes]
 
         for ax, (panel_title, item) in zip(axes, panels.items()):
-            panel_extent: Optional[list]
             if isinstance(item, (str, Path)):
                 try:
                     import rasterio
@@ -1238,12 +1191,12 @@ class Plotter:
                 nodata = src.nodata
                 if nodata is not None:
                     arr = np.where(arr == nodata, np.nan, arr)
-                extent: Optional[Tuple[float, float, float, float]] = (
+                extent = [
                     src.bounds.left,
                     src.bounds.right,
                     src.bounds.bottom,
                     src.bounds.top,
-                )
+                ]
         else:
             arr = np.asarray(source, dtype=np.float32)
             extent = None
@@ -1272,9 +1225,9 @@ class Plotter:
 
         if effective_mode == "categorical":
             codes = sorted(int(c) for c in np.unique(finite))
-            import matplotlib.cm as cm
+            import matplotlib as mpl
 
-            palette = cm.get_cmap("tab10" if len(codes) <= 10 else "tab20")
+            palette = mpl.colormaps["tab10" if len(codes) <= 10 else "tab20"]
             class_labels = {c: f"Class {c}" for c in codes}
             class_colors = {
                 c: palette(i / max(len(codes) - 1, 1)) for i, c in enumerate(codes)

@@ -6,12 +6,10 @@ Mirror access to Copernicus Sentinel data. No login for open mirrors.
 
 from __future__ import annotations
 
-import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from pygeofetch.core.logging import report_download_progress
 from pygeofetch.models.download_task import (
     DownloadOptions,
     DownloadResult,
@@ -25,7 +23,7 @@ from pygeofetch.models.satellite_data import (
 )
 from pygeofetch.models.search_query import SearchQuery
 from pygeofetch.models.user_auth import AuthSession, Credentials
-from pygeofetch.providers.base import AbstractBaseProvider, AuthenticationError
+from pygeofetch.providers.base import AbstractBaseProvider
 
 
 def _plain(v) -> str:
@@ -57,91 +55,50 @@ class EsaScihubProvider(AbstractBaseProvider):
     )
     SATELLITES = ["Sentinel-1", "Sentinel-2", "Sentinel-3", "Sentinel-5P"]
     BASE_URL = "https://apihub.copernicus.eu/apihub"
-    INTEGRATION_VERIFIED = False  # see UnverifiedIntegrationError docstring — not confirmed against the live API
+
+    # REAL BUG FIXED (crash): search()/download() previously called
+    # self._check_integration_verified(), a method that does not exist
+    # anywhere in this codebase -- every call raised AttributeError
+    # immediately, regardless of credentials or query.
+    #
+    # REAL BUG FIXED (dead endpoint): BASE_URL points at the Copernicus
+    # Open Access Hub, which ESA permanently decommissioned on
+    # 2023-11-02 in favour of the Copernicus Data Space Ecosystem (the
+    # `copernicus` provider in this codebase). Rather than let every
+    # call burn a real network timeout against a dead host and surface
+    # a generic connection error, both methods now fail fast with a
+    # clear, actionable message.
+    _DEAD_ENDPOINT_MESSAGE = (
+        "esa_scihub targets the Copernicus Open Access Hub "
+        f"({BASE_URL}), which ESA permanently decommissioned on "
+        "2023-11-02. Use the 'copernicus' provider instead -- it "
+        "targets the live Copernicus Data Space Ecosystem replacement."
+    )
 
     def authenticate(self, credentials: Credentials) -> AuthSession:
-
-        token = (
-            credentials.api_key or credentials.password or credentials.access_key or ""
-        )
-        if self.REQUIRES_AUTH and not token and not credentials.username:
-            msg = f"{self.DISPLAY_NAME} requires credentials. See: https://scihub.copernicus.eu/"
-            raise AuthenticationError(msg)
+        # No real auth is needed for a request that will never be
+        # made, but a session object is still returned so callers that
+        # check is_authenticated (e.g. before search()) behave
+        # consistently with other no-auth providers.
         session = AuthSession(
             provider=self.PROVIDER_ID,
-            access_token=_plain(token) or credentials.username or "anonymous",
+            access_token="anonymous",
             expires_at=datetime.now(timezone.utc) + timedelta(days=365),
-            session_data={
-                "api_key": _plain(token),
-                "username": credentials.username or "",
-            },
+            session_data={},
         )
         self._session = session
-        self._logger.info(f"{self.DISPLAY_NAME}: authenticated")
         return session
 
     def validate_credentials(self, credentials: Credentials) -> bool:
-        if not self.REQUIRES_AUTH:
-            return True
-        return bool(credentials.api_key or credentials.password or credentials.username)
+        return True
 
     def set_session(self, session: Any) -> None:
         """Store an authenticated session for use in requests."""
         self._session = session
 
     def search(self, query: SearchQuery) -> list[SatelliteData]:
-        # NOTE: previously called self._check_integration_verified(),
-        # a method that does not exist anywhere in this codebase --
-        # every call to this method would have raised AttributeError
-        # unconditionally. Removed rather than guessed-at; if a real
-        # integration-verification gate was intended here, it needs
-        # to be implemented (e.g. on AbstractBaseProvider) and reinstated.
-        if self.REQUIRES_AUTH:
-            self.require_auth()
-        import httpx
-
-        if not self.BASE_URL:
-            return []
-        params: dict[str, Any] = {"limit": min(query.max_results, 500)}
-        if query.bbox:
-            bb = query.bbox
-            params["bbox"] = f"{bb.min_lon},{bb.min_lat},{bb.max_lon},{bb.max_lat}"
-        if query.start_date:
-            params["startDate"] = str(query.start_date)
-        if query.end_date:
-            params["endDate"] = str(query.end_date)
-        if query.cloud_cover_max is not None:
-            params["cloudCoverMax"] = query.cloud_cover_max
-        headers: dict[str, str] = {}
-        if (
-            self._session
-            and self._session.access_token
-            and self._session.access_token not in ("anonymous", "")
-        ):
-            if self._session.session_data and self._session.session_data.get("api_key"):
-                headers["X-API-Key"] = self._session.session_data["api_key"]
-            else:
-                headers["Authorization"] = f"Bearer {self._session.access_token}"
-        try:
-            resp = httpx.get(
-                f"{self.BASE_URL}/search",
-                params=params,
-                headers=headers,
-                timeout=self.config.get("timeout", 60),
-            )
-            if resp.status_code == 404:
-                return []
-            if resp.status_code != 200:
-                self._logger.warning(f"{self.DISPLAY_NAME}: HTTP {resp.status_code}")
-                return []
-            data = resp.json()
-            items = data.get(
-                "features", data.get("items", data if isinstance(data, list) else [])
-            )
-            return [self._parse_item(item) for item in items]
-        except Exception as exc:
-            self._logger.warning(f"{self.DISPLAY_NAME} search: {exc}")
-            return []
+        self._logger.error(self._DEAD_ENDPOINT_MESSAGE)
+        return []
 
     def _parse_item(self, item: dict[str, Any]) -> SatelliteData:
         item_id = str(item.get("id", item.get("scene_id", item.get("identifier", ""))))
@@ -154,11 +111,6 @@ class EsaScihubProvider(AbstractBaseProvider):
             or item.get("cloudCover")
             or (item.get("properties") or {}).get("eo:cloud_cover")
         )
-        # Real fix: this shared, generic parser already assumes a
-        # GeoJSON Feature-like response (a "features" array), so its
-        # real "geometry" field (standard GeoJSON) is safe to extract
-        # the same way -- confirmed consistent with the existing bbox
-        # extraction on this same response shape, not a new assumption.
         geometry = item.get("geometry")
         if not (isinstance(geometry, dict) and geometry.get("coordinates")):
             geometry = None
@@ -178,77 +130,11 @@ class EsaScihubProvider(AbstractBaseProvider):
     def download(
         self, data: SatelliteData, destination: Path, options: DownloadOptions
     ) -> DownloadResult:
-        # NOTE: previously called self._check_integration_verified(),
-        # a method that does not exist anywhere in this codebase --
-        # every call to this method would have raised AttributeError
-        # unconditionally. Removed rather than guessed-at; if a real
-        # integration-verification gate was intended here, it needs
-        # to be implemented (e.g. on AbstractBaseProvider) and reinstated.
-        if self.REQUIRES_AUTH:
-            self.require_auth()
-        import httpx
-
-        destination = Path(destination)
-        destination.mkdir(parents=True, exist_ok=True)
-        start = time.time()
-        output_paths, total_bytes = [], 0
-        headers: dict[str, str] = {}
-        if (
-            self._session
-            and self._session.access_token
-            and self._session.access_token not in ("anonymous", "")
-        ):
-            headers["Authorization"] = f"Bearer {self._session.access_token}"
-        for key, asset in (data.data_assets or data.assets).items():
-            if not asset.href or not asset.href.startswith("http"):
-                continue
-            out_file = destination / (asset.href.split("/")[-1] or f"{data.id}_{key}")
-            try:
-                with httpx.stream(
-                    "GET",
-                    asset.href,
-                    headers=headers,
-                    timeout=options.timeout_seconds,
-                    follow_redirects=True,
-                ) as resp:
-                    self._handle_http_error(resp)
-                    total_bytes_this_asset = int(resp.headers.get("content-length", 0))
-                    bytes_written_this_asset = 0
-                    chunk_t0 = time.time()
-                    with open(out_file, "wb") as f:
-                        for chunk in resp.iter_bytes(
-                            chunk_size=int(options.chunk_size_mb * 1024 * 1024)
-                        ):
-                            f.write(chunk)
-                            bytes_written_this_asset += len(chunk)
-                            elapsed = time.time() - chunk_t0
-                            speed = (
-                                bytes_written_this_asset / elapsed
-                                if elapsed > 0
-                                else 0.0
-                            )
-                            report_download_progress(
-                                bytes_written_this_asset, total_bytes_this_asset, speed
-                            )
-                output_paths.append(out_file)
-                total_bytes += out_file.stat().st_size
-            except Exception as exc:
-                self._logger.warning(f"Asset {key} failed: {exc}")
-        if not output_paths:
-            return DownloadResult(
-                status=DownloadStatus.FAILED,
-                data_id=data.id,
-                provider=self.PROVIDER_ID,
-                error="No assets downloaded",
-            )
         return DownloadResult(
-            status=DownloadStatus.COMPLETED,
+            status=DownloadStatus.FAILED,
             data_id=data.id,
             provider=self.PROVIDER_ID,
-            output_path=output_paths[0],
-            output_paths=output_paths,
-            bytes_downloaded=total_bytes,
-            duration_seconds=time.time() - start,
+            error=self._DEAD_ENDPOINT_MESSAGE,
         )
 
     def get_capabilities(self) -> ProviderCapabilities:

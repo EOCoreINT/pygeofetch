@@ -227,7 +227,15 @@ class FederatedSearcher:
                 return cached
 
         provider = self._get_provider(provider_id)
-        results = provider.search(query.copy_for_provider(provider_id))
+
+        # REAL BUG FIXED: the circuit breaker was previously instantiated
+        # per-provider but never actually invoked anywhere in the request
+        # path -- it contributed zero resilience. Wrapping the real call
+        # here means a provider that has failed repeatedly is now skipped
+        # fast (CircuitBreakerOpenError) instead of being hammered again,
+        # and a healthy provider's success resets its failure count.
+        with provider._circuit_breaker:
+            results = provider.search(query.copy_for_provider(provider_id))
 
         if use_cache:
             self.cache.set(query, provider_id, results)
@@ -235,8 +243,23 @@ class FederatedSearcher:
         return results
 
     def _get_provider(self, provider_id: str) -> Any:
-        """Get provider instance with fresh auth session."""
+        """
+        Get a provider instance with a fresh auth session.
+
+        REAL BUG FIXED: this used to call ``get_provider()`` fresh on
+        every single search, creating a brand-new provider object (and
+        therefore a brand-new, always-zeroed CircuitBreaker) each time --
+        so circuit breaker failure counts could never accumulate across
+        calls no matter how it was wired in. Provider instances are now
+        cached per searcher for the lifetime of this FederatedSearcher,
+        so both the circuit breaker's state and the provider's auth
+        session persist across repeated searches, as originally intended
+        by the (previously unused) ``self._provider_instances`` cache.
+        """
         from pygeofetch.providers import get_provider
+
+        if provider_id in self._provider_instances:
+            return self._provider_instances[provider_id]
 
         prov = get_provider(provider_id)
         if self.auth_manager and prov.REQUIRES_AUTH:
@@ -245,6 +268,7 @@ class FederatedSearcher:
                 prov.set_session(session)
             except Exception as exc:
                 logger.warning(f"Auth for {provider_id} failed: {exc}")
+        self._provider_instances[provider_id] = prov
         return prov
 
     def _get_available_providers(self) -> list[str]:
