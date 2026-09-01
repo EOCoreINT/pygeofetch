@@ -1,8 +1,8 @@
 # PyGeoFetch Official Documentation
 
-
+<div align="center">
 <br>
-<img src="icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
+<img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/refs/heads/main/icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
 <br>
 
 **A universal satellite data pipeline.** One CLI, one Python API, 24
