@@ -12,6 +12,23 @@ validated-subsidence-map run, cross-referenced against a published
 result (Cigna & Tapete 2021).
 ```
 
+```{note}
+**Re-verified against a fresh source upload after this page and the
+tutorial were originally written**: the InSAR module had substantial
+internal changes since then (900+ diff lines in `interferogram.py`
+alone; large diffs across nearly every file in `pygeofetch/insar/`).
+Directly re-checked the real signatures of every function/class this
+page and the tutorial document —
+`search_and_select_consistent_stack`, `PreflightGate`,
+`select_burst_synchronized_dates`, `SLCExtractor.extract_consistent_stack`,
+`InterferogramGenerator.process_pair`, `PhaseUnwrapper.unwrap_pair`,
+`build_sbas_network`, `select_reliable_reference_pixel`,
+`bridge_unwrap_regions`, `SBASTimeSeries.invert`,
+`RiskMapper.compute_risk` — against the fresh source. All matched
+exactly; the large diffs were internal refactoring/implementation
+changes, not breaking changes to the public API documented here.
+```
+
 Coregistration, interferogram formation, phase unwrapping, and SBAS
 time series inversion, in pure Python. No SNAP or ISCE required for
 the core pipeline.

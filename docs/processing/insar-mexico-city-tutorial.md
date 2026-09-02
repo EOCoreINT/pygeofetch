@@ -1,4 +1,4 @@
-# Complete Worked Example: Case Study
+# Complete Worked Example: Mexico City Subsidence
 
 A full, real, end-to-end InSAR run — search through a validated
 vertical-velocity map — reproduced here stage by stage from an actual
