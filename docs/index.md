@@ -1,6 +1,6 @@
 # EOCoreINT : pygeofetch official documentation
 
-**A unified satellite data and geospatial processing platform** One CLI, one Python API, 24
+**A unified satellite data and geospatial processing platform.** One CLI, one Python API, 24
 provider integrations — federated search, authenticated downloads,
 InSAR/SAR processing, and pipeline orchestration, in pure Python.
 
