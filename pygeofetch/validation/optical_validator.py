@@ -33,7 +33,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Union
+from typing import Any, Union
 
 from pydantic import BaseModel, Field
 from shapely.geometry import Polygon, shape
@@ -93,7 +93,7 @@ class OpticalValidationError(ValueError):
 #  Report data model (mirrors pygeofetch.insar.preflight.PreflightIssue)
 # ══════════════════════════════════════════════════════════════════════════
 
-SEVERITY_ERROR = "ERROR"  # hard failure -- scene excluded
+SEVERITY_ERROR = "ERROR"      # hard failure -- scene excluded
 SEVERITY_WARNING = "WARNING"  # logged, scene kept unless config says otherwise
 
 
@@ -292,6 +292,16 @@ def _levels_match(actual: str, expected: str) -> bool:
     for canonical, aliases in _LEVEL_ALIASES.items():
         if a in aliases and e in aliases:
             return True
+    # REAL BUG FIXED: `actual` is often a compound string, not a clean
+    # level code -- e.g. a STAC collection id like "sentinel-2-l2a"
+    # (the real fallback source when a scene has no dedicated
+    # processing-level property; see _scene_processing_level above).
+    # Exact/set-membership matching alone never matched these. Find
+    # which canonical group `expected` belongs to, then check whether
+    # any of ITS aliases appears as a substring of `actual`.
+    for canonical, aliases in _LEVEL_ALIASES.items():
+        if e in aliases and any(alias in a for alias in aliases):
+            return True
     return False
 
 
@@ -303,21 +313,14 @@ def _levels_match(actual: str, expected: str) -> bool:
 def _scene_id(scene: SceneLike) -> str:
     if isinstance(scene, SatelliteData):
         return scene.id
-    return str(
-        scene.get("id")
-        or scene.get("scene_id")
-        or scene.get("identifier")
-        or "<unknown>"
-    )
+    return str(scene.get("id") or scene.get("scene_id") or scene.get("identifier") or "<unknown>")
 
 
 def _scene_footprint(scene: SceneLike) -> Polygon | None:
     """Real footprint geometry when available, falling back to a bbox
     rectangle -- the same fallback pattern used throughout the rest of
     pygeofetch's provider layer for bbox-only providers."""
-    geometry = (
-        scene.geometry if isinstance(scene, SatelliteData) else scene.get("geometry")
-    )
+    geometry = scene.geometry if isinstance(scene, SatelliteData) else scene.get("geometry")
     if isinstance(geometry, dict) and geometry.get("coordinates"):
         try:
             geom = shape(geometry)
@@ -341,29 +344,15 @@ def _scene_cloud_cover(scene: SceneLike) -> float | None:
         if scene.get("cloud_cover") is not None:
             return float(scene["cloud_cover"])
         props = scene.get("properties") or scene
-    for key in (
-        "eo:cloud_cover",
-        "cloudCover",
-        "cloud_cover",
-        "cloud_cover_percentage",
-    ):
+    for key in ("eo:cloud_cover", "cloudCover", "cloud_cover", "cloud_cover_percentage"):
         if key in props and props[key] is not None:
             return float(props[key])
     return None
 
 
 def _scene_snow_ice_cover(scene: SceneLike) -> float | None:
-    props = (
-        scene.properties
-        if isinstance(scene, SatelliteData)
-        else scene.get("properties")
-    ) or {}
-    for key in (
-        "s2:snow_ice_percentage",
-        "snowIceCover",
-        "snow_ice_cover",
-        "snow_ice_percentage",
-    ):
+    props = (scene.properties if isinstance(scene, SatelliteData) else scene.get("properties")) or {}
+    for key in ("s2:snow_ice_percentage", "snowIceCover", "snow_ice_cover", "snow_ice_percentage"):
         if key in props and props[key] is not None:
             return float(props[key])
     return None
@@ -376,22 +365,6 @@ def _scene_available_assets(scene: SceneLike) -> list[str]:
     return list(assets.keys())
 
 
-# def _scene_processing_level(scene: SceneLike) -> str | None:
-#     if isinstance(scene, SatelliteData):
-#         level = scene.processing_level
-#         if level and level != ProcessingLevel.UNKNOWN:
-#             return level.value
-#         props = scene.properties or {}
-#     else:
-#         if scene.get("processing_level"):
-#             return str(scene["processing_level"])
-#         props = scene.get("properties") or scene
-#     for key in ("processing:level", "processingLevel", "processing_level", "s2:processing_baseline"):
-#         if key in props and props[key]:
-#             return str(props[key])
-#     return None
-
-
 def _scene_processing_level(scene: SceneLike) -> str | None:
     if isinstance(scene, SatelliteData):
         level = scene.processing_level
@@ -402,29 +375,33 @@ def _scene_processing_level(scene: SceneLike) -> str | None:
         if scene.get("processing_level"):
             return str(scene["processing_level"])
         props = scene.get("properties") or scene
-
-    # FIX: Removed 's2:processing_baseline' (which is a version like '05.10').
-    # Added 's2:product_type' (which holds 'S2MSI2A') and standard STAC keys.
-    for key in (
-        "processing:level",
-        "processingLevel",
-        "processing_level",
-        "s2:product_type",
-        "s2:product_uri",
-    ):
+    # REAL BUG FIXED: "s2:processing_baseline" used to be included here
+    # as if it were a processing-level field -- it is a real, distinct
+    # STAC property representing the Sentinel-2 processing BASELINE
+    # VERSION (e.g. "05.10", the atmospheric-correction algorithm
+    # version), not the processing LEVEL (L1C/L2A). Since real
+    # Sentinel-2 STAC items (Earth Search v1, AWS Earth, Planetary
+    # Computer) don't reliably set any of the genuine level keys below,
+    # this was silently matching the wrong field and reporting things
+    # like "05.10" as if it were a processing level, which then failed
+    # every real comparison against "Level-2A". The collection id is
+    # the reliable real-world signal instead (see
+    # SatelliteData.from_stac_item, which now sets processing_level
+    # from it directly for SatelliteData scenes -- this properties-dict
+    # fallback path only matters for plain-dict scenes).
+    for key in ("processing:level", "processingLevel", "processing_level"):
         if key in props and props[key]:
             return str(props[key])
+    collection = scene.collection if isinstance(scene, SatelliteData) else scene.get("collection")
+    if collection:
+        return str(collection)
     return None
 
 
 def _scene_datetime(scene: SceneLike) -> datetime | None:
     if isinstance(scene, SatelliteData):
         return scene.datetime
-    raw = (
-        scene.get("datetime")
-        or scene.get("acquisitionDate")
-        or scene.get("acquisition_date")
-    )
+    raw = scene.get("datetime") or scene.get("acquisitionDate") or scene.get("acquisition_date")
     if isinstance(raw, datetime):
         return raw
     if isinstance(raw, str):
@@ -568,11 +545,34 @@ class OpticalPreflightValidator:
             If any required band is missing. ``OpticalValidationError``
             is a ``ValueError`` subclass, so ``except ValueError`` at
             call sites keeps working unchanged.
+
+        Notes
+        -----
+        REAL BUG FIXED: this used to compare ``required_bands`` against
+        ``available_assets`` via plain case-insensitive string equality
+        only. Real STAC catalogs (Earth Search v1, AWS Earth) commonly
+        expose Sentinel-2 bands under semantic asset keys like
+        ``"red"``/``"green"``/``"blue"``/``"nir"``/``"scl"`` rather than
+        ``"B04"``/``"B03"``/``"B02"``/``"B08"``/``"SCL"`` -- exact
+        matching alone rejected every one of these scenes as "missing"
+        bands that were, in reality, fully present. Now resolved
+        through pygeofetch's own real band-alias table
+        (``pygeofetch.models.satellite_data._ALIAS_TO_CANONICAL``, the
+        same table ``resolve_band_keys()`` uses for downloads), so
+        ``"red"`` is correctly recognised as ``"B04"``, etc.
         """
-        available_upper = {a.upper() for a in available_assets}
+        from pygeofetch.models.satellite_data import _ALIAS_TO_CANONICAL
+
+        available_canonical = set()
+        for a in available_assets:
+            available_canonical.add(_ALIAS_TO_CANONICAL.get(a.upper(), a.upper()))
+
         required = self.config.required_bands
-        present = [b for b in required if b.upper() in available_upper]
-        missing = [b for b in required if b.upper() not in available_upper]
+        present, missing = [], []
+        for b in required:
+            canonical = _ALIAS_TO_CANONICAL.get(b.upper(), b.upper())
+            (present if canonical in available_canonical else missing).append(b)
+
         if missing:
             raise OpticalValidationError(
                 "<pending>",
@@ -677,15 +677,9 @@ class OpticalPreflightValidator:
         """
         if scene_datetime is None:
             return True
-        scene_date = (
-            scene_datetime.date()
-            if isinstance(scene_datetime, datetime)
-            else scene_datetime
-        )
+        scene_date = scene_datetime.date() if isinstance(scene_datetime, datetime) else scene_datetime
         if start_date is not None:
-            start = (
-                start_date.date() if isinstance(start_date, datetime) else start_date
-            )
+            start = start_date.date() if isinstance(start_date, datetime) else start_date
             if scene_date < start:
                 return False
         if end_date is not None:
@@ -742,77 +736,56 @@ class OpticalPreflightValidator:
         if cfg.check_aoi_coverage and aoi is not None:
             footprint = _scene_footprint(scene)
             if footprint is None:
-                issues.append(
-                    ValidationIssue(
-                        "NO_FOOTPRINT",
-                        SEVERITY_ERROR,
-                        "scene has neither geometry nor bbox -- cannot verify AOI coverage",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    "NO_FOOTPRINT", SEVERITY_ERROR,
+                    "scene has neither geometry nor bbox -- cannot verify AOI coverage",
+                ))
             else:
                 coverage = self.validate_aoi_coverage(footprint, aoi)
                 metrics["aoi_coverage"] = coverage
                 if coverage < cfg.min_coverage_ratio:
-                    issues.append(
-                        ValidationIssue(
-                            "LOW_AOI_COVERAGE",
-                            SEVERITY_ERROR,
-                            f"AOI coverage {coverage:.1%} is below the required "
-                            f"{cfg.min_coverage_ratio:.1%}",
-                        )
-                    )
+                    issues.append(ValidationIssue(
+                        "LOW_AOI_COVERAGE", SEVERITY_ERROR,
+                        f"AOI coverage {coverage:.1%} is below the required "
+                        f"{cfg.min_coverage_ratio:.1%}",
+                    ))
 
         if cfg.check_cloud_cover:
             cloud_cover = self.validate_cloud_cover(scene)
             metrics["cloud_cover_pct"] = cloud_cover
             if cloud_cover > cfg.max_cloud_cover_pct:
-                severity = (
-                    SEVERITY_ERROR
-                    if cfg.cloud_cover_is_hard_failure
-                    else SEVERITY_WARNING
-                )
-                issues.append(
-                    ValidationIssue(
-                        "CLOUD_COVER_EXCEEDED",
-                        severity,
-                        f"cloud cover {cloud_cover:.1f}% exceeds threshold "
-                        f"{cfg.max_cloud_cover_pct:.1f}%",
-                    )
-                )
+                severity = SEVERITY_ERROR if cfg.cloud_cover_is_hard_failure else SEVERITY_WARNING
+                issues.append(ValidationIssue(
+                    "CLOUD_COVER_EXCEEDED", severity,
+                    f"cloud cover {cloud_cover:.1f}% exceeds threshold "
+                    f"{cfg.max_cloud_cover_pct:.1f}%",
+                ))
 
         if cfg.check_snow_ice_cover:
             snow_ice = self.validate_snow_ice_cover(scene)
             metrics["snow_ice_cover_pct"] = snow_ice
             if snow_ice > cfg.max_snow_ice_pct:
-                issues.append(
-                    ValidationIssue(
-                        "SNOW_ICE_COVER_EXCEEDED",
-                        SEVERITY_WARNING,
-                        f"snow/ice cover {snow_ice:.1f}% exceeds threshold "
-                        f"{cfg.max_snow_ice_pct:.1f}%",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    "SNOW_ICE_COVER_EXCEEDED", SEVERITY_WARNING,
+                    f"snow/ice cover {snow_ice:.1f}% exceeds threshold "
+                    f"{cfg.max_snow_ice_pct:.1f}%",
+                ))
 
         if cfg.check_required_bands:
             available = _scene_available_assets(scene)
             try:
                 self.validate_bands(available)
             except OpticalValidationError as exc:
-                issues.append(
-                    ValidationIssue("MISSING_BANDS", SEVERITY_ERROR, exc.reason)
-                )
+                issues.append(ValidationIssue("MISSING_BANDS", SEVERITY_ERROR, exc.reason))
 
         if cfg.check_processing_level:
             if not self.validate_processing_level(scene):
                 actual = _scene_processing_level(scene) or "unknown"
-                issues.append(
-                    ValidationIssue(
-                        "PROCESSING_LEVEL_MISMATCH",
-                        SEVERITY_ERROR,
-                        f"processing level {actual!r} does not match expected "
-                        f"{cfg.expected_level!r}",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    "PROCESSING_LEVEL_MISMATCH", SEVERITY_ERROR,
+                    f"processing level {actual!r} does not match expected "
+                    f"{cfg.expected_level!r}",
+                ))
 
         if cfg.check_nodata_margins and aoi is None:
             logger.debug(
@@ -821,37 +794,27 @@ class OpticalPreflightValidator:
             )
         if cfg.check_nodata_margins and aoi is not None:
             footprint = _scene_footprint(scene)
-            if footprint is not None and not self.validate_nodata_margins(
-                footprint, aoi
-            ):
-                issues.append(
-                    ValidationIssue(
-                        "NODATA_MARGIN_RISK",
-                        SEVERITY_WARNING,
-                        "AOI sits mostly in the scene's edge margin -- the "
-                        "clipped result may be mostly no-data",
-                    )
-                )
+            if footprint is not None and not self.validate_nodata_margins(footprint, aoi):
+                issues.append(ValidationIssue(
+                    "NODATA_MARGIN_RISK", SEVERITY_WARNING,
+                    "AOI sits mostly in the scene's edge margin -- the "
+                    "clipped result may be mostly no-data",
+                ))
 
         if cfg.check_temporal_bounds:
             scene_dt = _scene_datetime(scene)
             if not self.validate_temporal_bounds(scene_dt, start_date, end_date):
-                issues.append(
-                    ValidationIssue(
-                        "OUT_OF_TEMPORAL_BOUNDS",
-                        SEVERITY_ERROR,
-                        f"acquisition date {scene_dt} is outside "
-                        f"[{start_date}, {end_date}]",
-                    )
-                )
+                issues.append(ValidationIssue(
+                    "OUT_OF_TEMPORAL_BOUNDS", SEVERITY_ERROR,
+                    f"acquisition date {scene_dt} is outside "
+                    f"[{start_date}, {end_date}]",
+                ))
 
         has_errors = any(i.severity == SEVERITY_ERROR for i in issues)
         has_warnings = any(i.severity == SEVERITY_WARNING for i in issues)
         passed = not has_errors and not (cfg.treat_warnings_as_errors and has_warnings)
 
-        return SceneValidationReport(
-            scene_id=scene_id, passed=passed, issues=issues, metrics=metrics
-        )
+        return SceneValidationReport(scene_id=scene_id, passed=passed, issues=issues, metrics=metrics)
 
     def run_preflight(
         self,
@@ -897,9 +860,7 @@ class OpticalPreflightValidator:
             report = self.validate_scene(scene, aoi, start_date, end_date)
 
             for issue in report.issues:
-                log = (
-                    logger.error if issue.severity == SEVERITY_ERROR else logger.warning
-                )
+                log = logger.error if issue.severity == SEVERITY_ERROR else logger.warning
                 log(f"Scene {report.scene_id} [{issue.code}]: {issue.message}")
 
             if report.passed:

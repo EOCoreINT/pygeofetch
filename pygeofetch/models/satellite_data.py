@@ -203,6 +203,45 @@ class SatelliteAsset(BaseModel):
         return False
 
 
+def _processing_level_from_stac(
+    collection: str | None, properties: dict[str, Any]
+) -> "ProcessingLevel":
+    """
+    Determine a real ProcessingLevel from a STAC item's collection id
+    and/or properties, since real Sentinel-2/Landsat STAC catalogs
+    (Earth Search v1, AWS Earth, Planetary Computer) don't reliably
+    populate a "processing:level" properties key -- the collection id
+    itself (e.g. "sentinel-2-l2a", "sentinel-2-c1-l2a", "landsat-c2-l2")
+    is the actually-reliable real-world signal.
+    """
+    candidates = [
+        properties.get("processing:level"),
+        properties.get("processingLevel"),
+        properties.get("processing_level"),
+        collection,
+    ]
+    text = " ".join(str(c) for c in candidates if c).upper()
+
+    # Order matters: check the more specific tokens first so e.g.
+    # "L2A" isn't shadowed by a looser "L2" match on the same string.
+    ordered_checks = [
+        (ProcessingLevel.L2A, ("L2A", "MSIL2A")),
+        (ProcessingLevel.L2SP, ("L2SP",)),
+        (ProcessingLevel.L1C, ("L1C", "MSIL1C")),
+        (ProcessingLevel.L1T, ("L1T",)),
+        (ProcessingLevel.L1B, ("L1B",)),
+        (ProcessingLevel.L1A, ("L1A",)),
+        (ProcessingLevel.L2, ("L2",)),
+        (ProcessingLevel.L1, ("L1",)),
+        (ProcessingLevel.L0, ("L0",)),
+        (ProcessingLevel.RAW, ("RAW",)),
+    ]
+    for level, tokens in ordered_checks:
+        if any(token in text for token in tokens):
+            return level
+    return ProcessingLevel.UNKNOWN
+
+
 class SatelliteData(BaseModel):
     """
     Core model representing a satellite data product/scene.
@@ -399,11 +438,9 @@ class SatelliteData(BaseModel):
                 href=asset_data.get("href", ""),
                 title=asset_data.get("title"),
                 media_type=asset_data.get("type"),
-                roles=(
-                    [asset_data["roles"]]
-                    if isinstance(asset_data.get("roles"), str)
-                    else list(asset_data.get("roles") or [])
-                ),
+                roles=[asset_data["roles"]]
+                if isinstance(asset_data.get("roles"), str)
+                else list(asset_data.get("roles") or []),
                 size_bytes=asset_data.get("size"),
             )
 
@@ -455,6 +492,16 @@ class SatelliteData(BaseModel):
             bbox=bbox,
             geometry=item.get("geometry"),
             cloud_cover=props.get("eo:cloud_cover"),
+            # REAL BUG FIXED: processing_level was never set here at all,
+            # for any STAC-based provider (aws_earth, element84,
+            # planetary_computer, sentinel_hub) -- it always defaulted to
+            # ProcessingLevel.UNKNOWN. Real Sentinel-2/Landsat STAC items
+            # don't reliably expose a "processing:level" properties key;
+            # the reliable signal is the collection id itself (e.g.
+            # "sentinel-2-l2a", "sentinel-2-c1-l2a", "landsat-c2-l2").
+            processing_level=_processing_level_from_stac(
+                collection=item.get("collection"), properties=props
+            ),
             properties=props,
             assets=assets,
             stac_extensions=item.get("stac_extensions", []),
@@ -474,6 +521,8 @@ class SatelliteData(BaseModel):
             gsd_m=gsd,
             resolution_m=gsd,
         )
+
+
 
 
 class ProviderCapabilities(BaseModel):
