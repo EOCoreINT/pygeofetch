@@ -1,4 +1,4 @@
-# pygeofetch
+# EOCoreINT : pygeofetch official documentation
 
 **A universal satellite data pipeline.** One CLI, one Python API, 24
 provider integrations — federated search, authenticated downloads,
