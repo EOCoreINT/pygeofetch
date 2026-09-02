@@ -50,6 +50,35 @@ have since been fixed, with real tests added for each:
 
 ## Found during this documentation pass, not yet fixed
 
+- **Real test-suite maintenance debt, found from a fresh source
+  upload**: 2 stale-duplicate test files and 2 hardcoded-absolute-path
+  import hacks had crept back in since the project-wide fix earlier
+  in this documentation effort — fixed. After that, **15 real,
+  reproducible test failures remain** (an `InterferogramPair`
+  constructor signature the tests weren't updated for, a stale
+  synthetic-fixture XML missing a now-required field, and a few not
+  yet individually triaged). See {doc}`/reference/testing` for the
+  full, honest breakdown.
+
+- **`--on-provider-failure` (search) is only partially real** —
+  `abort`/`retry` are accepted and stored on `SearchQuery` but
+  `FederatedSearcher.search()` never reads that field; every provider
+  always runs and any failure is always just logged and skipped. See
+  {doc}`/core-features/search`.
+- **A real, significant documentation error corrected**: an earlier
+  version of {doc}`/core-features/authentication` documented a
+  `PYGEOFETCH_{PROVIDER}_{FIELD}` environment-variable credential
+  auto-loading mechanism. It does not exist anywhere in the codebase
+  — verified by searching the entire source tree for any
+  environment-variable reading related to credentials. Corrected to
+  document the real, working approach (read your own env vars, pass
+  them to `add_credentials()` explicitly).
+- **A real, verified correction to `--resume`'s documented
+  behavior**: it does not perform byte-range/partial-file resume —
+  it skips re-downloading files that already exist and pass
+  validation, restarting from scratch otherwise. See
+  {doc}`/core-features/download`.
+
 - **`monitor` CLI command group is real but completely unreachable** —
   `pygeofetch/cli/monitor_commands.py` defines a working `monitor run`
   / `monitor history` group, but it's never registered in

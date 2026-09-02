@@ -45,6 +45,36 @@ ls -la ./data/
 A real Sentinel-2 scene, on disk, ready to open in QGIS or load with
 rasterio.
 
+## The same thing in Python
+
+If you'd rather script this than use the CLI, here's the exact same
+five minutes as Python:
+
+```python
+from pygeofetch import PyGeoFetch
+from pygeofetch.models import SearchQuery
+
+client = PyGeoFetch()
+
+results = client.search(
+    SearchQuery(
+        bbox=(-74.1, 40.6, -73.7, 40.9),
+        start_date="2024-01-01",
+        end_date="2024-03-01",
+        cloud_cover_max=10,
+    ),
+    providers=["aws_earth"],
+)
+
+print(f"Found {len(results)} scenes")
+
+downloaded = client.download(results[:1], destination="./data")
+print(downloaded[0].output_path)
+```
+
+No credentials, no `auth add` step needed — `aws_earth` is a real,
+free, no-account provider, same as the CLI example above.
+
 ## What's next
 
 - **See it on a map first** — before committing to a download, view

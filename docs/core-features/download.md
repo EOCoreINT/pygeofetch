@@ -47,6 +47,28 @@ pygeofetch download run \
   --output ./ndvi/
 ```
 
+## What `--resume` actually does
+
+```{danger}
+**Real, verified behavior — not what "resume" usually implies.**
+`--resume` does **not** continue a partially-downloaded file from the
+last byte received (no HTTP Range requests are used). What it
+actually does: before downloading each item, check whether a file
+already exists at the expected destination path, and if it does,
+**validate it**. If it's valid, skip re-downloading that item
+entirely and report it as already complete. If no file is found, or
+the found file fails validation (e.g. it's truncated or corrupted),
+a full, fresh download runs — starting over from byte zero, not
+continuing from wherever the previous attempt stopped.
+
+In practice this means `--resume` is genuinely useful for its most
+common real use case — **re-running the same download command safely
+after an interruption**, so you don't waste bandwidth re-fetching
+scenes you already have — but it will not save partial progress on a
+single large file that got cut off partway through; that file gets
+re-downloaded completely.
+```
+
 ## Download flags
 
 | Flag | Type | Description |
@@ -57,12 +79,12 @@ pygeofetch download run \
 | `--retry` | int | Max retry attempts with exponential backoff. Default 3. |
 | `--retry-delay` | float | Base retry delay in seconds, doubles each attempt. Default 5.0. |
 | `--verify-checksum` | flag | SHA256 verification after each download; auto-retries on mismatch. |
-| `--resume` | flag | Resume interrupted downloads from the last byte received. On by default. |
+| `--resume` | flag | Skip re-downloading files that already exist and pass validation. **Not** byte-range/partial-file resume — see the note below. On by default. |
 | `--bandwidth-limit` | string | e.g. `10MB`, `500KB`. `0` = unlimited. |
 | `--priority` | choice | `high`, `normal`, `low`. |
 | `--bands` | list | Comma-separated band names, e.g. `B02,B03,B04`. Default: all assets. |
 | `--post-process` | string | Comma-separated chain, e.g. `unzip,reproject:EPSG:4326,cog`. |
-| `--on-failure` | choice | `skip`, `abort`, `retry`. |
+| `--on-failure` | choice | `skip`, `abort`, `retry`. See the note below — the real behavior is narrower than the three choices suggest. |
 | `--max-items` | int | Limit to first N items in the results file. |
 | `--overwrite` | flag | Overwrite existing files. Default: skip existing. |
 | `--notify` | string | `webhook:URL` or `email:ADDRESS`. Repeatable. |
@@ -71,6 +93,19 @@ pygeofetch download run \
 | `--optical-max-cloud-cover` | float | Override the max cloud cover threshold used by `--validate-optical` (default 20.0). |
 | `--optical-min-coverage` | float | Override the min AOI coverage ratio used by `--validate-optical`, 0-1 (default 0.8). |
 | `--optical-required-bands` | string | Comma-separated required bands for `--validate-optical` (default `B02,B03,B04,B08,SCL`). |
+
+```{note}
+**What `--on-failure` actually does, verified against source:** every
+item in the batch is always attempted, regardless of this flag —
+"abort" does **not** stop the download mid-batch the moment one item
+fails. `abort` means: after every item has been attempted, if *any*
+failed, exit the CLI process with status code 1 (useful for detecting
+failure in a script or CI job, e.g. `pygeofetch download run ... ||
+echo "some downloads failed"`). `retry` has no behavior distinct from
+the default `skip` — genuine per-item retries with exponential
+backoff already happen automatically via the separate `--retry N`
+flag, independent of what `--on-failure` is set to.
+```
 
 ## Band selection for Sentinel-2
 

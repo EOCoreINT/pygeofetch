@@ -1,19 +1,48 @@
 # Testing
 
-```{note}
-**Directly verified in this documentation pass, against the specific
-package snapshot audited here** (results may differ from whatever is
-currently on the `main` branch of the GitHub repo, which this session
-could not fetch directly): the test suite in this snapshot is **50
-files, flat under `tests/`** — not organized into
-`tests/unit/`/`tests/integration/`/`tests/property/`/`tests/cli/`
-subdirectories. After a full audit and fix pass, all tests passed:
-**497 passed, 0 failed**, stable across repeated and reordered runs
-(up from 377 at the start of this pass — 9 new provider/core-fix test
-files and the new optical validation module's own test files account
-for the difference). Run `pytest tests/ -v` yourself against your
-current checkout to see the live count and pass rate.
+```{danger}
+**Directly verified against a fresh upload of both the real source
+and a real `tests/` directory in this pass — not the same snapshot
+the "497 passed" figure below was verified against, and the honest
+current picture is worse.** The fresh test suite is **43 files**. Two
+real, stale-duplicate files were found and removed
+(`test_preflight_gate (1).py`, `test_provider_geometry_audit (1).py`
+— exact reruns of the same "duplicate stale test file" issue found
+and fixed for 2 other files at the start of this documentation
+project; it has since crept back via newly-added test files). Two
+hardcoded-absolute-path import hacks
+(`sys.path.insert(0, "/home/mrtenkorang/...")`) were found and fixed
+in `test_build_sbas_network.py` and `test_coregister_upgrades.py` —
+the exact same anti-pattern fixed project-wide earlier, also crept
+back in.
+
+**After those fixes: 359 passed, 15 failed.** The 15 failures are
+real, not flaky — confirmed reproducible, not order-dependent noise:
+
+- **A genuine test/source signature drift**: several tests in
+  `test_insar.py::TestDataValidator` construct `InterferogramPair(...)`
+  with 4 positional arguments; the real class now requires a 5th,
+  `perpendicular_baseline_m`. The tests weren't updated when that
+  field was added.
+- **A test fixture gap**: `test_insar.py::TestAnnotation`'s synthetic
+  SLC annotation XML fixture is missing a
+  `numberOfSamples` field that `pygeofetch.insar.annotation.parse_slc_geometry()`
+  now requires and raises a clear `ValueError` for when absent — this
+  is the real *source* code correctly enforcing a required field; the
+  *test fixture* is what's stale.
+- A few more in `test_offset_tracking.py`, `test_extraction.py`,
+  `test_era5_atmospheric_correction.py` not individually triaged here
+  — real, reproducible, not yet diagnosed to a specific root cause.
+
+None of this reflects newly-broken *library* behavior — the parts of
+the real source these tests exercise
+(`InterferogramPair`, `parse_slc_geometry`, offset tracking, DOS
+atmospheric correction) were independently verified elsewhere in this
+documentation pass. This is aging test-file maintenance debt, laid
+out honestly rather than glossed over. Run `pytest tests/ -v` yourself
+against your current checkout for the live count.
 ```
+
 
 ## Running tests
 

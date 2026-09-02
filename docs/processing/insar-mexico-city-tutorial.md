@@ -1,4 +1,4 @@
-# Complete Case Study
+# Complete Worked Example: Case Study
 
 A full, real, end-to-end InSAR run — search through a validated
 vertical-velocity map — reproduced here stage by stage from an actual
