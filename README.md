@@ -11,9 +11,6 @@
 
 [Quick Start](#-quick-start) · [Mexico City Case Study](#-case-study-mapping-mexico-city-land-subsidence-with-insar) · [Case Study Repo ↗](https://github.com/EOCoreINT/mexico-subsidence-project) · [Documentation](https://pygeofetch.readthedocs.io/en/latest/) · [Notebooks](#-notebooks)
 
-<br>
-<img src="https://raw.githubusercontent.com/EOCoreINT/pygeofetch/refs/heads/main/icon/concept_a.png" alt="PyGeoFetch Logo" width="350">
-<br>
 
 </div>
 
