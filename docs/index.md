@@ -1,4 +1,4 @@
-# pygeofetch official documentation
+# pygeofetch documentation
 
 **A universal satellite data pipeline.** One CLI, one Python API, 22
 provider integrations — federated search, authenticated downloads,
