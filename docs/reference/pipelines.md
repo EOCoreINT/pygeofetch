@@ -1,51 +1,51 @@
 # Pipelines & Batch Processing
 
-!!! note
+:::{note}
 
-    **Three genuinely different things share the word "pipeline" in this
-    codebase** — this page covers the first two, clearly separated; the
-    third has its own dedicated page.
+**Three genuinely different things share the word "pipeline" in this
+codebase** — this page covers the first two, clearly separated; the
+third has its own dedicated page.
 
-    1. **YAML pipeline orchestration** (below) — `search` → `filter` →
-       `download` → `process` → `export`, run ad-hoc or on a cron
-       schedule via the CLI. Built for *acquisition* workflows.
-    2. **The Python fluent processing pipeline** (`client.pipeline(...)`,
-       further down this page) — a chainable builder over
-       preprocessing/index/postprocessing/SAR operations
-       (`.clip().reproject().ndvi().cog().run(...)`). Built for
-       *processing* workflows on files you already have.
-    3. **The five real SAR processing pipelines**
-       (`pygeofetch.sar.pipelines`) — real, standard end-to-end SAR
-       workflows (`standard_grd_preprocessing_pipeline`,
-       `flood_mapping_pipeline`, `change_detection_pipeline`,
-       `coherence_disturbance_pipeline`, `bright_target_detection_pipeline`),
-       each orchestrating `SARProcessor`'s atomic operations into one
-       real, named analysis chain. See [SAR Processing](../processing/sar.md#five-real-standard-sar-processing-pipelines)
-       — not documented on this page, since they're specific to SAR
-       rather than general-purpose acquisition or processing chains.
+1. **YAML pipeline orchestration** (below) — `search` → `filter` →
+   `download` → `process` → `export`, run ad-hoc or on a cron
+   schedule via the CLI. Built for *acquisition* workflows.
+2. **The Python fluent processing pipeline** (`client.pipeline(...)`,
+   further down this page) — a chainable builder over
+   preprocessing/index/postprocessing/SAR operations
+   (`.clip().reproject().ndvi().cog().run(...)`). Built for
+   *processing* workflows on files you already have.
+3. **The five real SAR processing pipelines**
+   (`pygeofetch.sar.pipelines`) — real, standard end-to-end SAR
+   workflows (`standard_grd_preprocessing_pipeline`,
+   `flood_mapping_pipeline`, `change_detection_pipeline`,
+   `coherence_disturbance_pipeline`, `bright_target_detection_pipeline`),
+   each orchestrating `SARProcessor`'s atomic operations into one
+   real, named analysis chain. See [SAR Processing](../processing/sar.md#five-real-standard-sar-processing-pipelines)
+   — not documented on this page, since they're specific to SAR
+   rather than general-purpose acquisition or processing chains.
 
-    There's also a fourth, simpler option for "run this same processing
-    chain over many files in parallel" that isn't any of the above —
-    see "Batch Processing" at the bottom of this page.
-
+There's also a fourth, simpler option for "run this same processing
+chain over many files in parallel" that isn't any of the above —
+see "Batch Processing" at the bottom of this page.
+:::
 Define recurring satellite data workflows in a single YAML file.
 Schedule on cron, run ad-hoc, validate before committing, watch live
 logs.
 
-!!! note
+:::{note}
 
-    **Previously stub, now real.** The `process` and `export` steps used
-    to log a message and return `{"status": "stub"}` without doing
-    anything. Both now delegate to real, tested implementations: `process`
-    reuses the same action executor `DownloadOptions.post_process` and the
-    CLI's `--post-process` flag use; `export` genuinely copies files to
-    local disk, uploads to S3 (`s3://...`) or GCS (`gs://...`), and can
-    POST a webhook notification on completion. See
-    [Error Handling & Resilience](error-handling.md) for the equivalent fix to the circuit
-    breaker, and [Security Model](security.md) for the credential-encryption
-    fix — all three were found and fixed together during this
-    documentation pass.
-
+**Previously stub, now real.** The `process` and `export` steps used
+to log a message and return `{"status": "stub"}` without doing
+anything. Both now delegate to real, tested implementations: `process`
+reuses the same action executor `DownloadOptions.post_process` and the
+CLI's `--post-process` flag use; `export` genuinely copies files to
+local disk, uploads to S3 (`s3://...`) or GCS (`gs://...`), and can
+POST a webhook notification on completion. See
+[Error Handling & Resilience](error-handling.md) for the equivalent fix to the circuit
+breaker, and [Security Model](security.md) for the credential-encryption
+fix — all three were found and fixed together during this
+documentation pass.
+:::
 ## Pipeline steps
 
 | Step | Config keys | Status |
@@ -136,12 +136,12 @@ pygeofetch pipeline unschedule ndvi-monitor
 pygeofetch pipeline run weekly-sentinel2.yaml --step download
 ```
 
-!!! note
+:::{note}
 
-    `pipeline schedule` uses the system cron daemon on Linux/macOS, and
-    Windows Task Scheduler on Windows. Run `pygeofetch pipeline
-    list-scheduled` to confirm registration.
-
+`pipeline schedule` uses the system cron daemon on Linux/macOS, and
+Windows Task Scheduler on Windows. Run `pygeofetch pipeline
+list-scheduled` to confirm registration.
+:::
 ---
 
 ## Python Processing Pipeline — `client.pipeline(...)`
@@ -204,29 +204,29 @@ pl = ProcessingPipeline.from_yaml("ndvi_workflow.yaml", engine=client)
 result = pl.run(input="scene.tif")
 ```
 
-!!! danger
+:::{danger}
 
-    **Real bug found in the source's own docstring, verified by testing
-    directly**: `ProcessingPipeline`'s class docstring shows
-    `client.pipeline.from_yaml("ndvi_workflow.yaml").run()` as the usage
-    example. `from_yaml` is a real `@classmethod` on `ProcessingPipeline`
-    itself — `client.pipeline` is a bound *method* (it returns a new
-    `ProcessingPipeline` instance when called), and Python methods don't
-    have a `.from_yaml` attribute. Calling it exactly as the docstring
-    shows raises `AttributeError: 'function' object has no attribute
-    'from_yaml'` — confirmed by running it. The working form is
-    `ProcessingPipeline.from_yaml(path, engine=client)`, shown above.
+**Real bug found in the source's own docstring, verified by testing
+directly**: `ProcessingPipeline`'s class docstring shows
+`client.pipeline.from_yaml("ndvi_workflow.yaml").run()` as the usage
+example. `from_yaml` is a real `@classmethod` on `ProcessingPipeline`
+itself — `client.pipeline` is a bound *method* (it returns a new
+`ProcessingPipeline` instance when called), and Python methods don't
+have a `.from_yaml` attribute. Calling it exactly as the docstring
+shows raises `AttributeError: 'function' object has no attribute
+'from_yaml'` — confirmed by running it. The working form is
+`ProcessingPipeline.from_yaml(path, engine=client)`, shown above.
+:::
+:::{warning}
 
-!!! warning
-
-    This YAML format (a chain of processing steps for one file) is **not
-    the same YAML format** as the acquisition-pipeline YAML at the top of
-    this page (`search`/`filter`/`download`/`process`/`export` for a
-    recurring cron job). Don't mix the two — a
-    `weekly-sentinel2.yaml`-style file passed to
-    `ProcessingPipeline.from_yaml()` won't produce the steps you expect,
-    and vice versa.
-
+This YAML format (a chain of processing steps for one file) is **not
+the same YAML format** as the acquisition-pipeline YAML at the top of
+this page (`search`/`filter`/`download`/`process`/`export` for a
+recurring cron job). Don't mix the two — a
+`weekly-sentinel2.yaml`-style file passed to
+`ProcessingPipeline.from_yaml()` won't produce the steps you expect,
+and vice versa.
+:::
 ---
 
 ## Batch Processing — `client.batch`

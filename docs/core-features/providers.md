@@ -17,30 +17,31 @@ that provider's notes — not smoothed over.
 - 🔴 **Dead / decommissioned** — the upstream service is confirmed shut down; pygeofetch fails clearly rather than silently
 - 🔐 **Auth required for download** — search may still be public; see notes
 
-!!! warning "Two providers were removed, not fixed"
+:::{admonition} Two providers were removed, not fixed
+:class: warning
 
-    `eodag_provider` and `terrabotics` are **no longer part of pygeofetch**
-    as of this pass.
+`eodag_provider` and `terrabotics` are **no longer part of pygeofetch**
+as of this pass.
 
-    - **`eodag_provider`** only ever delegated to the third-party `eodag`
-      package — itself a separate, general-purpose multi-provider
-      aggregator, not a native connection to any single satellite data
-      source. It was also never wired into the actual provider registry
-      (`pygeofetch.providers.list_providers()`), so it was already
-      unreachable through normal use before removal.
-    - **`terrabotics`** targeted a genuinely real company, but one with no
-      public, verifiable API documentation to check its real endpoints
-      against — their real engagement model is a bespoke, per-contract
-      consulting service (a "fill out a form for a quote" site, not a
-      self-serve developer portal), unlike every other provider on this
-      page. The domain the old code used (`terrabotics.earth`) wasn't
-      even the company's real one (`terrabotics.co.uk`). Rather than guess
-      at endpoints with nothing public to verify them against, it was
-      removed.
+- **`eodag_provider`** only ever delegated to the third-party `eodag`
+  package — itself a separate, general-purpose multi-provider
+  aggregator, not a native connection to any single satellite data
+  source. It was also never wired into the actual provider registry
+  (`pygeofetch.providers.list_providers()`), so it was already
+  unreachable through normal use before removal.
+- **`terrabotics`** targeted a genuinely real company, but one with no
+  public, verifiable API documentation to check its real endpoints
+  against — their real engagement model is a bespoke, per-contract
+  consulting service (a "fill out a form for a quote" site, not a
+  self-serve developer portal), unlike every other provider on this
+  page. The domain the old code used (`terrabotics.earth`) wasn't
+  even the company's real one (`terrabotics.co.uk`). Rather than guess
+  at endpoints with nothing public to verify them against, it was
+  removed.
 
-    If you were using either, see [Contributing](../contributing.md) for
-    how to re-add a provider with real, documented API support.
-
+If you were using either, see [Contributing](../contributing.md) for
+how to re-add a provider with real, documented API support.
+:::
 ## Open, no-auth providers
 
 Search works without any credentials for all of these — confirmed
@@ -101,12 +102,12 @@ list_providers()        # -> sorted list of provider ID strings, currently 22
 list_provider_info()     # -> rich metadata: auth type, capabilities, satellites, etc.
 ```
 
-!!! note
+:::{note}
 
-    `PyGeoFetch` itself has no `.providers()` method — provider listing is
-    a module-level function on `pygeofetch.providers`, not a method on the
-    client class.
-
+`PyGeoFetch` itself has no `.providers()` method — provider listing is
+a module-level function on `pygeofetch.providers`, not a method on the
+client class.
+:::
 ## A note on how this list gets kept honest
 
 Every fix above was made by first researching that provider's real,

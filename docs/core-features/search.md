@@ -26,28 +26,30 @@ per-provider results come back:
    | Processing level | 10% flat bonus | Applied if the scene is L2/L2A/L2SP/analysis-ready — not scaled, just added or not |
    | *(baseline)* | 50%→60% blended with cloud score | Every result starts at a neutral 0.5 baseline |
 
-!!! warning "Deduplication is only provider+ID based"
-    **Honest, verified limitation**: deduplication is *only*
-    provider+ID based. If two *different* providers both index the
-    same real scene (e.g. both `aws_earth` and `planetary_computer`
-    carry the same Sentinel-2 tile), you will get **both copies** in
-    your results — there is no cross-provider identity matching (by
-    real acquisition ID, footprint+datetime, etc.) despite what a
-    stale comment in the source suggests. If you're searching multiple
-    STAC catalogues that overlap in coverage, expect near-duplicate
-    results and dedupe by your own criteria (e.g. real Sentinel-2
-    granule ID) if that matters for your workflow.
-
-!!! note "Scoring is 3 factors, not the 4 the docstring claims"
-    **Honest, verified discrepancy**: the scoring function's own
-    docstring lists a fourth factor — "spatial coverage (larger
-    coverage = better, 0.2 weight)" — but the actual implementation
-    does not compute or apply it at all. The real formula only uses
-    cloud cover, recency, and processing level, as shown above; AOI
-    coverage is not currently part of the relevance score (though it
-    *is* available separately via [Optical Data Validation & Preflight](optical-validation.md)'s
-    `check_aoi_coverage`, which is a hard filter, not a scoring input).
-
+:::{admonition} Deduplication is only provider+ID based
+:class: warning
+**Honest, verified limitation**: deduplication is *only*
+provider+ID based. If two *different* providers both index the
+same real scene (e.g. both `aws_earth` and `planetary_computer`
+carry the same Sentinel-2 tile), you will get **both copies** in
+your results — there is no cross-provider identity matching (by
+real acquisition ID, footprint+datetime, etc.) despite what a
+stale comment in the source suggests. If you're searching multiple
+STAC catalogues that overlap in coverage, expect near-duplicate
+results and dedupe by your own criteria (e.g. real Sentinel-2
+granule ID) if that matters for your workflow.
+:::
+:::{admonition} Scoring is 3 factors, not the 4 the docstring claims
+:class: note
+**Honest, verified discrepancy**: the scoring function's own
+docstring lists a fourth factor — "spatial coverage (larger
+coverage = better, 0.2 weight)" — but the actual implementation
+does not compute or apply it at all. The real formula only uses
+cloud cover, recency, and processing level, as shown above; AOI
+coverage is not currently part of the relevance score (though it
+*is* available separately via [Optical Data Validation & Preflight](optical-validation.md)'s
+`check_aoi_coverage`, which is a hard filter, not a scoring input).
+:::
 ## CLI examples
 
 ```bash
@@ -115,20 +117,20 @@ pygeofetch search run \
 | `--optical-min-coverage` | float | Override the min AOI coverage ratio used by `--validate-optical`, 0-1 (default 0.8). |
 | `--optical-required-bands` | string | Comma-separated required bands for `--validate-optical` (default `B02,B03,B04,B08,SCL`). |
 
-!!! danger
+:::{danger}
 
-    **`--on-provider-failure` is only partially real, verified directly
-    against source.** `abort`/`retry` are accepted by the CLI and stored
-    on the `SearchQuery` object, but `FederatedSearcher.search()` never
-    actually reads that field. Every provider always runs in parallel;
-    any provider that times out or raises is logged and excluded, while
-    results from every other provider are still returned normally — this
-    is the real, unconditional behavior regardless of what you pass. If
-    you need a search to genuinely abort when one provider fails, or to
-    actually retry a failed provider, that has to be implemented in your
-    own calling code — passing `--on-provider-failure abort` will not do
-    it.
-
+**`--on-provider-failure` is only partially real, verified directly
+against source.** `abort`/`retry` are accepted by the CLI and stored
+on the `SearchQuery` object, but `FederatedSearcher.search()` never
+actually reads that field. Every provider always runs in parallel;
+any provider that times out or raises is logged and excluded, while
+results from every other provider are still returned normally — this
+is the real, unconditional behavior regardless of what you pass. If
+you need a search to genuinely abort when one provider fails, or to
+actually retry a failed provider, that has to be implemented in your
+own calling code — passing `--on-provider-failure abort` will not do
+it.
+:::
 ## Output formats
 
 | Format | Description |

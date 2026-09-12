@@ -1,14 +1,14 @@
 # Roadmap
 
-!!! note
+:::{note}
 
-    Roadmap items are maintained by the project, not derivable from static
-    source inspection — this page intentionally doesn't repeat specific
-    version/feature claims from prior documentation that couldn't be
-    verified in this pass. For the current roadmap and to vote on
-    priorities, see GitHub Discussions on the
-    [EOCoreINT/pygeofetch](https://github.com/EOCoreINT/pygeofetch) repo.
-
+Roadmap items are maintained by the project, not derivable from static
+source inspection — this page intentionally doesn't repeat specific
+version/feature claims from prior documentation that couldn't be
+verified in this pass. For the current roadmap and to vote on
+priorities, see GitHub Discussions on the
+[EOCoreINT/pygeofetch](https://github.com/EOCoreINT/pygeofetch) repo.
+:::
 ## Fixed during this documentation audit
 
 These concrete, source-verified gaps were found during this audit and

@@ -8,12 +8,12 @@ lowest to highest precedence:
 3. **Environment variables** — `PYGEOFETCH_*`, case-insensitive, `__` for nesting
 4. **CLI arguments** — highest priority
 
-!!! note
+:::{note}
 
-    This page is generated directly from `pygeofetch/config/settings.py`
-    and its bundled `defaults.yaml`, not from a hand-maintained example —
-    so the field names and defaults below are exact.
-
+This page is generated directly from `pygeofetch/config/settings.py`
+and its bundled `defaults.yaml`, not from a hand-maintained example —
+so the field names and defaults below are exact.
+:::
 ## Real bundled defaults
 
 ```yaml

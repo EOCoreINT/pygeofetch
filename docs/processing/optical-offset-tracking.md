@@ -90,16 +90,17 @@ Returns an `OpticalOffsetResult` with:
 | `reliable` | Boolean mask: `snr >= snr_threshold` |
 | `window_centers_row`, `window_centers_col` | Real pixel coordinates each measurement corresponds to |
 
-!!! warning "SNR-based reliability alone is not enough — verified, not assumed"
+:::{admonition} SNR-based reliability alone is not enough — verified, not assumed
+:class: warning
 
-    Running this pipeline against real Bu'ertai imagery, a small number
-    of windows passed the `snr >= 3.0` reliability filter with a
-    displacement of **226.27 metres** — a single Sentinel-2 pixel pair
-    that should never move more than a few metres between two dates,
-    revealing a spurious correlator lock-on that SNR alone didn't catch.
-    See `compute_horizontal_strain` below for the real, direct
-    consequence of trusting this without further filtering, and the fix.
-
+Running this pipeline against real Bu'ertai imagery, a small number
+of windows passed the `snr >= 3.0` reliability filter with a
+displacement of **226.27 metres** — a single Sentinel-2 pixel pair
+that should never move more than a few metres between two dates,
+revealing a spurious correlator lock-on that SNR alone didn't catch.
+See `compute_horizontal_strain` below for the real, direct
+consequence of trusting this without further filtering, and the fix.
+:::
 ## Strain: turning displacement into a risk metric
 
 ```python
@@ -177,16 +178,17 @@ print(f"Optical-dominant: {(fused['reliability_source'] == 0).sum()} pixels")
 `fuse_insar_optical` is a real, coherence-weighted *source selection*,
 not an average.
 
-!!! danger "Do not average InSAR and optical displacement"
+:::{admonition} Do not average InSAR and optical displacement
+:class: danger
 
-    InSAR measures real line-of-sight phase, converted to a *vertical*
-    displacement estimate under a small-horizontal-motion assumption.
-    Optical offset tracking measures real 2D *horizontal* displacement
-    directly. These are physically different vector components, not
-    two noisy estimates of the same scalar quantity. Averaging a
-    vertical value with a horizontal-magnitude value produces a number
-    with no real physical meaning.
-
+InSAR measures real line-of-sight phase, converted to a *vertical*
+displacement estimate under a small-horizontal-motion assumption.
+Optical offset tracking measures real 2D *horizontal* displacement
+directly. These are physically different vector components, not
+two noisy estimates of the same scalar quantity. Averaging a
+vertical value with a horizontal-magnitude value produces a number
+with no real physical meaning.
+:::
 Instead, `fuse_insar_optical` uses the InSAR coherence map itself as
 the real, per-pixel decision signal:
 

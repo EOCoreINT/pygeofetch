@@ -3,29 +3,29 @@
 pygeofetch is designed with credential safety, network security, and
 data integrity as first-class concerns.
 
-!!! note
+:::{note}
 
-    **Previously base64, now genuinely encrypted.** The file-backend
-    credential store used to only base64-encode sensitive fields (its own
-    source comment read `# Basic obfuscation (not encryption)`) — trivially
-    reversible by anyone who could read the file, with no key required.
-    It now uses real Fernet symmetric encryption: a random key is
-    generated on first use and stored separately at
-    `~/.pygeofetch/credentials.key` (`chmod 0600`), and credentials are
-    written to `~/.pygeofetch/credentials.enc` (`chmod 0600`) with
-    sensitive fields (`password`, `api_key`, `token`, `secret_key`,
-    `client_secret`) genuinely encrypted, not just encoded. Existing users
-    upgrading from the old base64 file are migrated transparently on
-    first use — the old `credentials.json` is left in place, unused, and
-    can be deleted manually.
+**Previously base64, now genuinely encrypted.** The file-backend
+credential store used to only base64-encode sensitive fields (its own
+source comment read `# Basic obfuscation (not encryption)`) — trivially
+reversible by anyone who could read the file, with no key required.
+It now uses real Fernet symmetric encryption: a random key is
+generated on first use and stored separately at
+`~/.pygeofetch/credentials.key` (`chmod 0600`), and credentials are
+written to `~/.pygeofetch/credentials.enc` (`chmod 0600`) with
+sensitive fields (`password`, `api_key`, `token`, `secret_key`,
+`client_secret`) genuinely encrypted, not just encoded. Existing users
+upgrading from the old base64 file are migrated transparently on
+first use — the old `credentials.json` is left in place, unused, and
+can be deleted manually.
 
-    **`PyGeoFetch()`'s default backend is still `auth_backend="file"`**
-    (not keyring) — that default itself wasn't changed here, only what
-    "file" storage actually does to protect the data. Prefer
-    `PyGeoFetch(auth_backend="keyring")` when a real OS keyring is
-    available, since it hands storage off to the OS rather than a
-    locally-generated key file.
-
+**`PyGeoFetch()`'s default backend is still `auth_backend="file"`**
+(not keyring) — that default itself wasn't changed here, only what
+"file" storage actually does to protect the data. Prefer
+`PyGeoFetch(auth_backend="keyring")` when a real OS keyring is
+available, since it hands storage off to the OS rather than a
+locally-generated key file.
+:::
 ## Credential handling
 
 - System keyring storage is available and works correctly when

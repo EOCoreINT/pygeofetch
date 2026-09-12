@@ -1,17 +1,17 @@
 # Full CLI Reference
 
-!!! danger
+:::{danger}
 
-    **A real, confirmed dead command group exists in the codebase**:
-    `pygeofetch/cli/monitor_commands.py` defines a real `monitor` group
-    (`monitor run`, `monitor history`) with real implementation code, but
-    it is **never registered** in `pygeofetch/cli/main.py` — confirmed by
-    running `pygeofetch --help` directly and checking the real output: no
-    `monitor` entry appears, and `pygeofetch monitor run` fails with "No
-    such command". If you need this functionality, it exists in source
-    but needs `cli.add_command(monitor)` added to `main.py` to actually
-    be reachable.
-
+**A real, confirmed dead command group exists in the codebase**:
+`pygeofetch/cli/monitor_commands.py` defines a real `monitor` group
+(`monitor run`, `monitor history`) with real implementation code, but
+it is **never registered** in `pygeofetch/cli/main.py` — confirmed by
+running `pygeofetch --help` directly and checking the real output: no
+`monitor` entry appears, and `pygeofetch monitor run` fails with "No
+such command". If you need this functionality, it exists in source
+but needs `cli.add_command(monitor)` added to `main.py` to actually
+be reachable.
+:::
 ## Global options
 
 ```
@@ -46,18 +46,18 @@ Options:
 | `doctor` | — | Diagnose installation and connectivity |
 | `version` | — | Show version info |
 
-!!! note
+:::{note}
 
-    `preprocess`, `index`, `post`, and `sar` are thin, direct CLI wrappers
-    around the exact same `client.preprocess`/`client.indices`/
-    `client.post`/`client.sar` methods documented in full on their
-    respective processing pages — flag names match the Python keyword
-    argument names throughout (e.g. `--red`/`--nir` on `index ndvi` maps
-    directly to `red=`/`nir=`). This page lists every real command with a
-    one-line description and a few concrete examples; see the linked
-    processing pages for full algorithm detail, real formulas, and
-    verification basis.
-
+`preprocess`, `index`, `post`, and `sar` are thin, direct CLI wrappers
+around the exact same `client.preprocess`/`client.indices`/
+`client.post`/`client.sar` methods documented in full on their
+respective processing pages — flag names match the Python keyword
+argument names throughout (e.g. `--red`/`--nir` on `index ndvi` maps
+directly to `red=`/`nir=`). This page lists every real command with a
+one-line description and a few concrete examples; see the linked
+processing pages for full algorithm detail, real formulas, and
+verification basis.
+:::
 ## Extra download and cache subcommands
 
 Beyond `download run` (see [Downloading Satellite Data](../core-features/download.md) for its
@@ -164,15 +164,15 @@ this CLI group.
 
 ## `proc-pipeline` — the YAML *processing-chain* pipeline
 
-!!! warning
+:::{warning}
 
-    This is genuinely different from `pygeofetch pipeline` (search →
-    filter → download → process → export, for a recurring acquisition
-    job). `proc-pipeline` runs a **chain of processing steps on one
-    file** — the CLI-accessible form of `ProcessingPipeline` from
-    [Pipelines & Batch Processing](pipelines.md)'s "Python Processing Pipeline" section.
-    Don't mix the two YAML formats.
-
+This is genuinely different from `pygeofetch pipeline` (search →
+filter → download → process → export, for a recurring acquisition
+job). `proc-pipeline` runs a **chain of processing steps on one
+file** — the CLI-accessible form of `ProcessingPipeline` from
+[Pipelines & Batch Processing](pipelines.md)'s "Python Processing Pipeline" section.
+Don't mix the two YAML formats.
+:::
 ```bash
 pygeofetch proc-pipeline run ndvi_workflow.yaml --input scene.tif --output-dir ./processed/
 pygeofetch proc-pipeline validate ndvi_workflow.yaml

@@ -32,6 +32,10 @@ myst_enable_extensions = [
     "fieldlist",
 ]
 
+# Auto-generate slugged anchors for headings up to h4, so in-page and
+# cross-page links like `page.md#some-heading` resolve.
+myst_heading_anchors = 4
+
 # autodoc imports the real package, which pulls in heavy optional deps
 # (rasterio, boto3, numpy, etc.). Mock anything not required just to
 # build docs, so a missing system lib (e.g. GDAL) never breaks the

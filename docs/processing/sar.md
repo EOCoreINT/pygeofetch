@@ -9,45 +9,46 @@ interferometric coherence, and five real, standard end-to-end
 processing pipelines built on top of them — genuine, from-scratch
 implementations, not thin wrappers around an external SAR toolkit.
 
-!!! note "Two `SARProcessor` classes exist — corrected here after direct verification"
+:::{admonition} Two `SARProcessor` classes exist — corrected here after direct verification
+:class: note
 
-    `client.sar` (via `PyGeoFetch()`) is `pygeofetch.processing.sar.SARProcessor`.
-    `from pygeofetch.sar import SARProcessor` is a separate, standalone class
-    (`pygeofetch.sar.processor.SARProcessor`) with a pluggable `backend=`
-    parameter (`"native"`/`"sarxarray"`/`"ost"`).
+`client.sar` (via `PyGeoFetch()`) is `pygeofetch.processing.sar.SARProcessor`.
+`from pygeofetch.sar import SARProcessor` is a separate, standalone class
+(`pygeofetch.sar.processor.SARProcessor`) with a pluggable `backend=`
+parameter (`"native"`/`"sarxarray"`/`"ost"`).
 
-    An earlier version of this page said the standalone class's `"native"`
-    backend was "a third, separate implementation... not a delegation."
-    That was checked directly against the actual code and **isn't
-    accurate**: `pygeofetch.sar._native.NativeSARBackend` constructs a
-    real `pygeofetch.processing.sar.SARProcessor` internally and calls
-    straight through to it for despeckle, calibrate, flood mapping, and
-    coherence. For the native backend specifically, these are the same
-    real implementation reached through two different import paths, not
-    two copies to keep in sync.
+An earlier version of this page said the standalone class's `"native"`
+backend was "a third, separate implementation... not a delegation."
+That was checked directly against the actual code and **isn't
+accurate**: `pygeofetch.sar._native.NativeSARBackend` constructs a
+real `pygeofetch.processing.sar.SARProcessor` internally and calls
+straight through to it for despeckle, calibrate, flood mapping, and
+coherence. For the native backend specifically, these are the same
+real implementation reached through two different import paths, not
+two copies to keep in sync.
 
-    The real, narrower duplication that *did* exist — and has been
-    fixed — was the interferometric coherence *formula* itself, which
-    was independently implemented a second time inside
-    `pygeofetch.insar.interferogram` (the full InSAR pipeline's own
-    coherence step). Both were verified mathematically correct, but as
-    two copies. The standalone version now delegates to one shared,
-    canonical implementation in `pygeofetch.utils.sar_math` — see
-    below. The `insar` package's own internal version deliberately
-    stays separate: it's tightly coupled to a large, already
-    real-world-validated class with a real chunked variant for
-    memory-safe processing of full-scene Sentinel-1 SLC rasters (which
-    can be multiple gigabytes) and real GPU acceleration support —
-    refactoring that file to depend on this one was judged too risky
-    for the marginal benefit versus the chance of regressing already-proven code.
+The real, narrower duplication that *did* exist — and has been
+fixed — was the interferometric coherence *formula* itself, which
+was independently implemented a second time inside
+`pygeofetch.insar.interferogram` (the full InSAR pipeline's own
+coherence step). Both were verified mathematically correct, but as
+two copies. The standalone version now delegates to one shared,
+canonical implementation in `pygeofetch.utils.sar_math` — see
+below. The `insar` package's own internal version deliberately
+stays separate: it's tightly coupled to a large, already
+real-world-validated class with a real chunked variant for
+memory-safe processing of full-scene Sentinel-1 SLC rasters (which
+can be multiple gigabytes) and real GPU acceleration support —
+refactoring that file to depend on this one was judged too risky
+for the marginal benefit versus the chance of regressing already-proven code.
 
-    Use `client.sar` for despeckling, calibration, flood mapping, or
-    coherence if you don't need the `sarxarray`/OST backends — it needs
-    no extra imports. Reach for the standalone `pygeofetch.sar.SARProcessor`
-    when you specifically want the `sarxarray` or `ost` backend, or when
-    calling one of the five pipelines below (which use the pluggable
-    facade so they work with any backend).
-
+Use `client.sar` for despeckling, calibration, flood mapping, or
+coherence if you don't need the `sarxarray`/OST backends — it needs
+no extra imports. Reach for the standalone `pygeofetch.sar.SARProcessor`
+when you specifically want the `sarxarray` or `ost` backend, or when
+calling one of the five pipelines below (which use the pluggable
+facade so they work with any backend).
+:::
 ## `client.sar` — the primary, wired-in processor
 
 ```python
@@ -93,22 +94,22 @@ client.sar.calibrate(input, output_type="sigma0", in_db=True, output=None)
 Converts SAR digital numbers (DN) to backscatter coefficients:
 `sigma0 = DN² / A²`.
 
-!!! warning
+:::{warning}
 
-    **Honest, documented limitation**: the calibration constant `A` is
-    fixed at `1.0` (identity) — this is *not* a real, per-scene
-    calibration LUT read from the Sentinel-1 annotation XML, which is
-    what real radiometric calibration requires for absolute accuracy.
-    `gamma0`/`beta0` similarly use a **fixed nominal incidence angle**
-    (38°), not the real per-pixel local incidence angle from a DEM. This
-    is adequate for *relative* comparisons within one scene (e.g. flood
-    detection, change detection — which is exactly what every pipeline
-    below uses it for) but **not** for absolute, cross-scene radiometric
-    accuracy work. A real implementation would need to parse the actual
-    Sentinel-1 calibration vectors and use per-pixel incidence angle
-    from a real terrain model — track this as a known gap if your use
-    case needs true absolute calibration.
-
+**Honest, documented limitation**: the calibration constant `A` is
+fixed at `1.0` (identity) — this is *not* a real, per-scene
+calibration LUT read from the Sentinel-1 annotation XML, which is
+what real radiometric calibration requires for absolute accuracy.
+`gamma0`/`beta0` similarly use a **fixed nominal incidence angle**
+(38°), not the real per-pixel local incidence angle from a DEM. This
+is adequate for *relative* comparisons within one scene (e.g. flood
+detection, change detection — which is exactly what every pipeline
+below uses it for) but **not** for absolute, cross-scene radiometric
+accuracy work. A real implementation would need to parse the actual
+Sentinel-1 calibration vectors and use per-pixel incidence angle
+from a real terrain model — track this as a known gap if your use
+case needs true absolute calibration.
+:::
 ### Flood mapping
 
 ```python
@@ -133,13 +134,14 @@ Two real modes:
 | `"increase"` | Backscatter rising | The correct signature for **flooded urban/built-up areas** — water at a building's base creates a double-bounce (ground-wall-sensor) reflection stronger than dry ground alone |
 | `"both"` | Either direction | The robust choice when an AOI mixes open water and dense urban flooding — a one-directional threshold **structurally cannot** detect the other pattern at all, not just detect it poorly |
 
-!!! note "flood_map() alone is not a complete workflow"
+:::{admonition} flood_map() alone is not a complete workflow
+:class: note
 
-    Calling `flood_map()` directly on raw DN values gives poor,
-    unreliable results — its dB-scale threshold assumes calibrated
-    input. See [`flood_mapping_pipeline`](#flood_mapping_pipeline)
-    below, which handles the real prerequisite chain for you.
-
+Calling `flood_map()` directly on raw DN values gives poor,
+unreliable results — its dB-scale threshold assumes calibrated
+input. See [`flood_mapping_pipeline`](#flood_mapping_pipeline)
+below, which handles the real prerequisite chain for you.
+:::
 ### Interferometric coherence
 
 ```python
@@ -153,33 +155,34 @@ surface between the two acquisition dates; low coherence indicates
 change or temporal decorrelation (vegetation growth, surface
 disturbance, etc.).
 
-!!! danger "A real, serious bug was fixed here — verify you're on a current version"
+:::{admonition} A real, serious bug was fixed here — verify you're on a current version
+:class: danger
 
-    A previous version of `coherence()` read complex SLC data through a
-    shared helper that unconditionally casts everything to real
-    float32 (discarding the imaginary/phase part), then tried to
-    reinterpret that already-real data as complex via a raw memory
-    `.view()`. **This made `coherence()` completely non-functional for
-    its entire stated purpose** — genuine complex SLC input — before
-    the fix. This wasn't found by code review; it was caught by an
-    actual test using a real synthetic complex64 GeoTIFF, which crashed
-    with a shape-mismatch error rather than silently returning
-    corrupted output. Fixed by reading complex bands directly via
-    rasterio, never through the lossy real-valued helper.
+A previous version of `coherence()` read complex SLC data through a
+shared helper that unconditionally casts everything to real
+float32 (discarding the imaginary/phase part), then tried to
+reinterpret that already-real data as complex via a raw memory
+`.view()`. **This made `coherence()` completely non-functional for
+its entire stated purpose** — genuine complex SLC input — before
+the fix. This wasn't found by code review; it was caught by an
+actual test using a real synthetic complex64 GeoTIFF, which crashed
+with a shape-mismatch error rather than silently returning
+corrupted output. Fixed by reading complex bands directly via
+rasterio, never through the lossy real-valued helper.
 
-    The underlying formula now lives in one shared, canonical place —
-    `pygeofetch.utils.sar_math.estimate_interferometric_coherence` —
-    used by both `client.sar.coherence()` and the pipelines below.
+The underlying formula now lives in one shared, canonical place —
+`pygeofetch.utils.sar_math.estimate_interferometric_coherence` —
+used by both `client.sar.coherence()` and the pipelines below.
+:::
+:::{note}
 
-!!! note
-
-    For the *specific* case of Sentinel-1 InSAR coherence as part of a
-    full interferogram (not a standalone two-image comparison), see
-    [InSAR Processing](insar.md) -- `InterferogramGenerator` computes
-    coherence as part of real burst-aware, orbit-coregistered
-    interferogram formation, which is a substantially more involved
-    pipeline than this standalone `coherence()` method.
-
+For the *specific* case of Sentinel-1 InSAR coherence as part of a
+full interferogram (not a standalone two-image comparison), see
+[InSAR Processing](insar.md) -- `InterferogramGenerator` computes
+coherence as part of real burst-aware, orbit-coregistered
+interferogram formation, which is a substantially more involved
+pipeline than this standalone `coherence()` method.
+:::
 ## Five real, standard SAR processing pipelines
 
 `pygeofetch.sar.pipelines` orchestrates the atomic operations above

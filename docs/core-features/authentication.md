@@ -10,15 +10,15 @@ client credentials, depending on what each provider needs — see
 [Providers](providers.md) for which auth type each of the 22
 providers uses.
 
-!!! note
+:::{note}
 
-    **Verified default, worth knowing explicitly**: `PyGeoFetch()` with
-    no arguments uses `auth_backend="file"` — the encrypted-file backend
-    is what almost everyone is actually using unless they've explicitly
-    passed `auth_backend="keyring"`. This matters for the CI/CD section
-    below: `auth_backend="file"` there isn't opting into anything
-    unusual, it's just being explicit about the same default behavior.
-
+**Verified default, worth knowing explicitly**: `PyGeoFetch()` with
+no arguments uses `auth_backend="file"` — the encrypted-file backend
+is what almost everyone is actually using unless they've explicitly
+passed `auth_backend="keyring"`. This matters for the CI/CD section
+below: `auth_backend="file"` there isn't opting into anything
+unusual, it's just being explicit about the same default behavior.
+:::
 ## Adding credentials
 
 ```bash
@@ -51,20 +51,20 @@ pygeofetch auth export --output creds_backup.json
 
 ## CI/CD, Docker, and headless environments
 
-!!! danger
+:::{danger}
 
-    **A previous version of this page documented a
-    `PYGEOFETCH_{PROVIDER}_{FIELD}` environment-variable auto-loading
-    mechanism for credentials. It does not exist.** Verified by searching
-    the entire codebase for any environment-variable reading related to
-    credentials — there is none. `Credentials` is a plain data model with
-    no environment-variable support built in, and neither `AuthManager`
-    nor any individual provider reads `os.environ` to populate
-    credentials automatically. Setting `PYGEOFETCH_USGS_USERNAME` (or any
-    similar variable) and expecting `pygeofetch` to pick it up will not
-    work — your authentication will fail with no indication that the
-    environment variable was ever the problem.
-
+**A previous version of this page documented a
+`PYGEOFETCH_{PROVIDER}_{FIELD}` environment-variable auto-loading
+mechanism for credentials. It does not exist.** Verified by searching
+the entire codebase for any environment-variable reading related to
+credentials — there is none. `Credentials` is a plain data model with
+no environment-variable support built in, and neither `AuthManager`
+nor any individual provider reads `os.environ` to populate
+credentials automatically. Setting `PYGEOFETCH_USGS_USERNAME` (or any
+similar variable) and expecting `pygeofetch` to pick it up will not
+work — your authentication will fail with no indication that the
+environment variable was ever the problem.
+:::
 The real, working way to authenticate in CI/CD, Docker, or any
 headless environment is to read your own secrets and pass them to
 `add_credentials()` explicitly, in your own Python code or a small
@@ -91,19 +91,19 @@ using your CI system's own secrets mechanism (GitHub Actions
 Secrets, GitLab CI/CD Variables, a Docker `--env-file`, etc.), then
 run this setup step once before your real search/download code.
 
-!!! note
+:::{note}
 
-    **Headless Linux (Docker, SSH) if you've explicitly opted into
-    `auth_backend="keyring"`:** if no D-Bus/keyring daemon is running,
-    `keyring` itself may raise an error before you ever reach
-    pygeofetch's own code. Set
-    `PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring` as a real,
-    separate environment variable (a `keyring` library convention, not a
-    pygeofetch one) to avoid that -- or simply don't pass
-    `auth_backend="keyring"` at all, since the real default
-    (`auth_backend="file"`) never touches a keyring daemon in the first
-    place.
-
+**Headless Linux (Docker, SSH) if you've explicitly opted into
+`auth_backend="keyring"`:** if no D-Bus/keyring daemon is running,
+`keyring` itself may raise an error before you ever reach
+pygeofetch's own code. Set
+`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring` as a real,
+separate environment variable (a `keyring` library convention, not a
+pygeofetch one) to avoid that -- or simply don't pass
+`auth_backend="keyring"` at all, since the real default
+(`auth_backend="file"`) never touches a keyring daemon in the first
+place.
+:::
 ## Provider auth types
 
 | Provider | Auth type | Free? |
@@ -120,16 +120,16 @@ run this setup step once before your real search/download code.
 | `alaska_satellite_facility` | Search: none (public). Download: Earthdata Login (same as NASA), or a bearer token | Free |
 | `google_earth_engine` | Service account JSON | See note below |
 
-!!! warning
+:::{warning}
 
-    **`google_earth_engine` is not actually functional** regardless of
-    what credentials you provide — its real API needs a fundamentally
-    different Google service-account JWT auth flow and Earth Engine's
-    own asset/computation API, neither of which is implemented. It now
-    fails immediately with a clear message rather than crashing, but
-    `auth add google_earth_engine` will not make search/download work.
-    See [Providers](providers.md).
-
+**`google_earth_engine` is not actually functional** regardless of
+what credentials you provide — its real API needs a fundamentally
+different Google service-account JWT auth flow and Earth Engine's
+own asset/computation API, neither of which is implemented. It now
+fails immediately with a clear message rather than crashing, but
+`auth add google_earth_engine` will not make search/download work.
+See [Providers](providers.md).
+:::
 ## In Python
 
 ```python

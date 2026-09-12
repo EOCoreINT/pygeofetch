@@ -4,31 +4,31 @@
 pip install "pygeofetch[insar]"
 ```
 
-!!! tip
+:::{tip}
 
-    Looking for a complete, real, cell-by-cell worked example rather than
-    an API reference? See
-    [Complete Worked Example: Mexico City Subsidence](insar-mexico-city-tutorial.md) — a full search-to-
-    validated-subsidence-map run, cross-referenced against a published
-    result (Cigna & Tapete 2021).
+Looking for a complete, real, cell-by-cell worked example rather than
+an API reference? See
+[Complete Worked Example: Mexico City Subsidence](insar-mexico-city-tutorial.md) — a full search-to-
+validated-subsidence-map run, cross-referenced against a published
+result (Cigna & Tapete 2021).
+:::
+:::{note}
 
-!!! note
-
-    **Re-verified against a fresh source upload after this page and the
-    tutorial were originally written**: the InSAR module had substantial
-    internal changes since then (900+ diff lines in `interferogram.py`
-    alone; large diffs across nearly every file in `pygeofetch/insar/`).
-    Directly re-checked the real signatures of every function/class this
-    page and the tutorial document —
-    `search_and_select_consistent_stack`, `PreflightGate`,
-    `select_burst_synchronized_dates`, `SLCExtractor.extract_consistent_stack`,
-    `InterferogramGenerator.process_pair`, `PhaseUnwrapper.unwrap_pair`,
-    `build_sbas_network`, `select_reliable_reference_pixel`,
-    `bridge_unwrap_regions`, `SBASTimeSeries.invert`,
-    `RiskMapper.compute_risk` — against the fresh source. All matched
-    exactly; the large diffs were internal refactoring/implementation
-    changes, not breaking changes to the public API documented here.
-
+**Re-verified against a fresh source upload after this page and the
+tutorial were originally written**: the InSAR module had substantial
+internal changes since then (900+ diff lines in `interferogram.py`
+alone; large diffs across nearly every file in `pygeofetch/insar/`).
+Directly re-checked the real signatures of every function/class this
+page and the tutorial document —
+`search_and_select_consistent_stack`, `PreflightGate`,
+`select_burst_synchronized_dates`, `SLCExtractor.extract_consistent_stack`,
+`InterferogramGenerator.process_pair`, `PhaseUnwrapper.unwrap_pair`,
+`build_sbas_network`, `select_reliable_reference_pixel`,
+`bridge_unwrap_regions`, `SBASTimeSeries.invert`,
+`RiskMapper.compute_risk` — against the fresh source. All matched
+exactly; the large diffs were internal refactoring/implementation
+changes, not breaking changes to the public API documented here.
+:::
 Coregistration, interferogram formation, phase unwrapping, and SBAS
 time series inversion, in pure Python. No SNAP or ISCE required for
 the core pipeline.
@@ -91,17 +91,17 @@ On-Demand InSAR and ISCE2/3 use in production.
 Berardino et al. (2002) SBAS inversion, with optional MintPy delegation
 for the full correction chain.
 
-!!! warning
+:::{warning}
 
-    **The reference pixel matters more than almost anything else here.**
-    Phase unwrapping only recovers phase relative to an arbitrary
-    per-interferogram offset. Combining unwrapped interferograms without a
-    common, stable reference pixel corrupts the entire result. In one
-    verification run, referencing inside a synthetic subsidence bowl gave
-    103 mm/yr RMSE against a 100 mm/yr true signal; a verified-stable
-    reference gave 8.84 mm/yr RMSE. Always pass an explicit,
-    independently-verified `reference_pixel`.
-
+**The reference pixel matters more than almost anything else here.**
+Phase unwrapping only recovers phase relative to an arbitrary
+per-interferogram offset. Combining unwrapped interferograms without a
+common, stable reference pixel corrupts the entire result. In one
+verification run, referencing inside a synthetic subsidence bowl gave
+103 mm/yr RMSE against a 100 mm/yr true signal; a verified-stable
+reference gave 8.84 mm/yr RMSE. Always pass an explicit,
+independently-verified `reference_pixel`.
+:::
 ## Advanced safeguards: custom DEMs, layover/shadow, and topographic residuals
 
 `pygeofetch.insar.advanced_safeguards` adds three real, general-purpose
@@ -259,14 +259,14 @@ Supply all four (plus a DEM) and orbit-based coregistration is used
 automatically. Omit any of the four and it falls back cleanly to
 shape-based resampling, with a clear log line stating which path ran.
 
-!!! note
+:::{note}
 
-    **Honest, documented limitation:** the lower-level
-    `solve_ground_point()` (an alternative, pixel-driven geolocation solve)
-    has a known reliability gap and is deliberately not exported as a
-    primary API. It always fails safely, but isn't recommended for
-    unattended use.
-
+**Honest, documented limitation:** the lower-level
+`solve_ground_point()` (an alternative, pixel-driven geolocation solve)
+has a known reliability gap and is deliberately not exported as a
+primary API. It always fails safely, but isn't recommended for
+unattended use.
+:::
 ## LOS-to-vertical conversion
 
 InSAR measures line-of-sight range change — the true 3D displacement
@@ -341,16 +341,16 @@ but accepts any `(data_array, time_years) -> risk_array` callable, so
 a domain-specific risk definition (e.g. weighting recent
 acceleration more heavily) can be substituted directly.
 
-!!! note
+:::{note}
 
-    **Real bug fixed**: an earlier version resolved the input time series
-    by *mutating the caller's own `ts_result` object* (setting new
-    `.data`/`.times` attributes on it as a side effect of just
-    constructing a `RiskMapper`) — a real risk of silently corrupting the
-    caller's own code if that same `ts_result` object was reused
-    elsewhere afterward. `RiskMapper.__init__` no longer mutates its
-    input.
-
+**Real bug fixed**: an earlier version resolved the input time series
+by *mutating the caller's own `ts_result` object* (setting new
+`.data`/`.times` attributes on it as a side effect of just
+constructing a `RiskMapper`) — a real risk of silently corrupting the
+caller's own code if that same `ts_result` object was reused
+elsewhere afterward. `RiskMapper.__init__` no longer mutates its
+input.
+:::
 `RiskMapper` accepts a `TimeSeriesResult` from `SBASTimeSeries.invert()`
 directly (matches its `.displacement`/`.dates` attributes), or any
 object/dict exposing a 3D `(time, y, x)` array under one of

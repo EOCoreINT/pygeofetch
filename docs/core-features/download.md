@@ -49,26 +49,26 @@ pygeofetch download run \
 
 ## What `--resume` actually does
 
-!!! danger
+:::{danger}
 
-    **Real, verified behavior — not what "resume" usually implies.**
-    `--resume` does **not** continue a partially-downloaded file from the
-    last byte received (no HTTP Range requests are used). What it
-    actually does: before downloading each item, check whether a file
-    already exists at the expected destination path, and if it does,
-    **validate it**. If it's valid, skip re-downloading that item
-    entirely and report it as already complete. If no file is found, or
-    the found file fails validation (e.g. it's truncated or corrupted),
-    a full, fresh download runs — starting over from byte zero, not
-    continuing from wherever the previous attempt stopped.
+**Real, verified behavior — not what "resume" usually implies.**
+`--resume` does **not** continue a partially-downloaded file from the
+last byte received (no HTTP Range requests are used). What it
+actually does: before downloading each item, check whether a file
+already exists at the expected destination path, and if it does,
+**validate it**. If it's valid, skip re-downloading that item
+entirely and report it as already complete. If no file is found, or
+the found file fails validation (e.g. it's truncated or corrupted),
+a full, fresh download runs — starting over from byte zero, not
+continuing from wherever the previous attempt stopped.
 
-    In practice this means `--resume` is genuinely useful for its most
-    common real use case — **re-running the same download command safely
-    after an interruption**, so you don't waste bandwidth re-fetching
-    scenes you already have — but it will not save partial progress on a
-    single large file that got cut off partway through; that file gets
-    re-downloaded completely.
-
+In practice this means `--resume` is genuinely useful for its most
+common real use case — **re-running the same download command safely
+after an interruption**, so you don't waste bandwidth re-fetching
+scenes you already have — but it will not save partial progress on a
+single large file that got cut off partway through; that file gets
+re-downloaded completely.
+:::
 ## Download flags
 
 | Flag | Type | Description |
@@ -94,19 +94,19 @@ pygeofetch download run \
 | `--optical-min-coverage` | float | Override the min AOI coverage ratio used by `--validate-optical`, 0-1 (default 0.8). |
 | `--optical-required-bands` | string | Comma-separated required bands for `--validate-optical` (default `B02,B03,B04,B08,SCL`). |
 
-!!! note
+:::{note}
 
-    **What `--on-failure` actually does, verified against source:** every
-    item in the batch is always attempted, regardless of this flag —
-    "abort" does **not** stop the download mid-batch the moment one item
-    fails. `abort` means: after every item has been attempted, if *any*
-    failed, exit the CLI process with status code 1 (useful for detecting
-    failure in a script or CI job, e.g. `pygeofetch download run ... ||
-    echo "some downloads failed"`). `retry` has no behavior distinct from
-    the default `skip` — genuine per-item retries with exponential
-    backoff already happen automatically via the separate `--retry N`
-    flag, independent of what `--on-failure` is set to.
-
+**What `--on-failure` actually does, verified against source:** every
+item in the batch is always attempted, regardless of this flag —
+"abort" does **not** stop the download mid-batch the moment one item
+fails. `abort` means: after every item has been attempted, if *any*
+failed, exit the CLI process with status code 1 (useful for detecting
+failure in a script or CI job, e.g. `pygeofetch download run ... ||
+echo "some downloads failed"`). `retry` has no behavior distinct from
+the default `skip` — genuine per-item retries with exponential
+backoff already happen automatically via the separate `--retry N`
+flag, independent of what `--on-failure` is set to.
+:::
 ## Band selection for Sentinel-2
 
 | Bands | Purpose | Resolution | Approx size/scene |
@@ -173,13 +173,13 @@ for r in results_download:
         print(r.data_id, "failed:", r.error)
 ```
 
-!!! note
+:::{note}
 
-    The CLI's `--retry`, `--bandwidth-limit "10MB"`, and `--post-process
-    "reproject:EPSG:4326"` string syntax is parsed and converted into the
-    correct typed `DownloadOptions` fields for you — it's only when
-    constructing `DownloadOptions` directly in Python that the field names
-    above (`retry_attempts`, `bandwidth_limit_mbps`, a list of
-    `PostProcessAction` objects) matter.
-
+The CLI's `--retry`, `--bandwidth-limit "10MB"`, and `--post-process
+"reproject:EPSG:4326"` string syntax is parsed and converted into the
+correct typed `DownloadOptions` fields for you — it's only when
+constructing `DownloadOptions` directly in Python that the field names
+above (`retry_attempts`, `bandwidth_limit_mbps`, a list of
+`PostProcessAction` objects) matter.
+:::
 Full field reference: [Python API Reference](../reference/python-api.md).

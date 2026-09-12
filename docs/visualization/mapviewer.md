@@ -46,15 +46,15 @@ mv.add_split_comparison(
 )
 ```
 
-!!! note
+:::{note}
 
-    The interactive split view depends on `localtileserver` spinning up a
-    real local background HTTP server, which is known to fail in some
-    restricted/sandboxed network environments (firewalls, some corporate
-    VPNs) with a `ServerDownError`. When that happens,
-    `add_split_comparison()` automatically falls back to a static
-    side-by-side comparison that needs no server at all.
-
+The interactive split view depends on `localtileserver` spinning up a
+real local background HTTP server, which is known to fail in some
+restricted/sandboxed network environments (firewalls, some corporate
+VPNs) with a `ServerDownError`. When that happens,
+`add_split_comparison()` automatically falls back to a static
+side-by-side comparison that needs no server at all.
+:::
 ## Inspecting and saving
 
 ```python

@@ -28,30 +28,30 @@ pattern: pick two bands where a target surface type behaves very
 differently, normalize the difference so it always falls in a
 predictable range.
 
-!!! danger
+:::{danger}
 
-    **Two separate classes exist, and only one is reachable via
-    `PyGeoFetch`** — the same real duplication pattern documented on
-    [SAR Processing](sar.md):
+**Two separate classes exist, and only one is reachable via
+`PyGeoFetch`** — the same real duplication pattern documented on
+[SAR Processing](sar.md):
 
-    - **`client.indices`** (via `PyGeoFetch()`) is
-      `pygeofetch.processing.indices.SpectralIndices` — one **dedicated
-      method per index** (`client.indices.ndvi(red=..., nir=...)`), 17
-      indices total, always available with no extra dependency. **This is
-      the one almost every real workflow should use**, and everything on
-      this page documents it.
-    - **`from pygeofetch.processor.indices import SpectralIndex`** is a
-      *different* class with a generic `compute(index, **band_arrays)` /
-      `from_files(index, **band_paths)` interface, and can reach 280
-      indices when `spyndex` is installed (confirmed directly against
-      spyndex's real, current catalogue — not the 232 an earlier pass
-      of this page assumed), plus 6 real geology/mineral-exploration
-      indices spyndex itself doesn't have. Not accessible as
-      `client.indices` — see the bottom of this page.
+- **`client.indices`** (via `PyGeoFetch()`) is
+  `pygeofetch.processing.indices.SpectralIndices` — one **dedicated
+  method per index** (`client.indices.ndvi(red=..., nir=...)`), 17
+  indices total, always available with no extra dependency. **This is
+  the one almost every real workflow should use**, and everything on
+  this page documents it.
+- **`from pygeofetch.processor.indices import SpectralIndex`** is a
+  *different* class with a generic `compute(index, **band_arrays)` /
+  `from_files(index, **band_paths)` interface, and can reach 280
+  indices when `spyndex` is installed (confirmed directly against
+  spyndex's real, current catalogue — not the 232 an earlier pass
+  of this page assumed), plus 6 real geology/mineral-exploration
+  indices spyndex itself doesn't have. Not accessible as
+  `client.indices` — see the bottom of this page.
 
-    If in doubt, use `client.indices` — everything below is written
-    against it.
-
+If in doubt, use `client.indices` — everything below is written
+against it.
+:::
 ## Quick start
 
 ```python
@@ -306,13 +306,13 @@ stacked = client.indices.stack(inputs=[b02, b03, b04, b08])   # multi-band GeoTI
 `B[1]`, etc. refer to your `inputs` list in order, `np` is available
 for any numpy function.
 
-!!! danger
+:::{danger}
 
-    `band_math()`'s `expression` is evaluated with Python's `eval()`
-    (`B` and `np` are the only names exposed). Fine for expressions you
-    write yourself; **never pass an `expression` string from untrusted
-    user input** — it is not sandboxed against arbitrary code execution.
-
+`band_math()`'s `expression` is evaluated with Python's `eval()`
+(`B` and `np` are the only names exposed). Fine for expressions you
+write yourself; **never pass an `expression` string from untrusted
+user input** — it is not sandboxed against arbitrary code execution.
+:::
 ## Common pitfalls
 
 - **Mismatched band resolutions.** Sentinel-2's bands aren't all the
@@ -395,19 +395,20 @@ spyndex's less-common indices (spyndex's real, current catalogue has
 assumed), or want in-memory-array input without writing to a file
 first.
 
-!!! danger "A real, confirmed bug in `RVI` was fixed here"
+:::{admonition} A real, confirmed bug in `RVI` was fixed here
+:class: danger
 
-    Every built-in formula's result used to be clipped to `[-1, 1]`,
-    correct for a normalized-difference index like `NDVI` but **wrong**
-    for a genuine ratio index like `RVI` (Ratio Vegetation Index =
-    `NIR / RED`), which has no such bound. Confirmed directly: for
-    healthy vegetation (`NIR=0.4`, `RED=0.1`), the real RVI value is
-    `4.0` — the old code silently returned `1.0` instead, for any pixel
-    where the numerator exceeded the denominator, which is essentially
-    all healthy vegetation. `RVI` is now correctly exempted from the
-    `[-1, 1]` clip, alongside `DNBR` (which was already, correctly,
-    exempted) and the 6 new geology indices below.
-
+Every built-in formula's result used to be clipped to `[-1, 1]`,
+correct for a normalized-difference index like `NDVI` but **wrong**
+for a genuine ratio index like `RVI` (Ratio Vegetation Index =
+`NIR / RED`), which has no such bound. Confirmed directly: for
+healthy vegetation (`NIR=0.4`, `RED=0.1`), the real RVI value is
+`4.0` — the old code silently returned `1.0` instead, for any pixel
+where the numerator exceeded the denominator, which is essentially
+all healthy vegetation. `RVI` is now correctly exempted from the
+`[-1, 1]` clip, alongside `DNBR` (which was already, correctly,
+exempted) and the 6 new geology indices below.
+:::
 ### Geology & mineral-exploration indices
 
 Six real, verified indices from

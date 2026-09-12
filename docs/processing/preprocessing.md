@@ -37,18 +37,18 @@ whose `.output_path` is the new raster on disk.
 | `mosaic()` | first, last, min, max, sum | Merge scenes covering **different, adjacent areas** into one seamless image |
 | `composite()` | median, mean, max, min, best_pixel | Merge scenes covering the **same area on different dates** into one cloud-free image |
 
-!!! tip
+:::{tip}
 
-    **`mosaic()` vs. `composite()` — the distinction that trips people
-    up**: `mosaic()` stitches spatially *adjacent, non-overlapping* tiles
-    into one larger image (e.g. two Sentinel-2 tiles covering the east
-    and west halves of your AOI). `composite()` stacks the *same* area
-    across *multiple dates* to build one cloud-free image (e.g. 12 monthly
-    scenes of one tile, taking the per-pixel median to erase clouds that
-    happened to be over different parts on different dates). If your
-    inputs are "same place, different time," you want `composite()`, not
-    `mosaic()`.
-
+**`mosaic()` vs. `composite()` — the distinction that trips people
+up**: `mosaic()` stitches spatially *adjacent, non-overlapping* tiles
+into one larger image (e.g. two Sentinel-2 tiles covering the east
+and west halves of your AOI). `composite()` stacks the *same* area
+across *multiple dates* to build one cloud-free image (e.g. 12 monthly
+scenes of one tile, taking the per-pixel median to erase clouds that
+happened to be over different parts on different dates). If your
+inputs are "same place, different time," you want `composite()`, not
+`mosaic()`.
+:::
 ## Atmospheric correction — `atmos()`
 
 ```python
@@ -64,21 +64,21 @@ detection, time series), atmospheric differences between the two
 acquisitions can masquerade as real surface change unless corrected
 for first.
 
-!!! danger
+:::{danger}
 
-    **Honest, verified limitation**: only `"dos1"`/`"dos2"` are genuine,
-    complete implementations. `"sen2cor"` is a **simplified** L1C→L2A
-    reflectance conversion (divide by 10000, the standard Sentinel-2
-    quantification value) — not the real, published Sen2Cor algorithm
-    (which does full atmospheric radiative transfer modeling with aerosol
-    and water-vapor retrieval). `"flaash"`, `"6s"`, and `"icor"` are
-    **placeholders** — calling any of them logs a warning and silently
-    falls back to DOS1, since those methods genuinely require an external
-    tool/executable this package doesn't bundle. If your workflow needs
-    one of those specific published algorithms rather than DOS1's dark-
-    object-subtraction approach, that real gap needs to be filled with the
-    actual external tool, not assumed to be running here.
-
+**Honest, verified limitation**: only `"dos1"`/`"dos2"` are genuine,
+complete implementations. `"sen2cor"` is a **simplified** L1C→L2A
+reflectance conversion (divide by 10000, the standard Sentinel-2
+quantification value) — not the real, published Sen2Cor algorithm
+(which does full atmospheric radiative transfer modeling with aerosol
+and water-vapor retrieval). `"flaash"`, `"6s"`, and `"icor"` are
+**placeholders** — calling any of them logs a warning and silently
+falls back to DOS1, since those methods genuinely require an external
+tool/executable this package doesn't bundle. If your workflow needs
+one of those specific published algorithms rather than DOS1's dark-
+object-subtraction approach, that real gap needs to be filled with the
+actual external tool, not assumed to be running here.
+:::
 **What DOS1/DOS2 actually do** (the two real implementations): find
 the darkest 1st-percentile pixel value in each band (the "dark
 object" — assumed to be a surface that should reflect near-zero, like
@@ -134,15 +134,15 @@ result = client.preprocess.cloud_mask("scene.tif", method="fmask")
 | `"threshold"` | Flags band-1 pixels above a brightness cutoff as cloud | Crude, single-band fallback — only reliable for obviously bright, thick cloud |
 | `"ndsi"` | Computes NDSI internally and masks high-snow pixels — **requires bands in exactly `[blue, green, red, swir1]` order** (uses index 1 for green, index 3 for SWIR1) | Snow/ice removal, not actually cloud removal despite living on this method |
 
-!!! warning
+:::{warning}
 
-    `"ndsi"` and `"fmask"` both assume a **specific band order** in your
-    input raster, not just a minimum band count — passing the same 4
-    bands in the wrong order silently produces a wrong mask rather than
-    an error. If your raster was stacked via `client.indices.stack()` or
-    [Postprocessing](postprocessing.md), double-check the order you passed
-    matches what these methods expect (blue, green, red, nir, ...).
-
+`"ndsi"` and `"fmask"` both assume a **specific band order** in your
+input raster, not just a minimum band count — passing the same 4
+bands in the wrong order silently produces a wrong mask rather than
+an error. If your raster was stacked via `client.indices.stack()` or
+[Postprocessing](postprocessing.md), double-check the order you passed
+matches what these methods expect (blue, green, red, nir, ...).
+:::
 `cloud_classes` (for `method="scl"`) lets you override which SCL class
 values count as "cloud" — the real Sentinel-2 SCL legend is: 0=nodata,
 1=saturated, 2=dark area, 3=cloud shadow, 4=vegetation, 5=bare soil,
@@ -188,25 +188,25 @@ units — degrees for geographic CRS, metres for projected), `scale_factor=`
 `reference=` (match another raster's grid *exactly* — same shape,
 transform, *and* CRS, not just the same resolution number).
 
-!!! tip
+:::{tip}
 
-    **Use `reference=`, not two separate `resolution=` calls, when you
-    need two rasters to align pixel-for-pixel** (e.g. before
-    `client.indices.ndvi()`, which needs its bands on the same grid).
-    Two rasters independently resampled to "the same resolution" can
-    still end up with different origins/extents and fail to overlay
-    correctly — `reference=` guarantees an exact match.
+**Use `reference=`, not two separate `resolution=` calls, when you
+need two rasters to align pixel-for-pixel** (e.g. before
+`client.indices.ndvi()`, which needs its bands on the same grid).
+Two rasters independently resampled to "the same resolution" can
+still end up with different origins/extents and fail to overlay
+correctly — `reference=` guarantees an exact match.
+:::
+:::{note}
 
-!!! note
-
-    **`clip()` CRS handling, verified:** a WGS84 boundary polygon (the
-    normal format for AOI GeoJSON) clipped against a raster in its native
-    UTM projection (the normal delivery format for real satellite
-    imagery) is automatically reprojected to match before masking —
-    confirmed against a real UTM Zone 30N test raster. This previously
-    failed silently with a near-empty intersection window rather than a
-    clear CRS error.
-
+**`clip()` CRS handling, verified:** a WGS84 boundary polygon (the
+normal format for AOI GeoJSON) clipped against a raster in its native
+UTM projection (the normal delivery format for real satellite
+imagery) is automatically reprojected to match before masking —
+confirmed against a real UTM Zone 30N test raster. This previously
+failed silently with a near-empty intersection window rather than a
+clear CRS error.
+:::
 **Resampling method choice matters**: `"nearest"` preserves exact
 original values (use for categorical/classified data — resampling a
 land-cover class map with `"bilinear"` would create meaningless
@@ -272,21 +272,22 @@ whole period), `"min"`, `"best_pixel"` (picks the least-cloudy pixel
 per location using `cloud_masks` if you supply them, rather than a
 blind statistical reduction).
 
-!!! tip
+:::{tip}
 
-    **Real, common workflow**: cloud-mask each date individually first
-    (`cloud_mask()`), *then* composite with `method="median"` — the
-    median naturally ignores the NaN/NoData gaps left by masking, giving
-    you a clean, cloud-free multi-month view without needing every single
-    input date to itself be cloud-free.
+**Real, common workflow**: cloud-mask each date individually first
+(`cloud_mask()`), *then* composite with `method="median"` — the
+median naturally ignores the NaN/NoData gaps left by masking, giving
+you a clean, cloud-free multi-month view without needing every single
+input date to itself be cloud-free.
+:::
+:::{note}
 
-!!! note
-
-    Terrain-specific operations (`terrain_derivatives()`,
-    `topographic_wetness_index()`, `curvature()`,
-    `terrain_ruggedness_index()`, `identify_depressions()`,
-    `extract_drainage_network()`) also live on this same `Preprocessor`
-    class, reachable the same way (`client.preprocess.terrain_derivatives(...)`)
-    — documented separately on [Terrain Analysis (DEM / DSM / DTM)](terrain.md) since they form
-    a coherent topic of their own (DEM/DSM/DTM analysis) rather than
-    general-purpose optical preprocessing.
+Terrain-specific operations (`terrain_derivatives()`,
+`topographic_wetness_index()`, `curvature()`,
+`terrain_ruggedness_index()`, `identify_depressions()`,
+`extract_drainage_network()`) also live on this same `Preprocessor`
+class, reachable the same way (`client.preprocess.terrain_derivatives(...)`)
+— documented separately on [Terrain Analysis (DEM / DSM / DTM)](terrain.md) since they form
+a coherent topic of their own (DEM/DSM/DTM analysis) rather than
+general-purpose optical preprocessing.
+:::

@@ -8,13 +8,13 @@ planning mistakes *before* bandwidth is spent, distinguish HARD
 failures (reject the scene) from WARNINGS (log and proceed), and make
 every check independently toggleable.
 
-!!! note
+:::{note}
 
-    `pygeofetch.validation` requires `shapely` (the `geo` or `insar`
-    extra). It's imported lazily — a base `pip install pygeofetch` never
-    requires it, and neither does `PyGeoFetch()` unless optical validation
-    is actually turned on.
-
+`pygeofetch.validation` requires `shapely` (the `geo` or `insar`
+extra). It's imported lazily — a base `pip install pygeofetch` never
+requires it, and neither does `PyGeoFetch()` unless optical validation
+is actually turned on.
+:::
 ## Quick start — wired into search() and download()
 
 The simplest way to use this is the built-in toggle on `PyGeoFetch`
@@ -47,13 +47,13 @@ results = pf.search(query, validate_optical=True)     # on for just this call
 downloads = pf.download(results, "./data", validate_optical=True)  # a final gate before spending bandwidth
 ```
 
-!!! warning
+:::{warning}
 
-    The default `required_bands` (`B02, B03, B04, B08, SCL`) are optical
-    band names. Don't enable `validate_optical` for SAR/InSAR searches —
-    every SAR scene would fail the missing-bands check. Either leave it
-    off for those, or pass a config with `check_required_bands=False`.
-
+The default `required_bands` (`B02, B03, B04, B08, SCL`) are optical
+band names. Don't enable `validate_optical` for SAR/InSAR searches —
+every SAR scene would fail the missing-bands check. Either leave it
+off for those, or pass a config with `check_required_bands=False`.
+:::
 ## Direct use — as its own module
 
 For more control (custom configs per AOI, validating scenes from a
@@ -112,49 +112,49 @@ bands, processing level, temporal bounds) default **on**. Heavier or
 more niche checks (snow/ice cover, nodata margins) default **off** — a
 disabled check costs nothing; it's simply skipped.
 
-!!! note
+:::{note}
 
-    **`validate_nodata_margins` is a real but inherently approximate
-    heuristic**, not a raster-level check — it can't see actual per-pixel
-    no-data masks, since those don't exist until the file is downloaded.
-    It shrinks the scene footprint inward by `nodata_margin_buffer_deg`
-    and checks how much of the AOI still falls within that shrunk shape.
-    It catches the common "AOI clips the corner of the swath" case, not
-    cloud-masked interior gaps — that's not a margin issue and isn't this
-    check's job.
+**`validate_nodata_margins` is a real but inherently approximate
+heuristic**, not a raster-level check — it can't see actual per-pixel
+no-data masks, since those don't exist until the file is downloaded.
+It shrinks the scene footprint inward by `nodata_margin_buffer_deg`
+and checks how much of the AOI still falls within that shrunk shape.
+It catches the common "AOI clips the corner of the swath" case, not
+cloud-masked interior gaps — that's not a margin issue and isn't this
+check's job.
+:::
+:::{danger}
 
-!!! danger
+**Two real bugs, found from a real CLI run against real providers, are
+fixed as of this pass — both affected every result from every
+STAC-based provider (aws_earth, element84, planetary_computer,
+sentinel_hub) before the fix, causing `--validate-optical` to reject
+100% of real scenes regardless of actual quality.**
 
-    **Two real bugs, found from a real CLI run against real providers, are
-    fixed as of this pass — both affected every result from every
-    STAC-based provider (aws_earth, element84, planetary_computer,
-    sentinel_hub) before the fix, causing `--validate-optical` to reject
-    100% of real scenes regardless of actual quality.**
+1. **Band matching**: real Earth Search v1 / AWS Earth items expose
+   Sentinel-2 bands under semantic asset keys (`"red"`, `"green"`,
+   `"blue"`, `"nir"`, `"scl"`), not `"B04"`/`"B03"`/`"B02"`/`"B08"`/
+   `"SCL"`. `required_bands` matching now goes through pygeofetch's own
+   real band-alias table (`pygeofetch.models.satellite_data.
+   _ALIAS_TO_CANONICAL` — the same table `resolve_band_keys()` uses for
+   downloads), so `"red"` is correctly recognised as `"B04"`, etc.
+2. **Processing level**: `SatelliteData.from_stac_item()` never set
+   `processing_level` at all for any STAC provider — it silently
+   stayed `ProcessingLevel.UNKNOWN`. The validator's own fallback then
+   matched the wrong properties key (`s2:processing_baseline`, a
+   *version* string like `"05.10"`, not a level) as if it were the
+   processing level, since real Sentinel-2 STAC items don't reliably
+   expose a genuine `processing:level` field. Both are fixed: the
+   model now derives a real `ProcessingLevel` from the STAC collection
+   id (e.g. `"sentinel-2-l2a"` → `L2A`) when no explicit level
+   property exists, and the validator's fallback no longer touches
+   `s2:processing_baseline` at all.
 
-    1. **Band matching**: real Earth Search v1 / AWS Earth items expose
-       Sentinel-2 bands under semantic asset keys (`"red"`, `"green"`,
-       `"blue"`, `"nir"`, `"scl"`), not `"B04"`/`"B03"`/`"B02"`/`"B08"`/
-       `"SCL"`. `required_bands` matching now goes through pygeofetch's own
-       real band-alias table (`pygeofetch.models.satellite_data.
-       _ALIAS_TO_CANONICAL` — the same table `resolve_band_keys()` uses for
-       downloads), so `"red"` is correctly recognised as `"B04"`, etc.
-    2. **Processing level**: `SatelliteData.from_stac_item()` never set
-       `processing_level` at all for any STAC provider — it silently
-       stayed `ProcessingLevel.UNKNOWN`. The validator's own fallback then
-       matched the wrong properties key (`s2:processing_baseline`, a
-       *version* string like `"05.10"`, not a level) as if it were the
-       processing level, since real Sentinel-2 STAC items don't reliably
-       expose a genuine `processing:level` field. Both are fixed: the
-       model now derives a real `ProcessingLevel` from the STAC collection
-       id (e.g. `"sentinel-2-l2a"` → `L2A`) when no explicit level
-       property exists, and the validator's fallback no longer touches
-       `s2:processing_baseline` at all.
-
-    Neither fix changes `required_bands`/`expected_level`'s public
-    defaults — real Sentinel-2 L2A scenes from these providers now
-    correctly pass validation with the same default config that
-    previously rejected all of them.
-
+Neither fix changes `required_bands`/`expected_level`'s public
+defaults — real Sentinel-2 L2A scenes from these providers now
+correctly pass validation with the same default config that
+previously rejected all of them.
+:::
 ## AOI coverage and multi-tile satellites — not a bug, a real geometric fact
 
 If `check_aoi_coverage` rejects every result from a wide-swath,

@@ -3,12 +3,12 @@
 Use pygeofetch as a library in your own scripts, notebooks, or
 applications.
 
-!!! note
+:::{note}
 
-    The class is `PyGeoFetch` (capitalized) — earlier docs for this
-    project used a lowercase `pygeofetch()` constructor in examples, which
-    does not match the installed package.
-
+The class is `PyGeoFetch` (capitalized) — earlier docs for this
+project used a lowercase `pygeofetch()` constructor in examples, which
+does not match the installed package.
+:::
 ## Full workflow example
 
 ```python
@@ -178,12 +178,12 @@ Runs the same processing chain over many files in parallel —
 shorthand for `client.batch.process(...)`. See
 [Pipelines & Batch Processing](pipelines.md)'s "Batch Processing" section.
 
-!!! note
+:::{note}
 
-    `PyGeoFetch` has **no** `.providers()` method. List providers via
-    `pygeofetch.providers.list_providers()` / `list_provider_info()` — see
-    [Providers](../core-features/providers.md).
-
+`PyGeoFetch` has **no** `.providers()` method. List providers via
+`pygeofetch.providers.list_providers()` / `list_provider_info()` — see
+[Providers](../core-features/providers.md).
+:::
 ## Optical validation quick reference
 
 See [Optical Data Validation & Preflight](../core-features/optical-validation.md) for the full guide.

@@ -4,16 +4,16 @@
 provider integrations — federated search, authenticated downloads,
 InSAR/SAR processing, and pipeline orchestration, in pure Python.
 
-!!! note
+:::{note}
 
-    This documentation is being rebuilt from source. A handful of examples
-    on the previous docs site didn't match the actual installed package
-    (e.g. the Python API examples referenced a lowercase `pygeofetch()`
-    constructor and plain-tuple `bbox` values that don't match the real
-    `PyGeoFetch` class and `SearchQuery`/`BoundingBox` models). Pages here
-    are checked against `pygeofetch`'s source directly; see each page's
-    examples for the corrected, working forms.
-
+This documentation is being rebuilt from source. A handful of examples
+on the previous docs site didn't match the actual installed package
+(e.g. the Python API examples referenced a lowercase `pygeofetch()`
+constructor and plain-tuple `bbox` values that don't match the real
+`PyGeoFetch` class and `SearchQuery`/`BoundingBox` models). Pages here
+are checked against `pygeofetch`'s source directly; see each page's
+examples for the corrected, working forms.
+:::
 ## Who this is for
 
 - Geospatial researchers who need data from multiple providers without
@@ -36,7 +36,69 @@ InSAR/SAR processing, and pipeline orchestration, in pure Python.
 - [Full CLI Reference](reference/cli.md) — full command reference
 
 
+:::{toctree}
+:hidden:
+:caption: Getting Started
 
+getting-started/installation.md
+getting-started/quickstart.md
+getting-started/diagnostics.md
+:::
 
+:::{toctree}
+:hidden:
+:caption: Core Features
 
+core-features/authentication.md
+core-features/search.md
+core-features/download.md
+core-features/data-organizer.md
+core-features/providers.md
+core-features/optical-validation.md
+:::
 
+:::{toctree}
+:hidden:
+:caption: Processing & Analysis
+
+processing/insar.md
+processing/insar-mexico-city-tutorial.md
+processing/optical-offset-tracking.md
+processing/sar.md
+processing/spectral-indices.md
+processing/landsat.md
+processing/timeseries.md
+processing/preprocessing.md
+processing/terrain.md
+processing/postprocessing.md
+:::
+
+:::{toctree}
+:hidden:
+:caption: Visualization
+
+visualization/plotter.md
+visualization/mapviewer.md
+:::
+
+:::{toctree}
+:hidden:
+:caption: Reference
+
+reference/python-api.md
+reference/cli.md
+reference/pipelines.md
+reference/configuration.md
+reference/security.md
+reference/error-handling.md
+reference/docker.md
+reference/testing.md
+reference/roadmap.md
+:::
+
+:::{toctree}
+:hidden:
+:caption: Project
+
+contributing.md
+:::

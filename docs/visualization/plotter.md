@@ -104,9 +104,10 @@ pl.plot_3d_terrain_interactive(
 `plot_3d_terrain_interactive()` needs `pip install "pyvista[jupyter]"`
 — the `[jupyter]` extra specifically for HTML export.
 
-!!! note
+:::{note}
 
-    Both are hardened against a real failure mode: a near-uniform
-    elevation field (e.g. an AOI that barely overlaps real terrain)
-    previously rendered as a flat, confusingly "empty" plot with no
-    explanation. Now raises a clear warning identifying the actual cause.
+Both are hardened against a real failure mode: a near-uniform
+elevation field (e.g. an AOI that barely overlaps real terrain)
+previously rendered as a flat, confusingly "empty" plot with no
+explanation. Now raises a clear warning identifying the actual cause.
+:::

@@ -46,16 +46,17 @@ are placed into it:
 | `file_operation` | `"copy"` | `"copy"`, `"symlink"`, or `"move"`. |
 | `manifest_filename` | `"manifest.json"` | Written to the root of `output_dir` after organizing. |
 
-!!! note "Copy is the default for a real reason"
+:::{admonition} Copy is the default for a real reason
+:class: note
 
-    `file_operation` defaults to `"copy"`, not `"move"` — verified
-    directly that the original downloaded file survives an `organize()`
-    call. A grouping bug that also deleted your only copy of an
-    already-downloaded scene would be a serious, unrecoverable failure
-    mode. Opt into `"move"` explicitly once you trust your own grouping
-    configuration, or use `"symlink"` to avoid duplicating large scenes
-    on disk while keeping the original flat layout intact too.
-
+`file_operation` defaults to `"copy"`, not `"move"` — verified
+directly that the original downloaded file survives an `organize()`
+call. A grouping bug that also deleted your only copy of an
+already-downloaded scene would be a serious, unrecoverable failure
+mode. Opt into `"move"` explicitly once you trust your own grouping
+configuration, or use `"symlink"` to avoid duplicating large scenes
+on disk while keeping the original flat layout intact too.
+:::
 `organize()` is also idempotent — running it twice on the same input
 doesn't re-copy, error, or double-count.
 
@@ -116,12 +117,14 @@ InSAR pipeline itself uses — rather than a second, independent
 implementation of that check. `report.ready_paths` then only includes
 the dates that actually pass burst-sync classification.
 
-!!! note "Honest behavior without orbit files"
+:::{admonition} Honest behavior without orbit files
+:class: note
 
-    Without real orbit files, burst-sync compatibility genuinely cannot
-    be checked — it's a real, separate download step, not something
-    this method can fabricate. `prepare_insar_stack()` still returns
-    real track/date grouping in that case, but `report.burst_sync_checked`
-    is `False`, and `report.ready_paths` includes every date rather than
-    only the burst-sync-compatible ones. Check `burst_sync_checked`
-    before assuming the returned stack is ready for coregistration.
+Without real orbit files, burst-sync compatibility genuinely cannot
+be checked — it's a real, separate download step, not something
+this method can fabricate. `prepare_insar_stack()` still returns
+real track/date grouping in that case, but `report.burst_sync_checked`
+is `False`, and `report.ready_paths` includes every date rather than
+only the burst-sync-compatible ones. Check `burst_sync_checked`
+before assuming the returned stack is ready for coregistration.
+:::

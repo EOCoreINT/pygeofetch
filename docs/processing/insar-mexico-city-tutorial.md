@@ -8,16 +8,16 @@ actual reasoning recorded alongside the original run (docstrings,
 inline comments, and printed diagnostics), not written after the fact
 to sound plausible.
 
-!!! note
+:::{note}
 
-    Every function referenced on this page was directly verified against
-    pygeofetch's real source before this page was written — not assumed
-    correct because it appeared in a notebook. Where the notebook's own
-    comments describe a real bug found and fixed during this project
-    (there are several), that context is preserved rather than smoothed
-    over, because it's exactly the kind of detail that makes a worked
-    example trustworthy.
-
+Every function referenced on this page was directly verified against
+pygeofetch's real source before this page was written — not assumed
+correct because it appeared in a notebook. Where the notebook's own
+comments describe a real bug found and fixed during this project
+(there are several), that context is preserved rather than smoothed
+over, because it's exactly the kind of detail that makes a worked
+example trustworthy.
+:::
 ## Why this AOI
 
 Mexico City's Iztapalapa borough is one of ESA's own two official
@@ -168,14 +168,14 @@ for why burst sync matters at all in TOPS mode), AOI coverage, and
 network connectivity, all *before* spending bandwidth on a download
 that would only reveal the same problems hours later, mid-pipeline.
 
-!!! warning
+:::{warning}
 
-    **The fix that actually matters here**: use `report.selected`, not the
-    `selected` variable from Stage 1. Preflight can legitimately narrow the
-    stack further (drop dates whose burst timing doesn't match the
-    majority family); continuing with the stale pre-preflight list
-    silently un-does that filtering.
-
+**The fix that actually matters here**: use `report.selected`, not the
+`selected` variable from Stage 1. Preflight can legitimately narrow the
+stack further (drop dates whose burst timing doesn't match the
+majority family); continuing with the stale pre-preflight list
+silently un-does that filtering.
+:::
 ## Stage 3 — Download the filtered scenes
 
 ```python
@@ -558,21 +558,21 @@ print(f"  reliable in {ref_pixel_report['reliable_fraction']*100:.0f}% of pairs"
          else " (moved nearby for reliability)"))
 ```
 
-!!! warning
+:::{warning}
 
-    **The reference pixel matters more than almost anything else in
-    InSAR time series.** Phase unwrapping only recovers phase relative to
-    an arbitrary per-interferogram offset — combining unwrapped
-    interferograms without a common, *stable* reference pixel corrupts
-    the entire result. In a verification run on this exact codebase,
-    referencing inside a synthetic subsidence bowl gave 103 mm/yr RMSE
-    against a 100 mm/yr true signal; a verified-stable reference gave
-    8.84 mm/yr RMSE. `select_reliable_reference_pixel()` starts from a
-    *real, physically justified* candidate (Cerro de la Estrella — known
-    stable rock) and only searches nearby if that exact point isn't
-    reliably connected in enough real pairs, rather than picking an
-    arbitrary corner pixel.
-
+**The reference pixel matters more than almost anything else in
+InSAR time series.** Phase unwrapping only recovers phase relative to
+an arbitrary per-interferogram offset — combining unwrapped
+interferograms without a common, *stable* reference pixel corrupts
+the entire result. In a verification run on this exact codebase,
+referencing inside a synthetic subsidence bowl gave 103 mm/yr RMSE
+against a 100 mm/yr true signal; a verified-stable reference gave
+8.84 mm/yr RMSE. `select_reliable_reference_pixel()` starts from a
+*real, physically justified* candidate (Cerro de la Estrella — known
+stable rock) and only searches nearby if that exact point isn't
+reliably connected in enough real pairs, rather than picking an
+arbitrary corner pixel.
+:::
 ## Stage 12 — Baseline- and coherence-optimized network
 
 ```python
@@ -753,17 +753,17 @@ write_provenance_manifest(
 )
 ```
 
-!!! note
+:::{note}
 
-    Real numeric outcomes (the actual measured cm/yr peak, mean coherence,
-    pair counts, etc.) are intentionally not quoted on this page as fixed
-    figures — they depend on which real scenes were available on the day
-    a run is executed (the archive keeps growing), and printing a stale
-    number here would misrepresent a live, reproducible pipeline as a
-    frozen result. Run the cells above against the current archive to see
-    today's real numbers; the provenance manifest is what makes any
-    specific run's numbers independently checkable afterward.
-
+Real numeric outcomes (the actual measured cm/yr peak, mean coherence,
+pair counts, etc.) are intentionally not quoted on this page as fixed
+figures — they depend on which real scenes were available on the day
+a run is executed (the archive keeps growing), and printing a stale
+number here would misrepresent a live, reproducible pipeline as a
+frozen result. Run the cells above against the current archive to see
+today's real numbers; the provenance manifest is what makes any
+specific run's numbers independently checkable afterward.
+:::
 ## What this demonstrates end to end
 
 Every stage above chains a specific, previously-shipped bug fix into

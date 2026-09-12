@@ -51,18 +51,19 @@ atomically on completion; partial files never corrupt existing data.
 post-download when `verify_checksum=True`; mismatches trigger an
 automatic re-download.
 
-!!! note
+:::{note}
 
-    **Previously dead code, now wired in.** `CircuitBreaker` used to be
-    instantiated per-provider but never invoked anywhere in the request
-    path, *and* `get_provider()` created a brand-new provider instance
-    (with a fresh, always-zeroed breaker) on every single search — so
-    failure counts could never have accumulated across calls regardless.
-    Both are fixed: `FederatedSearcher` now caches one provider instance
-    per provider ID for its own lifetime, and `_search_provider()` wraps
-    the real `provider.search(...)` call in `with provider._circuit_breaker:`.
-    A provider that fails `failure_threshold` times (default 5) in a row
-    now genuinely opens its breaker — subsequent calls fail fast with
-    `CircuitBreakerOpenError` (surfaced as a normal per-provider search
-    error, not a crash) until `recovery_timeout` (default 60s) has passed.
-    A success resets the failure count to zero.
+**Previously dead code, now wired in.** `CircuitBreaker` used to be
+instantiated per-provider but never invoked anywhere in the request
+path, *and* `get_provider()` created a brand-new provider instance
+(with a fresh, always-zeroed breaker) on every single search — so
+failure counts could never have accumulated across calls regardless.
+Both are fixed: `FederatedSearcher` now caches one provider instance
+per provider ID for its own lifetime, and `_search_provider()` wraps
+the real `provider.search(...)` call in `with provider._circuit_breaker:`.
+A provider that fails `failure_threshold` times (default 5) in a row
+now genuinely opens its breaker — subsequent calls fail fast with
+`CircuitBreakerOpenError` (surfaced as a normal per-provider search
+error, not a crash) until `recovery_timeout` (default 60s) has passed.
+A success resets the failure count to zero.
+:::

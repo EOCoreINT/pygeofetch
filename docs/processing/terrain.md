@@ -62,14 +62,14 @@ Positive values mark concave (bowl-shaped) terrain, where water
 converges and tends to collect; negative values mark convex
 (dome/ridge-shaped) terrain, where water diverges and drains away.
 
-!!! note
+:::{note}
 
-    This is the simplified general/mean curvature, not the full
-    profile/plan curvature decomposition (Zevenbergen & Thorne, 1987) —
-    sufficient to identify convergence/divergence zones, but not a
-    substitute for that finer decomposition if your analysis specifically
-    needs profile vs. plan curvature separated.
-
+This is the simplified general/mean curvature, not the full
+profile/plan curvature decomposition (Zevenbergen & Thorne, 1987) —
+sufficient to identify convergence/divergence zones, but not a
+substitute for that finer decomposition if your analysis specifically
+needs profile vs. plan curvature separated.
+:::
 ## `terrain_ruggedness_index()` — micro-topographic complexity
 
 ```python
@@ -122,12 +122,13 @@ a fixed, arbitrary cutoff.
 | `identify_depressions()` | Morphological reconstruction (fill-then-diff) | Known synthetic 20m basin — exact depth recovered |
 | `extract_drainage_network()` | D8 flow accumulation, thresholded | V-valley test — channel correctly concentrated at the true valley floor |
 
-!!! warning
+:::{warning}
 
-    Open elevation products (SRTM, Copernicus DEM) are surface models, not
-    clean bare-earth DTMs — over forested or vegetated terrain, some
-    canopy height is baked into the "ground" elevation. A genuine Canopy
-    Height Model needs a real bare-earth DTM, typically from LiDAR, which
-    isn't available through pygeofetch's current open-data providers. This
-    isn't worked around by fabricating a DTM that doesn't exist — it's an
-    honest, stated limitation.
+Open elevation products (SRTM, Copernicus DEM) are surface models, not
+clean bare-earth DTMs — over forested or vegetated terrain, some
+canopy height is baked into the "ground" elevation. A genuine Canopy
+Height Model needs a real bare-earth DTM, typically from LiDAR, which
+isn't available through pygeofetch's current open-data providers. This
+isn't worked around by fabricating a DTM that doesn't exist — it's an
+honest, stated limitation.
+:::
