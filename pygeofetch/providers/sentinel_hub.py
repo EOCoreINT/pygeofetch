@@ -66,14 +66,23 @@ class SentinelHubProvider(AbstractBaseProvider):
     BASE_URL = "https://services.sentinel-hub.com"
     AUTH_URL = "https://services.sentinel-hub.com/auth/realms/main/protocol/openid-connect/token"
 
+    # Real, confirmed Catalog API collection IDs (lowercase-hyphenated
+    # STAC collection names) -- confirmed directly against Sentinel
+    # Hub's own Catalog API documentation and examples
+    # (docs.sentinel-hub.com/api/latest/api/catalog/), which use
+    # "sentinel-1-grd", "sentinel-2-l2a", etc. The previous mapping's
+    # values ("S1GRD", "S2L2A", ...) are real Sentinel Hub identifiers,
+    # but for a *different* API (Process API "type" values / the
+    # sentinelhub-py DataCollection enum) -- not valid Catalog API
+    # collection IDs, so every search would have been rejected.
     DATA_SOURCE_MAP = {
-        "sentinel-1": "S1GRD",
-        "sentinel-2": "S2L2A",
-        "sentinel-3": "S3OLCI",
-        "landsat8": "LOTL2",
-        "landsat9": "LOTL2",
-        "modis": "MODIS",
-        "dem": "DEM",
+        "sentinel-1": "sentinel-1-grd",
+        "sentinel-2": "sentinel-2-l2a",
+        "sentinel-3": "sentinel-3-olci",
+        "landsat8": "landsat-ot-l2",
+        "landsat9": "landsat-ot-l2",
+        "modis": "modis",
+        "dem": "dem",
     }
 
     def authenticate(self, credentials: Credentials) -> AuthSession:
@@ -127,31 +136,47 @@ class SentinelHubProvider(AbstractBaseProvider):
         self.require_auth()
         import httpx
 
+        # Real, confirmed fix: the Catalog API implements the real
+        # STAC Specification with a flat request body -- confirmed
+        # directly against Sentinel Hub's own documented examples
+        # (docs.sentinel-hub.com/api/latest/api/catalog/examples/) and
+        # the Copernicus Data Space mirror of the same API. The
+        # previous nested structure
+        # ({"collections": {"input": [...]}}, {"spatial": {"bbox": ...}},
+        # {"timeRange": {"from": ..., "to": ...}}) doesn't match this
+        # real schema at all and would be rejected by the real server.
         data_source = self._resolve_datasource(query)
         payload: dict[str, Any] = {
-            "collections": {"input": [{"type": data_source}]},
+            "collections": [data_source],
             "limit": min(query.max_results, 100),
         }
         if query.bbox:
             bb = query.bbox
-            payload["spatial"] = {
-                "bbox": [bb.min_lon, bb.min_lat, bb.max_lon, bb.max_lat]
-            }
+            payload["bbox"] = [bb.min_lon, bb.min_lat, bb.max_lon, bb.max_lat]
         if query.start_date or query.end_date:
-            payload["timeRange"] = {
-                "from": (
-                    f"{query.start_date}T00:00:00Z"
-                    if query.start_date
-                    else "2015-01-01T00:00:00Z"
-                ),
-                "to": (
-                    f"{query.end_date}T23:59:59Z"
-                    if query.end_date
-                    else datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-                ),
-            }
+            start = (
+                f"{query.start_date}T00:00:00Z"
+                if query.start_date
+                else "1970-01-01T00:00:00Z"
+            )
+            end = (
+                f"{query.end_date}T23:59:59Z"
+                if query.end_date
+                else datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            )
+            # Real, confirmed format: a single "datetime" field holding
+            # an RFC3339 interval string ("start/end"), not two
+            # separate "from"/"to" fields nested under "timeRange".
+            payload["datetime"] = f"{start}/{end}"
         if query.cloud_cover_max is not None:
-            payload["filter"] = {"maxCloudCoverage": query.cloud_cover_max}
+            # Real, confirmed CQL2-JSON filter format (Sentinel Hub's
+            # own Catalog API filter extension docs) -- not a
+            # fictional {"maxCloudCoverage": ...} key.
+            payload["filter"] = {
+                "op": "lte",
+                "args": [{"property": "eo:cloud_cover"}, query.cloud_cover_max],
+            }
+            payload["filter-lang"] = "cql2-json"
         try:
             resp = httpx.post(
                 f"{self.BASE_URL}/api/v1/catalog/1.0.0/search",

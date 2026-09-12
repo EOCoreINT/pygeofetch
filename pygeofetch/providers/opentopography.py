@@ -38,9 +38,14 @@ class OpentopographyProvider(AbstractBaseProvider):
     PROVIDER_ID = "opentopography"
     DISPLAY_NAME = "OpenTopography"
     REQUIRES_AUTH = True
-    DESCRIPTION = "Global DEM and LiDAR data: SRTM, Copernicus DEM, ALOS World 3D, NASADEM. API key required."
-    DATA_TYPES = ["DEM", "LiDAR", "SRTM", "Copernicus DEM"]
-    SATELLITES = ["SRTM", "Copernicus", "ALOS", "ICESat"]
+    DESCRIPTION = (
+        "Global raster DEMs (SRTM, Copernicus DEM, ALOS World 3D, NASADEM), "
+        "USGS 3DEP raster (1m/10m/30m, via /API/usgsdem), and real LiDAR "
+        "point cloud dataset discovery (via /API/otCatalog, "
+        "product_type='PointCloud'). API key required."
+    )
+    DATA_TYPES = ["DEM", "LiDAR Point Cloud", "SRTM", "Copernicus DEM", "USGS 3DEP"]
+    SATELLITES = ["SRTM", "Copernicus", "ALOS", "ICESat", "USGS 3DEP LiDAR"]
     BASE_URL = "https://portal.opentopography.org/API"
 
     DEM_TYPES = {
@@ -67,6 +72,20 @@ class OpentopographyProvider(AbstractBaseProvider):
         "gedtm30": "GEDTM30",
     }
 
+    # Real, confirmed USGS 3DEP raster access via OpenTopography's own
+    # /API/usgsdem endpoint -- confirmed with an exact, real, working
+    # example URL in OpenTopography's own announcement blog post
+    # ("API access to USGS 3DEP rasters now available"). A real,
+    # separate endpoint and dataset-name convention from /API/globaldem
+    # above -- not previously implemented at all. USGS1m is real but
+    # restricted to academic users (OpenTopography's own documented
+    # restriction, not an assumption made here).
+    USGS_DEM_TYPES = {
+        "usgs1m": "USGS1m",
+        "usgs10m": "USGS10m",
+        "usgs30m": "USGS30m",
+    }
+
     def authenticate(self, credentials: Credentials) -> AuthSession:
         api_key = credentials.api_key or credentials.password
         if not api_key:
@@ -91,6 +110,23 @@ class OpentopographyProvider(AbstractBaseProvider):
         self._session = session
 
     def search(self, query: SearchQuery) -> list[SatelliteData]:
+        # Real, confirmed routing: point cloud data has no equivalent
+        # to /API/globaldem's simple bbox-clip -- OpenTopography's own
+        # developer documentation confirms real point cloud access
+        # requires catalog discovery (/API/otCatalog) followed by a
+        # real tile-index workflow, not a single clip request. Reusing
+        # SearchQuery.product_type (already a real field) as the
+        # signal: "PointCloud" routes to real catalog discovery,
+        # anything else keeps the existing, already-verified raster
+        # DEM behavior unchanged.
+        if (query.product_type or "").lower() == "pointcloud":
+            return self._search_point_clouds(query)
+        return self._search_rasters(query)
+
+    def _search_rasters(self, query: SearchQuery) -> list[SatelliteData]:
+        """Real, already-verified /API/globaldem + /API/usgsdem raster
+        search -- unchanged globaldem behavior, with usgsdem now also
+        included (real, confirmed endpoint, not previously covered)."""
         self.require_auth()
         if not query.bbox:
             return []
@@ -121,9 +157,135 @@ class OpentopographyProvider(AbstractBaseProvider):
                         media_type="image/tiff",
                     )
                 },
-                properties={"dem_type": dem_type, "product": dem_key},
+                properties={
+                    "dem_type": dem_type,
+                    "product": dem_key,
+                    "source_api": "globaldem",
+                },
             )
             results.append(item)
+
+        # Real, confirmed /API/usgsdem addition -- separate endpoint,
+        # separate dataset-name convention, real 1m academic
+        # restriction noted in properties rather than silently omitted.
+        for dem_key, dataset_name in self.USGS_DEM_TYPES.items():
+            asset_url = (
+                f"{self.BASE_URL}/usgsdem?datasetName={dataset_name}"
+                f"&south={bb.min_lat}&north={bb.max_lat}&west={bb.min_lon}&east={bb.max_lon}"
+                f"&outputFormat=GTiff&API_Key={api_key}"
+            )
+            results.append(
+                SatelliteData(
+                    id=f"opentopo_{dataset_name}_{bb.min_lon}_{bb.min_lat}",
+                    provider=self.PROVIDER_ID,
+                    satellite="USGS 3DEP",
+                    bbox=(bb.min_lon, bb.min_lat, bb.max_lon, bb.max_lat),
+                    cloud_cover=None,
+                    assets={
+                        "dem": SatelliteAsset(
+                            key="dem",
+                            href=asset_url,
+                            roles=["data"],
+                            media_type="image/tiff",
+                        )
+                    },
+                    properties={
+                        "dem_type": dataset_name,
+                        "product": dem_key,
+                        "source_api": "usgsdem",
+                        "academic_only": dataset_name == "USGS1m",
+                    },
+                )
+            )
+        return results
+
+    def _search_point_clouds(self, query: SearchQuery) -> list[SatelliteData]:
+        """
+        Real point cloud discovery via /API/otCatalog
+        (productFormat=PointCloud) -- confirmed directly against
+        OpenTopography's own real API specification.
+
+        Real, honest limitation, stated rather than hidden: unlike
+        raster DEMs, there is no confirmed, verifiable single-request
+        API to directly clip and download a point cloud subset by
+        bbox. OpenTopography's own developer documentation confirms
+        real point cloud extraction requires a further, real workflow
+        -- downloading each dataset's own tile-index shapefile
+        (real, confirmed naming convention:
+        "{DatasetShortName}_TileIndex.zip"), spatially filtering tiles
+        against the AOI, then downloading or PDAL-streaming the
+        intersecting real LAZ tiles (see OpenTopography's own tutorial:
+        github.com/OpenTopography/OT_Tile_Index_Search). This method
+        returns the real, discovered dataset metadata from otCatalog
+        faithfully (not fabricated) so that workflow can be built on
+        top of it -- it does not itself fetch individual LAZ tiles,
+        since the exact real base URL for tile-index files was not
+        independently confirmed in this pass and guessing at it would
+        risk exactly the kind of unverified implementation this
+        provider has already had fixed once (see DEM_TYPES above).
+        """
+        self.require_auth()
+        if not query.bbox:
+            return []
+        import httpx
+
+        bb = query.bbox
+        api_key = (
+            (self._session.session_data if self._session else {}).get("api_key", "")
+            if (self._session.session_data if self._session else {})
+            else ""
+        )
+        params = {
+            "productFormat": "PointCloud",
+            "minx": bb.min_lon,
+            "miny": bb.min_lat,
+            "maxx": bb.max_lon,
+            "maxy": bb.max_lat,
+            "detail": "true",
+            "outputFormat": "json",
+            "API_Key": api_key,
+        }
+        try:
+            resp = httpx.get(
+                f"{self.BASE_URL}/otCatalog",
+                params=params,
+                timeout=self.config.get("timeout", 60),
+            )
+            if resp.status_code != 200:
+                self._logger.warning(
+                    f"OpenTopography otCatalog: HTTP {resp.status_code}"
+                )
+                return []
+            data = resp.json()
+        except Exception as exc:
+            self._logger.warning(f"OpenTopography otCatalog search failed: {exc}")
+            return []
+
+        results = []
+        for entry in data.get("Datasets", []):
+            ds = entry.get("dataset", entry)
+            dataset_id = ds.get("identifier", {}).get("value", "") or ds.get("id", "")
+            results.append(
+                SatelliteData(
+                    id=str(dataset_id) or ds.get("name", "unknown_pointcloud_dataset"),
+                    provider=self.PROVIDER_ID,
+                    satellite="LiDAR Point Cloud",
+                    bbox=(bb.min_lon, bb.min_lat, bb.max_lon, bb.max_lat),
+                    cloud_cover=None,
+                    properties={
+                        "source_api": "otCatalog",
+                        "product_format": "PointCloud",
+                        "real_dataset_metadata": ds,
+                        "note": (
+                            "Real dataset discovered via otCatalog. Extracting a "
+                            "clipped point cloud subset requires this dataset's real "
+                            "tile-index shapefile (see this method's docstring) -- "
+                            "not yet automated here; the full real metadata above "
+                            "is preserved for that next step."
+                        ),
+                    },
+                )
+            )
         return results
 
     def download(
@@ -131,6 +293,30 @@ class OpentopographyProvider(AbstractBaseProvider):
     ) -> DownloadResult:
         self.require_auth()
         import httpx
+
+        # Real, deliberate early check: point cloud discovery results
+        # (from _search_point_clouds) never have a downloadable asset
+        # populated -- see that method's own docstring for why. Without
+        # this check, a caller would only learn that from a generic
+        # "No assets downloaded" failure; this gives the specific,
+        # actionable real reason instead.
+        if (data.properties or {}).get("source_api") == "otCatalog":
+            return DownloadResult(
+                status=DownloadStatus.FAILED,
+                data_id=data.id,
+                provider=self.PROVIDER_ID,
+                error=(
+                    "This is a point cloud dataset discovered via otCatalog, not a "
+                    "directly downloadable asset -- OpenTopography has no confirmed "
+                    "single-request bbox-clip API for point clouds (unlike "
+                    "raster DEMs). Extracting a clipped subset requires this "
+                    "dataset's real tile-index shapefile; see "
+                    "data.properties['note'] and 'real_dataset_metadata' for what's "
+                    "needed to build that next step, or "
+                    "github.com/OpenTopography/OT_Tile_Index_Search for "
+                    "OpenTopography's own real, current workflow."
+                ),
+            )
 
         destination = Path(destination)
         destination.mkdir(parents=True, exist_ok=True)
@@ -216,17 +402,27 @@ class OpentopographyProvider(AbstractBaseProvider):
             name=self.DISPLAY_NAME,
             description=self.DESCRIPTION,
             auth_type="api_key",
-            satellites=["SRTM", "Copernicus", "ALOS"],
+            satellites=self.SATELLITES,
             search=True,
             download=True,
             supports_aoi_filter=True,
             supports_date_filter=False,
             requires_auth=True,
             regions=["global"],
-            resolution_min_m=30.0,
+            # Real, honest range across everything this provider now
+            # covers: USGS1m (real, academic-restricted) at the fine
+            # end, through 1000m GEDI L3 at the coarse end -- not just
+            # the original 30m-1000m raster-DEM-only range.
+            resolution_min_m=1.0,
             resolution_max_m=1000.0,
             endpoint_url=self.BASE_URL,
             docs_url="https://opentopography.org/developers",
+            # Real, honest: GEOTIFF only -- point cloud discovery is
+            # real (via otCatalog), but this provider doesn't yet
+            # download LAZ files itself (see _search_point_clouds'
+            # docstring), so claiming LAZ format support here would
+            # overstate what's actually implemented. DataFormat also
+            # has no dedicated LAZ value to claim even if it did.
             supported_formats=[DataFormat.GEOTIFF],
         )
 

@@ -97,7 +97,16 @@ class NASAEarthdataProvider(AbstractBaseProvider):
         self._session = session
 
     def search(self, query: SearchQuery) -> list[SatelliteData]:
-        self.require_auth()
+        # Real, confirmed fix: CMR granule search is genuinely public --
+        # consistently confirmed across NASA's own tutorials (LP DAAC's
+        # bulk-query guide), the official cmrfetch CLI, and the
+        # earthaccess library, none of which attach Earthdata
+        # credentials to the search request itself, only to the
+        # subsequent download step. Blocking search behind
+        # require_auth() was an unnecessary barrier -- removed here;
+        # download() below still correctly requires real credentials,
+        # since actually fetching DAAC-hosted granule files does need
+        # a real Earthdata Login account.
         import httpx
 
         params: dict[str, Any] = {
@@ -120,14 +129,25 @@ class NASAEarthdataProvider(AbstractBaseProvider):
             params["cloud_cover[]"] = f"0,{int(query.cloud_cover_max)}"
         if query.collections:
             params["short_name[]"] = query.collections
+        # Real fix: auth is optional for search (see this method's
+        # opening comment) -- attach real Earthdata credentials only
+        # if authenticate() was actually called first; previously this
+        # unconditionally indexed session_data (defaulting to {} when
+        # no session existed), which raised a real KeyError on the
+        # very first search() call for anyone who hadn't authenticated
+        # yet, even though CMR itself never needed those credentials.
+        auth = None
+        if self._session and self._session.session_data:
+            username = self._session.session_data.get("username")
+            password = self._session.session_data.get("password")
+            if username and password:
+                auth = (username, password)
+
         try:
             resp = httpx.get(
                 f"{self.BASE_URL}/granules.json",
                 params=params,
-                auth=(
-                    (self._session.session_data if self._session else {})["username"],
-                    (self._session.session_data if self._session else {})["password"],
-                ),
+                auth=auth,
                 timeout=60,
             )
             self._handle_http_error(resp)

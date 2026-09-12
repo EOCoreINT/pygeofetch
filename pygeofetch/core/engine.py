@@ -58,7 +58,10 @@ if TYPE_CHECKING:
 
     from pygeofetch.models.download_task import DownloadOptions, DownloadResult
     from pygeofetch.models.search_query import SearchQuery
-    from pygeofetch.validation.optical_validator import OpticalValidationConfig
+    from pygeofetch.validation.optical_validator import (
+        OpticalPreflightValidator,
+        OpticalValidationConfig,
+    )
 
 logger = get_logger(__name__)
 
@@ -161,7 +164,9 @@ class PyGeoFetch:
         # used — see _get_optical_validator().
         self.validate_optical = validate_optical
         self.optical_validation_config = optical_validation_config
-        self._optical_validator = None  # lazily built by _get_optical_validator()
+        self._optical_validator: "OpticalPreflightValidator | None" = (
+            None  # lazily built by _get_optical_validator()
+        )
 
         logger.info("PyGeoFetch ready")
 
@@ -343,7 +348,6 @@ class PyGeoFetch:
         "alaska_satellite_facility",
         "asf_vertex",
         "asf",
-        "eodag",
         "copernicus_dataspace",
         "nasa_earthdata",
     }

@@ -155,6 +155,7 @@ class PreflightGate:
         min_majority_family_dates: int = 8,
         min_workable_family_dates: int = 3,
         attempt_real_burst_check: bool = True,
+        max_perpendicular_baseline_m: float = 200.0,
     ) -> None:
         self.client = client
         self.aoi_bbox = aoi_bbox
@@ -190,6 +191,18 @@ class PreflightGate:
         # instant, zero-network preflight, or if "copernicus" isn't the
         # authenticated provider these real annotation fetches need.
         self.attempt_real_burst_check = attempt_real_burst_check
+        # Real, pre-download SPATIAL (perpendicular) baseline check --
+        # genuinely achievable before download, unlike burst-timing-family
+        # detection (see this module's own top docstring for why that one
+        # can't be): perpendicular_baseline() only needs real orbit state
+        # vectors (already fetched for the burst-family check above, when
+        # attempt_real_burst_check=True) plus each scene's real acquisition
+        # time from search results -- no downloaded product required.
+        # Reuses those same already-fetched orbit files at zero additional
+        # network cost rather than fetching them a second time. Only runs
+        # when attempt_real_burst_check=True, since it depends on that same
+        # real orbit-file fetch.
+        self.max_perpendicular_baseline_m = max_perpendicular_baseline_m
 
     # ── public entry point ───────────────────────────────────────────────
     def run(
@@ -632,6 +645,44 @@ class PreflightGate:
                 )
             )
 
+            spatial_report = family_report.get("spatial_baseline_report")
+            if spatial_report and spatial_report["high_baseline_pairs"]:
+                high_pairs = spatial_report["high_baseline_pairs"]
+                issues.append(
+                    PreflightIssue(
+                        code="HIGH_SPATIAL_BASELINE",
+                        severity=SEVERITY_YELLOW,
+                        message=(
+                            f"Real, pre-download perpendicular-baseline check "
+                            f"(reusing the orbit files already fetched above, "
+                            f"no extra network cost): {len(high_pairs)} "
+                            f"consecutive-date pair(s) exceed "
+                            f"{self.max_perpendicular_baseline_m:.0f}m -- "
+                            f"{[(p['date1'], p['date2'], p['perpendicular_baseline_m']) for p in high_pairs]}. "
+                            f"Expect these specific pairs to show real, physical "
+                            f"geometric decorrelation independent of burst-sync "
+                            f"or coregistration quality -- not fixable by "
+                            f"reprocessing; only by choosing a different "
+                            f"reference/secondary pairing for the network."
+                        ),
+                    )
+                )
+            elif spatial_report and spatial_report["dates_resolved"] < 2:
+                issues.append(
+                    PreflightIssue(
+                        code="SPATIAL_BASELINE_UNASSESSED",
+                        severity=SEVERITY_YELLOW,
+                        message=(
+                            f"Real perpendicular-baseline check could not "
+                            f"resolve orbit positions for enough dates "
+                            f"({spatial_report['dates_resolved']}/"
+                            f"{spatial_report['dates_total']}) to report "
+                            f"anything meaningful -- not confirmation baselines "
+                            f"are safe, just unassessed."
+                        ),
+                    )
+                )
+
             # ACTUALLY apply the recommendation -- not just report it.
             chosen_set = set(chosen_dates)
             filtered_selected = [
@@ -842,6 +893,9 @@ class PreflightGate:
                 min_majority_dates=self.min_majority_family_dates,
                 min_workable_dates=self.min_workable_family_dates,
             )
+            family_report["spatial_baseline_report"] = self._compute_spatial_baselines(
+                selected, chosen_dates, orbit_files, ground_point
+            )
             return chosen_dates, family_report
         except Exception as exc:
             logger.warning(
@@ -851,6 +905,87 @@ class PreflightGate:
                 exc,
             )
             return None
+
+    def _compute_spatial_baselines(
+        self,
+        selected: List[Any],
+        chosen_dates: List[str],
+        orbit_files: Dict[str, Any],
+        ground_point: Tuple[float, float, float],
+    ) -> Dict[str, Any]:
+        """
+        Real, pre-download perpendicular-baseline check for consecutive
+        dates in the burst-sync-chosen stack, reusing the orbit files
+        already fetched for burst-family classification above -- no
+        second network fetch. Never raises: any real failure here (a
+        malformed orbit file, a date whose acquisition time can't be
+        resolved) degrades to an honest "not computed for this date"
+        entry rather than aborting the whole preflight run over a
+        secondary, advisory check.
+        """
+        from datetime import timezone
+
+        from pygeofetch.insar.geolocation import (
+            find_zero_doppler_time,
+            interpolate_orbit_state,
+            parse_orbit_file,
+            perpendicular_baseline,
+        )
+
+        date_to_scene = {str(s.datetime)[:10]: s for s in selected}
+        positions: Dict[str, Tuple[float, float, float]] = {}
+
+        for d in chosen_dates:
+            scene = date_to_scene.get(d)
+            if scene is None or scene.datetime is None or d not in orbit_files:
+                continue
+            try:
+                times, orbit_positions, velocities = parse_orbit_file(orbit_files[d])
+                times = [
+                    t.replace(tzinfo=timezone.utc) if t.tzinfo is None else t
+                    for t in times
+                ]
+                acq_time = scene.datetime
+                if acq_time.tzinfo is None:
+                    acq_time = acq_time.replace(tzinfo=timezone.utc)
+                t_zero = find_zero_doppler_time(
+                    times, orbit_positions, velocities, ground_point, acq_time
+                )
+                pos, _ = interpolate_orbit_state(
+                    times, orbit_positions, velocities, t_zero
+                )
+                positions[d] = pos
+            except Exception as exc:
+                logger.debug(
+                    "Spatial baseline: could not resolve real orbit position "
+                    "for %s (%s) -- excluded from this check, not from the "
+                    "stack itself.",
+                    d,
+                    exc,
+                )
+                continue
+
+        ordered = sorted(positions.keys())
+        pair_baselines: List[Dict[str, Any]] = []
+        for d1, d2 in zip(ordered, ordered[1:]):
+            b_perp = perpendicular_baseline(positions[d1], positions[d2], ground_point)
+            pair_baselines.append(
+                {"date1": d1, "date2": d2, "perpendicular_baseline_m": round(b_perp, 1)}
+            )
+
+        high_baseline_pairs = [
+            p
+            for p in pair_baselines
+            if abs(p["perpendicular_baseline_m"]) > self.max_perpendicular_baseline_m
+        ]
+
+        return {
+            "dates_resolved": len(positions),
+            "dates_total": len(chosen_dates),
+            "consecutive_pair_baselines_m": pair_baselines,
+            "high_baseline_pairs": high_baseline_pairs,
+            "max_perpendicular_baseline_m_threshold": self.max_perpendicular_baseline_m,
+        }
 
     # ── manifest + severity ───────────────────────────────────────────────
     def _build_manifest(

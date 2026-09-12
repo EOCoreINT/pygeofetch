@@ -4,30 +4,30 @@
 pip install "pygeofetch[insar]"
 ```
 
-```{tip}
-Looking for a complete, real, cell-by-cell worked example rather than
-an API reference? See
-{doc}`/processing/insar-mexico-city-tutorial` — a full search-to-
-validated-subsidence-map run, cross-referenced against a published
-result (Cigna & Tapete 2021).
-```
+!!! tip
 
-```{note}
-**Re-verified against a fresh source upload after this page and the
-tutorial were originally written**: the InSAR module had substantial
-internal changes since then (900+ diff lines in `interferogram.py`
-alone; large diffs across nearly every file in `pygeofetch/insar/`).
-Directly re-checked the real signatures of every function/class this
-page and the tutorial document —
-`search_and_select_consistent_stack`, `PreflightGate`,
-`select_burst_synchronized_dates`, `SLCExtractor.extract_consistent_stack`,
-`InterferogramGenerator.process_pair`, `PhaseUnwrapper.unwrap_pair`,
-`build_sbas_network`, `select_reliable_reference_pixel`,
-`bridge_unwrap_regions`, `SBASTimeSeries.invert`,
-`RiskMapper.compute_risk` — against the fresh source. All matched
-exactly; the large diffs were internal refactoring/implementation
-changes, not breaking changes to the public API documented here.
-```
+    Looking for a complete, real, cell-by-cell worked example rather than
+    an API reference? See
+    [Complete Worked Example: Mexico City Subsidence](insar-mexico-city-tutorial.md) — a full search-to-
+    validated-subsidence-map run, cross-referenced against a published
+    result (Cigna & Tapete 2021).
+
+!!! note
+
+    **Re-verified against a fresh source upload after this page and the
+    tutorial were originally written**: the InSAR module had substantial
+    internal changes since then (900+ diff lines in `interferogram.py`
+    alone; large diffs across nearly every file in `pygeofetch/insar/`).
+    Directly re-checked the real signatures of every function/class this
+    page and the tutorial document —
+    `search_and_select_consistent_stack`, `PreflightGate`,
+    `select_burst_synchronized_dates`, `SLCExtractor.extract_consistent_stack`,
+    `InterferogramGenerator.process_pair`, `PhaseUnwrapper.unwrap_pair`,
+    `build_sbas_network`, `select_reliable_reference_pixel`,
+    `bridge_unwrap_regions`, `SBASTimeSeries.invert`,
+    `RiskMapper.compute_risk` — against the fresh source. All matched
+    exactly; the large diffs were internal refactoring/implementation
+    changes, not breaking changes to the public API documented here.
 
 Coregistration, interferogram formation, phase unwrapping, and SBAS
 time series inversion, in pure Python. No SNAP or ISCE required for
@@ -91,16 +91,109 @@ On-Demand InSAR and ISCE2/3 use in production.
 Berardino et al. (2002) SBAS inversion, with optional MintPy delegation
 for the full correction chain.
 
-```{warning}
-**The reference pixel matters more than almost anything else here.**
-Phase unwrapping only recovers phase relative to an arbitrary
-per-interferogram offset. Combining unwrapped interferograms without a
-common, stable reference pixel corrupts the entire result. In one
-verification run, referencing inside a synthetic subsidence bowl gave
-103 mm/yr RMSE against a 100 mm/yr true signal; a verified-stable
-reference gave 8.84 mm/yr RMSE. Always pass an explicit,
-independently-verified `reference_pixel`.
+!!! warning
+
+    **The reference pixel matters more than almost anything else here.**
+    Phase unwrapping only recovers phase relative to an arbitrary
+    per-interferogram offset. Combining unwrapped interferograms without a
+    common, stable reference pixel corrupts the entire result. In one
+    verification run, referencing inside a synthetic subsidence bowl gave
+    103 mm/yr RMSE against a 100 mm/yr true signal; a verified-stable
+    reference gave 8.84 mm/yr RMSE. Always pass an explicit,
+    independently-verified `reference_pixel`.
+
+## Advanced safeguards: custom DEMs, layover/shadow, and topographic residuals
+
+`pygeofetch.insar.advanced_safeguards` adds three real, general-purpose
+capabilities — general-purpose meaning exactly that: the physics here
+applies identically to a volcanic edifice, mountainous landslide
+terrain, a high-relief urban area, or an open-pit mine. None of it is
+mining-specific, even though this project's own validation work happens
+to use a mine as its stress test.
+
+These three functions belong to genuinely different stages of the real
+InSAR chain, stated explicitly because conflating them is an easy
+mistake:
+
+### `prepare_custom_dem` — before interferogram generation
+
+Aligns a custom, high-resolution DEM (UAV photogrammetry, airborne
+LiDAR) to a reference SAR raster's exact grid via
+`rasterio.warp.reproject`, for real topographic-phase removal during
+interferogram formation. Useful when a coarse global DEM (SRTM,
+Copernicus DEM) under-resolves real terrain — a UAV DEM over an active
+volcanic crater, LiDAR over a landslide body, or a high-resolution
+urban DSM.
+
+```python
+from pygeofetch.insar.advanced_safeguards import prepare_custom_dem
+
+prepare_custom_dem(
+    custom_dem_path="uav_dem.tif",
+    reference_raster_path="reference_slc.tif",
+    output_path="aligned_dem.tif",
+)
 ```
+
+### `generate_insar_mask` — before interferogram generation
+
+Real, geometry-based layover/shadow masking from a DEM and the real
+acquisition geometry (incidence angle, heading, look side) — flags
+which pixels are structurally unusable for InSAR *before* any
+interferogram is even formed, independent of coherence.
+
+```python
+from pygeofetch.insar.advanced_safeguards import generate_insar_mask
+
+safe_mask = generate_insar_mask(
+    dem=dem_array, pixel_size_m=10.0,
+    incidence_angle_deg=35.0, heading_deg=193.0, look_side="right",
+)
+# True = geometrically safe for InSAR; False = layover or shadow —
+# mask out, or fall back to optical offset tracking there instead.
+```
+
+The real physics: a pixel is in **layover** when local terrain slope
+toward the radar is steep enough that the local incidence angle drops
+to zero or below (the near-range part of the slope arrives at the
+sensor before the far-range part, folding the image over itself), and
+in **shadow** when slope facing away from the radar pushes the local
+incidence angle to 90° or beyond (the radar beam physically can't reach
+it). Verified against a synthetic cone DEM: a steep cone (76° slope vs.
+35° incidence) correctly shows layover on the radar-facing flank *and*
+shadow on the opposite flank simultaneously; a gentler cone (31° slope,
+below the incidence angle) correctly shows neither.
+
+### `build_sbas_design_matrix_with_topo` — during SBAS inversion, after unwrapping
+
+This is real, standard residual DEM-error co-estimation (Berardino et
+al. 2002; Fattahi & Amelung 2013), applied to the *already unwrapped*
+phase stack — not topographic phase removal, which already happened
+earlier using whatever DEM the interferogram stage used. This corrects
+for the *residual* error left over in that earlier DEM, a real,
+separate, later correction.
+
+```python
+from pygeofetch.insar.advanced_safeguards import build_sbas_design_matrix_with_topo
+
+design_matrix, pair_order = build_sbas_design_matrix_with_topo(
+    dates=all_dates,
+    reference_date=reference_date,
+    pair_dates=network_pairs,
+    perpendicular_baselines=baseline_dict,   # {(date1, date2): B_perp_metres}
+    wavelength_m=0.05546576,                  # Sentinel-1 C-band
+    slant_range_m=850000.0,
+    incidence_angle_deg=35.0,
+)
+```
+
+Real physics: a residual DEM error `epsilon` contributes phase
+`(4π/λ) × (B_perp / (R·sin θ)) × epsilon`, linear in `epsilon` exactly
+like the familiar velocity term is linear in time — which is why both
+can be solved for jointly in one real linear least-squares system per
+pixel. The topographic-residual column added here has been checked
+against this exact analytical formula to machine precision, not just
+"does it run."
 
 ## Atmospheric correction
 
@@ -166,13 +259,13 @@ Supply all four (plus a DEM) and orbit-based coregistration is used
 automatically. Omit any of the four and it falls back cleanly to
 shape-based resampling, with a clear log line stating which path ran.
 
-```{note}
-**Honest, documented limitation:** the lower-level
-`solve_ground_point()` (an alternative, pixel-driven geolocation solve)
-has a known reliability gap and is deliberately not exported as a
-primary API. It always fails safely, but isn't recommended for
-unattended use.
-```
+!!! note
+
+    **Honest, documented limitation:** the lower-level
+    `solve_ground_point()` (an alternative, pixel-driven geolocation solve)
+    has a known reliability gap and is deliberately not exported as a
+    primary API. It always fails safely, but isn't recommended for
+    unattended use.
 
 ## LOS-to-vertical conversion
 
@@ -248,15 +341,15 @@ but accepts any `(data_array, time_years) -> risk_array` callable, so
 a domain-specific risk definition (e.g. weighting recent
 acceleration more heavily) can be substituted directly.
 
-```{note}
-**Real bug fixed**: an earlier version resolved the input time series
-by *mutating the caller's own `ts_result` object* (setting new
-`.data`/`.times` attributes on it as a side effect of just
-constructing a `RiskMapper`) — a real risk of silently corrupting the
-caller's own code if that same `ts_result` object was reused
-elsewhere afterward. `RiskMapper.__init__` no longer mutates its
-input.
-```
+!!! note
+
+    **Real bug fixed**: an earlier version resolved the input time series
+    by *mutating the caller's own `ts_result` object* (setting new
+    `.data`/`.times` attributes on it as a side effect of just
+    constructing a `RiskMapper`) — a real risk of silently corrupting the
+    caller's own code if that same `ts_result` object was reused
+    elsewhere afterward. `RiskMapper.__init__` no longer mutates its
+    input.
 
 `RiskMapper` accepts a `TimeSeriesResult` from `SBASTimeSeries.invert()`
 directly (matches its `.displacement`/`.dates` attributes), or any

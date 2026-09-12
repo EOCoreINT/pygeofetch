@@ -1,7 +1,7 @@
 """
 Provider registry for PyGeoFetch.
 
-22+ satellite data providers registered here. Add new providers by:
+22 satellite data providers registered here. Add new providers by:
 1. Creating a module in pygeofetch/providers/
 2. Implementing AbstractBaseProvider
 3. Adding to PROVIDER_REGISTRY and PROVIDER_META below.
@@ -38,7 +38,6 @@ def _lazy_load_providers() -> dict[str, type[AbstractBaseProvider]]:
     from pygeofetch.providers.planet import PlanetProvider
     from pygeofetch.providers.planetary_computer import PlanetaryComputerProvider
     from pygeofetch.providers.sentinel_hub import SentinelHubProvider
-    from pygeofetch.providers.terrabotics import TerraboticsProvider
     from pygeofetch.providers.usgs import USGSProvider
 
     return {
@@ -63,7 +62,6 @@ def _lazy_load_providers() -> dict[str, type[AbstractBaseProvider]]:
         "inpe_cbers": InpeCbersProvider,
         "esa_scihub": EsaScihubProvider,
         "digitalglobe": DigitalglobeProvider,
-        "terrabotics": TerraboticsProvider,
         "geoserver_generic": GeoserverGenericProvider,
     }
 

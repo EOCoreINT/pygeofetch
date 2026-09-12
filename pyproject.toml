@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygeofetch"
-version = "2.6.2.3"
+version = "2.6.2.4"
 description = "Universal satellite data pipeline + geospatial processing platform"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -69,12 +69,7 @@ processor = [
     "geopandas>=0.14",
 ]
 
-# Tier 4: Additional providers
-providers = [
-    "eodag>=3.0",
-]
-
-# Tier 5: lightweight SAR backend (pygeofetch.sar) — matches the
+# Tier 4: lightweight SAR backend (pygeofetch.sar) — matches the
 # "pip install pygeofetch[sar]" instruction in pygeofetch/sar/__init__.py.
 # Not required by pygeofetch.insar (nothing there imports sarxarray), and
 # not exercised by any test, so it's kept separate rather than bundled
@@ -85,7 +80,7 @@ sar = [
     "sarxarray>=0.1",
 ]
 
-# Tier 5b: interferometric SAR processing (pygeofetch.insar)
+# Tier 4b: interferometric SAR processing (pygeofetch.insar)
 insar = [
     "scipy>=1.12",
     # Required by pygeofetch.insar.preflight for AOI-vs-footprint coverage
@@ -101,7 +96,7 @@ insar = [
     "xarray>=2024.1",
 ]
 
-# Tier 5c: SAR processing (heavy — requires SNAP)
+# Tier 4c: SAR processing (heavy — requires SNAP)
 ost = [
     # REAL BUG FIXED: this was pinned ">=3.0", a version that has never
     # existed — opensartoolkit's real releases on PyPI top out at
@@ -111,7 +106,7 @@ ost = [
     "opensartoolkit>=0.12.1",
 ]
 
-# Tier 6: Visualization
+# Tier 5: Visualization
 viz = [
     "leafmap>=0.30",
     "folium>=0.16",
@@ -153,7 +148,7 @@ viz = [
     "pyvista",
 ]
 
-# Tier 6b: Kepler.gl 3D map visualization — isolated from the main viz extra.
+# Tier 5b: Kepler.gl 3D map visualization — isolated from the main viz extra.
 # keplergl's latest stable release (0.3.7) ships no wheel and pulls in a
 # hardcoded pyarrow~=16.0.0 build dependency inside its own setup.py, a
 # pyarrow version with no Windows wheel for Python 3.13. Building it from
@@ -208,10 +203,15 @@ dev = [
 # module without ImportErrors. Several test files import rasterio and
 # scipy directly (real GeoTIFF I/O / independent reference-implementation
 # checks in the InSAR integration tests), on top of what the insar/geo
-# extras' own library code needs. CI should install this extra, e.g.
-# `pip install -e ".[test]"`.
+# extras' own library code needs. Real, confirmed gap fixed here:
+# test_noaa_big_data.py and test_pipeline_process_export.py's S3-export
+# test both hard-import boto3/botocore directly, which this extra did
+# not previously include -- confirmed by actually running the full
+# suite with only the extras below `test` originally listed and getting
+# 4 real ModuleNotFoundErrors, not a hypothetical gap. CI should install
+# this extra, e.g. `pip install -e ".[test]"`.
 test = [
-    "pygeofetch[dev,geo,insar]",
+    "pygeofetch[dev,geo,insar,cloud]",
 ]
 
 insar-full = [
@@ -223,7 +223,7 @@ insar-full = [
 # viz-3d above) and sarxarray (see sar above, no Python 3.9 release) are
 # deliberately excluded; add them explicitly if you need them.
 full = [
-    "pygeofetch[geo,processor,providers,insar,viz,cloud,notebook,schedule]",
+    "pygeofetch[geo,processor,insar,viz,cloud,notebook,schedule]",
 ]
 # Legacy alias
 all = ["pygeofetch[full]"]
@@ -233,7 +233,7 @@ pygeofetch = "pygeofetch.cli.main:cli"
 
 [project.urls]
 Homepage      = "https://www.eocoreint.com/"
-Documentation = "https://pygeofetch.readthedocs.io/en/latest/"
+Documentation = "https://appiahkubis14.github.io/pygeofetch-docs/"
 Repository    = "https://github.com/EOCoreINT/pygeofetch"
 "Bug Tracker" = "https://github.com/EOCoreINT/pygeofetch/issues"
 

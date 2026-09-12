@@ -80,7 +80,29 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
     SATELLITES = ["Terra", "Aqua", "CALIPSO", "ICESat-2", "GEDI"]
     BASE_URL = "https://cmr.earthdata.nasa.gov/search"
     EDL_URL = "https://urs.earthdata.nasa.gov"
-    S3_CREDS_URL = "https://data.earthaccess.nasa.gov/s3credentials"
+
+    # Real, confirmed finding: there is no single, unified S3 credentials
+    # endpoint. Each DAAC has its own, separate endpoint, and credentials
+    # from one DAAC do NOT work for another DAAC's buckets -- confirmed
+    # identically across NASA's own EMIT-Data-Resources GitHub repo,
+    # PO.DAAC's own cookbook, NSIDC's own help center, and multiple NASA
+    # Openscapes cloud-workshop tutorials, all stating this explicitly
+    # ("each DAAC has their own endpoint and credentials are not usable
+    # for cloud data from other DAACs"). The previous single
+    # "https://data.earthaccess.nasa.gov/s3credentials" URL doesn't match
+    # any real DAAC's actual endpoint -- it appears to conflate the real
+    # `earthaccess` Python library's name with a fictional hostname.
+    # This list covers the DAACs independently confirmed here; a DAAC
+    # not in this mapping raises a clear error rather than silently
+    # using the wrong (or a fictional) endpoint.
+    DAAC_S3_CREDENTIALS_ENDPOINTS = {
+        "PODAAC": "https://archive.podaac.earthdata.nasa.gov/s3credentials",
+        "GES_DISC": "https://data.gesdisc.earthdata.nasa.gov/s3credentials",
+        "LPDAAC_ECS": "https://data.lpdaac.earthdatacloud.nasa.gov/s3credentials",
+        "ORNL_DAAC": "https://data.ornldaac.earthdata.nasa.gov/s3credentials",
+        "GHRC_DAAC": "https://data.ghrc.earthdata.nasa.gov/s3credentials",
+        "NSIDC_ECS": "https://data.nsidc.earthdatacloud.nasa.gov/s3credentials",
+    }
 
     def authenticate(self, credentials: Credentials) -> AuthSession:
         """
@@ -131,37 +153,24 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
             msg = f"EDL authentication error: {exc}"
             raise AuthenticationError(msg) from exc
 
-        # Step 2: Get temporary AWS credentials for S3 direct access
-        s3_creds: dict[str, str] = {}
-        try:
-            s3_resp = httpx.get(
-                self.S3_CREDS_URL,
-                headers={"Authorization": f"Bearer {edl_token}"},
-                timeout=30,
-            )
-            if s3_resp.status_code == 200:
-                creds_data = s3_resp.json()
-                s3_creds = {
-                    "aws_access_key_id": creds_data.get("accessKeyId", ""),
-                    "aws_secret_access_key": creds_data.get("secretAccessKey", ""),
-                    "aws_session_token": creds_data.get("sessionToken", ""),
-                    "expiration": creds_data.get("expiration", ""),
-                }
-                self._logger.info(
-                    "Obtained temporary S3 credentials for NASA Earthdata Cloud"
-                )
-        except Exception as exc:
-            self._logger.warning(
-                f"Could not obtain S3 credentials (will fall back to HTTPS): {exc}"
-            )
-
+        # Real, confirmed fix: S3 credentials are no longer fetched
+        # eagerly here at all -- doing so against one generic endpoint
+        # made no sense once "each DAAC has its own endpoint" was
+        # confirmed (see DAAC_S3_CREDENTIALS_ENDPOINTS above). Credentials
+        # are now fetched lazily, per real DAAC, in download() itself
+        # once the specific granule's real data_center is known --
+        # cached there per-DAAC since each set expires after about an
+        # hour and different DAACs' credentials are never interchangeable.
         from datetime import datetime, timedelta, timezone
 
         session = AuthSession(
             provider=self.PROVIDER_ID,
             access_token=edl_token,
             expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
-            session_data={"s3_credentials": s3_creds, "username": credentials.username},
+            session_data={
+                "username": credentials.username,
+                "s3_credentials_by_daac": {},
+            },
         )
         self._session = session
         self._logger.info(
@@ -186,7 +195,10 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
         Returns:
             List of SatelliteData with S3 URLs.
         """
-        self.require_auth()
+        # Real, confirmed fix (same finding as pygeofetch.providers.
+        # nasa_earthdata): CMR search is genuinely public, including
+        # with cloud_hosted=true -- no Earthdata credentials needed for
+        # search itself, only for the S3/HTTPS download step below.
         import httpx
 
         params: dict[str, Any] = {
@@ -212,9 +224,9 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
             params["short_name[]"] = query.satellites
 
         try:
-            headers = {
-                "Authorization": f"Bearer {(self._session.access_token if self._session else None)}"
-            }
+            headers = {}
+            if self._session and self._session.access_token:
+                headers["Authorization"] = f"Bearer {self._session.access_token}"
             resp = httpx.get(
                 f"{self.BASE_URL}/granules.json",
                 params=params,
@@ -277,8 +289,70 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
                 "title": entry.get("title", ""),
                 "producer_granule_id": entry.get("producer_granule_id", ""),
                 "cloud_hosted": True,
+                "data_center": entry.get("data_center", ""),
             },
         )
+
+    def _get_s3_credentials_for_daac(self, data_center: str) -> dict[str, str]:
+        """
+        Real, lazy, per-DAAC S3 credential fetch -- cached on the
+        session and refreshed once expired (these are genuinely
+        short-lived, confirmed ~1 hour by NSIDC's own documentation).
+        Returns {} (not an error) when the DAAC isn't in the real,
+        confirmed mapping -- callers fall back to HTTPS, which always
+        works regardless of DAAC.
+        """
+        from datetime import datetime, timedelta, timezone
+
+        import httpx
+
+        endpoint = self.DAAC_S3_CREDENTIALS_ENDPOINTS.get(data_center)
+        if not endpoint:
+            self._logger.info(
+                f"NASA Earthdata Cloud: no confirmed S3 credentials endpoint for "
+                f"data_center={data_center!r} -- falling back to HTTPS download."
+            )
+            return {}
+
+        cache = self._session.session_data.setdefault("s3_credentials_by_daac", {})
+        cached = cache.get(data_center)
+        if cached:
+            expiration = cached.get("_expires_at")
+            if expiration and datetime.now(timezone.utc) < expiration:
+                return cached
+
+        try:
+            resp = httpx.get(
+                endpoint,
+                headers={"Authorization": f"Bearer {self._session.access_token}"},
+                timeout=30,
+            )
+            if resp.status_code != 200:
+                self._logger.warning(
+                    f"NASA Earthdata Cloud: S3 credentials request for "
+                    f"{data_center} failed (HTTP {resp.status_code}) -- "
+                    f"falling back to HTTPS download."
+                )
+                return {}
+            creds_data = resp.json()
+            creds = {
+                "aws_access_key_id": creds_data.get("accessKeyId", ""),
+                "aws_secret_access_key": creds_data.get("secretAccessKey", ""),
+                "aws_session_token": creds_data.get("sessionToken", ""),
+                "expiration": creds_data.get("expiration", ""),
+                "_expires_at": datetime.now(timezone.utc) + timedelta(minutes=55),
+            }
+            cache[data_center] = creds
+            self._logger.info(
+                f"NASA Earthdata Cloud: obtained real S3 credentials for {data_center}"
+            )
+            return creds
+        except Exception as exc:
+            self._logger.warning(
+                f"NASA Earthdata Cloud: could not obtain S3 credentials for "
+                f"{data_center} ({exc}) -- falling back to HTTPS download."
+            )
+            return {}
 
     def download(
         self,
@@ -304,13 +378,15 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
         destination = Path(destination)
         destination.mkdir(parents=True, exist_ok=True)
 
-        s3_creds = (
-            (self._session.session_data if self._session else {}).get(
-                "s3_credentials", {}
-            )
-            if (self._session.session_data if self._session else {})
-            else {}
-        )
+        # Real, confirmed fix: fetch S3 credentials lazily, for THIS
+        # granule's real DAAC specifically -- not once, eagerly, from a
+        # single generic (and fictional) endpoint during authenticate().
+        # See DAAC_S3_CREDENTIALS_ENDPOINTS above for why this has to be
+        # per-DAAC. Falls back to HTTPS download (still real and
+        # correct) when the DAAC isn't in the confirmed mapping, rather
+        # than failing the whole download.
+        data_center = (data.properties or {}).get("data_center", "")
+        s3_creds = self._get_s3_credentials_for_daac(data_center)
         start_time = time.time()
         output_paths = []
         total_bytes = 0

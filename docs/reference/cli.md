@@ -1,16 +1,16 @@
 # Full CLI Reference
 
-```{danger}
-**A real, confirmed dead command group exists in the codebase**:
-`pygeofetch/cli/monitor_commands.py` defines a real `monitor` group
-(`monitor run`, `monitor history`) with real implementation code, but
-it is **never registered** in `pygeofetch/cli/main.py` — confirmed by
-running `pygeofetch --help` directly and checking the real output: no
-`monitor` entry appears, and `pygeofetch monitor run` fails with "No
-such command". If you need this functionality, it exists in source
-but needs `cli.add_command(monitor)` added to `main.py` to actually
-be reachable.
-```
+!!! danger
+
+    **A real, confirmed dead command group exists in the codebase**:
+    `pygeofetch/cli/monitor_commands.py` defines a real `monitor` group
+    (`monitor run`, `monitor history`) with real implementation code, but
+    it is **never registered** in `pygeofetch/cli/main.py` — confirmed by
+    running `pygeofetch --help` directly and checking the real output: no
+    `monitor` entry appears, and `pygeofetch monitor run` fails with "No
+    such command". If you need this functionality, it exists in source
+    but needs `cli.add_command(monitor)` added to `main.py` to actually
+    be reachable.
 
 ## Global options
 
@@ -30,37 +30,37 @@ Options:
 
 | Group | Subcommands | Description |
 |---|---|---|
-| `auth` | add, login, list, test, remove, export | Manage provider credentials — {doc}`/core-features/authentication` |
-| `providers` | list, info, search | Browse and inspect providers — {doc}`/core-features/providers` |
-| `search` | run | Search for satellite scenes — {doc}`/core-features/search` |
-| `download` | run, status, history | Download scenes to disk — {doc}`/core-features/download` |
+| `auth` | add, login, list, test, remove, export | Manage provider credentials — [Authentication](../core-features/authentication.md) |
+| `providers` | list, info, search | Browse and inspect providers — [Providers](../core-features/providers.md) |
+| `search` | run | Search for satellite scenes — [Searching Satellite Data](../core-features/search.md) |
+| `download` | run, status, history | Download scenes to disk — [Downloading Satellite Data](../core-features/download.md) |
 | `cache` | stats, clear, ttl, location, prune | Manage search result cache |
-| `pipeline` | run, validate, schedule, list-scheduled, unschedule, logs, history, retry | YAML *acquisition* orchestration — {doc}`/reference/pipelines` |
+| `pipeline` | run, validate, schedule, list-scheduled, unschedule, logs, history, retry | YAML *acquisition* orchestration — [Pipelines & Batch Processing](pipelines.md) |
 | `proc-pipeline` | run, validate, template | YAML *processing-chain* pipeline — a different, real capability, see below |
-| `preprocess` | clip, reproject, resample, cloud-mask, cloud-fill, atmos, topo-correct, pansharpen, mosaic, composite, tile | Direct CLI access to {doc}`/processing/preprocessing` |
-| `index` | ndvi, evi, savi, ndwi, mndwi, ndbi, ndsi, ndmi, nbr, dnbr, tct, pca, texture, lst, albedo, band-math, stack | Direct CLI access to {doc}`/processing/spectral-indices` |
-| `post` | vectorize, smooth, regularize, zonal-stats, buffer, centroids, geometry-metrics, compress, cog | Direct CLI access to {doc}`/processing/postprocessing` |
-| `sar` | despeckle, calibrate, flood-map, coherence | Direct CLI access to {doc}`/processing/sar` |
+| `preprocess` | clip, reproject, resample, cloud-mask, cloud-fill, atmos, topo-correct, pansharpen, mosaic, composite, tile | Direct CLI access to [Preprocessing Engine](../processing/preprocessing.md) |
+| `index` | ndvi, evi, savi, ndwi, mndwi, ndbi, ndsi, ndmi, nbr, dnbr, tct, pca, texture, lst, albedo, band-math, stack | Direct CLI access to [Spectral Indices](../processing/spectral-indices.md) |
+| `post` | vectorize, smooth, regularize, zonal-stats, buffer, centroids, geometry-metrics, compress, cog | Direct CLI access to [Postprocessing](../processing/postprocessing.md) |
+| `sar` | despeckle, calibrate, flood-map, coherence | Direct CLI access to [SAR Processing](../processing/sar.md) |
 | `config` | show, get, set, path, reset | Read and modify configuration |
 | `status` | — | System status dashboard |
 | `doctor` | — | Diagnose installation and connectivity |
 | `version` | — | Show version info |
 
-```{note}
-`preprocess`, `index`, `post`, and `sar` are thin, direct CLI wrappers
-around the exact same `client.preprocess`/`client.indices`/
-`client.post`/`client.sar` methods documented in full on their
-respective processing pages — flag names match the Python keyword
-argument names throughout (e.g. `--red`/`--nir` on `index ndvi` maps
-directly to `red=`/`nir=`). This page lists every real command with a
-one-line description and a few concrete examples; see the linked
-processing pages for full algorithm detail, real formulas, and
-verification basis.
-```
+!!! note
+
+    `preprocess`, `index`, `post`, and `sar` are thin, direct CLI wrappers
+    around the exact same `client.preprocess`/`client.indices`/
+    `client.post`/`client.sar` methods documented in full on their
+    respective processing pages — flag names match the Python keyword
+    argument names throughout (e.g. `--red`/`--nir` on `index ndvi` maps
+    directly to `red=`/`nir=`). This page lists every real command with a
+    one-line description and a few concrete examples; see the linked
+    processing pages for full algorithm detail, real formulas, and
+    verification basis.
 
 ## Extra download and cache subcommands
 
-Beyond `download run` (see {doc}`/core-features/download` for its
+Beyond `download run` (see [Downloading Satellite Data](../core-features/download.md) for its
 full flag reference):
 
 ```bash
@@ -93,8 +93,8 @@ pygeofetch preprocess pansharpen multispectral.tif --pan pan.tif --method brovey
 
 Full command list: `clip`, `reproject`, `resample`, `cloud-mask`,
 `cloud-fill`, `atmos`, `topo-correct`, `pansharpen`, `mosaic`,
-`composite`, `tile`. See {doc}`/processing/preprocessing` and
-{doc}`/processing/terrain` for what each does and its full parameter
+`composite`, `tile`. See [Preprocessing Engine](../processing/preprocessing.md) and
+[Terrain Analysis (DEM / DSM / DTM)](../processing/terrain.md) for what each does and its full parameter
 set.
 
 ## `index` — direct CLI access to spectral indices
@@ -108,7 +108,7 @@ pygeofetch index band-math --inputs B04.tif,B08.tif --expression "(B[1]-B[0])/(B
 
 Full command list: `ndvi`, `evi`, `savi`, `ndwi`, `mndwi`, `ndbi`,
 `ndsi`, `ndmi`, `nbr`, `dnbr`, `tct`, `pca`, `texture`, `lst`,
-`albedo`, `band-math`, `stack`. See {doc}`/processing/spectral-indices`
+`albedo`, `band-math`, `stack`. See [Spectral Indices](../processing/spectral-indices.md)
 for real formulas, published coefficients, and the full parameter set
 for each.
 
@@ -122,7 +122,7 @@ pygeofetch post cog scene.tif --compress deflate
 
 Full command list: `vectorize`, `smooth`, `regularize`,
 `zonal-stats`, `buffer`, `centroids`, `geometry-metrics`, `compress`,
-`cog`. See {doc}`/processing/postprocessing` for the full parameter
+`cog`. See [Postprocessing](../processing/postprocessing.md) for the full parameter
 set for each.
 
 ## `sar` — direct CLI access to SAR processing
@@ -135,20 +135,43 @@ pygeofetch sar coherence slc_20260601.tif slc_20260613.tif --window 7
 ```
 
 Full command list: `despeckle`, `calibrate`, `flood-map`,
-`coherence`. See {doc}`/processing/sar` — including the honest
-calibration-accuracy limitation and the real duplicate-class
-architecture note — for full detail.
+`coherence`. See [SAR Processing](../processing/sar.md) — including the honest
+calibration-accuracy limitation and the real bug fix in `coherence()`
+— for full detail. Five real, standard pipelines chaining these
+together (`standard_grd_preprocessing_pipeline`,
+`flood_mapping_pipeline`, `change_detection_pipeline`,
+`coherence_disturbance_pipeline`, `bright_target_detection_pipeline`)
+are available in Python via `pygeofetch.sar.pipelines`, not yet
+exposed as their own CLI subcommands.
+
+## `optical` — direct CLI access to optical pixel offset tracking
+
+```bash
+pygeofetch optical offset-track \
+    --ref sentinel2_2023-01-01_B08.tif \
+    --sec sentinel2_2023-06-01_B08.tif \
+    --output offsets.tif \
+    --window-size 64 --step-size 16 --snr-threshold 3.0 \
+    --cloud-mask sentinel2_2023-06-01_SCL.tif
+```
+
+Writes a 3-band GeoTIFF (`dx`, `dy`, `snr`, in real ground-distance
+metres for dx/dy). See
+[Optical Pixel Offset Tracking](../processing/optical-offset-tracking.md)
+for the full pipeline, including `compute_horizontal_strain` and
+`fuse_insar_optical` — both Python-only for now, not yet exposed via
+this CLI group.
 
 ## `proc-pipeline` — the YAML *processing-chain* pipeline
 
-```{warning}
-This is genuinely different from `pygeofetch pipeline` (search →
-filter → download → process → export, for a recurring acquisition
-job). `proc-pipeline` runs a **chain of processing steps on one
-file** — the CLI-accessible form of `ProcessingPipeline` from
-{doc}`/reference/pipelines`'s "Python Processing Pipeline" section.
-Don't mix the two YAML formats.
-```
+!!! warning
+
+    This is genuinely different from `pygeofetch pipeline` (search →
+    filter → download → process → export, for a recurring acquisition
+    job). `proc-pipeline` runs a **chain of processing steps on one
+    file** — the CLI-accessible form of `ProcessingPipeline` from
+    [Pipelines & Batch Processing](pipelines.md)'s "Python Processing Pipeline" section.
+    Don't mix the two YAML formats.
 
 ```bash
 pygeofetch proc-pipeline run ndvi_workflow.yaml --input scene.tif --output-dir ./processed/
@@ -158,7 +181,7 @@ pygeofetch proc-pipeline template   # print a starter YAML template
 
 `ndvi_workflow.yaml` uses the same step names as the Python builder
 (`clip`, `reproject`, `ndvi`, `cog`, etc. — the full list is in
-{doc}`/reference/pipelines`):
+[Pipelines & Batch Processing](pipelines.md)):
 
 ```yaml
 name: ndvi-workflow

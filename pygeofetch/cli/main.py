@@ -26,6 +26,7 @@ from pygeofetch.cli.auth_commands import auth
 from pygeofetch.cli.config_commands import config
 from pygeofetch.cli.download_commands import download
 from pygeofetch.cli.index_commands import index
+from pygeofetch.cli.optical_commands import optical
 from pygeofetch.cli.pipeline_process_commands import proc_pipeline
 from pygeofetch.cli.postprocess_commands import post
 from pygeofetch.cli.preprocess_commands import preprocess
@@ -103,6 +104,7 @@ cli.add_command(index)
 cli.add_command(post)
 cli.add_command(sar)
 cli.add_command(proc_pipeline)
+cli.add_command(optical)
 
 
 # ---------------------------------------------------------------------------

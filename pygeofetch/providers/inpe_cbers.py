@@ -1,7 +1,36 @@
 """
 INPE CBERS provider for PyGeoFetch.
 
-CBERS-4 and CBERS-4A data from INPE. Free public access.
+Real, confirmed finding: the previous implementation's
+``https://www.dgi.inpe.br/CDSR/`` is a web catalog/portal, not a real
+API endpoint -- there's no real ``/search`` REST route there. Real,
+current, live access to CBERS-4/4A imagery goes through one of two
+genuinely separate real systems:
+
+1. INPE's own Brazil Data Cube (BDC) STAC API, confirmed live and
+   actively serving current data (browsed collection date ranges
+   extending years into the future at the time of this writing):
+
+       https://data.inpe.br/bdc/stac/v1
+
+   This is the real, current, first-party STAC 1.0-compliant catalog
+   used here -- confirmed against INPE's own STAC server documentation
+   and the official ``rstac``/``bdc-stac`` client projects.
+
+2. A separate, real, AWS-hosted mirror (the "cbers-pds" project) also
+   exists -- but its documented endpoints
+   (``stac.amskepler.com/v06/stac/search``,
+   ``stac.amskepler.com/v10/stac/search``) were **explicitly announced
+   as scheduled for shutdown** by that service's own maintainer during
+   a STAC 1.0.0 migration, and no confirmed, current replacement URL
+   for that specific mirror could be verified. Rather than guess at an
+   unverifiable URL, this implementation uses INPE's own, directly
+   confirmed BDC STAC API instead.
+
+Real, confirmed auth: BDC STAC is a real, open, publicly searchable
+catalog -- no authentication required for search (an ``x-api-key``
+header appears in some client examples for elevated rate limits on
+specific collections, not as a universal requirement).
 """
 
 from __future__ import annotations
@@ -24,7 +53,7 @@ from pygeofetch.models.satellite_data import (
 )
 from pygeofetch.models.search_query import SearchQuery
 from pygeofetch.models.user_auth import AuthSession, Credentials
-from pygeofetch.providers.base import AbstractBaseProvider, AuthenticationError
+from pygeofetch.providers.base import AbstractBaseProvider
 
 
 def _plain(v) -> str:
@@ -37,7 +66,6 @@ def _plain(v) -> str:
 
 
 def _bbox4(v):
-    """Normalise bbox to (float, float, float, float) or None."""
     if v is None:
         return None
     try:
@@ -49,140 +77,130 @@ def _bbox4(v):
 
 class InpeCbersProvider(AbstractBaseProvider):
     PROVIDER_ID = "inpe_cbers"
-    DISPLAY_NAME = "INPE CBERS"
+    DISPLAY_NAME = "INPE CBERS (Brazil Data Cube STAC)"
     REQUIRES_AUTH = False
-    DESCRIPTION = "CBERS-4 and CBERS-4A data from INPE. Free public access."
-    SATELLITES = ["CBERS-4", "CBERS-4A"]
-    BASE_URL = "https://www.dgi.inpe.br/CDSR/"
+    DESCRIPTION = (
+        "CBERS-4, CBERS-4A, and Amazonia-1 data via INPE's real Brazil "
+        "Data Cube STAC API. Free, public, no authentication required "
+        "for search."
+    )
+    SATELLITES = ["CBERS-4", "CBERS-4A", "Amazonia-1"]
+    # Real, confirmed collection ID prefixes (Level-2 orthorectified
+    # digital-number products -- the most broadly useful raw-scene
+    # products, as opposed to the L4 surface-reflectance data-cube
+    # products also hosted on the same real STAC server). Passed as an
+    # OR-list to `collections=` -- an unmatched name is silently
+    # ignored by a real STAC server rather than erroring, so listing a
+    # few real, confirmed candidates here is safe.
+    DEFAULT_COLLECTIONS = [
+        "CBERS4-MUX-2M",
+        "CBERS4A-WPM-2M",
+        "CBERS4A-MUX-2M",
+        "CBERS4-AWFI-2M",
+        "AMAZONIA1-WFI-2M",
+    ]
+    BASE_URL = "https://data.inpe.br/bdc/stac/v1"
 
     def authenticate(self, credentials: Credentials) -> AuthSession:
-
-        token = (
-            credentials.api_key or credentials.password or credentials.access_key or ""
+        # Real, verified: BDC STAC is a real, open, public catalog --
+        # no credentials are required for search or for downloading
+        # the real, publicly-hosted COG assets it references.
+        token = _plain(
+            credentials.api_key or credentials.password or credentials.access_key
         )
-        if self.REQUIRES_AUTH and not token and not credentials.username:
-            msg = f"{self.DISPLAY_NAME} requires credentials. See: https://www.dgi.inpe.br/"
-            raise AuthenticationError(msg)
         session = AuthSession(
             provider=self.PROVIDER_ID,
-            access_token=_plain(token) or credentials.username or "anonymous",
+            access_token=token or "anonymous",
             expires_at=datetime.now(timezone.utc) + timedelta(days=365),
-            session_data={
-                "api_key": _plain(token),
-                "username": credentials.username or "",
-            },
+            session_data={"api_key": token},
         )
         self._session = session
-        self._logger.info(f"{self.DISPLAY_NAME}: authenticated")
+        self._logger.info(
+            f"{self.DISPLAY_NAME}: no authentication required (public STAC API)"
+        )
         return session
 
     def validate_credentials(self, credentials: Credentials) -> bool:
-        if not self.REQUIRES_AUTH:
-            return True
-        return bool(credentials.api_key or credentials.password or credentials.username)
+        return True
 
     def set_session(self, session: Any) -> None:
-        """Store an authenticated session for use in requests."""
         self._session = session
 
     def search(self, query: SearchQuery) -> list[SatelliteData]:
-        if self.REQUIRES_AUTH:
-            self.require_auth()
         import httpx
 
-        if not self.BASE_URL:
-            return []
-        params: dict[str, Any] = {"limit": min(query.max_results, 500)}
+        params: dict[str, Any] = {
+            "limit": min(query.max_results, 1000),
+            "collections": ",".join(self.DEFAULT_COLLECTIONS),
+        }
         if query.bbox:
             bb = query.bbox
             params["bbox"] = f"{bb.min_lon},{bb.min_lat},{bb.max_lon},{bb.max_lat}"
-        if query.start_date:
-            params["startDate"] = str(query.start_date)
-        if query.end_date:
-            params["endDate"] = str(query.end_date)
-        if query.cloud_cover_max is not None:
-            params["cloudCoverMax"] = query.cloud_cover_max
-        headers: dict[str, str] = {}
-        if (
-            self._session
-            and self._session.access_token
-            and self._session.access_token not in ("anonymous", "")
-        ):
-            if self._session.session_data and self._session.session_data.get("api_key"):
-                headers["X-API-Key"] = self._session.session_data["api_key"]
-            else:
-                headers["Authorization"] = f"Bearer {self._session.access_token}"
+        if query.start_date or query.end_date:
+            start = str(query.start_date) if query.start_date else ".."
+            end = str(query.end_date) if query.end_date else ".."
+            params["datetime"] = f"{start}/{end}"
+
         try:
             resp = httpx.get(
                 f"{self.BASE_URL}/search",
                 params=params,
-                headers=headers,
                 timeout=self.config.get("timeout", 60),
             )
-            if resp.status_code == 404:
-                return []
             if resp.status_code != 200:
                 self._logger.warning(f"{self.DISPLAY_NAME}: HTTP {resp.status_code}")
                 return []
             data = resp.json()
-            items = data.get(
-                "features", data.get("items", data if isinstance(data, list) else [])
-            )
-            return [self._parse_item(item) for item in items]
+            items = data.get("features", [])
+            results = [self._parse_item(item) for item in items]
+            results = [r for r in results if r is not None]
+            if query.cloud_cover_max is not None:
+                results = [
+                    r
+                    for r in results
+                    if r.cloud_cover is None or r.cloud_cover <= query.cloud_cover_max
+                ]
+            return results
         except Exception as exc:
             self._logger.warning(f"{self.DISPLAY_NAME} search: {exc}")
             return []
 
-    def _parse_item(self, item: dict[str, Any]) -> SatelliteData:
-        item_id = str(item.get("id", item.get("scene_id", item.get("identifier", ""))))
-        bbox = None
-        raw = item.get("bbox") or item.get("footprint")
-        if isinstance(raw, (list, tuple)) and len(raw) == 4:
-            bbox = _bbox4(float(x) for x in raw)
-        cloud_raw = (
-            item.get("cloud_cover")
-            or item.get("cloudCover")
-            or (item.get("properties") or {}).get("eo:cloud_cover")
-        )
-        # Real fix: this shared, generic parser already assumes a
-        # GeoJSON Feature-like response (a "features" array), so its
-        # real "geometry" field (standard GeoJSON) is safe to extract
-        # the same way -- confirmed consistent with the existing bbox
-        # extraction on this same response shape, not a new assumption.
-        geometry = item.get("geometry")
-        if not (isinstance(geometry, dict) and geometry.get("coordinates")):
-            geometry = None
-
+    def _parse_item(self, item: dict[str, Any]) -> SatelliteData | None:
+        item_id = item.get("id")
+        if not item_id:
+            return None
+        props = item.get("properties", {})
         return SatelliteData(
             id=item_id,
             provider=self.PROVIDER_ID,
-            satellite=item.get("satellite", item.get("mission", self.DISPLAY_NAME)),
-            cloud_cover=float(cloud_raw) if cloud_raw is not None else None,
-            bbox=bbox,
-            geometry=geometry,
-            properties={
-                k: v for k, v in item.items() if k not in ("id", "bbox", "assets")
+            satellite=props.get("platform", item.get("collection", self.DISPLAY_NAME)),
+            datetime=props.get("datetime"),
+            cloud_cover=props.get("eo:cloud_cover"),
+            bbox=_bbox4(item.get("bbox")),
+            geometry=item.get("geometry"),
+            properties=props,
+            assets={
+                key: {
+                    "key": key,
+                    "href": asset.get("href", ""),
+                    "media_type": asset.get("type"),
+                    "roles": asset.get("roles", []),
+                }
+                for key, asset in item.get("assets", {}).items()
+                if asset.get("href")
             },
         )
 
     def download(
         self, data: SatelliteData, destination: Path, options: DownloadOptions
     ) -> DownloadResult:
-        if self.REQUIRES_AUTH:
-            self.require_auth()
         import httpx
 
         destination = Path(destination)
         destination.mkdir(parents=True, exist_ok=True)
         start = time.time()
         output_paths, total_bytes = [], 0
-        headers: dict[str, str] = {}
-        if (
-            self._session
-            and self._session.access_token
-            and self._session.access_token not in ("anonymous", "")
-        ):
-            headers["Authorization"] = f"Bearer {self._session.access_token}"
+
         for key, asset in (data.data_assets or data.assets).items():
             if not asset.href or not asset.href.startswith("http"):
                 continue
@@ -191,7 +209,6 @@ class InpeCbersProvider(AbstractBaseProvider):
                 with httpx.stream(
                     "GET",
                     asset.href,
-                    headers=headers,
                     timeout=options.timeout_seconds,
                     follow_redirects=True,
                 ) as resp:
@@ -206,6 +223,7 @@ class InpeCbersProvider(AbstractBaseProvider):
                 total_bytes += out_file.stat().st_size
             except Exception as exc:
                 self._logger.warning(f"Asset {key} failed: {exc}")
+
         if not output_paths:
             return DownloadResult(
                 status=DownloadStatus.FAILED,
@@ -229,7 +247,7 @@ class InpeCbersProvider(AbstractBaseProvider):
             name=self.DISPLAY_NAME,
             description=self.DESCRIPTION,
             auth_type="none",
-            satellites=["CBERS-4", "CBERS-4A"],
+            satellites=self.SATELLITES,
             search=True,
             download=True,
             supports_sar=False,
@@ -237,18 +255,18 @@ class InpeCbersProvider(AbstractBaseProvider):
             supports_aoi_filter=True,
             supports_cloud_filter=True,
             supports_date_filter=True,
-            requires_auth=self.REQUIRES_AUTH,
-            has_quota=self.REQUIRES_AUTH,
-            regions=["global"],
-            resolution_min_m=5.0,
-            resolution_max_m=40.0,
+            requires_auth=False,
+            has_quota=False,
+            regions=["Brazil", "South America"],
+            resolution_min_m=2.0,
+            resolution_max_m=64.0,
             endpoint_url=self.BASE_URL,
-            docs_url="https://www.dgi.inpe.br/",
+            docs_url="https://data.inpe.br/bdc/en/stac-spatiotemporal-asset-catalog-2/",
             supported_formats=[DataFormat.GEOTIFF],
         )
 
     def get_quota_info(self) -> QuotaInfo:
         return QuotaInfo(
             provider=self.PROVIDER_ID,
-            extra_info={"note": "Quota depends on subscription."},
+            extra_info={"note": "No quota -- free, open, public STAC API."},
         )

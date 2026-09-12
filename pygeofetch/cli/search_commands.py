@@ -282,6 +282,7 @@ def search_run(
 
     sb = PyGeoFetch()
 
+    optical_config = None
     if validate_optical and (
         optical_max_cloud_cover,
         optical_min_coverage,
@@ -298,21 +299,47 @@ def search_run(
             overrides["required_bands"] = [
                 b.strip() for b in optical_required_bands.split(",")
             ]
-        sb.optical_validation_config = OpticalValidationConfig(**overrides)
+        optical_config = OpticalValidationConfig(**overrides)
+        sb.optical_validation_config = optical_config
 
     with console.status(
         f"[cyan]Searching {len(provider_list or [])} provider(s)...[/]"
     ):
-        results = sb.search(
-            query,
-            providers=provider_list,
-            use_cache=not no_cache,
-            validate_optical=validate_optical,
-        )
+        if validate_optical:
+            # Real, deliberate choice: search WITHOUT filtering here, then
+            # validate directly in this CLI layer, rather than calling
+            # search(validate_optical=True) and losing visibility into
+            # what got rejected and why. sb.search()'s own contract
+            # (returns only the passed scenes) is left untouched for
+            # every other caller -- this is a CLI-only reporting path,
+            # not a change to the library's real filtering behavior.
+            raw_results = sb.search(
+                query,
+                providers=provider_list,
+                use_cache=not no_cache,
+                validate_optical=False,
+            )
+            results, validation_summary = _validate_and_summarize(
+                sb, raw_results, query, optical_config
+            )
+        else:
+            results = sb.search(
+                query,
+                providers=provider_list,
+                use_cache=not no_cache,
+                validate_optical=False,
+            )
+            validation_summary = None
 
     if not results:
         console.print("[yellow]No results found.[/]")
         return
+
+    # Real, clean validation info + full results table, organized so the
+    # summary always appears before the detailed table -- not interleaved
+    # with save/format output below.
+    if validation_summary is not None:
+        _display_validation_summary(validation_summary)
 
     # Save if requested
     if output:
@@ -363,6 +390,92 @@ def search_run(
     elif fmt == "ids":
         for r in results:
             click.echo(r.id)
+
+
+def _validate_and_summarize(sb, raw_results, query, optical_config):
+    """
+    Real validation pass over every raw candidate, returning both the
+    scenes that actually pass and a real, structured summary of what got
+    rejected and why -- the information sb.search(validate_optical=True)
+    alone discards once it returns only the filtered list.
+    """
+    from collections import Counter
+
+    from pygeofetch.validation import OpticalPreflightValidator, OpticalValidationConfig
+
+    validator = OpticalPreflightValidator(optical_config or OpticalValidationConfig())
+    aoi = sb._derive_aoi_polygon(query)
+
+    passed_results = []
+    rejection_reasons: Counter = Counter()
+    warning_reasons: Counter = Counter()
+    n_warned_but_passed = 0
+
+    for scene in raw_results:
+        report = validator.validate_scene(scene, aoi, query.start_date, query.end_date)
+        if report.passed:
+            passed_results.append(scene)
+            if report.issues:
+                n_warned_but_passed += 1
+                for issue in report.issues:
+                    warning_reasons[issue.code] += 1
+        else:
+            for issue in report.issues:
+                if issue.severity == "ERROR":
+                    rejection_reasons[issue.code] += 1
+
+    summary = {
+        "n_total": len(raw_results),
+        "n_passed": len(passed_results),
+        "n_rejected": len(raw_results) - len(passed_results),
+        "n_warned_but_passed": n_warned_but_passed,
+        "rejection_reasons": rejection_reasons,
+        "warning_reasons": warning_reasons,
+    }
+    return passed_results, summary
+
+
+def _display_validation_summary(summary: dict) -> None:
+    """Clean, real info block summarizing optical validation -- shown
+    before the detailed results table, not interleaved with it."""
+    n_total = summary["n_total"]
+    n_passed = summary["n_passed"]
+    n_rejected = summary["n_rejected"]
+    pct = (100 * n_passed / n_total) if n_total else 0.0
+
+    console.print(
+        f"\n[bold]Optical validation:[/] {n_passed}/{n_total} scenes passed "
+        f"({pct:.0f}%)"
+        + (f", [yellow]{n_rejected} rejected[/]" if n_rejected else "")
+        + (
+            f", [cyan]{summary['n_warned_but_passed']} passed with warnings[/]"
+            if summary["n_warned_but_passed"]
+            else ""
+        )
+    )
+
+    if summary["rejection_reasons"]:
+        reasons_table = Table(
+            title="Rejection reasons", header_style="bold red", show_lines=False
+        )
+        reasons_table.add_column("Code", style="red")
+        reasons_table.add_column("Count", justify="right")
+        for code, count in summary["rejection_reasons"].most_common():
+            reasons_table.add_row(code, str(count))
+        console.print(reasons_table)
+
+    if summary["warning_reasons"]:
+        warn_table = Table(
+            title="Warnings on passed scenes",
+            header_style="bold yellow",
+            show_lines=False,
+        )
+        warn_table.add_column("Code", style="yellow")
+        warn_table.add_column("Count", justify="right")
+        for code, count in summary["warning_reasons"].most_common():
+            warn_table.add_row(code, str(count))
+        console.print(warn_table)
+    console.print()  # real spacing before the full results table below
 
 
 def _display_table(results) -> None:

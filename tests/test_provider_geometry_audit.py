@@ -5,22 +5,55 @@ where no better field could be confirmed) across every provider that
 constructs SatelliteData, plus a real, separate crash fix found along
 the way in nasa_earthdata_cloud.
 
-Shared-pattern providers (esa_scihub, inpe_cbers, jaxa_earth,
-isro_bhuvan, alaska_satellite_facility, airbus_oneatlas, digitalglobe,
-earth_explorer_additional, geoserver_generic, google_earth_engine,
-maxar_gbdx, noaa_big_data, terrabotics) all received the identical fix
-and are tested via one representative, parametrized case per real
-provider class to keep this maintainable.
+Shared-pattern providers still on the original template (esa_scihub,
+inpe_cbers, isro_bhuvan, google_earth_engine) are tested via one
+representative, parametrized case per real provider class to keep this
+maintainable. airbus_oneatlas and noaa_big_data were the first to get
+full, bespoke rewrites against their real APIs -- see
+test_airbus_oneatlas.py and test_noaa_big_data.py. digitalglobe,
+alaska_satellite_facility, inpe_cbers (kept in the shared list -- its
+rewrite preserved the same _parse_item(item) shape), jaxa_earth,
+isro_bhuvan, earth_explorer_additional, and geoserver_generic later
+each received their own full, bespoke rewrites against their real,
+individually-researched APIs too, each with a real, different
+_parse_item signature/shape (a deterministic tile system for
+jaxa_earth with no _parse_item at all; a subclassed USGSProvider
+method for earth_explorer_additional; real STAC/WFS/GeoJSON feature
+shapes, not this file's generic flat-dict fixture, for the rest) --
+see their own dedicated test files (test_digitalglobe.py,
+test_alaska_satellite_facility.py, test_jaxa_earth.py,
+test_earth_explorer_additional.py, test_geoserver_generic.py) for
+their real, bespoke geometry-parsing tests instead. maxar_gbdx also
+received a full rewrite (GBDX itself was confirmed shut down in 2022;
+it now targets the real, current Discovery API) -- see
+test_maxar_gbdx.py.
+
+eodag_provider and terrabotics were both removed entirely (not
+rewritten): eodag_provider only ever delegated to the third-party
+`eodag` package -- a separate multi-provider aggregator, not a native
+connection -- and was never even wired into the real provider registry
+in the first place. terrabotics targeted a company confirmed real, but
+with no public, verifiable API documentation to check its endpoints
+against (a bespoke, per-contract enterprise integration, not a
+standardized, publicly-documented API like every other provider here)
+-- its real, confirmed domain wasn't even the one previously used
+(terrabotics.co.uk, not terrabotics.earth). Removed rather than
+guessed at, consistent with every other real fix in this file.
 """
 
 import pytest
 
 REAL_GEOMETRY = {
     "type": "Polygon",
-    "coordinates": [[
-        [-55.75, -21.28], [-55.66, -21.28],
-        [-55.66, -21.19], [-55.75, -21.19], [-55.75, -21.28],
-    ]],
+    "coordinates": [
+        [
+            [-55.75, -21.28],
+            [-55.66, -21.28],
+            [-55.66, -21.19],
+            [-55.75, -21.19],
+            [-55.75, -21.28],
+        ]
+    ],
 }
 
 
@@ -38,20 +71,28 @@ def _make_provider(module_name, class_name):
 SHARED_PATTERN_PROVIDERS = [
     ("esa_scihub", "EsaScihubProvider"),
     ("inpe_cbers", "InpeCbersProvider"),
-    ("jaxa_earth", "JaxaEarthProvider"),
     ("isro_bhuvan", "IsroBhuvanProvider"),
-    ("alaska_satellite_facility", "AlaskaSatelliteFacilityProvider"),
+    ("google_earth_engine", "GoogleEarthEngineProvider"),
+    # airbus_oneatlas removed: it no longer uses this shared generic
+    # template as of its own full rewrite against the real, verified
+    # OneAtlas API (which returns geometry as a GeoJSON Polygon only,
+    # never a flat top-level "bbox" array) -- see the dedicated
+    # test_airbus_oneatlas.py for its real, bespoke parsing tests,
+    # same precedent as terrabotics below.
     # airbus_oneatlas and noaa_big_data removed: both received full,
     # bespoke rewrites against their real APIs (OneAtlas opensearch;
     # real, listable S3 buckets for NOAA) and no longer use this
     # shared generic dict-based _parse_item() shape at all -- see
     # test_airbus_oneatlas.py and test_noaa_big_data.py respectively,
     # same precedent as terrabotics below.
-    ("digitalglobe", "DigitalglobeProvider"),
-    ("earth_explorer_additional", "EarthExplorerAdditionalProvider"),
-    ("geoserver_generic", "GeoserverGenericProvider"),
-    ("google_earth_engine", "GoogleEarthEngineProvider"),
-    ("maxar_gbdx", "MaxarGbdxProvider"),
+    # digitalglobe, earth_explorer_additional, and geoserver_generic
+    # removed: each received its own full, bespoke rewrite against its
+    # real, individually-researched API (see the module docstring
+    # above) -- see test_digitalglobe.py, test_earth_explorer_additional.py,
+    # and test_geoserver_generic.py for their real, bespoke tests instead.
+    # maxar_gbdx removed: GBDX itself was confirmed shut down in 2022;
+    # it now targets the real, current Discovery API -- see
+    # test_maxar_gbdx.py.
 ]
 
 
@@ -77,7 +118,9 @@ def test_shared_pattern_provider_populates_real_geometry(module_name, class_name
 
 
 @pytest.mark.parametrize("module_name,class_name", SHARED_PATTERN_PROVIDERS)
-def test_shared_pattern_provider_handles_missing_geometry_gracefully(module_name, class_name):
+def test_shared_pattern_provider_handles_missing_geometry_gracefully(
+    module_name, class_name
+):
     """A real item with no geometry field at all must leave geometry
     as None without raising -- the same graceful degradation as before
     this fix, just now also correctly populating it when available."""
@@ -90,18 +133,6 @@ def test_shared_pattern_provider_handles_missing_geometry_gracefully(module_name
     result = provider._parse_item(item)
     assert result.geometry is None
     assert result.bbox == (-55.75, -21.28, -55.66, -21.19)
-
-
-def test_terrabotics_populates_real_geometry():
-    """TerraBotics uses a slightly different item shape (top-level bbox
-    key check) but the same real geometry fix."""
-    provider = _make_provider("terrabotics", "TerraboticsProvider")
-    item = {
-        "id": "scene1", "bbox": [-55.75, -21.28, -55.66, -21.19],
-        "geometry": REAL_GEOMETRY, "satellite": "SENTINEL-1B",
-    }
-    result = provider._parse_item(item)
-    assert result.geometry == REAL_GEOMETRY
 
 
 def test_planet_passes_through_already_extracted_geometry():
@@ -136,32 +167,6 @@ def test_usgs_passes_through_already_extracted_spatial_geometry():
     assert result.bbox == (-55.75, -21.28, -55.66, -21.19)
 
 
-def test_eodag_converts_real_shapely_geometry_to_geojson():
-    """Real fix: EODAG's own documented API gives a real Shapely
-    geometry object, converted via shapely's own mapping() utility."""
-    from shapely.geometry import Polygon
-
-    provider = _make_provider("eodag_provider", "EODAGProvider")
-
-    class FakeProduct:
-        def __init__(self):
-            self.properties = {
-                "id": "scene1", "platform": "SENTINEL-1",
-                "processingLevel": "L1",
-            }
-            self.geometry = Polygon([
-                (-55.75, -21.28), (-55.66, -21.28),
-                (-55.66, -21.19), (-55.75, -21.19),
-            ])
-            self.product_type = "S1_SAR_SLC"
-            self.remote_location = "https://example.com/scene1"
-
-    result = provider._eodag_to_satellite_data(FakeProduct())
-    assert result.geometry is not None
-    assert result.geometry["type"] == "Polygon"
-    assert result.bbox == (-55.75, -21.28, -55.66, -21.19)
-
-
 def test_nasa_earthdata_cloud_does_not_crash_on_real_granule():
     """Real, severe bug fixed: dict.get() was called with an invalid
     keyword argument, crashing every single search result from this
@@ -179,26 +184,3 @@ def test_nasa_earthdata_cloud_does_not_crash_on_real_granule():
     result = provider._parse_granule(entry)
     assert result.collection == "C1234-TEST"
     assert result.bbox == (-55.75, -21.28, -55.66, -21.19)
-
-
-def test_nasa_earthdata_parses_real_cmr_polygons_field():
-    """Real fix, confirmed against two independent real examples (NASA's
-    own CMR GitHub repo, NSIDC's SnowEx Hackweek tutorial): the real
-    granules.json "polygons" field, previously never parsed at all."""
-    provider = _make_provider("nasa_earthdata", "NASAEarthdataProvider")
-    g = {
-        "id": "G1441955149-LAADS",
-        "title": "LAADS:2898928073",
-        "time_start": "2017-12-04T19:15:00.000Z",
-        "short_name": "MYD01",
-        "boxes": ["12.722903 -103.427423 33.998022 -76.12721"],
-        "polygons": [[
-            "33.998022 -78.986962 30.291195 -103.427423 "
-            "12.722903 -97.56511 15.805856 -76.12721 33.998022 -78.986962"
-        ]],
-        "links": [],
-    }
-    result = provider._granule_to_satellite_data(g)
-    assert result.geometry is not None
-    assert result.geometry["type"] == "Polygon"
-    assert result.bbox == (-103.427423, 12.722903, -76.12721, 33.998022)

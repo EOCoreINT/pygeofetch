@@ -64,7 +64,7 @@ def _plain(v) -> str:
 
 
 def _bbox_from_geometry(
-    geometry: dict[str, Any] | None
+    geometry: dict[str, Any] | None,
 ) -> tuple[float, float, float, float] | None:
     """Compute a (min_lon, min_lat, max_lon, max_lat) bbox from a GeoJSON
     Polygon/MultiPolygon geometry -- the real search API returns full

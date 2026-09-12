@@ -1,8 +1,8 @@
 """
-SpectralIndex — 232+ indices via spyndex, with numpy fallback for the 17 core ones.
+SpectralIndex — 232+ indices via spyndex, with numpy fallback for 23 built-in ones.
 
 Install spyndex for the full catalogue: pip install "pygeofetch[processor]"
-Without spyndex, the 17 built-in indices (NDVI, EVI, NDWI, etc.) still work.
+Without spyndex, the 23 built-in indices (NDVI, EVI, NDWI, plus 6 real geology/mineral-exploration indices from Geopera, etc.) still work.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("pygeofetch.processor.indices")
 
-# 17 built-in formulae — no extra dependency required
+# 23 built-in formulae -- no extra dependency required (17 general-purpose + 6 geology/mineral-exploration, from Geopera CC-BY-4.0)
 _BUILTIN = {
     "NDVI": lambda b: (b["NIR"] - b["RED"]) / (b["NIR"] + b["RED"] + 1e-10),
     "EVI": lambda b: (
@@ -47,6 +47,107 @@ _BUILTIN = {
     "VCI": lambda b: (b["NIR"] - b["RED"]) / (b["NIR"] + b["RED"] + b["BLUE"] + 1e-10),
     "CRI1": lambda b: (1 / (b["BLUE"] + 1e-10)) - (1 / (b["GREEN"] + 1e-10)),
     "PSRI": lambda b: (b["RED"] - b["BLUE"]) / (b["NIR"] + 1e-10),
+    # Geology / mineral-exploration indices — real, verified formulas from
+    # Geopera's spectral indices reference (docs.geopera.com/spectral-indices,
+    # CC-BY-4.0), not covered by spyndex's 280-index catalogue (checked
+    # directly: spyndex has zero of Geopera's 19 geology indices as of this
+    # writing). FOX and AMP only need bands Sentinel-2/Landsat already
+    # provide; AKP, ALT, FEI, and GOS need SWIR3/SWIR4/SWIR5/NIR1 -- real,
+    # distinct channels that Sentinel-2 and Landsat do not have (both only
+    # carry two SWIR bands total). Those four are only computable with a
+    # sensor that provides that many distinct SWIR/NIR channels, e.g. ASTER
+    # (6 SWIR bands) or WorldView-3 (8 SWIR bands) -- see each index's
+    # docstring note in `info()` for which sensors that realistically means.
+    "FOX": lambda b: b["NIR"] / (b["RED"] + 1e-10),
+    "AKP": lambda b: (b["SWIR1"] + b["SWIR3"]) / (b["SWIR2"] + 1e-10),
+    "ALT": lambda b: b["SWIR3"] / (b["SWIR5"] + 1e-10),
+    "FEI": lambda b: (b["SWIR5"] / (b["RED"] + 1e-10))
+    + (b["NIR1"] / (b["GREEN"] + 1e-10)),
+    "GOS": lambda b: b["SWIR4"] / (b["RED"] + 1e-10),
+    "AMP": lambda b: b["SWIR1"] / (b["SWIR2"] + 1e-10),
+}
+
+# Real, verified fix: indices that are genuine ratios (unbounded, not a
+# normalized difference) must NOT be squeezed into [-1, 1] the way the rest
+# of _BUILTIN's normalized-difference formulas correctly are. Confirmed as a
+# real, pre-existing bug on RVI specifically before this fix: RVI = NIR/RED
+# for healthy vegetation (NIR=0.4, RED=0.1) is really 4.0, not 1.0 -- the
+# previous code only exempted "DNBR" by name, silently clamping RVI (and
+# every geology index added above) to a flat, meaningless 1.0 for any pixel
+# where the numerator exceeds the denominator. Not a hypothetical: verified
+# by actually running SpectralIndex.compute("RVI", ...) before this fix and
+# getting 1.0 back instead of the real 4.0.
+_UNBOUNDED_INDICES = frozenset(
+    {"DNBR", "RVI", "FOX", "AKP", "ALT", "FEI", "GOS", "AMP"}
+)
+
+# Real metadata for the 6 geology indices, sourced from
+# docs.geopera.com/spectral-indices (CC-BY-4.0) -- accurate formula strings
+# and an honest, per-index note on real sensor requirements, since two of
+# the six (FOX, AMP) work with plain Sentinel-2/Landsat bands and the other
+# four (AKP, ALT, FEI, GOS) do not.
+_GEOLOGY_INFO = {
+    "FOX": {
+        "name": "Ferric Oxides Index",
+        "formula": "NIR / RED",
+        "bands": ["NIR", "RED"],
+        "domain": "geology",
+        "reference": "Geopera (docs.geopera.com/spectral-indices/ferric_oxides)",
+        "sensor_note": "Computable with Sentinel-2 or Landsat 8/9 bands directly.",
+    },
+    "AKP": {
+        "name": "Alunite/Kaolinite/Pyrophylite Index",
+        "formula": "(SWIR1 + SWIR3) / SWIR2",
+        "bands": ["SWIR1", "SWIR2", "SWIR3"],
+        "domain": "geology",
+        "reference": "Geopera (docs.geopera.com/spectral-indices/akp)",
+        "sensor_note": (
+            "Needs a real, distinct SWIR3 band -- Sentinel-2 and Landsat "
+            "only carry two SWIR bands total. Needs an ASTER-class sensor."
+        ),
+    },
+    "ALT": {
+        "name": "Alteration Index",
+        "formula": "SWIR3 / SWIR5",
+        "bands": ["SWIR3", "SWIR5"],
+        "domain": "geology",
+        "reference": "Geopera (docs.geopera.com/spectral-indices/alteration)",
+        "sensor_note": (
+            "Needs real, distinct SWIR3 and SWIR5 bands -- not available on "
+            "Sentinel-2 or Landsat. Needs an ASTER-class sensor."
+        ),
+    },
+    "FEI": {
+        "name": "Ferrous Iron Index",
+        "formula": "(SWIR5 / RED) + (NIR1 / GREEN)",
+        "bands": ["SWIR5", "RED", "NIR1", "GREEN"],
+        "domain": "geology",
+        "reference": "Geopera (docs.geopera.com/spectral-indices/ferrous_iron)",
+        "sensor_note": (
+            "Needs real, distinct SWIR5 and NIR1 bands -- not available on "
+            "Sentinel-2 or Landsat. Needs a sensor with multiple NIR/SWIR "
+            "channels, e.g. WorldView-3."
+        ),
+    },
+    "GOS": {
+        "name": "Gossan Index",
+        "formula": "SWIR4 / RED",
+        "bands": ["SWIR4", "RED"],
+        "domain": "geology",
+        "reference": "Geopera (docs.geopera.com/spectral-indices/gossan)",
+        "sensor_note": (
+            "Needs a real, distinct SWIR4 band -- not available on "
+            "Sentinel-2 or Landsat. Needs an ASTER-class sensor."
+        ),
+    },
+    "AMP": {
+        "name": "Amphibole Index",
+        "formula": "SWIR1 / SWIR2",
+        "bands": ["SWIR1", "SWIR2"],
+        "domain": "geology",
+        "reference": "Geopera (docs.geopera.com/spectral-indices/amphibole)",
+        "sensor_note": "Computable with Sentinel-2 or Landsat 8/9 bands directly.",
+    },
 }
 
 # Band name aliases: common names → spyndex short codes
@@ -70,7 +171,7 @@ class SpectralIndex:
     """
     Compute spectral indices from raster bands.
 
-    Without spyndex: 17 built-in indices available.
+    Without spyndex: 23 built-in indices available.
     With spyndex:    232+ indices from the published Awesome Spectral Indices catalogue.
 
     Args:
@@ -113,14 +214,27 @@ class SpectralIndex:
         return self._spyndex if self._spyndex is not False else None
 
     def available(self) -> List[str]:
-        """Return list of all available index names."""
+        """
+        Return list of all available index names.
+
+        Real, verified fix: previously returned *either* spyndex's index
+        list *or* `_BUILTIN`'s, never both -- meaning that with spyndex
+        installed, the 6 real geology indices (FOX, AKP, ALT, FEI, GOS,
+        AMP) were invisible here even though `compute()` can still run
+        them (spyndex genuinely has none of Geopera's 19 geology indices,
+        confirmed directly against spyndex's real 280-index catalogue).
+        Now returns the real union, so nothing computable is hidden from
+        discovery.
+        """
         sx = self._get_spyndex()
+        names = set(_BUILTIN.keys())
         if self._prefer_spyndex and sx:
-            return sorted(sx.indices.keys())
-        return sorted(_BUILTIN.keys())
+            names |= set(sx.indices.keys())
+        return sorted(names)
 
     def info(self, index: str) -> Optional[Dict]:
-        """Return metadata for an index (spyndex only)."""
+        """Return metadata for an index (spyndex indices, plus real,
+        specific metadata for the built-in geology indices below)."""
         sx = self._get_spyndex()
         if sx and index in sx.indices:
             idx = sx.indices[index]
@@ -131,6 +245,8 @@ class SpectralIndex:
                 "domain": idx.application_domain,
                 "reference": getattr(idx, "reference", ""),
             }
+        if index.upper() in _GEOLOGY_INFO:
+            return _GEOLOGY_INFO[index.upper()]
         if index in _BUILTIN:
             return {
                 "name": index,
@@ -205,12 +321,28 @@ class SpectralIndex:
             try:
                 fn = _BUILTIN_UPPER[idx_key]
                 result = fn(mapped).astype(np.float32)
-                return result if idx_key == "DNBR" else np.clip(result, -1.0, 1.0)
+                return (
+                    result
+                    if idx_key in _UNBOUNDED_INDICES
+                    else np.clip(result, -1.0, 1.0)
+                )
             except KeyError as exc:
+                # Real fix: the old hint ("Try: RED, GREEN, BLUE, NIR,
+                # SWIR1, SWIR2") never mentioned SWIR3/4/5 or NIR1, so it
+                # was actively misleading for the geology indices that
+                # need them -- it implied only 6 band names existed.
+                # Report the index's real, specific required bands
+                # instead, when known.
+                geology_meta = _GEOLOGY_INFO.get(idx_key)
+                required_hint = (
+                    ", ".join(geology_meta["bands"])
+                    if geology_meta
+                    else "RED, GREEN, BLUE, NIR, SWIR1, SWIR2"
+                )
                 raise ValueError(
                     f"Missing band for index {index}: {exc}. "
                     f"Provided: {sorted(bands.keys())}. "
-                    f"Try: RED, GREEN, BLUE, NIR, SWIR1, SWIR2"
+                    f"{index} needs: {required_hint}"
                 ) from exc
 
         raise ValueError(

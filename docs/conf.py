@@ -68,7 +68,11 @@ html_theme_options = {
     "navigation_depth": 3,
     "titles_only": False,
 }
-html_static_path = ["_static"] if os.path.isdir(os.path.join(os.path.dirname(__file__), "_static")) else []
+html_static_path = (
+    ["_static"]
+    if os.path.isdir(os.path.join(os.path.dirname(__file__), "_static"))
+    else []
+)
 html_title = "pygeofetch"
 
 intersphinx_mapping = {

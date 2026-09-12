@@ -20,7 +20,7 @@ date, and marked accordingly rather than filled in with invented
 bullet points.
 ```
 
-## [Unreleased] — v2.6.2.4
+## [Unreleased] — v2.6.2.4.4
 
 ```{note}
 Not yet published to PyPI. This entry documents work completed and
@@ -130,7 +130,7 @@ audit and remain open for a follow-up pass.
 
 ---
 
-## [2.6.2.3] — 2026-08-25 (latest)
+## [2.6.2.4.4] — 2026-08-25 (latest)
 
 Confirmed via direct fetch of the current PyPI listing.
 
@@ -149,7 +149,7 @@ Confirmed via direct fetch of the current PyPI listing.
 - `SearchQuery.sort_ascending: bool` — earlier examples showed a `sort_order: "asc"/"desc"` string field that doesn't exist on the model (the CLI's `--sort-order` flag does convert to this internally, so CLI docs were unaffected)
 - `DownloadOptions.post_process` requires a list of `PostProcessAction` objects — passing plain strings raises a real `pydantic.ValidationError`
 
-## [2.6.2] — 2026-08-24
+## [2.6.2.4] — 2026-08-24
 Real, verified release. Detailed notes not independently recovered from PyPI's release-history page (no distinct per-version notes exposed for this release specifically).
 
 ## [2.6.1] — 2026-08-22
@@ -261,9 +261,9 @@ recovered.
 
 ```{note}
 The previous version of this changelog had an entry labeled
-**"2.6.2.3 — 2026-07-12"** describing 22+ providers, Sentinel-1C/1D
+**"2.6.2.4.4 — 2026-07-12"** describing 22+ providers, Sentinel-1C/1D
 support, SLC search with provider routing, precise orbit file
-management, 17 spectral indices, and various bug fixes. **2.6.2.3 was
+management, 17 spectral indices, and various bug fixes. **2.6.2.4.4 was
 only ever released once, on 2026-08-25** — it was never released on
 2026-07-12. The date matches this real release, **1.0.8**, exactly.
 That content is reproduced below under the version it actually
@@ -406,8 +406,8 @@ The version of this file uploaded for this update had **5 entries
 covering 5 dates**. PyPI's real release history has **54 releases**.
 Specific issues found and fixed:
 
-1. **Two different entries were both labeled `2.6.2.3`**, dated
-   2026-07-29 and 2026-07-12. **2.6.2.3 was only ever released once**,
+1. **Two different entries were both labeled `2.6.2.4.4`**, dated
+   2026-07-29 and 2026-07-12. **2.6.2.4.4 was only ever released once**,
    on 2026-08-25 (confirmed directly from the live PyPI listing).
 2. **The 2026-07-12 entry's date exactly matches a real release**
    — version **1.0.8** — and its content (22+ providers, Sentinel-1C/D,

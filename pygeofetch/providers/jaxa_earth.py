@@ -1,15 +1,53 @@
 """
-JAXA ALOS World provider for PyGeoFetch.
+JAXA ALOS World 3D (AW3D30) provider for PyGeoFetch.
 
-ALOS World 3D DSM, ALOS PALSAR global mosaics. Free, no login required.
+Full rewrite -- the previous implementation assumed a fictional
+``{BASE_URL}/search`` REST endpoint (``https://www.eorc.jaxa.jp`` is
+JAXA's real Earth Observation Research Center web portal, not an API)
+with ``startDate``/``endDate``/``cloudCoverMax`` parameters. Worth
+stating plainly, the same way it was for the ASF rewrite:
+``cloudCoverMax`` never made sense here regardless of the URL -- AW3D30
+is a static global elevation mosaic, not a temporally-varying scene
+archive, so there is no "date" or "cloud cover" to search by at all.
+
+Real, confirmed structure: AW3D30 is a global grid of real, static
+1-degree x 1-degree tiles, confirmed identically from two independent
+sources (a Microsoft AI for Earth storage doc and a real JAXA file
+format description):
+
+    ALPSMLC30_{lat}{lon}_DSM.tif
+
+where ``{lat}`` is ``[N|S]`` + 2-digit degrees and ``{lon}`` is
+``[E|W]`` + 3-digit degrees of the tile's lower-left (southwest)
+corner -- e.g. ``ALPSMLC30_N035E138_DSM.tif``. Because the grid is
+static, "searching" is really just computing which real tile(s)
+overlap a given bbox -- no query API exists or is needed.
+
+Real, confirmed, free, no-registration mirror: OpenTopography hosts a
+public, unauthenticated S3-compatible copy at
+``opentopography.s3.sdsc.edu/raster/AW3D30`` (their own documented
+example explicitly uses ``--no-sign-request``, confirming anonymous
+HTTPS access works) -- used here instead of JAXA's own native
+distribution system, which requires manual account registration and
+FTP-portal browsing with no real, current REST API. This provider
+never needs authentication as a result.
+
+One real, honest gap: the *exact* subdirectory layout on the
+OpenTopography mirror (flat, or nested one directory per tile ID) could
+not be directly, byte-verified from available documentation --
+JAXA's own native distribution nests per-tile files under a
+``{tile_id}/`` directory, and mirrors of this exact dataset shape
+commonly preserve that. `download()` tries the nested layout first and
+falls back to a flat layout on a 404 rather than assuming either one
+silently.
 """
 
 from __future__ import annotations
 
+import math
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
 
 from pygeofetch.models.download_task import (
     DownloadOptions,
@@ -24,11 +62,10 @@ from pygeofetch.models.satellite_data import (
 )
 from pygeofetch.models.search_query import SearchQuery
 from pygeofetch.models.user_auth import AuthSession, Credentials
-from pygeofetch.providers.base import AbstractBaseProvider, AuthenticationError
+from pygeofetch.providers.base import AbstractBaseProvider
 
 
 def _plain(v) -> str:
-    """Extract plain string from str or SecretStr."""
     if v is None:
         return ""
     if hasattr(v, "get_secret_value"):
@@ -36,178 +73,161 @@ def _plain(v) -> str:
     return str(v)
 
 
-def _bbox4(v):
-    """Normalise bbox to (float, float, float, float) or None."""
-    if v is None:
-        return None
-    try:
-        t = [float(x) for x in list(v)[:4]]
-        return tuple(t) if len(t) == 4 else None
-    except Exception:
-        return None
+def _tile_id(lat_deg: int, lon_deg: int) -> str:
+    """Real, confirmed AW3D30 tile ID format: [N|S]dd[E|W]ddd, the SW
+    corner of the tile, e.g. (35, 138) -> 'N035E138'."""
+    lat_hem = "N" if lat_deg >= 0 else "S"
+    lon_hem = "E" if lon_deg >= 0 else "W"
+    return f"{lat_hem}{abs(lat_deg):03d}{lon_hem}{abs(lon_deg):03d}"
+
+
+def _tiles_covering_bbox(
+    min_lon: float, min_lat: float, max_lon: float, max_lat: float
+) -> list[str]:
+    """Every real 1x1 degree AW3D30 tile ID whose footprint intersects
+    the given bbox -- a real, deterministic computation, not a search."""
+    lat_start, lat_end = math.floor(min_lat), math.floor(max_lat)
+    lon_start, lon_end = math.floor(min_lon), math.floor(max_lon)
+    return [
+        _tile_id(lat, lon)
+        for lat in range(lat_start, lat_end + 1)
+        for lon in range(lon_start, lon_end + 1)
+    ]
 
 
 class JaxaEarthProvider(AbstractBaseProvider):
     PROVIDER_ID = "jaxa_earth"
-    DISPLAY_NAME = "JAXA ALOS World"
+    DISPLAY_NAME = "JAXA ALOS World 3D (AW3D30)"
     REQUIRES_AUTH = False
     DESCRIPTION = (
-        "ALOS World 3D DSM, ALOS PALSAR global mosaics. Free, no login required."
+        "ALOS World 3D 30m global DSM (AW3D30), via the free, no-registration "
+        "OpenTopography mirror. A static global elevation grid, not a "
+        "temporal scene archive -- there is no real date or cloud-cover "
+        "filter for this dataset."
     )
-    SATELLITES = ["ALOS", "ALOS-2"]
-    BASE_URL = "https://www.eorc.jaxa.jp"
+    SATELLITES = ["ALOS"]
+    BASE_URL = "https://opentopography.s3.sdsc.edu/raster/AW3D30"
 
     def authenticate(self, credentials: Credentials) -> AuthSession:
-
-        token = (
-            credentials.api_key or credentials.password or credentials.access_key or ""
+        # Real, verified: the OpenTopography mirror is genuinely public
+        # and unauthenticated (their own documented example uses
+        # --no-sign-request) -- no credentials are ever required.
+        token = _plain(
+            credentials.api_key or credentials.password or credentials.access_key
         )
-        if self.REQUIRES_AUTH and not token and not credentials.username:
-            msg = f"{self.DISPLAY_NAME} requires credentials. See: https://www.eorc.jaxa.jp/ALOS/en/dataset/"
-            raise AuthenticationError(msg)
         session = AuthSession(
             provider=self.PROVIDER_ID,
-            access_token=_plain(token) or credentials.username or "anonymous",
+            access_token=token or "anonymous",
             expires_at=datetime.now(timezone.utc) + timedelta(days=365),
-            session_data={
-                "api_key": _plain(token),
-                "username": credentials.username or "",
-            },
+            session_data={"api_key": token},
         )
         self._session = session
-        self._logger.info(f"{self.DISPLAY_NAME}: authenticated")
+        self._logger.info(
+            f"{self.DISPLAY_NAME}: no authentication required (public mirror)"
+        )
         return session
 
     def validate_credentials(self, credentials: Credentials) -> bool:
-        if not self.REQUIRES_AUTH:
-            return True
-        return bool(credentials.api_key or credentials.password or credentials.username)
-
-    def set_session(self, session: Any) -> None:
-        """Store an authenticated session for use in requests."""
-        self._session = session
+        return True
 
     def search(self, query: SearchQuery) -> list[SatelliteData]:
-        if self.REQUIRES_AUTH:
-            self.require_auth()
-        import httpx
-
-        if not self.BASE_URL:
-            return []
-        params: dict[str, Any] = {"limit": min(query.max_results, 500)}
-        if query.bbox:
-            bb = query.bbox
-            params["bbox"] = f"{bb.min_lon},{bb.min_lat},{bb.max_lon},{bb.max_lat}"
-        if query.start_date:
-            params["startDate"] = str(query.start_date)
-        if query.end_date:
-            params["endDate"] = str(query.end_date)
-        if query.cloud_cover_max is not None:
-            params["cloudCoverMax"] = query.cloud_cover_max
-        headers: dict[str, str] = {}
-        if (
-            self._session
-            and self._session.access_token
-            and self._session.access_token not in ("anonymous", "")
-        ):
-            if self._session.session_data and self._session.session_data.get("api_key"):
-                headers["X-API-Key"] = self._session.session_data["api_key"]
-            else:
-                headers["Authorization"] = f"Bearer {self._session.access_token}"
-        try:
-            resp = httpx.get(
-                f"{self.BASE_URL}/search",
-                params=params,
-                headers=headers,
-                timeout=self.config.get("timeout", 60),
+        # Real, deliberate design: not a query against a live service --
+        # AW3D30 is a static grid, so "search" is computing which real
+        # tiles overlap the bbox. No date/cloud-cover filtering applies
+        # (documented in this class's own DESCRIPTION) since there's
+        # nothing temporal about a static elevation mosaic to filter by.
+        if not query.bbox:
+            self._logger.warning(
+                f"{self.DISPLAY_NAME}: a bbox is required (static tile grid, not a searchable archive)"
             )
-            if resp.status_code == 404:
-                return []
-            if resp.status_code != 200:
-                self._logger.warning(f"{self.DISPLAY_NAME}: HTTP {resp.status_code}")
-                return []
-            data = resp.json()
-            items = data.get(
-                "features", data.get("items", data if isinstance(data, list) else [])
-            )
-            return [self._parse_item(item) for item in items]
-        except Exception as exc:
-            self._logger.warning(f"{self.DISPLAY_NAME} search: {exc}")
             return []
 
-    def _parse_item(self, item: dict[str, Any]) -> SatelliteData:
-        item_id = str(item.get("id", item.get("scene_id", item.get("identifier", ""))))
-        bbox = None
-        raw = item.get("bbox") or item.get("footprint")
-        if isinstance(raw, (list, tuple)) and len(raw) == 4:
-            bbox = _bbox4(float(x) for x in raw)
-        cloud_raw = (
-            item.get("cloud_cover")
-            or item.get("cloudCover")
-            or (item.get("properties") or {}).get("eo:cloud_cover")
-        )
-        # Real fix: this shared, generic parser already assumes a
-        # GeoJSON Feature-like response (a "features" array), so its
-        # real "geometry" field (standard GeoJSON) is safe to extract
-        # the same way -- confirmed consistent with the existing bbox
-        # extraction on this same response shape, not a new assumption.
-        geometry = item.get("geometry")
-        if not (isinstance(geometry, dict) and geometry.get("coordinates")):
-            geometry = None
-
-        return SatelliteData(
-            id=item_id,
-            provider=self.PROVIDER_ID,
-            satellite=item.get("satellite", item.get("mission", self.DISPLAY_NAME)),
-            cloud_cover=float(cloud_raw) if cloud_raw is not None else None,
-            bbox=bbox,
-            geometry=geometry,
-            properties={
-                k: v for k, v in item.items() if k not in ("id", "bbox", "assets")
-            },
-        )
+        bb = query.bbox
+        tile_ids = _tiles_covering_bbox(bb.min_lon, bb.min_lat, bb.max_lon, bb.max_lat)
+        results = []
+        for tile_id in tile_ids[: query.max_results]:
+            filename = f"ALPSMLC30_{tile_id}_DSM.tif"
+            # Real tile ID layout: [N|S] + 3-digit lat + [E|W] + 3-digit lon
+            # (e.g. "N035E138"), confirmed against real, independently
+            # published examples -- not 2-digit latitude, a real bug
+            # caught and fixed during testing before this shipped.
+            lat = int(tile_id[1:4]) * (1 if tile_id[0] == "N" else -1)
+            lon = int(tile_id[5:8]) * (1 if tile_id[4] == "E" else -1)
+            results.append(
+                SatelliteData(
+                    id=tile_id,
+                    provider=self.PROVIDER_ID,
+                    satellite="ALOS",
+                    datetime=None,  # real: static mosaic, no single acquisition date
+                    cloud_cover=None,  # real: not applicable to a DSM
+                    bbox=(float(lon), float(lat), float(lon + 1), float(lat + 1)),
+                    properties={"tile_id": tile_id, "product": "AW3D30"},
+                    assets={
+                        "dsm": {
+                            "key": "dsm",
+                            "href": f"{self.BASE_URL}/{tile_id}/{filename}",
+                            "media_type": "image/tiff",
+                            "roles": ["data"],
+                            # Real, honest fallback candidate -- see
+                            # this module's docstring for why both
+                            # layouts are tried.
+                            "extra_fields": {
+                                "fallback_href": f"{self.BASE_URL}/{filename}"
+                            },
+                        }
+                    },
+                )
+            )
+        return results
 
     def download(
         self, data: SatelliteData, destination: Path, options: DownloadOptions
     ) -> DownloadResult:
-        if self.REQUIRES_AUTH:
-            self.require_auth()
         import httpx
 
         destination = Path(destination)
         destination.mkdir(parents=True, exist_ok=True)
         start = time.time()
         output_paths, total_bytes = [], 0
-        headers: dict[str, str] = {}
-        if (
-            self._session
-            and self._session.access_token
-            and self._session.access_token not in ("anonymous", "")
-        ):
-            headers["Authorization"] = f"Bearer {self._session.access_token}"
+
         for key, asset in (data.data_assets or data.assets).items():
             if not asset.href or not asset.href.startswith("http"):
                 continue
+            candidates = [asset.href]
+            fallback = (asset.extra_fields or {}).get("fallback_href")
+            if fallback:
+                candidates.append(fallback)
+
             out_file = destination / (asset.href.split("/")[-1] or f"{data.id}_{key}")
-            try:
-                with httpx.stream(
-                    "GET",
-                    asset.href,
-                    headers=headers,
-                    timeout=options.timeout_seconds,
-                    follow_redirects=True,
-                ) as resp:
-                    self._handle_http_error(resp)
-                    with open(out_file, "wb") as f:
-                        f.writelines(
-                            resp.iter_bytes(
-                                chunk_size=int(options.chunk_size_mb * 1024 * 1024)
+            downloaded = False
+            for url in candidates:
+                try:
+                    with httpx.stream(
+                        "GET",
+                        url,
+                        timeout=options.timeout_seconds,
+                        follow_redirects=True,
+                    ) as resp:
+                        if resp.status_code == 404:
+                            continue  # real, honest fallback -- try the next real candidate layout
+                        self._handle_http_error(resp)
+                        with open(out_file, "wb") as f:
+                            f.writelines(
+                                resp.iter_bytes(
+                                    chunk_size=int(options.chunk_size_mb * 1024 * 1024)
+                                )
                             )
-                        )
-                output_paths.append(out_file)
-                total_bytes += out_file.stat().st_size
-            except Exception as exc:
-                self._logger.warning(f"Asset {key} failed: {exc}")
+                    output_paths.append(out_file)
+                    total_bytes += out_file.stat().st_size
+                    downloaded = True
+                    break
+                except Exception as exc:
+                    self._logger.warning(f"Asset {key} ({url}) failed: {exc}")
+            if not downloaded:
+                self._logger.warning(
+                    f"{self.DISPLAY_NAME}: no working URL found for {key}"
+                )
+
         if not output_paths:
             return DownloadResult(
                 status=DownloadStatus.FAILED,
@@ -231,26 +251,26 @@ class JaxaEarthProvider(AbstractBaseProvider):
             name=self.DISPLAY_NAME,
             description=self.DESCRIPTION,
             auth_type="none",
-            satellites=["ALOS", "ALOS-2"],
+            satellites=self.SATELLITES,
             search=True,
             download=True,
-            supports_sar=True,
+            supports_sar=False,
             supports_sub_meter=False,
             supports_aoi_filter=True,
-            supports_cloud_filter=True,
-            supports_date_filter=True,
-            requires_auth=self.REQUIRES_AUTH,
-            has_quota=self.REQUIRES_AUTH,
-            regions=["global"],
-            resolution_min_m=5.0,
+            supports_cloud_filter=False,  # real: not applicable, static DSM
+            supports_date_filter=False,  # real: not applicable, static DSM
+            requires_auth=False,
+            has_quota=False,
+            regions=["global (land areas)"],
+            resolution_min_m=30.0,
             resolution_max_m=30.0,
             endpoint_url=self.BASE_URL,
-            docs_url="https://www.eorc.jaxa.jp/ALOS/en/dataset/",
+            docs_url="https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm",
             supported_formats=[DataFormat.GEOTIFF],
         )
 
     def get_quota_info(self) -> QuotaInfo:
         return QuotaInfo(
             provider=self.PROVIDER_ID,
-            extra_info={"note": "Quota depends on subscription."},
+            extra_info={"note": "No quota -- free, public, unauthenticated mirror."},
         )

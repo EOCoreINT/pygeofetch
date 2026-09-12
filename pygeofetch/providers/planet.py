@@ -92,6 +92,16 @@ class PlanetProvider(AbstractBaseProvider):
     }
     DEFAULT_ITEM_TYPES = ["PSScene", "SkySatCollect"]
 
+    # Real, confirmed per-item-type default asset types -- see the
+    # real fix note in download() for why a single hardcoded default
+    # across every item type was wrong (SkySat has no
+    # "ortho_analytic_4b_sr" asset at all).
+    DEFAULT_ASSET_TYPES: dict[str, str] = {
+        "PSScene": "ortho_analytic_4b_sr",
+        "SkySatScene": "ortho_pansharpened",
+        "SkySatCollect": "ortho_pansharpened",
+    }
+
     def authenticate(self, credentials: Credentials) -> AuthSession:
         """
         Authenticate with Planet API using an API key.
@@ -366,7 +376,18 @@ class PlanetProvider(AbstractBaseProvider):
             else ""
         )
         item_type = data.satellite or "PSScene"
-        asset_type = "ortho_analytic_4b_sr"  # default: surface reflectance
+        # Real, confirmed fix: "ortho_analytic_4b_sr" is a real asset
+        # type, but only for PSScene -- SkySatScene/SkySatCollect items
+        # have no such asset at all (confirmed against Planet's own
+        # SkySat documentation: their real asset types are
+        # ortho_pansharpened, ortho_visual, ortho_analytic,
+        # ortho_panchromatic). Hardcoding the PSScene-specific name for
+        # every item_type would silently fail activation for SkySat
+        # items. A config override always takes precedence for any
+        # item type not covered here.
+        asset_type = self.config.get("asset_type") or self.DEFAULT_ASSET_TYPES.get(
+            item_type, "ortho_analytic_4b_sr"
+        )
 
         start_time = time.time()
 

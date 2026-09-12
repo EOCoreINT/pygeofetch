@@ -1,40 +1,50 @@
 # Pipelines & Batch Processing
 
-```{note}
-**Two genuinely different things share the word "pipeline" in this
-codebase** — this page covers both, clearly separated:
+!!! note
 
-1. **YAML pipeline orchestration** (below) — `search` → `filter` →
-   `download` → `process` → `export`, run ad-hoc or on a cron
-   schedule via the CLI. Built for *acquisition* workflows.
-2. **The Python fluent processing pipeline** (`client.pipeline(...)`,
-   further down this page) — a chainable builder over
-   preprocessing/index/postprocessing/SAR operations
-   (`.clip().reproject().ndvi().cog().run(...)`). Built for
-   *processing* workflows on files you already have.
+    **Three genuinely different things share the word "pipeline" in this
+    codebase** — this page covers the first two, clearly separated; the
+    third has its own dedicated page.
 
-There's also a third, simpler option for "run this same processing
-chain over many files in parallel" that isn't either of the above —
-see "Batch Processing" at the bottom of this page.
-```
+    1. **YAML pipeline orchestration** (below) — `search` → `filter` →
+       `download` → `process` → `export`, run ad-hoc or on a cron
+       schedule via the CLI. Built for *acquisition* workflows.
+    2. **The Python fluent processing pipeline** (`client.pipeline(...)`,
+       further down this page) — a chainable builder over
+       preprocessing/index/postprocessing/SAR operations
+       (`.clip().reproject().ndvi().cog().run(...)`). Built for
+       *processing* workflows on files you already have.
+    3. **The five real SAR processing pipelines**
+       (`pygeofetch.sar.pipelines`) — real, standard end-to-end SAR
+       workflows (`standard_grd_preprocessing_pipeline`,
+       `flood_mapping_pipeline`, `change_detection_pipeline`,
+       `coherence_disturbance_pipeline`, `bright_target_detection_pipeline`),
+       each orchestrating `SARProcessor`'s atomic operations into one
+       real, named analysis chain. See [SAR Processing](../processing/sar.md#five-real-standard-sar-processing-pipelines)
+       — not documented on this page, since they're specific to SAR
+       rather than general-purpose acquisition or processing chains.
+
+    There's also a fourth, simpler option for "run this same processing
+    chain over many files in parallel" that isn't any of the above —
+    see "Batch Processing" at the bottom of this page.
 
 Define recurring satellite data workflows in a single YAML file.
 Schedule on cron, run ad-hoc, validate before committing, watch live
 logs.
 
-```{note}
-**Previously stub, now real.** The `process` and `export` steps used
-to log a message and return `{"status": "stub"}` without doing
-anything. Both now delegate to real, tested implementations: `process`
-reuses the same action executor `DownloadOptions.post_process` and the
-CLI's `--post-process` flag use; `export` genuinely copies files to
-local disk, uploads to S3 (`s3://...`) or GCS (`gs://...`), and can
-POST a webhook notification on completion. See
-{doc}`/reference/error-handling` for the equivalent fix to the circuit
-breaker, and {doc}`/reference/security` for the credential-encryption
-fix — all three were found and fixed together during this
-documentation pass.
-```
+!!! note
+
+    **Previously stub, now real.** The `process` and `export` steps used
+    to log a message and return `{"status": "stub"}` without doing
+    anything. Both now delegate to real, tested implementations: `process`
+    reuses the same action executor `DownloadOptions.post_process` and the
+    CLI's `--post-process` flag use; `export` genuinely copies files to
+    local disk, uploads to S3 (`s3://...`) or GCS (`gs://...`), and can
+    POST a webhook notification on completion. See
+    [Error Handling & Resilience](error-handling.md) for the equivalent fix to the circuit
+    breaker, and [Security Model](security.md) for the credential-encryption
+    fix — all three were found and fixed together during this
+    documentation pass.
 
 ## Pipeline steps
 
@@ -126,11 +136,11 @@ pygeofetch pipeline unschedule ndvi-monitor
 pygeofetch pipeline run weekly-sentinel2.yaml --step download
 ```
 
-```{note}
-`pipeline schedule` uses the system cron daemon on Linux/macOS, and
-Windows Task Scheduler on Windows. Run `pygeofetch pipeline
-list-scheduled` to confirm registration.
-```
+!!! note
+
+    `pipeline schedule` uses the system cron daemon on Linux/macOS, and
+    Windows Task Scheduler on Windows. Run `pygeofetch pipeline
+    list-scheduled` to confirm registration.
 
 ---
 
@@ -138,9 +148,9 @@ list-scheduled` to confirm registration.
 
 A genuinely different capability from the YAML orchestration above: a
 **chainable builder** over the processing operations documented
-throughout {doc}`/processing/preprocessing`,
-{doc}`/processing/spectral-indices`, {doc}`/processing/postprocessing`,
-and {doc}`/processing/sar` — for processing files you already have,
+throughout [Preprocessing Engine](../processing/preprocessing.md),
+[Spectral Indices](../processing/spectral-indices.md), [Postprocessing](../processing/postprocessing.md),
+and [SAR Processing](../processing/sar.md) — for processing files you already have,
 not for search/download orchestration.
 
 ```python
@@ -173,10 +183,10 @@ as a pipeline step, grouped by where it's documented in full:
 
 | Category | Steps |
 |---|---|
-| Preprocessing ({doc}`/processing/preprocessing`) | `clip`, `reproject`, `resample`, `cloud_mask`, `cloud_fill`, `atmos`, `composite`, `mosaic`, `topo_correct`, `pansharpen`, `tile` |
-| Spectral indices ({doc}`/processing/spectral-indices`) | `ndvi`, `evi`, `ndwi`, `ndbi`, `ndsi`, `ndmi`, `nbr`, `dnbr`, `savi`, `mndwi`, `tct`, `pca`, `lst`, `albedo`, `band_math`, `stack`, `texture` |
-| Postprocessing ({doc}`/processing/postprocessing`) | `vectorize`, `smooth`, `regularize`, `zonal_stats`, `buffer`, `centroids`, `add_geometry_metrics`, `compress`, `cog` |
-| SAR ({doc}`/processing/sar`) | `despeckle`, `calibrate`, `flood_map`, `coherence` |
+| Preprocessing ([Preprocessing Engine](../processing/preprocessing.md)) | `clip`, `reproject`, `resample`, `cloud_mask`, `cloud_fill`, `atmos`, `composite`, `mosaic`, `topo_correct`, `pansharpen`, `tile` |
+| Spectral indices ([Spectral Indices](../processing/spectral-indices.md)) | `ndvi`, `evi`, `ndwi`, `ndbi`, `ndsi`, `ndmi`, `nbr`, `dnbr`, `savi`, `mndwi`, `tct`, `pca`, `lst`, `albedo`, `band_math`, `stack`, `texture` |
+| Postprocessing ([Postprocessing](../processing/postprocessing.md)) | `vectorize`, `smooth`, `regularize`, `zonal_stats`, `buffer`, `centroids`, `add_geometry_metrics`, `compress`, `cog` |
+| SAR ([SAR Processing](../processing/sar.md)) | `despeckle`, `calibrate`, `flood_map`, `coherence` |
 
 Each step method accepts the exact same keyword arguments as its
 corresponding `client.preprocess`/`client.indices`/`client.post`/
@@ -194,28 +204,28 @@ pl = ProcessingPipeline.from_yaml("ndvi_workflow.yaml", engine=client)
 result = pl.run(input="scene.tif")
 ```
 
-```{danger}
-**Real bug found in the source's own docstring, verified by testing
-directly**: `ProcessingPipeline`'s class docstring shows
-`client.pipeline.from_yaml("ndvi_workflow.yaml").run()` as the usage
-example. `from_yaml` is a real `@classmethod` on `ProcessingPipeline`
-itself — `client.pipeline` is a bound *method* (it returns a new
-`ProcessingPipeline` instance when called), and Python methods don't
-have a `.from_yaml` attribute. Calling it exactly as the docstring
-shows raises `AttributeError: 'function' object has no attribute
-'from_yaml'` — confirmed by running it. The working form is
-`ProcessingPipeline.from_yaml(path, engine=client)`, shown above.
-```
+!!! danger
 
-```{warning}
-This YAML format (a chain of processing steps for one file) is **not
-the same YAML format** as the acquisition-pipeline YAML at the top of
-this page (`search`/`filter`/`download`/`process`/`export` for a
-recurring cron job). Don't mix the two — a
-`weekly-sentinel2.yaml`-style file passed to
-`ProcessingPipeline.from_yaml()` won't produce the steps you expect,
-and vice versa.
-```
+    **Real bug found in the source's own docstring, verified by testing
+    directly**: `ProcessingPipeline`'s class docstring shows
+    `client.pipeline.from_yaml("ndvi_workflow.yaml").run()` as the usage
+    example. `from_yaml` is a real `@classmethod` on `ProcessingPipeline`
+    itself — `client.pipeline` is a bound *method* (it returns a new
+    `ProcessingPipeline` instance when called), and Python methods don't
+    have a `.from_yaml` attribute. Calling it exactly as the docstring
+    shows raises `AttributeError: 'function' object has no attribute
+    'from_yaml'` — confirmed by running it. The working form is
+    `ProcessingPipeline.from_yaml(path, engine=client)`, shown above.
+
+!!! warning
+
+    This YAML format (a chain of processing steps for one file) is **not
+    the same YAML format** as the acquisition-pipeline YAML at the top of
+    this page (`search`/`filter`/`download`/`process`/`export` for a
+    recurring cron job). Don't mix the two — a
+    `weekly-sentinel2.yaml`-style file passed to
+    `ProcessingPipeline.from_yaml()` won't produce the steps you expect,
+    and vice versa.
 
 ---
 

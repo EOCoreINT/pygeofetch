@@ -15,6 +15,7 @@ pygeofetch/validation/optical_validator.py for the minimal form).
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 
 from shapely.geometry import Polygon
@@ -76,6 +77,18 @@ def fetch_optical_stack(
         validation_config or OpticalValidationConfig()
     )
 
+    # Real, confirmed bug fixed here: run_preflight()'s temporal-bounds
+    # check compares real date objects (scene_date < start_date) --
+    # passing the raw ISO strings straight through, as this example
+    # previously did, raises a genuine TypeError at runtime
+    # ("'<' not supported between instances of 'datetime.date' and
+    # 'str'"), confirmed by actually running it. SearchQuery itself
+    # accepts ISO date strings directly (its own str parsing happens
+    # there), so the strings are still passed to pf.search() unchanged
+    # below -- only the run_preflight() call needs real date objects.
+    start = date.fromisoformat(start_date)
+    end = date.fromisoformat(end_date)
+
     minx, miny, maxx, maxy = aoi.bounds
     results = pf.search(
         SearchQuery(
@@ -93,7 +106,7 @@ def fetch_optical_stack(
 
     try:
         safe_results = validator.run_preflight(
-            results, aoi, start_date=start_date, end_date=end_date
+            results, aoi, start_date=start, end_date=end
         )
     except OpticalValidationError as exc:
         # run_preflight itself doesn't raise per-scene -- this branch
@@ -112,7 +125,7 @@ def fetch_optical_stack(
         return []
 
     print(f"{len(safe_results)}/{len(results)} scenes passed preflight; downloading...")
-    return pf.download(safe_results, destination=destination)
+    return pf.download(safe_results, destination=Path(destination))
 
 
 if __name__ == "__main__":

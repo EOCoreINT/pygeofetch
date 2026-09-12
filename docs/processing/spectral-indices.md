@@ -28,26 +28,29 @@ pattern: pick two bands where a target surface type behaves very
 differently, normalize the difference so it always falls in a
 predictable range.
 
-```{danger}
-**Two separate classes exist, and only one is reachable via
-`PyGeoFetch`** — the same real duplication pattern documented on
-{doc}`/processing/sar`:
+!!! danger
 
-- **`client.indices`** (via `PyGeoFetch()`) is
-  `pygeofetch.processing.indices.SpectralIndices` — one **dedicated
-  method per index** (`client.indices.ndvi(red=..., nir=...)`), 17
-  indices total, always available with no extra dependency. **This is
-  the one almost every real workflow should use**, and everything on
-  this page documents it.
-- **`from pygeofetch.processor.indices import SpectralIndex`** is a
-  *different* class with a generic `compute(index, **band_arrays)` /
-  `from_files(index, **band_paths)` interface, and can reach 232+
-  indices when `spyndex` is installed. Not accessible as
-  `client.indices` — see the bottom of this page.
+    **Two separate classes exist, and only one is reachable via
+    `PyGeoFetch`** — the same real duplication pattern documented on
+    [SAR Processing](sar.md):
 
-If in doubt, use `client.indices` — everything below is written
-against it.
-```
+    - **`client.indices`** (via `PyGeoFetch()`) is
+      `pygeofetch.processing.indices.SpectralIndices` — one **dedicated
+      method per index** (`client.indices.ndvi(red=..., nir=...)`), 17
+      indices total, always available with no extra dependency. **This is
+      the one almost every real workflow should use**, and everything on
+      this page documents it.
+    - **`from pygeofetch.processor.indices import SpectralIndex`** is a
+      *different* class with a generic `compute(index, **band_arrays)` /
+      `from_files(index, **band_paths)` interface, and can reach 280
+      indices when `spyndex` is installed (confirmed directly against
+      spyndex's real, current catalogue — not the 232 an earlier pass
+      of this page assumed), plus 6 real geology/mineral-exploration
+      indices spyndex itself doesn't have. Not accessible as
+      `client.indices` — see the bottom of this page.
+
+    If in doubt, use `client.indices` — everything below is written
+    against it.
 
 ## Quick start
 
@@ -66,7 +69,7 @@ print(result.success)        # -> True
 Every method:
 - Accepts **file paths**, not in-memory arrays — pass the actual
   `.tif` files for each band (typically what `pf.download()` or
-  {doc}`/processing/preprocessing` just produced).
+  [Preprocessing Engine](preprocessing.md) just produced).
 - Reads via a block-by-block fallback, so it works directly on
   tiled/COG/compressed inputs without a full-scene decode crashing on
   large files.
@@ -93,7 +96,7 @@ common source), the mapping most indices below need is:
 | SWIR2 | B12 | ~2190 nm | Burn severity, mineral/soil composition |
 
 If you downloaded via `pf.download(results, "./data", bands=["B02","B03","B04","B08"])`
-(see {doc}`/core-features/download`), you already have exactly the
+(see [Downloading Satellite Data](../core-features/download.md)), you already have exactly the
 files you need, named by their real band codes.
 
 ## Vegetation indices — "how healthy/dense is the plant life here"
@@ -286,7 +289,7 @@ albedo = client.indices.albedo(inputs=[b02, b03, b04, b08, b11, b12], sensor="se
 | `lst()` | **Land Surface Temperature** from a thermal band, in real Kelvin/Celsius | Real Landsat 8/9 Band 10 thermal constants (K1=774.8853, K2=1321.0789) |
 | `albedo()` | **Narrowband-to-broadband surface albedo** | Liang (2001) published coefficients |
 
-See {doc}`/processing/spectral-indices`'s full method reference
+See [Spectral Indices](spectral-indices.md)'s full method reference
 (below) for every parameter of each.
 
 ### General-purpose escape hatches
@@ -303,12 +306,12 @@ stacked = client.indices.stack(inputs=[b02, b03, b04, b08])   # multi-band GeoTI
 `B[1]`, etc. refer to your `inputs` list in order, `np` is available
 for any numpy function.
 
-```{danger}
-`band_math()`'s `expression` is evaluated with Python's `eval()`
-(`B` and `np` are the only names exposed). Fine for expressions you
-write yourself; **never pass an `expression` string from untrusted
-user input** — it is not sandboxed against arbitrary code execution.
-```
+!!! danger
+
+    `band_math()`'s `expression` is evaluated with Python's `eval()`
+    (`B` and `np` are the only names exposed). Fine for expressions you
+    write yourself; **never pass an `expression` string from untrusted
+    user input** — it is not sandboxed against arbitrary code execution.
 
 ## Common pitfalls
 
@@ -327,7 +330,7 @@ user input** — it is not sandboxed against arbitrary code execution.
   with atmospheric conditions, sun angle, and sensor calibration
   drift — comparing NDVI from two dates processed differently can show
   "change" that's really just atmospheric noise. See
-  {doc}`/processing/preprocessing`'s `atmos()` step if you're doing
+  [Preprocessing Engine](preprocessing.md)'s `atmos()` step if you're doing
   real change detection, not just a single-date snapshot.
 - **`dNBR`'s sign convention.** It's `pre - post`, so a *positive*
   value means the surface got *less* vegetated (burned); this is the
@@ -370,19 +373,71 @@ si.available()   # -> list of all available index names
 si.info("NDVI")   # -> formula, required bands, valid range
 ```
 
-Without `spyndex` installed, 17 built-in formulae (matching
-`client.indices`'s coverage, though via a different, generic call
-shape) still work — `NDVI`, `EVI`, `SAVI`, `NDWI`, `MNDWI`, `NDBI`,
-`NDSI`, `NDMI`, `NBR`, `dNBR`, `BSI`, `ARVI`, `GNDVI`, `RVI`, `VCI`,
-`CRI1`, `PSRI`. With `spyndex` installed (`pip install
+Without `spyndex` installed, **23** built-in formulae still work — the
+original 17 (`NDVI`, `EVI`, `SAVI`, `NDWI`, `MNDWI`, `NDBI`, `NDSI`,
+`NDMI`, `NBR`, `dNBR`, `BSI`, `ARVI`, `GNDVI`, `RVI`, `VCI`, `CRI1`,
+`PSRI`), plus 6 real geology/mineral-exploration indices added this
+pass (see below). With `spyndex` installed (`pip install
 "pygeofetch[processor]"` already includes it), `si.available()`
-returns spyndex's much larger published catalogue (232+ indices)
-instead, transparently.
+returns the real union of both — confirmed directly against a real
+bug this used to have: it previously returned *either* spyndex's list
+*or* the built-in list, never both, silently hiding the 6 geology
+indices below from discovery whenever spyndex happened to be
+installed, even though `compute()` could still run them.
 
 Band names are matched via a real alias table (`RED`/`R`, `NIR`/`N`,
 `B04`/`R`, `B08`/`N`, etc.), so both spyndex's short codes and common
 long-form names work as keyword arguments.
 
 Reach for this instead of `client.indices` when you need one of
-spyndex's less-common 200+ indices, or want in-memory-array input
-without writing to a file first.
+spyndex's less-common indices (spyndex's real, current catalogue has
+**280** — checked directly, not the 232 an earlier pass of this page
+assumed), or want in-memory-array input without writing to a file
+first.
+
+!!! danger "A real, confirmed bug in `RVI` was fixed here"
+
+    Every built-in formula's result used to be clipped to `[-1, 1]`,
+    correct for a normalized-difference index like `NDVI` but **wrong**
+    for a genuine ratio index like `RVI` (Ratio Vegetation Index =
+    `NIR / RED`), which has no such bound. Confirmed directly: for
+    healthy vegetation (`NIR=0.4`, `RED=0.1`), the real RVI value is
+    `4.0` — the old code silently returned `1.0` instead, for any pixel
+    where the numerator exceeded the denominator, which is essentially
+    all healthy vegetation. `RVI` is now correctly exempted from the
+    `[-1, 1]` clip, alongside `DNBR` (which was already, correctly,
+    exempted) and the 6 new geology indices below.
+
+### Geology & mineral-exploration indices
+
+Six real, verified indices from
+[Geopera's spectral indices reference](https://docs.geopera.com/spectral-indices)
+(CC-BY-4.0), added because neither the built-in 17 nor spyndex's own
+280-index catalogue covered this domain at all — confirmed directly,
+not assumed.
+
+| Index | Formula | Sensor requirement |
+|---|---|---|
+| `FOX` (Ferric Oxides) | `NIR / RED` | Sentinel-2 / Landsat — computable directly |
+| `AMP` (Amphibole) | `SWIR1 / SWIR2` | Sentinel-2 / Landsat — computable directly |
+| `AKP` (Alunite/Kaolinite/Pyrophylite) | `(SWIR1 + SWIR3) / SWIR2` | Needs a real, distinct `SWIR3` band — **not** available on Sentinel-2 or Landsat (both carry only two SWIR bands total) |
+| `ALT` (Alteration) | `SWIR3 / SWIR5` | Needs real, distinct `SWIR3` and `SWIR5` — ASTER-class sensor required |
+| `FEI` (Ferrous Iron) | `(SWIR5 / RED) + (NIR1 / GREEN)` | Needs real, distinct `SWIR5` and `NIR1` — a sensor with multiple NIR/SWIR channels (e.g. WorldView-3) required |
+| `GOS` (Gossan) | `SWIR4 / RED` | Needs a real, distinct `SWIR4` band — ASTER-class sensor required |
+
+Only `FOX` and `AMP` work with the SWIR bands Sentinel-2/Landsat
+actually provide. The other four are real, correct formulas, but
+genuinely need a sensor with more distinct SWIR/NIR channels than the
+most commonly free-available sensors carry — calling them with
+Sentinel-2 data raises a clear error naming exactly which band is
+missing, rather than silently computing something wrong with a
+substituted band:
+
+```python
+si.compute("GOS", RED=red_array)
+# ValueError: Missing band for index GOS: 'SWIR4'. Provided: ['RED']. GOS needs: SWIR4, RED
+```
+
+`si.info("AKP")` returns the real formula, required bands, and a
+`sensor_note` explaining the same real constraint in prose.
+

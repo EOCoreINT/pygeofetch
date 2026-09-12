@@ -169,8 +169,27 @@ class Plotter:
         # accepts any registered matplotlib colormap name string, which is
         # exactly what `colormap`/`drape_colormap` (both plain `str`
         # parameters on this method) already are. Not a real type error.
+        # PyVista's own type stubs are unreliable for this call across
+        # versions -- empirically confirmed two different, real mypy
+        # complaints depending on the installed pyvista release:
+        # [arg-type] (cmap narrowed to a fixed Literal set that doesn't
+        # match what this method actually accepts at runtime -- any
+        # registered matplotlib colormap name) and, with pyvista
+        # 0.48.4 specifically, [call-arg] ("Missing positional argument
+        # 'self' in call to '__call__' of '_Wrapped'" -- a real defect
+        # in that version's own decorator-generated stub for add_mesh,
+        # not a real call-signature problem; this line runs correctly
+        # at runtime as an ordinary bound method call). Both codes
+        # suppressed together rather than guessing which one a given
+        # pyvista version will raise. The [call-arg] half specifically
+        # -- confirmed empirically -- is attributed by mypy to the
+        # *following* statement, not to this add_mesh() call itself
+        # (a real quirk of how this pyvista version's decorator-
+        # generated stub confuses mypy's line tracking for the wrapped
+        # call's return value); the ignore comment for it has to live
+        # on that next line instead, or it has no effect.
         plotter.add_mesh(warped, scalars=scalars_name, cmap=cmap, show_scalar_bar=True)  # type: ignore[arg-type]
-        plotter.set_background(color="white")
+        plotter.set_background(color="white")  # type: ignore[call-arg]
 
         if output is not None:
             out_path = Path(output)
@@ -575,7 +594,7 @@ class Plotter:
                     nodata = src.nodata
                     if nodata is not None:
                         arr = np.where(arr == nodata, np.nan, arr)
-                    plot_extent = [
+                    plot_extent: list[float] | None = [
                         src.bounds.left,
                         src.bounds.right,
                         src.bounds.bottom,
@@ -904,7 +923,7 @@ class Plotter:
                         nodata = src.nodata
                         if nodata is not None:
                             arr = np.where(arr == nodata, np.nan, arr)
-                        panel_extent = [
+                        panel_extent: list[float] | None = [
                             src.bounds.left,
                             src.bounds.right,
                             src.bounds.bottom,
@@ -1246,12 +1265,12 @@ class Plotter:
                 nodata = src.nodata
                 if nodata is not None:
                     arr = np.where(arr == nodata, np.nan, arr)
-                extent = [
+                extent: Optional[Tuple[float, float, float, float]] = (
                     src.bounds.left,
                     src.bounds.right,
                     src.bounds.bottom,
                     src.bounds.top,
-                ]
+                )
         else:
             arr = np.asarray(source, dtype=np.float32)
             extent = None

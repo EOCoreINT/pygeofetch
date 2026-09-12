@@ -8,8 +8,8 @@ Contributions of all kinds are welcome. See the repository's
 ```bash
 git clone git@github.com:EOCoreINT/pygeofetch.git
 cd pygeofetch
-pip install -e ".[dev,all]"
-pytest tests/unit/ -v
+pip install -e ".[test]"
+pytest tests/ -v
 ```
 
 ## Good first issues
@@ -18,9 +18,9 @@ pytest tests/unit/ -v
   to incomplete *provider* integrations — a different, still-open
   category from the pipeline stub steps fixed during this pass)
 - Extending real footprint geometry support to the remaining
-  bbox-only providers (see {doc}`/core-features/providers`)
+  bbox-only providers (see [Providers](core-features/providers.md))
 - Improving test coverage
-- Adding new post-processing actions (see {doc}`/reference/pipelines`
+- Adding new post-processing actions (see [Pipelines & Batch Processing](reference/pipelines.md)
   for the action executor `process` pipeline steps now delegate to)
 - Adding a GCS-export test path with a real (or mocked) bucket, to
   complement the S3 path already covered in

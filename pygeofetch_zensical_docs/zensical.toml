@@ -1,0 +1,95 @@
+[project]
+site_name = "pygeofetch"
+site_description = "Universal satellite data pipeline + geospatial processing platform"
+site_author = "Samuel Appiah Kubi"
+copyright = "&copy; 2026 Samuel Appiah Kubi"
+docs_dir = "docs"
+site_dir = "site"
+repo_url = "https://github.com/EOCoreINT/pygeofetch"
+repo_name = "EOCoreINT/pygeofetch"
+
+nav = [
+  { "Home" = "index.md" },
+  { "Getting Started" = [
+    "getting-started/installation.md",
+    "getting-started/quickstart.md",
+    "getting-started/diagnostics.md",
+  ] },
+  { "Core Features" = [
+    "core-features/authentication.md",
+    "core-features/search.md",
+    "core-features/download.md",
+    "core-features/providers.md",
+    "core-features/optical-validation.md",
+  ] },
+  { "Processing & Analysis" = [
+    "processing/insar.md",
+    "processing/insar-mexico-city-tutorial.md",
+    "processing/sar.md",
+    "processing/spectral-indices.md",
+    "processing/landsat.md",
+    "processing/timeseries.md",
+    "processing/preprocessing.md",
+    "processing/terrain.md",
+    "processing/postprocessing.md",
+  ] },
+  { "Visualization" = [
+    "visualization/plotter.md",
+    "visualization/mapviewer.md",
+  ] },
+  { "Reference" = [
+    "reference/python-api.md",
+    "reference/cli.md",
+    "reference/pipelines.md",
+    "reference/configuration.md",
+    "reference/security.md",
+    "reference/error-handling.md",
+    "reference/docker.md",
+    "reference/testing.md",
+    "reference/roadmap.md",
+  ] },
+  { "Contributing" = "contributing.md" },
+]
+
+[project.theme]
+name = "material"
+features = [
+  "navigation.tabs",
+  "navigation.sections",
+  "navigation.top",
+  "navigation.path",
+  "navigation.tracking",
+  "toc.follow",
+  "content.code.copy",
+  "content.tabs.link",
+]
+
+[project.theme.palette]
+scheme = "default"
+primary = "teal"
+accent = "amber"
+
+[project.markdown_extensions]
+admonition = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+toc = { permalink = true }
+
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.superfences]
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+[project.markdown_extensions.pymdownx.inlinehilite]
+[project.markdown_extensions.pymdownx.snippets]
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
+[project.markdown_extensions.pymdownx.emoji]
+[project.markdown_extensions.pymdownx.mark]
+[project.markdown_extensions.pymdownx.tilde]
+
+[project.theme.icon.admonition]
+danger = "material/alert-decagram"
