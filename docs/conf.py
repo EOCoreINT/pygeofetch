@@ -77,6 +77,8 @@ html_static_path = (
     if os.path.isdir(os.path.join(os.path.dirname(__file__), "_static"))
     else []
 )
+html_css_files = ["custom.css"] if html_static_path else []
+
 html_title = "pygeofetch"
 
 intersphinx_mapping = {
