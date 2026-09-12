@@ -1,0 +1,56 @@
+feat: implement multi-modal fusion, STAC fixes, and InSAR safeguards
+
+Elevates pygeofetch to an enterprise-grade, unified EO pipeline by 
+integrating Optical Pixel Offset Tracking (POT) with InSAR, fixing 
+critical STAC ingestion bugs, and adding physics-based safeguards for 
+high-gradient deformation environments (e.g., active mining).
+
+FEATURES & ARCHITECTURE:
+- Optical POT & Fusion (pygeofetch/optical/offset_tracking.py):
+  * Added `compute_pixel_offsets` and `prepare_optical_pair` for 
+    sub-pixel Normalized Cross-Correlation (NCC) and cloud masking.
+  * Implemented `compute_horizontal_strain_robust` with Median Absolute 
+    Deviation (MAD) filtering and physical strain capping to prevent 
+    spurious artifacts (e.g., 600%+ strain from spurious correlation locks).
+  * Added `fuse_insar_optical` for coherence-weighted blending of InSAR 
+    vertical velocity and Optical horizontal displacement.
+
+- Advanced InSAR Safeguards (pygeofetch/insar/advanced_safeguards.py):
+  * Added `prepare_custom_dem` to align high-res UAV/LiDAR DEMs to SAR grids.
+  * Implemented SBAS topographic residual estimation via a WLS design 
+    matrix to mathematically separate DEM error (Δh) from true velocity.
+  * Added `generate_insar_mask` for automated layover, shadow, and 
+    high-slope masking based on DEM slope, aspect, and incidence angle.
+
+- Data Organization (pygeofetch/core/data_organizer.py):
+  * Added intelligent post-download grouping (YYYY-MM-DD/Orbit/Sensor/).
+  * Added manifest generation and InSAR stack preparation utilities.
+
+- STAC Validator Overhaul (pygeofetch/validation/optical_validator.py):
+  * Implemented robust, case-insensitive band alias resolution (fixes MISSING_BANDS).
+  * Fixed processing level extraction to prioritize `s2:product_type` 
+    over `s2:processing_baseline` (fixes PROCESSING_LEVEL_MISMATCH).
+  * Made AOI coverage "mosaic-aware" with a default 5% threshold 
+    (fixes LOW_AOI_COVERAGE).
+  * Corrected cloud cover logic to emit WARN instead of ERRR when 
+    `cloud_cover_is_hard_failure=False`.
+
+BUG FIXES:
+- Fixed `NoneType` crash in SBAS inversion by dynamically calculating 
+  missing perpendicular baselines from precise orbit files when metadata is absent.
+- Removed invalid `display="auto"` kwarg from matplotlib plotting calls.
+- Removed unsupported `use_gpu` kwarg from `SBASTimeSeries` initialization.
+
+VALIDATION & DOCUMENTATION:
+- Added Bu'ertai Mine notebook validating the InSAR failure mode (0.1% 
+  coverage over active pit) and Optical POT recovery (226m displacement).
+- Implemented TM-19 compliant uncertainty quantification (Eq. 2.9) and 
+  honest limitation reporting (no overclaiming of InSAR precision in 
+  decorrelated zones).
+
+BREAKING CHANGES:
+- `OpticalValidationConfig`: Default `min_coverage_ratio` changed from 
+  0.80 to 0.05 to support mosaic-aware workflows.
+- `SBASTimeSeries`: `use_gpu` argument removed from `__init__`.
+
+Co-authored-by: Sammy <appiahkubis14@gmail.com>
