@@ -32,6 +32,7 @@ examples for the corrected, working forms.
 - [Optical Data Validation & Preflight](core-features/optical-validation.md) — pre-download quality gates for optical imagery
 - [InSAR Processing](processing/insar.md) — the pure-Python InSAR chain (no SNAP/ISCE required)
 - [Optical Pixel Offset Tracking](processing/optical-offset-tracking.md) — measuring large ground displacement where InSAR structurally cannot
+- [Multi-Sensor Pipelines](processing/multi-sensor-pipelines.md) — 5 real pipelines combining InSAR, optical, SAR, and DEM data
 - [Complete Worked Example: Mexico City Subsidence](processing/insar-mexico-city-tutorial.md) — a complete, real, cell-by-cell InSAR run (search to validated subsidence map)
 - [Full CLI Reference](reference/cli.md) — full command reference
 
@@ -64,6 +65,7 @@ core-features/optical-validation.md
 processing/insar.md
 processing/insar-mexico-city-tutorial.md
 processing/optical-offset-tracking.md
+processing/multi-sensor-pipelines.md
 processing/sar.md
 processing/spectral-indices.md
 processing/landsat.md

@@ -12,6 +12,13 @@ an API reference? See
 validated-subsidence-map run, cross-referenced against a published
 result (Cigna & Tapete 2021).
 :::
+
+:::{seealso}
+Need to combine InSAR with optical data specifically? See
+[Optical Pixel Offset Tracking](optical-offset-tracking.md)'s fusion
+section, or the formalized, reusable
+[InSAR + Optical Displacement Fusion pipeline](multi-sensor-pipelines.md#1-insar--optical-displacement-fusion).
+:::
 :::{note}
 
 **Re-verified against a fresh source upload after this page and the

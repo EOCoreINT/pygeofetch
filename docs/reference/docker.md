@@ -80,7 +80,8 @@ inject secrets from your CI system's own secret store rather than a
 mounted host directory, do it explicitly in a short setup step before
 your real command, e.g. as the container's entrypoint:
 :::
-bash
+
+```bash
 python -c "
 from pygeofetch import PyGeoFetch
 import os

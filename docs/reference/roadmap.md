@@ -106,3 +106,58 @@ have since been fixed, with real tests added for each:
   wired directly into `PyGeoFetch.search()` and `.download()` via a
   `validate_optical` toggle. See
   [Optical Data Validation & Preflight](../core-features/optical-validation.md).
+- **`DataOrganizer`** (`pygeofetch.core.data_organizer`) — structured
+  post-download hierarchies (by date/orbit/satellite/processing level),
+  a real manifest mapping structure back to scene metadata, and
+  `prepare_insar_stack()` real burst-sync-aware SLC grouping. See
+  [Organizing Downloaded Data](../core-features/data-organizer.md).
+- **Optical pixel offset tracking, strain, and InSAR fusion**
+  (`pygeofetch.optical.offset_tracking`) — `compute_pixel_offsets`,
+  `compute_horizontal_strain` (with real, tested outlier protection
+  found necessary after a real 617%-strain artifact surfaced in this
+  project's own Bu'ertai validation run), and `fuse_insar_optical`
+  (real, coherence-weighted source selection, not an average). See
+  [Optical Pixel Offset Tracking](../processing/optical-offset-tracking.md).
+- **InSAR advanced safeguards** (`pygeofetch.insar.advanced_safeguards`)
+  — real, geometry-based layover/shadow masking (verified against a
+  synthetic cone DEM), custom high-resolution DEM alignment, and SBAS
+  topographic-residual (DEM-error) co-estimation. See
+  [InSAR Processing](../processing/insar.md#advanced-safeguards-custom-dems-layovershadow-and-topographic-residuals).
+- **Five real, standard SAR processing pipelines**
+  (`pygeofetch.sar.pipelines`) — standard GRD preprocessing, flood
+  mapping, change detection, coherence-based disturbance monitoring,
+  and CFAR bright-target detection, each orchestrating `SARProcessor`'s
+  atomic operations. Also fixed a real, serious bug found while
+  building these: `SARProcessor.coherence()` was completely
+  non-functional for genuine complex SLC input (a shared read helper
+  silently discarded the imaginary/phase part before a `.view()` call
+  tried to reinterpret it). See [SAR Processing](../processing/sar.md).
+- **Five real multi-sensor pipelines** (`pygeofetch.multisensor`) —
+  combining two genuinely different sensor types each: InSAR+optical
+  displacement fusion, SAR+optical flood mapping, terrain-corrected
+  optical change detection (with a real, independently-verified solar
+  position calculation), DEM-of-Difference volumetric change analysis,
+  and optical NDVI + SAR coherence sub-canopy disturbance
+  classification. All five are also exposed as real CLI commands
+  (`pygeofetch multisensor ...`). See
+  [Multi-Sensor Pipelines](../processing/multi-sensor-pipelines.md).
+- **6 real geology/mineral-exploration spectral indices** and a real,
+  confirmed bug fix in `RVI` (a genuine ratio index was being silently
+  clamped to a meaningless constant `1.0` by a blanket `[-1, 1]` clip
+  meant for normalized-difference indices only). See
+  [Spectral Indices](../processing/spectral-indices.md).
+- **`eodag_provider` and `terrabotics` providers removed** — the
+  former only ever delegated to a separate, third-party multi-provider
+  aggregator (and was never actually wired into the real provider
+  registry in the first place); the latter targeted a real company
+  with no public, verifiable API documentation to check its real
+  endpoints against. See [Providers](../core-features/providers.md).
+- **8 more providers individually rewritten** against their real,
+  current APIs after the initial `airbus_oneatlas`/`noaa_big_data`
+  fixes: `digitalglobe`, `maxar_gbdx` (GBDX itself confirmed shut down
+  in 2022), `alaska_satellite_facility`, `inpe_cbers`, `jaxa_earth`,
+  `isro_bhuvan`, `earth_explorer_additional`, `geoserver_generic` —
+  plus targeted regression fixes in `nasa_earthdata`,
+  `nasa_earthdata_cloud`, `planet`, and `sentinel_hub`. See
+  [Providers](../core-features/providers.md) for what was real and
+  specifically wrong in each.

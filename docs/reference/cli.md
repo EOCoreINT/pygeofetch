@@ -158,9 +158,49 @@ pygeofetch optical offset-track \
 Writes a 3-band GeoTIFF (`dx`, `dy`, `snr`, in real ground-distance
 metres for dx/dy). See
 [Optical Pixel Offset Tracking](../processing/optical-offset-tracking.md)
-for the full pipeline, including `compute_horizontal_strain` and
-`fuse_insar_optical` — both Python-only for now, not yet exposed via
-this CLI group.
+for the full pipeline. `compute_horizontal_strain` is Python-only for
+now; `fuse_insar_optical` is exposed via the full
+`pygeofetch multisensor insar-optical-fusion` pipeline command below,
+not as a standalone fusion-only command here.
+
+## `multisensor` — the 5 real multi-sensor fusion pipelines
+
+```bash
+pygeofetch multisensor insar-optical-fusion \
+    --insar-velocity sbas_velocity.tif --insar-coherence sbas_coherence.tif \
+    --optical-ref sentinel2_pre_B08.tif --optical-sec sentinel2_post_B08.tif \
+    --output-dir ./fused --cloud-mask sentinel2_post_SCL.tif
+
+pygeofetch multisensor flood-map \
+    --sar sentinel1_flood.tif --optical-green B03.tif --optical-nir B08.tif \
+    --output-dir ./flood --fusion-mode cloud_aware
+
+pygeofetch multisensor terrain-change \
+    --pre ndvi_pre.tif --post ndvi_post.tif --dem copernicus_dem.tif \
+    --pre-datetime 2023-01-15T10:30:00 --post-datetime 2023-07-15T10:45:00 \
+    --lat 27.98 --lon 86.92 --output-dir ./terrain_change
+
+pygeofetch multisensor dem-diff \
+    --dem-old srtm_2015.tif --dem-new uav_dem_2024.tif \
+    --output-dir ./dem_diff --old-rmse 8.0 --new-rmse 0.15
+
+pygeofetch multisensor vegetation-disturbance \
+    --red-pre red_pre.tif --nir-pre nir_pre.tif \
+    --red-post red_post.tif --nir-post nir_post.tif \
+    --slc-pre slc_pre.tif --slc-post slc_post.tif \
+    --output-dir ./disturbance
+```
+
+Full command list: `insar-optical-fusion`, `flood-map`,
+`terrain-change`, `dem-diff`, `vegetation-disturbance`. Every command
+prints its real `PipelineResult` metadata as JSON on success, or a
+clear, specific error naming which real check failed (a shape
+mismatch, an invalid fusion mode, etc.) rather than a generic
+traceback. See [Multi-Sensor Pipelines](../processing/multi-sensor-pipelines.md)
+for the full real physics, formulas, and honest limitations behind
+each one — including the two datetime-format and RMSE-value inputs
+that materially change each pipeline's real output and are easy to
+get wrong silently.
 
 ## `proc-pipeline` — the YAML *processing-chain* pipeline
 

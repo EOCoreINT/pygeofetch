@@ -4,6 +4,13 @@
 pip install "pygeofetch[sar]"
 ```
 
+:::{seealso}
+Looking to combine SAR with a *different* sensor type (optical, DEM)
+rather than multiple dates of SAR alone? See
+[Multi-Sensor Pipelines](multi-sensor-pipelines.md) — flood mapping,
+vegetation disturbance, and InSAR+optical fusion all live there.
+:::
+
 Speckle filtering, radiometric calibration, flood mapping,
 interferometric coherence, and five real, standard end-to-end
 processing pipelines built on top of them — genuine, from-scratch

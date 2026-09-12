@@ -135,7 +135,7 @@ def prepare_custom_dem(
     return output_path
 
 
-def _slope_aspect_degrees(dem: "np.ndarray", pixel_size_m: float):
+def slope_aspect_degrees(dem: "np.ndarray", pixel_size_m: float):
     """
     Real slope (degrees from horizontal) and aspect (degrees,
     clockwise from north, direction the slope FACES -- i.e. the
@@ -236,7 +236,7 @@ def generate_insar_mask(
             f"generate_insar_mask: look_side must be 'left' or 'right', got {look_side!r}"
         )
 
-    slope_deg, aspect_deg = _slope_aspect_degrees(dem, pixel_size_m)
+    slope_deg, aspect_deg = slope_aspect_degrees(dem, pixel_size_m)
 
     look_azimuth = (
         (heading_deg + 90.0) if look_side == "right" else (heading_deg - 90.0)

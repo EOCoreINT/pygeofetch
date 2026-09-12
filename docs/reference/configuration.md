@@ -30,12 +30,34 @@ download:
   retry_strategy: "exponential_jitter"
   retry_delay_seconds: 1.0
   verify_checksum: true
-  checksum_algorithm: "md5"     # not sha256 by default
+  checksum_algorithm: "md5"     # declared here, but see the warning below
   bandwidth_limit_mbps: 0       # 0 = unlimited; a float, not "10MB"
   timeout_seconds: 300
   overwrite: false
   keep_original: false
+```
 
+:::{danger}
+**Real, confirmed bug, the same pattern as `security.credential_storage`
+below**: `download.checksum_algorithm` above is declared in
+`defaults.yaml`, but `client.download()` never actually reads it.
+Confirmed directly: `Downloader.download_many()`'s real implementation
+is `options = options or DownloadOptions()` — a bare pydantic model
+construction that uses `DownloadOptions`' own independent default
+(`ChecksumAlgorithm.SHA256`), completely bypassing the `Settings`/YAML
+config layer shown here.
+
+**The real, effective default when you call `client.download(...)`
+without an explicit `options=` is `SHA256`, not `"md5"`.** If you want
+`md5` (or any other algorithm), you must pass it explicitly:
+`DownloadOptions(checksum_algorithm=ChecksumAlgorithm.MD5)` — setting
+`download.checksum_algorithm` in config, via `pygeofetch config set`,
+or via `PYGEOFETCH_DOWNLOAD__CHECKSUM_ALGORITHM` currently has no
+effect on this. See [Python API Reference](python-api.md) for
+`DownloadOptions`' real, effective defaults.
+:::
+
+```yaml
 search:
   max_results: 100
   page_size: 100
@@ -76,9 +98,32 @@ proxy:
 
 security:
   verify_ssl: true
-  credential_storage: "keyring"   # keyring | encrypted_file | plain_file
+  credential_storage: "keyring"   # keyring | encrypted_file | plain_file — see the warning below
   credential_file: "~/.pygeofetch/credentials.enc"
 ```
+
+:::{danger}
+**Real, confirmed bug**: `security.credential_storage` (shown above,
+settable via config file, `pygeofetch config set`, or
+`PYGEOFETCH_SECURITY__CREDENTIAL_STORAGE`) is declared with a real
+default in both `defaults.yaml` and the `Settings` pydantic model —
+but is **never read anywhere else in the codebase**. Confirmed by
+searching the entire real source tree for any other reference to it:
+there is none. Changing this setting currently has **zero effect** on
+which credential backend is actually used.
+
+The setting that actually controls this is `PyGeoFetch()`'s own
+`auth_backend` constructor parameter, which has its own real,
+independent, hardcoded default of `"file"` — completely disconnected
+from the config value above. See
+[Security Model](../reference/security.md) for what `auth_backend`
+actually does and its own real default.
+
+If you need a specific credential backend, pass it explicitly:
+`PyGeoFetch(auth_backend="keyring")` — do not rely on setting
+`security.credential_storage` in config, which this documentation
+would otherwise (incorrectly) suggest works.
+:::
 
 ## Environment variables
 

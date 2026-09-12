@@ -5,6 +5,13 @@ ordinary optical imagery (Sentinel-2, Landsat) by tracking how patches
 of real ground texture physically moved between two dates — the same
 idea as tracking a fingerprint pattern sliding across two photos.
 
+:::{seealso}
+For the formalized, reusable pipeline that fuses this with InSAR
+(rather than the manual steps below), see
+[InSAR + Optical Displacement Fusion](multi-sensor-pipelines.md#1-insar--optical-displacement-fusion)
+in [Multi-Sensor Pipelines](multi-sensor-pipelines.md).
+:::
+
 ## Why this exists alongside InSAR
 
 [InSAR](insar.md) is far more precise (millimetres, not metres) — but

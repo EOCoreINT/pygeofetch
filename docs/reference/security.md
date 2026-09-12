@@ -25,6 +25,13 @@ can be deleted manually.
 `PyGeoFetch(auth_backend="keyring")` when a real OS keyring is
 available, since it hands storage off to the OS rather than a
 locally-generated key file.
+
+**Related, real, confirmed bug**: the `security.credential_storage`
+config field (in `defaults.yaml`/`Settings`, defaulting to
+`"keyring"`) is disconnected from this — it's never read anywhere in
+the codebase, so setting it has no actual effect. `auth_backend` above
+is the real, only setting that controls this. See
+[Configuration Reference](configuration.md) for the full detail.
 :::
 ## Credential handling
 

@@ -2,9 +2,9 @@
 
 :::{note}
 
-**Three genuinely different things share the word "pipeline" in this
+**Four genuinely different things share the word "pipeline" in this
 codebase** — this page covers the first two, clearly separated; the
-third has its own dedicated page.
+other two each have their own dedicated page.
 
 1. **YAML pipeline orchestration** (below) — `search` → `filter` →
    `download` → `process` → `export`, run ad-hoc or on a cron
@@ -20,11 +20,19 @@ third has its own dedicated page.
    `flood_mapping_pipeline`, `change_detection_pipeline`,
    `coherence_disturbance_pipeline`, `bright_target_detection_pipeline`),
    each orchestrating `SARProcessor`'s atomic operations into one
-   real, named analysis chain. See [SAR Processing](../processing/sar.md#five-real-standard-sar-processing-pipelines)
-   — not documented on this page, since they're specific to SAR
-   rather than general-purpose acquisition or processing chains.
+   real, named analysis chain across multiple *dates of the same
+   sensor*. See [SAR Processing](../processing/sar.md#five-real-standard-sar-processing-pipelines).
+4. **The five real multi-sensor pipelines**
+   (`pygeofetch.multisensor`) — combining two genuinely *different
+   sensor types* (InSAR+optical, SAR+optical, DEM+optical, DEM+DEM,
+   optical+SAR) to do something neither sensor alone reliably does.
+   See [Multi-Sensor Pipelines](../processing/multi-sensor-pipelines.md).
 
-There's also a fourth, simpler option for "run this same processing
+Neither 3 nor 4 is documented on this page, since both are specific to
+their own real sensor-combination physics rather than general-purpose
+acquisition or file-processing chains.
+
+There's also a fifth, simpler option for "run this same processing
 chain over many files in parallel" that isn't any of the above —
 see "Batch Processing" at the bottom of this page.
 :::
