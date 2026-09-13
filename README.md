@@ -120,22 +120,22 @@ Mexico City sits on a drained lakebed and is subsiding at some of the fastest ra
 
 **1. Authenticated federated search.** `client.search()` against Copernicus Data Space for SLC scenes over the city (bbox `-99.183, 19.278, -99.003, 19.438`, July 2016 – September 2017) returns a stack of Sentinel-1A/1B candidates in seconds, filterable straight down to a single consistent track.
 
-<p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/data-search.png" width="85%" /></p>
+<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/data-search.png" width="85%" /></p> -->
 
 Results carry real footprint geometry and drop straight onto a map via `MapViewer`, with hover info for scene ID, date, satellite, and provider — useful for spotting swath overlap before committing to a download.
 
-<p align="center">
+<!-- <p align="center">
   <img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/search_1.png" width="48%" />
   <img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/search.png" width="48%" />
-</p>
+</p> -->
 
 **2. DEM acquisition.** A matching search against OpenTopography returns seven DEM products for the AOI; pygeofetch downloads and clips the selected one (SRTM 30 m) automatically for topographic phase removal.
 
-<p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/dem_acquisition.png" width="85%" /></p>
+<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/dem_acquisition.png" width="85%" /></p> -->
 
 **3. Preflight validation.** Before anything downloads, the `PreflightGate` checks search truncation, AOI coverage, temporal network connectivity, and burst-timing family compatibility from lightweight annotation XMLs — catching acquisitions that would waste compute before they cost bandwidth. This run avoided roughly 360 GB of downloads by excluding 48 of 115 candidate scenes at this stage alone.
 
-<p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/preflight-log.png" width="85%" /></p>
+<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/preflight-log.png" width="85%" /></p> -->
 
 Real orbit state vectors then pre-filter the candidate pair list against Sentinel-1's own mission thresholds, rejecting pairs for excess burst-sync error, temporal baseline, or spatial baseline before any interferogram is attempted.
 
