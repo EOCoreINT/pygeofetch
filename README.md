@@ -6,8 +6,9 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22087230.svg)](https://doi.org/10.5281/zenodo.22087230)
 [![Tests](https://github.com/EOCoreINT/pygeofetch/actions/workflows/tests.yml/badge.svg)](https://github.com/EOCoreINT/pygeofetch/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/appiahkubis14/pygeofetch/graph/badge.svg?token=2PS2A2VZL6)](https://codecov.io/gh/appiahkubis14/pygeofetch)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/appiahkubis14)
 
-**A unified satellite data and geospatial processing platform — one CLI, one Python API, 24 providers, and a fully verified InSAR chain.**
+**A unified satellite data and geospatial processing platform — one CLI, one Python API, 22 verified providers, and a fully verified InSAR chain.**
 
 [Quick Start](#-quick-start) · [Mexico City Case Study](#-case-study-mapping-mexico-city-land-subsidence-with-insar) · [Case Study Repo ↗](https://github.com/EOCoreINT/mexico-subsidence-project) · [Documentation](https://pygeofetch.readthedocs.io/en/latest/) · [Notebooks](#-notebooks)
 
@@ -64,9 +65,9 @@ Satellite data access is fragmented — every provider has its own auth scheme, 
 
 ## Providers
 
-**11 open-access providers**, no login required — including `planetary_computer`, `aws_earth`, `element84`, `noaa_big_data`, `esa_scihub`, `jaxa_earth`, and `geoserver_generic` for any OGC WMS/WFS/WCS endpoint.
+**22 verified providers total.** Open-access, no login required — including `planetary_computer`, `aws_earth`, `element84`, `noaa_big_data`, `jaxa_earth`, and `geoserver_generic` for any OGC WMS/WFS/WCS endpoint.
 
-**13 authenticated providers** — USGS, Copernicus CDSE, NASA Earthdata (+ Cloud), Alaska SAR Facility, OpenTopography, Planet Labs, Sentinel Hub, Maxar GBDX, Airbus OneAtlas, Google Earth Engine, TerraBotics, and Earth Explorer.
+Authenticated — USGS, Copernicus CDSE, NASA Earthdata (+ Cloud), Alaska SAR Facility, OpenTopography, Planet Labs, Sentinel Hub, Maxar GBDX, Airbus OneAtlas, and Earth Explorer.
 
 Every provider has been directly verified to return at minimum a correct bounding box; several are further confirmed to return real, precise footprint geometry against a live API response (marked in `pygeofetch providers info PROVIDER`). Run `pygeofetch providers list` for the full, current table.
 
@@ -251,15 +252,29 @@ If you use PyGeoFetch in your research or operational work, please cite it using
 
 Full documentation: **https://pygeofetch.readthedocs.io/en/latest/** — CLI reference, provider auth guides, pipeline configuration, post-processing catalogue, and InSAR verification methodology.
 
+## Support this project
+
+pygeofetch is built and maintained by a single developer, in the open,
+alongside a full-time workload — the InSAR/optical fusion chain, the
+provider verification work, and the documentation are all real,
+independently-verified engineering, not a side project maintained on
+autopilot. If pygeofetch is useful to your research or your
+organization, sponsoring its development directly funds the time spent
+keeping 22 provider integrations current as their real APIs change, and
+building out the multi-sensor pipelines documented above.
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/appiahkubis14)
+[![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-FF5E5B?logo=kofi)](https://ko-fi.com/appiahkubis14)
+
 ## Contributing
 
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Good first issues include extending real footprint geometry to remaining bbox-only providers, wiring stub providers to full API integrations, and adding new post-processing actions.
 
 ```bash
 git clone git@github.com:EOCoreINT/pygeofetch.git && cd pygeofetch
-pip install -e ".[dev,all]" && pytest tests/unit/ -v
-
+pip install -e ".[test]" && pytest tests/ -v
+```
 
 ## License
 
-MIT — see [LICENSE](LICENSE). © 2026 Samuel Appiah Kubi. Part of the **PyGeoVision** platform, alongside [pygeofetch](https://github.com/appiahkubis14/pygeofetch) itself.
+MIT — see [LICENSE](LICENSE). © 2026 Samuel Appiah Kubi.
