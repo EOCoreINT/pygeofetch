@@ -22,12 +22,18 @@ unusual, it's just being explicit about the same default behavior.
 ## Adding credentials
 
 ```bash
-# Username / password (USGS, NASA, Copernicus)
-pygeofetch auth add usgs --username YOUR_USER --password YOUR_PASS
+# Username / password (NASA, Copernicus)
 pygeofetch auth add copernicus --username email@example.com --password PASS
 pygeofetch auth add nasa_earthdata --username USER --password PASS
 
-# API key (Planet, OpenTopography, TerraBotics, Airbus)
+# Username + M2M Application Token (USGS) -- NOT a password. USGS
+# deprecated password-based login on 2025-02-26; the token replaces
+# it, it isn't used alongside it. Request M2M access first at
+# ers.cr.usgs.gov/profile/access (select "MACHINE" type), then
+# generate a token from your ERS profile page once approved.
+pygeofetch auth add usgs --username YOUR_USER --api-key YOUR_M2M_TOKEN
+
+# API key (Planet, OpenTopography, Airbus)
 pygeofetch auth add planet --api-key YOUR_API_KEY
 pygeofetch auth add opentopography --api-key YOUR_KEY
 
@@ -81,11 +87,11 @@ pf = PyGeoFetch(auth_backend="file")   # explicit -- also the real default, avoi
 pf.add_credentials(
     "usgs",
     username=os.environ["USGS_USERNAME"],
-    password=os.environ["USGS_PASSWORD"],
+    api_key=os.environ["USGS_M2M_TOKEN"],  # a real M2M Application Token, not your ERS password -- see Providers
 )
 ```
 
-Store `USGS_USERNAME`/`USGS_PASSWORD` (any names you like — they're
+Store `USGS_USERNAME`/`USGS_M2M_TOKEN` (any names you like — they're
 just your own environment variables, not a pygeofetch convention)
 using your CI system's own secrets mechanism (GitHub Actions
 Secrets, GitLab CI/CD Variables, a Docker `--env-file`, etc.), then
@@ -108,7 +114,7 @@ place.
 
 | Provider | Auth type | Free? |
 |---|---|---|
-| `usgs` | Username / password | Free (registration) |
+| `usgs` | Username + M2M Application Token (not a password — see [Providers](providers.md)) | Free (registration) |
 | `copernicus` | Username / password (OAuth2) | Free (registration) |
 | `nasa_earthdata` | Search: none (public). Download: Earthdata Login | Free (registration) |
 | `nasa_earthdata_cloud` | Search: none (public). Download: Earthdata Login + per-DAAC S3 credentials (auto-refreshed, no single unified endpoint) | Free (registration) |
@@ -136,7 +142,7 @@ See [Providers](providers.md).
 from pygeofetch import PyGeoFetch
 
 pf = PyGeoFetch()
-pf.add_credentials("usgs", username="user", password="pass")
+pf.add_credentials("usgs", username="user", api_key="your_m2m_application_token")
 pf.add_credentials("planet", api_key="PL_KEY")
 ```
 

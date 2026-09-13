@@ -115,13 +115,28 @@ class USGSProvider(AbstractBaseProvider):
         Token Documentation and multiple downstream project breakages —
         landsatxplore, rslearn, and others all required this same fix).
         Authentication now REQUIRES an M2M Application Token, not your ERS
-        account password.
+        account password. The token replaces the password — USGS's own
+        real documentation states the token authenticates "instead of
+        your ERS password," not in addition to it.
 
-        To generate an Application Token:
-          1. Sign in at https://ers.cr.usgs.gov
-          2. Go to your profile -> "Application Token"
-          3. Click "Generate Application Token"
-          4. Copy the token immediately — it is only shown once
+        Two real, separate steps are needed, in order — a real, common
+        point of confusion, since skipping step 1 means step 2's token
+        won't actually work even though it was generated successfully:
+
+        1. Request real M2M API access for your account (a one-time
+           approval, confirmed to take "a couple of days" for real
+           accounts) at:
+               https://ers.cr.usgs.gov/profile/access
+           Log in, click "Request Access," select "MACHINE" as the
+           access type, and fill out the short data-use survey.
+        2. Once approved, generate a real Application Token:
+             a. Sign in at https://ers.cr.usgs.gov
+             b. Go to your profile -> "Application Token"
+             c. Click "Generate Application Token"
+             d. Copy the token immediately — it is only shown once
+
+        Official USGS reference document:
+            https://www.usgs.gov/media/files/m2m-application-token-documentation
 
         Pass the token via `credentials.api_key` (preferred) or
         `credentials.token` — NOT `credentials.password`.
@@ -142,9 +157,14 @@ class USGSProvider(AbstractBaseProvider):
             msg = (
                 "USGS M2M API requires a username and an Application Token "
                 "(the old username+password login was deprecated by USGS on "
-                "2025-02-26 and no longer works). Generate a token at "
-                "https://ers.cr.usgs.gov -> profile -> 'Application Token', "
-                "then pass it as credentials.api_key (or credentials.token)."
+                "2025-02-26 and no longer works -- the token replaces the "
+                "password, it is not used alongside it). If you don't have "
+                "M2M access on your account yet, request it first at "
+                "https://ers.cr.usgs.gov/profile/access (select 'MACHINE' "
+                "access type; approval can take a couple of days). Once "
+                "approved, generate a token at https://ers.cr.usgs.gov -> "
+                "profile -> 'Application Token', then pass it as "
+                "credentials.api_key (or credentials.token)."
             )
             raise AuthenticationError(msg)
 

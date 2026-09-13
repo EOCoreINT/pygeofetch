@@ -1,163 +1,55 @@
-Audit and harden provider layer; add multi-sensor fusion pipelines,
-InSAR/optical/SAR processing extensions, and full documentation pass
+Fix USGS M2M authentication docs and add missing access-request step
 
-Provider layer: verified 15 of 22 providers against real, current
-vendor documentation (not assumed correct from the original
-templates); removed 2 that couldn't be responsibly maintained.
+The core pygeofetch/providers/usgs.py implementation was already
+correct (M2M Application Token, not password) but the surrounding
+documentation had drifted into showing the wrong auth method in four
+separate live code examples, and was missing a genuinely necessary
+prerequisite step entirely.
 
-Rewritten against real, current APIs:
-- digitalglobe: was hitting a fictional REST endpoint; now targets
-  Maxar's real static STAC catalog on S3 (maxar-opendata), with
-  event-level pre-filtering since no server-side search exists
-- maxar_gbdx: GBDX confirmed shut down 2022-01-04; now targets the
-  real, current Discovery API (Maxar/Vantor)
-- alaska_satellite_facility: was using a fictional endpoint and a
-  cloud-cover filter that never made sense for SAR; now uses the real
-  ASF Search API (WKT intersectsWith, platform/processingLevel), with
-  search confirmed public and only download requiring Earthdata Login
-- inpe_cbers: now targets the real Brazil Data Cube STAC API
-- jaxa_earth: AW3D30 is a static tile grid, not a searchable archive;
-  replaced fictional search with deterministic tile-coordinate math
-  and the real, free OpenTopography S3 mirror
-- isro_bhuvan: old endpoint served a different real ISRO service
-  (thematic GIS, not imagery); now targets the real Bhoonidhi STAC API
-- earth_explorer_additional: converted to a thin subclass of the
-  already-correct USGSProvider (declassified imagery via the same
-  real M2M API), removing a redundant parallel implementation
-- geoserver_generic: replaced fictional REST search with the real OGC
-  WFS GetFeature protocol and HTTP Basic Auth
-- opentopography: added real /API/usgsdem (USGS 3DEP) support and
-  /API/otCatalog point-cloud dataset discovery
+Verified directly against USGS's own official M2M Application Token
+documentation, plus cross-confirmation from independent real projects
+(landsatxplore, rslearn) that broke on the same real deprecation date:
+the Application Token authenticates "instead of your ERS password" --
+it replaces password auth, it is not used alongside it. USGS
+deprecated the password-based /login endpoint on 2025-02-26.
 
-Targeted fixes to already-functional providers:
-- nasa_earthdata, nasa_earthdata_cloud: search is genuinely public;
-  removed an unnecessary auth gate and a real KeyError/malformed-header
-  bug that crashed search() before authentication
-- nasa_earthdata_cloud: replaced a single fictional S3-credentials
-  endpoint with lazy, per-DAAC credential fetching (confirmed no
-  single unified endpoint exists; credentials are not interchangeable
-  across DAACs)
-- planet: fixed a hardcoded PSScene-only asset type that silently
-  broke SkySat downloads; now resolves per real item type
-- sentinel_hub: Catalog API request body used an invented nested
-  schema; replaced with the real, flat STAC-compliant body and real
-  CQL2-JSON cloud-cover filter
+Found and fixed a real, previously undocumented gap: M2M API access
+must be explicitly requested and approved on a USGS account before a
+generated token will actually work. This is a separate, one-time step
+from generating the token itself, and skipping it produces a token
+that silently doesn't work. Added the real, confirmed URL:
+https://ers.cr.usgs.gov/profile/access (select "MACHINE" access type;
+real accounts report approval taking a couple of days).
 
-Removed:
-- eodag_provider: delegated to a third-party multi-provider aggregator
-  rather than a native connection, and was never wired into the real
-  provider registry in the first place
-- terrabotics: real company, but no public API documentation exists to
-  verify against (bespoke per-contract integration); old code also
-  pointed at a domain the company doesn't own
+pygeofetch/providers/usgs.py:
+- authenticate()'s docstring and AuthenticationError message now
+  describe both real steps in order (request access, then generate
+  token), with both real URLs, and state explicitly that the token
+  replaces rather than supplements the password
+- No behavioral change; verified against existing usgs and
+  earth_explorer_additional test suites (32 tests, both still pass
+  unchanged)
 
-Processing engine:
-- Fixed a real, confirmed bug in RVI (Ratio Vegetation Index): a
-  blanket [-1, 1] clip meant for normalized-difference indices was
-  silently corrupting genuine ratio values (healthy vegetation
-  RVI=4.0 was being clamped to 1.0)
-- Added 6 real geology/mineral-exploration indices (FOX, AMP, AKP, ALT,
-  FEI, GOS) from Geopera's reference, with honest per-index sensor
-  requirements (2 of 6 work with Sentinel-2/Landsat; the rest need
-  ASTER-class multi-SWIR sensors)
-- Fixed available()'s real union bug: previously hid built-in indices
-  from discovery whenever spyndex was installed
+Documentation (core-features/providers.md, core-features/
+authentication.md, reference/python-api.md):
+- Fixed four separate live code examples in authentication.md that
+  showed `--password`/`password=` for USGS specifically (CLI add,
+  environment-variable loading example, provider auth-type table, and
+  the final Python snippet), each replaced with the real
+  --api-key/api_key= M2M token pattern
+- Fixed one more matching occurrence in python-api.md found during a
+  full-tree sweep
+- providers.md: corrected the USGS status-table label from "Username/
+  password (M2M)" to "Username + M2M Application Token", and expanded
+  the entry with the real two-step process and both URLs
+- Incidentally caught and confirmed as already-correct: two remaining
+  "terrabotics" mentions in providers.md and roadmap.md are legitimate
+  historical references explaining that provider's earlier removal,
+  not stale live references -- left unchanged after verification
 
-InSAR (pygeofetch.insar.advanced_safeguards, new):
-- prepare_custom_dem: aligns a custom high-res DEM to a reference SAR
-  grid for topographic-phase removal
-- generate_insar_mask: real, geometry-based layover/shadow masking
-  from DEM slope/aspect and acquisition geometry, verified against a
-  synthetic cone DEM (steep cone shows layover+shadow on opposite
-  flanks simultaneously; gentle cone shows neither)
-- build_sbas_design_matrix_with_topo: real SBAS DEM-error
-  co-estimation (Berardino 2002 / Fattahi & Amelung 2013), verified to
-  machine precision against the analytical formula
-- Added a real spatial/perpendicular baseline check to PreflightGate,
-  reusing orbit files already fetched for burst-family checking at
-  zero additional network cost
-
-Optical (pygeofetch.optical.offset_tracking):
-- Added compute_horizontal_strain with real, evidence-based outlier
-  protection: a live validation run (Bu'ertai Mine) surfaced a genuine
-  617% strain artifact from a small number of spurious correlator
-  matches that passed SNR-based reliability; reproduced the exact
-  failure synthetically and added MAD-based + reliability-mask
-  filtering as a permanent regression test
-- Added fuse_insar_optical: real, coherence-weighted source selection
-  between InSAR (vertical) and optical (horizontal) displacement --
-  explicitly not an average of two different physical quantities
-
-SAR (pygeofetch.sar):
-- Fixed a serious, confirmed bug in SARProcessor.coherence(): complex
-  SLC data was read through a helper that unconditionally casts to
-  real float32, discarding the imaginary/phase part before a .view()
-  call tried to reinterpret it -- coherence() was non-functional for
-  its entire stated purpose. Found via a real synthetic complex64
-  GeoTIFF test, not code review.
-- Consolidated the duplicate coherence formula (independently
-  implemented in both processor/sar.py and insar/interferogram.py)
-  into one canonical pygeofetch.utils.sar_math implementation; the
-  insar package's own chunked/GPU variant deliberately kept separate
-  given its real coupling to an already-proven, large class
-- Added 5 real, standard SAR processing pipelines
-  (pygeofetch.sar.pipelines): standard GRD preprocessing, flood
-  mapping, change detection, coherence-based disturbance monitoring,
-  CFAR bright-target detection
-
-New: pygeofetch.core.data_organizer
-- DataOrganizer: post-download grouping (date/orbit/satellite/level),
-  manifest generation, and prepare_insar_stack() reusing the existing
-  burst-sync engine; copy is the safe default (never move/delete
-  originals), operations are idempotent
-
-New: pygeofetch.multisensor (5 pipelines + CLI)
-- insar_optical_displacement_pipeline: formalizes the real, proven
-  Bu'ertai fusion approach (InSAR 0.1% coverage, optical 83.7%);
-  includes real grid-alignment math (verified against a hand-worked
-  example) between InSAR and optical's differing native resolutions
-- multi_sensor_flood_pipeline: SAR (sees through cloud) + optical NDWI
-  fusion, 3 real fusion modes (cloud_aware/union/intersection)
-- terrain_corrected_change_pipeline: real solar position calculation
-  (Spencer 1971, verified against 3 independent known physical
-  reference points) + cosine topographic correction, removing
-  illumination artifacts from optical change detection
-- dem_differencing_pipeline: real DEM-of-Difference volumetric
-  analysis (Brasington 2000) with propagated Level of Detection;
-  verified against an exact analytical volume (50,000 m^3 known case)
-- vegetation_disturbance_pipeline: optical NDVI + SAR coherence,
-  distinguishing visible canopy loss from real sub-canopy ground
-  disturbance optical alone cannot see
-- All 5 exposed as `pygeofetch multisensor <command>` CLI commands,
-  smoke-tested end to end with real synthetic data
-
-Test suite / infrastructure:
-- Consolidated a stale, duplicated test file
-  (test_provider_geometry_audit.py existed as two divergent versions)
-  that was failing against 5 legitimately-rewritten providers whose
-  real APIs no longer match the old shared generic template
-- Fixed a real gap in pyproject.toml's `test` extra: boto3 was never
-  included despite being hard-imported by real tests
-  (test_noaa_big_data.py, S3 export), breaking a fresh
-  `pip install -e ".[test]"` with real ModuleNotFoundErrors
-- Full suite verified clean from a fresh install: 715 passed, 0 failed
-
-Documentation:
-- Migrated from Zensical to Sphinx/MyST for Read the Docs; verified
-  with real sphinx-build runs throughout, not just written and assumed
-- New pages: multi-sensor-pipelines.md, data-organizer.md,
-  optical-offset-tracking.md
-- Rewrote providers.md, sar.md, insar.md (partial), spectral-indices.md,
-  installation.md, diagnostics.md to match real, current behavior
-- Found and fixed a second real "config declared but never read" bug
-  while cross-checking docs against source: download.checksum_algorithm
-  defaults to "md5" in defaults.yaml but is never consulted --
-  DownloadOptions() constructs with its own independent SHA256 default
-  regardless of config (same real disconnect pattern as
-  security.credential_storage, found and documented earlier)
-- Found and fixed a genuine broken markdown code fence in docker.md
-  (missing opening backticks) that was rendering a Python example as
-  unformatted, smart-quote-mangled paragraph text
-- Updated roadmap.md and contributing.md to reflect real, current
-  state rather than stale "planned"/"stub" framing now that most of
-  this work is done
+Verification:
+- Full-tree grep confirms zero remaining usgs+password co-occurrences
+  outside the two new, correct explanatory mentions
+- Real Sphinx rebuild succeeds with only the expected pre-existing
+  network-related intersphinx warning (sandbox cannot reach
+  docs.python.org), no new warnings or errors introduced

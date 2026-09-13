@@ -1,0 +1,123 @@
+{
+    "$schema": "https://floss.fund/schema/v1.0.0/funding.schema.json#",
+    "version": "v1.0.0",
+    "entity": {
+        "type": "individual",
+        "role": "maintainer",
+        "name": "Samuel Appiah Kubi",
+        "email": "appiahkubis14@gmail.com",
+        "description": "Open-source Python framework unifying satellite data access across 22 verified providers, featuring a physics-based InSAR chain, optical pixel offset tracking, and automatic multi-modal fallback for deformation monitoring.",
+        "sustainability": "After the funding period, pygeofetch will continue to be maintained through community contributions, academic partnerships, and potential commercial support for custom deployments. The core tool will remain MIT-licensed and open.",
+        "webpageUrl": {
+            "url": "https://appiahkubis14.github.io/portfolio/"
+        }
+    },
+    "projects": [
+        {
+            "guid": "pygeofetch",
+            "name": "pygeofetch",
+            "description": "A federated open-source geospatial data pipeline unifying search and download across 22 satellite data providers. Includes a physics-based InSAR processing chain (burst-synchronization preflight, orbit-based coregistration, SBAS time series, Cramer-Rao uncertainty quantification) and optical pixel offset tracking for deformation monitoring where InSAR structurally fails (e.g. large-magnitude mining subsidence, co-seismic displacement).\n\nValidation: a full, real, published-literature-referenced InSAR run at Mexico City (cross-checked qualitatively against Cigna & Tapete 2021's documented subsidence pattern); a second case study at Bu'ertai Mine (Shendong Coalfield), a site published literature confirms defeats conventional InSAR, where the pipeline automatically detected InSAR's real coverage collapse and handed off to optical offset tracking without manual intervention.\n\nAdoption: early-stage — see real, current GitHub metrics on the repository. Users include researchers in Ghana and Nigeria.",
+            "webpageUrl": {
+                "url": "https://pygeofetch.readthedocs.io/"
+            },
+            "repositoryUrl": {
+                "url": "https://github.com/EOCoreINT/pygeofetch",
+                "wellKnown": "https://github.com/EOCoreINT/pygeofetch/blob/main/.well-known/funding-manifest-urls"
+            },
+            "licenses": [
+                "spdx:MIT"
+            ],
+            "tags": [
+                "geospatial",
+                "insar",
+                "remote-sensing",
+                "earth-observation",
+                "python",
+                "satellite-data",
+                "deformation-monitoring",
+                "open-source"
+            ]
+        }
+    ],
+    "funding": {
+        "channels": [
+            {
+                "guid": "bank-transfer",
+                "type": "bank",
+                "description": "Direct bank transfer for grant disbursements. Please contact via email for wiring details."
+            }
+        ],
+        "plans": [
+            {
+                "guid": "core-dev-compensation",
+                "status": "active",
+                "name": "Core Development",
+                "description": "Dedicated time for core feature development, bug fixes, and maintaining the physics-based InSAR/optical fusion modules.",
+                "justification": "Covers approximately 20 hrs/week at $25/hr.",
+                "amount": 2000,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": [
+                    "bank-transfer"
+                ]
+            },
+            {
+                "guid": "automated-testing",
+                "status": "active",
+                "name": "Automated Testing & Validation",
+                "description": "Maintaining regression test suites (sub-pixel optical offset accuracy, InSAR phase-unwrapping correctness, strain outlier capping) and the cloud compute needed to run them against real Sentinel-1/2 data.",
+                "justification": "Covers cloud compute costs for real, periodic Sentinel-1/2 regression tests.",
+                "amount": 1000,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": [
+                    "bank-transfer"
+                ]
+            },
+            {
+                "guid": "community-support",
+                "status": "active",
+                "name": "Community Support",
+                "description": "Time allocated for issue triage, PR reviews, and lowering the barrier to entry for new researchers and engineers.",
+                "justification": "Covers dedicated hours for issue triage, PR review, and contributor onboarding.",
+                "amount": 800,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": [
+                    "bank-transfer"
+                ]
+            },
+            {
+                "guid": "cloud-compute-cicd",
+                "status": "active",
+                "name": "Cloud Compute & CI/CD",
+                "description": "Infrastructure to automatically test processing pipelines on every commit, ensuring new code does not break real geospatial workflows.",
+                "justification": "Covers CI minutes for real, automated test runs against representative-sized data.",
+                "amount": 300,
+                "currency": "USD",
+                "frequency": "monthly",
+                "channels": [
+                    "bank-transfer"
+                ]
+            },
+            {
+                "guid": "educational-content",
+                "status": "active",
+                "name": "Educational Content & Case Studies",
+                "description": "Production of real, fully-reproducible tutorial notebooks (e.g. the Mexico City and Bu'ertai case studies) for the official documentation, each cross-checked against source code and published literature before publication.",
+                "justification": "Covers approximately 40 hours at $100/hr to produce two reproducible case studies.",
+                "amount": 4000,
+                "currency": "USD",
+                "frequency": "one-time",
+                "channels": [
+                    "bank-transfer"
+                ]
+            }
+        ],
+        "roadmap": [
+            "Continued provider verification and maintenance as satellite data APIs change",
+            "Expanded multi-sensor fusion pipeline coverage",
+            "Community-driven provider additions"
+        ]
+    }
+}

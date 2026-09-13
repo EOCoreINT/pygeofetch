@@ -18,7 +18,7 @@ from pygeofetch.models import SearchQuery, DownloadOptions
 
 client = PyGeoFetch()
 
-client.add_credentials("usgs", username="user", password="pass")
+client.add_credentials("usgs", username="user", api_key="your_m2m_application_token")
 client.add_credentials("planet", api_key="PL_KEY")
 
 results = client.search(

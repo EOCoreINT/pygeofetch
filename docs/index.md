@@ -73,6 +73,7 @@ processing/timeseries.md
 processing/preprocessing.md
 processing/terrain.md
 processing/postprocessing.md
+processing/upgrades.md
 :::
 
 :::{toctree}
