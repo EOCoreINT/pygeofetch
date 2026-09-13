@@ -158,7 +158,7 @@ Real orbit state vectors then pre-filter the candidate pair list against Sentine
 
 **7. SBAS time-series inversion.** The full 58-date descending stack, once low-coherence and unreliable-reference-pixel pairs are excluded, fractures into 17 disconnected network "islands" — a genuine finding about this AOI's data quality, not a bug. The largest connected island (10 dates, 11 pairs) carries the final inversion, referenced near Cerro de la Estrella.
 
-<p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/1.png" width="85%" /></p>
+<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/1.png" width="85%" /></p> -->
 
 The resulting velocity field, uncertainty map, reliability mask, and displacement time series recover a 2nd–98th-percentile vertical velocity of **−35.5 to −2.9 cm/year** where reliable pixels exist.
 
