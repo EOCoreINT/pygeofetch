@@ -19,7 +19,7 @@
 
 ## Overview
 
-pygeofetch is a production-ready framework for acquiring and processing Earth observation data. It provides authenticated, unified access to **24 satellite repositories** — Sentinel, Landsat, Planet, Maxar, Airbus, Copernicus, USGS, NASA, JAXA, and more — through a single CLI and Python API, and layers a complete geospatial processing engine on top.
+pygeofetch is a production-ready framework for acquiring and processing Earth observation data. It provides authenticated, unified access to **22 verified satellite providers** — Sentinel, Landsat, Planet, Maxar, Airbus, Copernicus, USGS, NASA, JAXA, and more — through a single CLI and Python API, and layers a complete geospatial processing engine on top.
 
 Where pygeofetch goes further than most data-access libraries is in its **InSAR chain**: burst-aware coregistration, real flat-earth and topographic phase removal, ERA5 tropospheric and ionospheric correction, phase unwrapping, and SBAS time-series inversion — each stage independently verified against synthetic ground truth or real, published deformation studies, not assumed correct from theory alone. The [Mexico City case study](#-case-study-mapping-mexico-city-land-subsidence-with-insar) below walks through that chain end to end on real Sentinel-1 data.
 
@@ -27,7 +27,7 @@ Where pygeofetch goes further than most data-access libraries is in its **InSAR 
 
 | | |
 |---|---|
-| 🔐 **Authenticated access** | 24 providers, credentials stored via system keyring (Keychain / Credential Manager / Secret Service) |
+| 🔐 **Authenticated access** | 22 verified providers; credentials stored via a Fernet-encrypted local file by default, or the system keyring (Keychain / Credential Manager / Secret Service) as an opt-in alternative |
 | 🔍 **Federated search** | One query across all providers → STAC 1.0 GeoJSON / GeoParquet / CSV, with real footprint geometry where the provider supplies it |
 | 📥 **Resilient downloads** | Parallel, resumable, checksum-verified, band-selective, atomic writes |
 | ⚙️ **Preprocessing** | Atmospheric correction, cloud masking, reprojection, resampling, pan-sharpening, mosaicking |
@@ -53,7 +53,7 @@ Satellite data access is fragmented — every provider has its own auth scheme, 
 
 | Feature | pygeofetch | EODAG | pystac-client | satpy | sentinelsat |
 |---|---|---|---|---|---|
-| Providers | **24** | 10+ | STAC only | Limited | Sentinel only |
+| Providers | **22** | 10+ | STAC only | Limited | Sentinel only |
 | Processing engine | ✅ Full | ❌ | ❌ | Partial | ❌ |
 | Spectral indices | ✅ 17+ | ❌ | ❌ | ❌ | ❌ |
 | Full InSAR chain | ✅ Verified | ❌ | ❌ | ❌ | ❌ |
@@ -121,22 +121,11 @@ Mexico City sits on a drained lakebed and is subsiding at some of the fastest ra
 
 **1. Authenticated federated search.** `client.search()` against Copernicus Data Space for SLC scenes over the city (bbox `-99.183, 19.278, -99.003, 19.438`, July 2016 – September 2017) returns a stack of Sentinel-1A/1B candidates in seconds, filterable straight down to a single consistent track.
 
-<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/data-search.png" width="85%" /></p> -->
-
 Results carry real footprint geometry and drop straight onto a map via `MapViewer`, with hover info for scene ID, date, satellite, and provider — useful for spotting swath overlap before committing to a download.
-
-<!-- <p align="center">
-  <img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/search_1.png" width="48%" />
-  <img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/search.png" width="48%" />
-</p> -->
 
 **2. DEM acquisition.** A matching search against OpenTopography returns seven DEM products for the AOI; pygeofetch downloads and clips the selected one (SRTM 30 m) automatically for topographic phase removal.
 
-<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/dem_acquisition.png" width="85%" /></p> -->
-
 **3. Preflight validation.** Before anything downloads, the `PreflightGate` checks search truncation, AOI coverage, temporal network connectivity, and burst-timing family compatibility from lightweight annotation XMLs — catching acquisitions that would waste compute before they cost bandwidth. This run avoided roughly 360 GB of downloads by excluding 48 of 115 candidate scenes at this stage alone.
-
-<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/preflight-log.png" width="85%" /></p> -->
 
 Real orbit state vectors then pre-filter the candidate pair list against Sentinel-1's own mission thresholds, rejecting pairs for excess burst-sync error, temporal baseline, or spatial baseline before any interferogram is attempted.
 
@@ -158,8 +147,6 @@ Real orbit state vectors then pre-filter the candidate pair list against Sentine
 </p>
 
 **7. SBAS time-series inversion.** The full 58-date descending stack, once low-coherence and unreliable-reference-pixel pairs are excluded, fractures into 17 disconnected network "islands" — a genuine finding about this AOI's data quality, not a bug. The largest connected island (10 dates, 11 pairs) carries the final inversion, referenced near Cerro de la Estrella.
-
-<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/1.png" width="85%" /></p> -->
 
 The resulting velocity field, uncertainty map, reliability mask, and displacement time series recover a 2nd–98th-percentile vertical velocity of **−35.5 to −2.9 cm/year** where reliable pixels exist.
 
@@ -264,7 +251,6 @@ keeping 22 provider integrations current as their real APIs change, and
 building out the multi-sensor pipelines documented above.
 
 [![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/appiahkubis14)
-[![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-FF5E5B?logo=kofi)](https://ko-fi.com/appiahkubis14)
 
 ## Contributing
 
