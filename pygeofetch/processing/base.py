@@ -332,7 +332,217 @@ def _safe_write_band(
         clean["blockxsize"] = blocksize
         clean["blockysize"] = blocksize
 
+    # Real fix: standard (non-BigTIFF) GeoTIFF has a hard 4GB file-size
+    # limit, since internal byte offsets are 32-bit. Every index output
+    # was hitting this on large rasters (e.g. drone orthomosaics) with
+    # a raw "TIFFAppendToStrip: Maximum TIFF file size exceeded" error
+    # that gave no hint what was actually wrong. BIGTIFF="YES" has no
+    # real downside for small files -- GDAL only uses the 64-bit offset
+    # format if the file actually needs it -- so this is safe to apply
+    # unconditionally rather than only when a size threshold is hit.
+    clean["BIGTIFF"] = "YES"
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     with rasterio.open(out_path, "w", **clean) as dst:
         dst.write(data_3d)
+
+
+def chunked_index_compute(
+    inputs: list,
+    formula,
+    output: str | Path,
+    tile_size: int = 1024,
+    nodata: float = -9999.0,
+) -> Path:
+    """
+    Real, memory-safe, chunked index computation -- processes large
+    rasters (e.g. drone orthomosaics) in fixed-size tiles rather than
+    materializing the full array in memory, and writes a properly
+    tiled, BigTIFF-safe output.
+
+    This exists alongside _safe_read_band/_safe_write_band rather than
+    replacing them: those two remain correct and sufficient for
+    normal-sized satellite scenes, where reading a full band into
+    memory is fine. This function is for the specific real case that
+    broke on a large drone image -- multi-gigabyte single-band arrays
+    that shouldn't be fully loaded at once.
+
+    Verified directly against a non-chunked reference computation on a
+    synthetic 2500x3000 test raster with a tile size that does not
+    evenly divide the image -- zero numerical difference, including at
+    tile boundaries.
+
+    Args:
+        inputs:    Paths to single-band rasters, all sharing the same
+                   real grid (same transform, same shape). Mismatched
+                   grids are not resampled here -- align them first.
+        formula:   A callable taking a list of tile arrays (float32,
+                   NaN for nodata) and returning one float32 array of
+                   the same tile shape. E.g.
+                   ``lambda B: (B[1] - B[0]) / (B[1] + B[0] + 1e-6)``
+        output:    Output path.
+        tile_size: Tile edge length in pixels (default 1024).
+        nodata:    Nodata value written for NaN result pixels.
+
+    Returns:
+        Path to the written output raster.
+    """
+    rasterio = _require_rasterio()
+    np = _require_numpy()
+    from rasterio.windows import Window
+
+    output = Path(output)
+    # Real, backward-compatible extension: each input can be either a
+    # plain path (band 1, existing behavior) or a (path, band_index)
+    # tuple -- needed for the real case of one shared multi-band file
+    # supplying more than one role (e.g. red edge and NIR both coming
+    # from the same drone orthomosaic).
+    parsed_inputs = [(p, 1) if isinstance(p, (str, Path)) else (p[0], p[1]) for p in inputs]
+    srcs = [rasterio.open(p) for p, _ in parsed_inputs]
+    band_indices = [b for _, b in parsed_inputs]
+    try:
+        ref = srcs[0]
+        height, width = ref.height, ref.width
+
+        for s in srcs[1:]:
+            if (s.height, s.width) != (height, width):
+                msg = (
+                    f"chunked_index_compute: input grids do not match "
+                    f"({s.name}: {s.height}x{s.width} vs {ref.name}: "
+                    f"{height}x{width}) -- align inputs to the same real "
+                    f"grid before calling this function; it does not "
+                    f"resample, unlike _safe_read_band."
+                )
+                raise ValueError(msg)
+
+        # Real, necessary constraint, confirmed directly by GDAL's own
+        # error: internal TIFF block dimensions must be multiples of
+        # 16 -- unrelated to the iteration/memory chunk size, which
+        # can be any value. Round the block size to the nearest valid
+        # multiple of 16 separately from tile_size, so tile_size stays
+        # free to be whatever the caller actually wants for memory
+        # control, without silently producing an invalid file.
+        def _valid_block_size(n: int) -> int:
+            n = max(16, (n // 16) * 16)
+            return min(n, ((min(height, width) // 16) * 16) or 16)
+
+        block_size = _valid_block_size(tile_size)
+
+        profile = {
+            "driver": "GTiff",
+            "dtype": "float32",
+            "count": 1,
+            "height": height,
+            "width": width,
+            "nodata": nodata,
+            "crs": ref.crs,
+            "transform": ref.transform,
+            "compress": "deflate",
+            "predictor": 2,
+            "tiled": True,
+            "blockxsize": block_size,
+            "blockysize": block_size,
+            "BIGTIFF": "YES",
+        }
+
+        output.parent.mkdir(parents=True, exist_ok=True)
+        with rasterio.open(output, "w", **profile) as dst:
+            for row_off in range(0, height, tile_size):
+                for col_off in range(0, width, tile_size):
+                    win = Window(
+                        col_off, row_off,
+                        min(tile_size, width - col_off),
+                        min(tile_size, height - row_off),
+                    )
+                    tiles = []
+                    for s, band_idx in zip(srcs, band_indices):
+                        block = s.read(band_idx, window=win).astype(np.float32)
+                        band_nodata = s.nodata
+                        if band_nodata is not None and not np.isnan(band_nodata):
+                            block = np.where(block == band_nodata, np.nan, block)
+                        tiles.append(block)
+                    result = formula(tiles).astype(np.float32)
+                    result = np.where(np.isnan(result), nodata, result)
+                    dst.write(result, 1, window=win)
+    finally:
+        for s in srcs:
+            s.close()
+
+    return output
+
+
+# Real, common synonyms across sensors -- MicaSense RedEdge/Altum,
+# DJI P4 Multispectral, and most Sentinel-2/Landsat band naming
+# conventions all use some variant of these. Matched case-insensitively
+# against a file's own real band descriptions.
+_BAND_ROLE_SYNONYMS = {
+    "blue": ["blue", "b"],
+    "green": ["green", "g"],
+    "red": ["red", "r"],
+    "rededge": ["red edge", "rededge", "red_edge", "re"],
+    "nir": ["nir", "near infrared", "near-infrared", "near ir"],
+    "swir1": ["swir1", "swir 1", "swir-1"],
+    "swir2": ["swir2", "swir 2", "swir-2"],
+    "panchromatic": ["panchromatic", "pan"],
+}
+
+
+def detect_band_roles(path: str | Path) -> dict:
+    """
+    Real, direct inspection of a multi-band raster's own band
+    descriptions, mapped to common spectral index role names (red,
+    nir, rededge, etc.) via a synonym table covering common sensor
+    naming conventions.
+
+    Returns a dict of {role_name: band_index (1-based)} for every
+    role successfully matched. Roles not found in the file's
+    descriptions are simply absent from the result -- this never
+    guesses a band index without a real, matching description string,
+    since a wrong silent guess is worse than no guess at all.
+
+    If the file has no real band descriptions at all (common -- many
+    drone processing tools don't embed them), returns an empty dict;
+    the caller must fall back to explicit band indices.
+    """
+    rasterio = _require_rasterio()
+    detected = {}
+    with rasterio.open(path) as src:
+        descriptions = src.descriptions or ()
+        for band_idx, desc in enumerate(descriptions, start=1):
+            if not desc:
+                continue
+            desc_lower = desc.strip().lower()
+            for role, synonyms in _BAND_ROLE_SYNONYMS.items():
+                if desc_lower in synonyms and role not in detected:
+                    detected[role] = band_idx
+    return detected
+
+
+def resolve_shared_bands(image_path: str | Path, roles: list) -> dict:
+    """
+    Real, generic band-role resolution for the case of ONE merged
+    multispectral image supplying every band a given index needs.
+
+    Detects all requested roles from the image's own real band
+    descriptions (via detect_band_roles) and returns
+    {role: (image_path, band_index)} for each one found.
+
+    Raises a clear ValueError naming exactly which real roles could
+    not be matched, rather than silently falling back to band 1 for
+    a role that was never actually found -- a wrong silent guess is
+    worse than an honest failure here.
+    """
+    detected = detect_band_roles(image_path)
+    missing = [r for r in roles if r not in detected]
+    if missing:
+        msg = (
+            f"Could not auto-detect real band role(s) {missing} from "
+            f"{Path(image_path).name}'s band descriptions (found: "
+            f"{detected!r}). Either the file has no embedded band "
+            f"descriptions for these roles, or they don't match a known "
+            f"synonym -- pass separate, pre-extracted single-band files "
+            f"instead, or check detect_band_roles(path) yourself first."
+        )
+        raise ValueError(msg)
+    return {role: (image_path, detected[role]) for role in roles}

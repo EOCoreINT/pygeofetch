@@ -1,5 +1,5 @@
 """
-SpectralIndices — 17 spectral indices and band transformations.
+SpectralIndices — 18 spectral indices and band transformations.
 All methods return a ProcessingResult with the computed raster path.
 """
 
@@ -16,6 +16,9 @@ from pygeofetch.processing.base import (
     _safe_read_band,
     _safe_write_band,
     _timed,
+    chunked_index_compute,
+    detect_band_roles,
+    resolve_shared_bands,
 )
 
 logger = logging.getLogger(__name__)
@@ -42,14 +45,15 @@ class SpectralIndices:
     # ── internal helpers ──────────────────────────────────────────────────
 
     @staticmethod
-    def _read(path: str | Path, ref_shape=None):
+    def _read(path: str | Path, ref_shape=None, band: int = 1):
         """
-        Read band 1 of a raster robustly.
+        Read a specific band of a raster robustly (band=1 by default,
+        preserving existing behavior for single-band inputs).
         Uses block-by-block fallback for tiled/COG/compressed GeoTIFFs.
         Optionally resamples to ref_shape (h, w).
         Returns (data_float32, profile, nodata).
         """
-        return _safe_read_band(path, band=1, out_shape=ref_shape)
+        return _safe_read_band(path, band=band, out_shape=ref_shape)
 
     @staticmethod
     def _norm_diff(a, b):
@@ -70,20 +74,107 @@ class SpectralIndices:
         red: str | Path,
         nir: str | Path,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         NDVI — Normalized Difference Vegetation Index.
         Formula: (NIR - Red) / (NIR + Red).  Range: -1 to +1.
         Values > 0.3 indicate healthy vegetation.
+
+        Set chunked=True for large rasters (e.g. drone orthomosaics)
+        that shouldn't be fully loaded into memory at once, and that
+        may exceed the standard GeoTIFF 4GB size limit -- this writes
+        a proper tiled, BigTIFF output, processed in real, fixed-size
+        tiles rather than one full-array read/write. Default is False
+        to preserve existing behavior and performance for the common,
+        normal-sized-scene case.
+
+        If red and nir point to the SAME merged multi-band image (e.g.
+        a drone orthomosaic with all bands in one file), the correct
+        bands are auto-detected from its real band descriptions -- no
+        manual pre-splitting required.
         """
-        red_d, profile, _ = self._read(red)
-        nir_d, _, _ = self._read(nir, ref_shape=red_d.shape)
-        result = self._norm_diff(nir_d, red_d)
+        red_ref, nir_ref = red, nir
+        if str(red) == str(nir):
+            resolved = resolve_shared_bands(red, ["red", "nir"])
+            red_ref, nir_ref = resolved["red"], resolved["nir"]
+
         out_path = _resolve_output(Path(red), output, "ndvi")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=[red_ref, nir_ref],
+                formula=lambda B: (B[1] - B[0]) / (B[1] + B[0]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            red_band = red_ref[1] if isinstance(red_ref, tuple) else 1
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            red_d, profile, _ = self._read(red, band=red_band)
+            nir_d, _, _ = self._read(nir, ref_shape=red_d.shape, band=nir_band)
+            result = self._norm_diff(nir_d, red_d)
+            self._save(result, profile, out_path)
         logger.info("NDVI → %s", out_path.name)
         return ProcessingResult(
             success=True, operation="ndvi", output_path=out_path, input_path=Path(red)
+        )
+
+    # ── E1b: NDRE ────────────────────────────────────────────────────────
+
+    @_timed
+    def ndre(
+        self,
+        rededge: str | Path,
+        nir: str | Path,
+        output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
+    ) -> ProcessingResult:
+        """
+        NDRE — Normalized Difference Red Edge Index (Barnes et al. 2000).
+        Formula: (NIR - RedEdge) / (NIR + RedEdge).  Range: -1 to +1.
+
+        Uses the red edge band (~705-750nm) instead of red, which makes
+        it less prone to saturation than NDVI in dense canopy -- useful
+        for detecting crop stress and chlorophyll content in precision
+        agriculture, commonly from drone multispectral sensors
+        (MicaSense RedEdge/Altum, DJI P4 Multispectral, and similar)
+        that carry a dedicated red edge band alongside NIR.
+
+        Set chunked=True for large rasters (e.g. drone orthomosaics)
+        that shouldn't be fully loaded into memory at once, and that
+        may exceed the standard GeoTIFF 4GB size limit -- see ndvi's
+        docstring for details.
+
+        If rededge and nir point to the SAME multi-band file (e.g. a
+        drone orthomosaic with all bands in one raster), the correct
+        bands are auto-detected from the file's own real band
+        descriptions -- no manual pre-splitting required. If the file
+        has no real, matching band descriptions, a clear error is
+        raised rather than silently reading band 1 for both roles.
+        """
+        rededge_ref, nir_ref = rededge, nir
+        if str(rededge) == str(nir):
+            resolved = resolve_shared_bands(rededge, ["rededge", "nir"])
+            rededge_ref, nir_ref = resolved["rededge"], resolved["nir"]
+
+        out_path = _resolve_output(Path(rededge), output, "ndre")
+        if chunked:
+            chunked_index_compute(
+                inputs=[rededge_ref, nir_ref],
+                formula=lambda B: (B[1] - B[0]) / (B[1] + B[0]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            re_band = rededge_ref[1] if isinstance(rededge_ref, tuple) else 1
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            rededge_d, profile, _ = self._read(rededge, band=re_band)
+            nir_d, _, _ = self._read(nir, ref_shape=rededge_d.shape, band=nir_band)
+            result = self._norm_diff(nir_d, rededge_d)
+            self._save(result, profile, out_path)
+        logger.info("NDRE → %s", out_path.name)
+        return ProcessingResult(
+            success=True, operation="ndre", output_path=out_path, input_path=Path(rededge)
         )
 
     # ── E2: EVI ──────────────────────────────────────────────────────────
@@ -99,21 +190,49 @@ class SpectralIndices:
         C2: float = 7.5,
         L: float = 1.0,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         EVI — Enhanced Vegetation Index.
         Formula: G * (NIR-Red) / (NIR + C1*Red - C2*Blue + L).
         Reduces atmospheric and canopy background effects vs NDVI.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If blue, red, and nir point to the SAME merged multi-band
+        image, the correct bands are auto-detected from its real band
+        descriptions.
         """
         np = _require_numpy()
-        blue_d, profile, _ = self._read(blue)
-        red_d, _, _ = self._read(red, ref_shape=blue_d.shape)
-        nir_d, _, _ = self._read(nir, ref_shape=blue_d.shape)
-        denom = nir_d + C1 * red_d - C2 * blue_d + L
-        with np.errstate(divide="ignore", invalid="ignore"):
-            result = np.where(denom != 0, G * (nir_d - red_d) / denom, float("nan"))
+        blue_ref, red_ref, nir_ref = blue, red, nir
+        if str(blue) == str(red) == str(nir):
+            resolved = resolve_shared_bands(blue, ["blue", "red", "nir"])
+            blue_ref, red_ref, nir_ref = resolved["blue"], resolved["red"], resolved["nir"]
+
         out_path = _resolve_output(Path(red), output, "evi")
-        self._save(result, profile, out_path)
+
+        def _evi_formula(B):
+            blue_d, red_d, nir_d = B
+            denom = nir_d + C1 * red_d - C2 * blue_d + L
+            with np.errstate(divide="ignore", invalid="ignore"):
+                return np.where(denom != 0, G * (nir_d - red_d) / denom, float("nan"))
+
+        if chunked:
+            chunked_index_compute(
+                inputs=[blue_ref, red_ref, nir_ref],
+                formula=_evi_formula,
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            blue_band = blue_ref[1] if isinstance(blue_ref, tuple) else 1
+            red_band = red_ref[1] if isinstance(red_ref, tuple) else 1
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            blue_d, profile, _ = self._read(blue, band=blue_band)
+            red_d, _, _ = self._read(red, ref_shape=blue_d.shape, band=red_band)
+            nir_d, _, _ = self._read(nir, ref_shape=blue_d.shape, band=nir_band)
+            result = _evi_formula([blue_d, red_d, nir_d])
+            self._save(result, profile, out_path)
         logger.info("EVI → %s", out_path.name)
         return ProcessingResult(
             success=True, operation="evi", output_path=out_path, input_path=Path(red)
@@ -128,22 +247,46 @@ class SpectralIndices:
         nir: str | Path,
         L: float = 0.5,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         SAVI — Soil Adjusted Vegetation Index.
         Formula: (NIR-Red)/(NIR+Red+L) * (1+L).
         L=0.5 is standard; corrects for soil background reflectance.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If red and nir point to the SAME merged multi-band image, the
+        correct bands are auto-detected from its real band descriptions.
         """
         np = _require_numpy()
-        red_d, profile, _ = self._read(red)
-        nir_d, _, _ = self._read(nir, ref_shape=red_d.shape)
-        denom = nir_d + red_d + L
-        with np.errstate(divide="ignore", invalid="ignore"):
-            result = np.where(
-                denom != 0, (nir_d - red_d) / denom * (1 + L), float("nan")
-            )
+        red_ref, nir_ref = red, nir
+        if str(red) == str(nir):
+            resolved = resolve_shared_bands(red, ["red", "nir"])
+            red_ref, nir_ref = resolved["red"], resolved["nir"]
+
         out_path = _resolve_output(Path(red), output, "savi")
-        self._save(result, profile, out_path)
+
+        def _savi_formula(B):
+            red_d, nir_d = B
+            denom = nir_d + red_d + L
+            with np.errstate(divide="ignore", invalid="ignore"):
+                return np.where(denom != 0, (nir_d - red_d) / denom * (1 + L), float("nan"))
+
+        if chunked:
+            chunked_index_compute(
+                inputs=[red_ref, nir_ref],
+                formula=_savi_formula,
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            red_band = red_ref[1] if isinstance(red_ref, tuple) else 1
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            red_d, profile, _ = self._read(red, band=red_band)
+            nir_d, _, _ = self._read(nir, ref_shape=red_d.shape, band=nir_band)
+            result = _savi_formula([red_d, nir_d])
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True, operation="savi", output_path=out_path, input_path=Path(red)
         )
@@ -156,16 +299,38 @@ class SpectralIndices:
         green: str | Path,
         nir: str | Path,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         NDWI — Normalized Difference Water Index (McFeeters 1996).
         Formula: (Green - NIR) / (Green + NIR).  Water > 0, land < 0.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If green and nir point to the SAME merged multi-band image,
+        the correct bands are auto-detected from its real band
+        descriptions.
         """
-        green_d, profile, _ = self._read(green)
-        nir_d, _, _ = self._read(nir, ref_shape=green_d.shape)
-        result = self._norm_diff(green_d, nir_d)
+        green_ref, nir_ref = green, nir
+        if str(green) == str(nir):
+            resolved = resolve_shared_bands(green, ["green", "nir"])
+            green_ref, nir_ref = resolved["green"], resolved["nir"]
+
         out_path = _resolve_output(Path(green), output, "ndwi")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=[green_ref, nir_ref],
+                formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            green_band = green_ref[1] if isinstance(green_ref, tuple) else 1
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            green_d, profile, _ = self._read(green, band=green_band)
+            nir_d, _, _ = self._read(nir, ref_shape=green_d.shape, band=nir_band)
+            result = self._norm_diff(green_d, nir_d)
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True, operation="ndwi", output_path=out_path, input_path=Path(green)
         )
@@ -178,17 +343,39 @@ class SpectralIndices:
         green: str | Path,
         swir1: str | Path,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         MNDWI — Modified NDWI (Xu 2006).
         Formula: (Green - SWIR1) / (Green + SWIR1).
         Better separation of water from built-up areas than NDWI.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If green and swir1 point to the SAME merged multi-band image,
+        the correct bands are auto-detected from its real band
+        descriptions.
         """
-        green_d, profile, _ = self._read(green)
-        swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape)
-        result = self._norm_diff(green_d, swir_d)
+        green_ref, swir_ref = green, swir1
+        if str(green) == str(swir1):
+            resolved = resolve_shared_bands(green, ["green", "swir1"])
+            green_ref, swir_ref = resolved["green"], resolved["swir1"]
+
         out_path = _resolve_output(Path(green), output, "mndwi")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=[green_ref, swir_ref],
+                formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            green_band = green_ref[1] if isinstance(green_ref, tuple) else 1
+            swir_band = swir_ref[1] if isinstance(swir_ref, tuple) else 1
+            green_d, profile, _ = self._read(green, band=green_band)
+            swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape, band=swir_band)
+            result = self._norm_diff(green_d, swir_d)
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True,
             operation="mndwi",
@@ -204,16 +391,38 @@ class SpectralIndices:
         nir: str | Path,
         swir1: str | Path,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         NDBI — Normalized Difference Built-up Index (Zha 2003).
         Formula: (SWIR1 - NIR) / (SWIR1 + NIR).  Urban > 0, vegetation < 0.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If nir and swir1 point to the SAME merged multi-band image,
+        the correct bands are auto-detected from its real band
+        descriptions.
         """
-        swir_d, profile, _ = self._read(swir1)
-        nir_d, _, _ = self._read(nir, ref_shape=swir_d.shape)
-        result = self._norm_diff(swir_d, nir_d)
+        nir_ref, swir_ref = nir, swir1
+        if str(nir) == str(swir1):
+            resolved = resolve_shared_bands(nir, ["nir", "swir1"])
+            nir_ref, swir_ref = resolved["nir"], resolved["swir1"]
+
         out_path = _resolve_output(Path(nir), output, "ndbi")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=[nir_ref, swir_ref],
+                formula=lambda B: (B[1] - B[0]) / (B[1] + B[0]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            swir_band = swir_ref[1] if isinstance(swir_ref, tuple) else 1
+            swir_d, profile, _ = self._read(swir1, band=swir_band)
+            nir_d, _, _ = self._read(nir, ref_shape=swir_d.shape, band=nir_band)
+            result = self._norm_diff(swir_d, nir_d)
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True, operation="ndbi", output_path=out_path, input_path=Path(nir)
         )
@@ -226,16 +435,38 @@ class SpectralIndices:
         green: str | Path,
         swir1: str | Path,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         NDSI — Normalized Difference Snow Index (Hall 1995).
         Formula: (Green - SWIR1) / (Green + SWIR1).  Snow > 0.4.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If green and swir1 point to the SAME merged multi-band image,
+        the correct bands are auto-detected from its real band
+        descriptions.
         """
-        green_d, profile, _ = self._read(green)
-        swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape)
-        result = self._norm_diff(green_d, swir_d)
+        green_ref, swir_ref = green, swir1
+        if str(green) == str(swir1):
+            resolved = resolve_shared_bands(green, ["green", "swir1"])
+            green_ref, swir_ref = resolved["green"], resolved["swir1"]
+
         out_path = _resolve_output(Path(green), output, "ndsi")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=[green_ref, swir_ref],
+                formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            green_band = green_ref[1] if isinstance(green_ref, tuple) else 1
+            swir_band = swir_ref[1] if isinstance(swir_ref, tuple) else 1
+            green_d, profile, _ = self._read(green, band=green_band)
+            swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape, band=swir_band)
+            result = self._norm_diff(green_d, swir_d)
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True, operation="ndsi", output_path=out_path, input_path=Path(green)
         )
@@ -248,17 +479,39 @@ class SpectralIndices:
         nir: str | Path,
         swir1: str | Path,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         NDMI — Normalized Difference Moisture Index (Wilson & Sader 2002).
         Formula: (NIR - SWIR1) / (NIR + SWIR1).
         Sensitive to canopy water content; positive = moist vegetation.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If nir and swir1 point to the SAME merged multi-band image,
+        the correct bands are auto-detected from its real band
+        descriptions.
         """
-        nir_d, profile, _ = self._read(nir)
-        swir_d, _, _ = self._read(swir1, ref_shape=nir_d.shape)
-        result = self._norm_diff(nir_d, swir_d)
+        nir_ref, swir_ref = nir, swir1
+        if str(nir) == str(swir1):
+            resolved = resolve_shared_bands(nir, ["nir", "swir1"])
+            nir_ref, swir_ref = resolved["nir"], resolved["swir1"]
+
         out_path = _resolve_output(Path(nir), output, "ndmi")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=[nir_ref, swir_ref],
+                formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            swir_band = swir_ref[1] if isinstance(swir_ref, tuple) else 1
+            nir_d, profile, _ = self._read(nir, band=nir_band)
+            swir_d, _, _ = self._read(swir1, ref_shape=nir_d.shape, band=swir_band)
+            result = self._norm_diff(nir_d, swir_d)
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True, operation="ndmi", output_path=out_path, input_path=Path(nir)
         )
@@ -271,17 +524,39 @@ class SpectralIndices:
         nir: str | Path,
         swir2: str | Path,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         NBR — Normalized Burn Ratio.
         Formula: (NIR - SWIR2) / (NIR + SWIR2).
         Use dNBR = pre_NBR - post_NBR for burn severity mapping.
+
+        Set chunked=True for large rasters that shouldn't be fully
+        loaded into memory at once (see ndvi's docstring for details).
+        If nir and swir2 point to the SAME merged multi-band image,
+        the correct bands are auto-detected from its real band
+        descriptions.
         """
-        nir_d, profile, _ = self._read(nir)
-        swir2_d, _, _ = self._read(swir2, ref_shape=nir_d.shape)
-        result = self._norm_diff(nir_d, swir2_d)
+        nir_ref, swir_ref = nir, swir2
+        if str(nir) == str(swir2):
+            resolved = resolve_shared_bands(nir, ["nir", "swir2"])
+            nir_ref, swir_ref = resolved["nir"], resolved["swir2"]
+
         out_path = _resolve_output(Path(nir), output, "nbr")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=[nir_ref, swir_ref],
+                formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
+            swir_band = swir_ref[1] if isinstance(swir_ref, tuple) else 1
+            nir_d, profile, _ = self._read(nir, band=nir_band)
+            swir2_d, _, _ = self._read(swir2, ref_shape=nir_d.shape, band=swir_band)
+            result = self._norm_diff(nir_d, swir2_d)
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True, operation="nbr", output_path=out_path, input_path=Path(nir)
         )
@@ -697,27 +972,49 @@ class SpectralIndices:
         inputs: list[str | Path],
         expression: str,
         output: str | None = None,
+        chunked: bool = False,
+        tile_size: int = 1024,
     ) -> ProcessingResult:
         """
         Arbitrary band arithmetic via a Python expression.
 
         Args:
-            inputs:     Raster paths; accessible in expression as B[0], B[1], …
+            inputs:     Raster paths, OR (path, band_index) tuples to
+                        reference a specific band within a shared,
+                        merged multi-band image; accessible in
+                        expression as B[0], B[1], …
             expression: E.g. ``"(B[1] - B[0]) / (B[1] + B[0] + 1e-6)"``
             output:     Output path.
+            chunked:    Set True for large rasters (e.g. drone
+                        orthomosaics) that shouldn't be fully loaded
+                        into memory at once, and that may exceed the
+                        standard GeoTIFF 4GB size limit. Processes in
+                        real, fixed-size tiles and writes a proper
+                        tiled, BigTIFF output. Default False preserves
+                        existing behavior for normal-sized rasters.
         """
         np = _require_numpy()
-        B, profile, ref_shape = [], None, None
-        for p in inputs:
-            d, prof, _ = self._read(p, ref_shape=ref_shape)
-            if profile is None:
-                profile = prof
-                ref_shape = d.shape
-            B.append(d)
+        first_path = inputs[0][0] if isinstance(inputs[0], tuple) else inputs[0]
+        out_path = _resolve_output(Path(first_path), output, "band_math")
 
-        result = eval(expression, {"B": B, "np": np})  # noqa: S307
-        out_path = _resolve_output(Path(inputs[0]), output, "band_math")
-        self._save(result, profile, out_path)
+        if chunked:
+            chunked_index_compute(
+                inputs=inputs,
+                formula=lambda B: eval(expression, {"B": B, "np": np}),  # noqa: S307
+                output=out_path, tile_size=tile_size,
+            )
+        else:
+            B, profile, ref_shape = [], None, None
+            for p in inputs:
+                path, band = (p[0], p[1]) if isinstance(p, tuple) else (p, 1)
+                d, prof, _ = self._read(path, ref_shape=ref_shape, band=band)
+                if profile is None:
+                    profile = prof
+                    ref_shape = d.shape
+                B.append(d)
+
+            result = eval(expression, {"B": B, "np": np})  # noqa: S307
+            self._save(result, profile, out_path)
         return ProcessingResult(
             success=True,
             operation="band_math",

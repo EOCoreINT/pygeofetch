@@ -27,13 +27,13 @@ Where pygeofetch goes further than most data-access libraries is in its **InSAR 
 
 | | |
 |---|---|
-| 🔐 **Authenticated access** | 22 verified providers; credentials stored via a Fernet-encrypted local file by default, or the system keyring (Keychain / Credential Manager / Secret Service) as an opt-in alternative |
-| 🔍 **Federated search** | One query across all providers → STAC 1.0 GeoJSON / GeoParquet / CSV, with real footprint geometry where the provider supplies it |
-| 📥 **Resilient downloads** | Parallel, resumable, checksum-verified, band-selective, atomic writes |
-| ⚙️ **Preprocessing** | Atmospheric correction, cloud masking, reprojection, resampling, pan-sharpening, mosaicking |
-| 📊 **17 spectral indices** | NDVI, EVI, SAVI, NDWI, MNDWI, NDBI, LST, Albedo, dNBR, GLCM texture, and more |
-| 🌐 **Verified InSAR chain** | Coregistration → phase removal → atmospheric/ionospheric correction → unwrapping → SBAS inversion |
-| 📋 **YAML pipelines** | Chainable, schedulable, repeatable workflows with full run history |
+| **Authenticated access** | 22 verified providers; credentials stored via a Fernet-encrypted local file by default, or the system keyring (Keychain / Credential Manager / Secret Service) as an opt-in alternative |
+| **Federated search** | One query across all providers → STAC 1.0 GeoJSON / GeoParquet / CSV, with real footprint geometry where the provider supplies it |
+| **Resilient downloads** | Parallel, resumable, checksum-verified, band-selective, atomic writes |
+| **Preprocessing** | Atmospheric correction, cloud masking, reprojection, resampling, pan-sharpening, mosaicking |
+| **17 spectral indices** | NDVI, EVI, SAVI, NDWI, MNDWI, NDBI, LST, Albedo, dNBR, GLCM texture, and more |
+| **Verified InSAR chain** | Coregistration → phase removal → atmospheric/ionospheric correction → unwrapping → SBAS inversion |
+| **YAML pipelines** | Chainable, schedulable, repeatable workflows with full run history |
 
 ---
 
@@ -229,7 +229,7 @@ If you use PyGeoFetch in your research or operational work, please cite it using
   title        = {PyGeoFetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing},
   year         = {2026},
   publisher    = {Zenodo},
-  version      = {2.6.2.6.1},
+  version      = {2.6.2.9.1},
   doi          = {10.5281/zenodo.22087230},
   url          = {https://doi.org/10.5281/zenodo.22087230}
 }

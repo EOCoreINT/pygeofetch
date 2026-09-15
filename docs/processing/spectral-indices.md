@@ -36,7 +36,7 @@ predictable range.
 
 - **`client.indices`** (via `PyGeoFetch()`) is
   `pygeofetch.processing.indices.SpectralIndices` — one **dedicated
-  method per index** (`client.indices.ndvi(red=..., nir=...)`), 17
+  method per index** (`client.indices.ndvi(red=..., nir=...)`), 18
   indices total, always available with no extra dependency. **This is
   the one almost every real workflow should use**, and everything on
   this page documents it.
@@ -99,6 +99,54 @@ If you downloaded via `pf.download(results, "./data", bands=["B02","B03","B04","
 (see [Downloading Satellite Data](../core-features/download.md)), you already have exactly the
 files you need, named by their real band codes.
 
+### One merged multi-band image? Skip finding separate files entirely
+
+Drone multispectral orthomosaics (MicaSense RedEdge/Altum, DJI P4
+Multispectral, and similar) typically arrive as one file with every
+band already merged — not separate per-band GeoTIFFs like the
+Sentinel-2 workflow above. Every method that needs two or more bands
+can read all of them from that single file directly:
+
+```python
+# Same path passed to every role -- pygeofetch reads the file's own
+# real, embedded band descriptions and resolves the correct band for
+# each one automatically.
+ndre = client.indices.ndre(rededge="drone_orthomosaic.tif", nir="drone_orthomosaic.tif")
+evi = client.indices.evi(blue="drone.tif", red="drone.tif", nir="drone.tif")
+```
+
+This works by matching the file's real band descriptions (e.g.
+`"Red edge"`, `"NIR"`) against a built-in synonym table covering
+common sensor naming conventions. Check what your file actually
+reports before relying on this:
+
+```python
+from pygeofetch.processing.base import detect_band_roles
+
+print(detect_band_roles("drone_orthomosaic.tif"))
+# -> {'blue': 1, 'green': 2, 'red': 4, 'rededge': 5, 'nir': 6}
+```
+
+If a role is missing from the result, your file's descriptions don't
+match a known synonym for it (or the file has no embedded
+descriptions at all — common; many drone processing tools don't write
+them). Calling an index method with the same path for two roles in
+that case fails honestly — `result.success` is `False` and
+`result.error` names exactly which role(s) couldn't be resolved —
+rather than silently reading the wrong band. Pass separately
+pre-extracted single-band files instead, or pass an explicit
+`(path, band_index)` tuple for any role if you already know the real
+band number:
+
+```python
+ndre = client.indices.ndre(rededge=("drone.tif", 5), nir=("drone.tif", 6))
+```
+
+This auto-detection currently covers `ndvi`, `ndre`, `evi`, `savi`,
+`ndwi`, `mndwi`, `ndbi`, `ndsi`, `ndmi`, `nbr`, and `band_math` — see
+[Processing large rasters](#processing-large-rasters-chunked-mode)
+below for the other real addition that goes with it.
+
 ## Vegetation indices — "how healthy/dense is the plant life here"
 
 ### NDVI — the one to reach for first
@@ -130,6 +178,31 @@ sparse young forest and a dense old-growth forest can both read
 "~0.8," so it's poor at distinguishing *among* already-healthy
 canopies. It's also sensitive to bare soil showing through sparse
 canopy (see SAVI below for a fix).
+
+### NDRE — NDVI's fix for saturation in dense canopy
+
+```python
+ndre = client.indices.ndre(rededge="rededge_band.tif", nir="B08.tif")
+```
+
+`(NIR - RedEdge) / (NIR + RedEdge)` (Barnes et al. 2000). Uses the red
+edge band (~705-750nm, the steep reflectance transition between red
+absorption and NIR reflectance) instead of red — this makes NDRE
+meaningfully less prone to the saturation problem that limits NDVI in
+dense canopy, since the red edge keeps responding to chlorophyll
+changes past the point where red has already bottomed out.
+
+Most satellites that carry NDVI's Red/NIR pair don't carry a red edge
+band at all (Landsat doesn't; Sentinel-2 does, as B05/B06/B07). Red
+edge sensors are far more common on **drone multispectral payloads**
+built specifically for precision agriculture — MicaSense RedEdge/
+Altum, DJI P4 Multispectral, and similar — which is where NDRE sees
+most of its real, practical use.
+
+**Use it for**: crop stress and chlorophyll content monitoring in
+precision agriculture, especially from drone imagery; anywhere NDVI
+has already saturated but you need finer discrimination within
+already-dense canopy.
 
 ### EVI — NDVI's fix for dense canopy and atmospheric noise
 
@@ -313,6 +386,64 @@ for any numpy function.
 write yourself; **never pass an `expression` string from untrusted
 user input** — it is not sandboxed against arbitrary code execution.
 :::
+## Processing large rasters (chunked mode)
+
+Every method's default path reads full bands into memory — fine for
+typical satellite scenes, but a real problem for large drone
+orthomosaics, which can exceed both available RAM and the standard
+GeoTIFF format's hard 4GB file-size limit (internal byte offsets are
+32-bit). Writing a large result the normal way fails with a raw,
+unhelpful `TIFFAppendToStrip: Maximum TIFF file size exceeded` error
+that gives no hint what actually went wrong.
+
+`chunked=True` processes the raster in fixed-size tiles instead of
+one full-array read/write, and writes a properly tiled, BigTIFF-safe
+output:
+
+```python
+ndvi = client.indices.ndvi(red="huge_drone_band.tif", nir="huge_drone_band2.tif",
+                            chunked=True, tile_size=1024)
+```
+
+- **Default is `chunked=False`**, preserving existing behavior and
+  performance for the common, normal-sized-scene case — chunking adds
+  real per-tile loop overhead that isn't worth paying unless you
+  actually need it.
+- **`tile_size`** (default `1024`) controls memory usage, not output
+  quality — smaller tiles use less RAM per step at the cost of more
+  Python-level iterations. It does not need to be a multiple of 16;
+  the underlying GeoTIFF block size is validated and rounded
+  separately, automatically.
+- Chunked and non-chunked paths are numerically identical — verified
+  directly against a non-chunked reference computation, including at
+  tile boundaries with a deliberately non-clean tile size, with zero
+  difference.
+- **Every real output raster now writes with `BIGTIFF=YES`
+  unconditionally** — even without `chunked=True` — since this has no
+  real downside for small files (GDAL only uses the 64-bit offset
+  format when a file actually needs it) and fully prevents the 4GB
+  crash on its own.
+
+Combine chunking with the auto-detection above for the real, common
+drone workflow — one large merged image, one method call, no manual
+band splitting and no memory blowup:
+
+```python
+ndre = client.indices.ndre(rededge="huge_drone_orthomosaic.tif",
+                            nir="huge_drone_orthomosaic.tif",
+                            chunked=True)
+```
+
+**Currently supported**: `ndvi`, `ndre`, `evi`, `savi`, `ndwi`,
+`mndwi`, `ndbi`, `ndsi`, `ndmi`, `nbr`, `band_math`. **Not yet
+extended**: `dnbr`, `tct`, `pca`, `texture`, `lst`, `albedo` — these
+still read full bands into memory and are unaffected by `chunked`
+(the parameter doesn't exist on them). `texture` specifically needs
+tile overlap to compute its neighborhood-based GLCM features
+correctly at tile boundaries, not just the same fixed-tile approach
+used here — naively chunking it the same way would produce wrong
+values along every tile seam.
+
 ## Common pitfalls
 
 - **Mismatched band resolutions.** Sentinel-2's bands aren't all the
@@ -340,25 +471,54 @@ user input** — it is not sandboxed against arbitrary code execution.
 
 ## Full method reference
 
-| Method | Formula | Citation |
-|---|---|---|
-| `ndvi(red, nir)` | `(NIR-Red)/(NIR+Red)` | — |
-| `evi(blue, red, nir, G=2.5, C1=6.0, C2=7.5, L=1.0)` | `G*(NIR-Red)/(NIR+C1*Red-C2*Blue+L)` | Standard MODIS EVI constants |
-| `savi(red, nir, L=0.5)` | `(NIR-Red)/(NIR+Red+L)*(1+L)` | — |
-| `ndwi(green, nir)` | `(Green-NIR)/(Green+NIR)` | McFeeters 1996 |
-| `mndwi(green, swir1)` | `(Green-SWIR1)/(Green+SWIR1)` | Xu 2006 |
-| `ndbi(nir, swir1)` | `(SWIR1-NIR)/(SWIR1+NIR)` | Zha 2003 |
-| `ndsi(green, swir1)` | `(Green-SWIR1)/(Green+SWIR1)` | Hall 1995 |
-| `ndmi(nir, swir1)` | `(NIR-SWIR1)/(NIR+SWIR1)` | Wilson & Sader 2002 |
-| `nbr(nir, swir2)` | `(NIR-SWIR2)/(NIR+SWIR2)` | — |
-| `dnbr(pre_nir, pre_swir2, post_nir, post_swir2)` | `NBR_pre - NBR_post` | USGS burn-severity scale |
-| `tct(blue, green, red, nir, swir1, swir2, sensor="sentinel2")` | 3-band linear transform | Nedkov 2017 / Baig et al. 2014 |
-| `pca(inputs, n_components=3)` | Principal component analysis | — |
-| `texture(input, window=5, features=None)` | GLCM texture features | — |
-| `lst(thermal, emissivity=0.97, sensor="landsat8")` | Thermal band → real Kelvin/Celsius | Real Landsat thermal constants |
-| `albedo(inputs, sensor="sentinel2")` | Narrowband-to-broadband | Liang 2001 |
-| `band_math(inputs, expression)` | Arbitrary expression | — |
-| `stack(inputs)` | Multi-band GeoTIFF | — |
+| Method | Formula | Citation | `chunked`/auto-detect |
+|---|---|---|---|
+| `ndvi(red, nir)` | `(NIR-Red)/(NIR+Red)` | — | ✅ |
+| `ndre(rededge, nir)` | `(NIR-RedEdge)/(NIR+RedEdge)` | Barnes et al. 2000 | ✅ |
+| `evi(blue, red, nir, G=2.5, C1=6.0, C2=7.5, L=1.0)` | `G*(NIR-Red)/(NIR+C1*Red-C2*Blue+L)` | Standard MODIS EVI constants | ✅ |
+| `savi(red, nir, L=0.5)` | `(NIR-Red)/(NIR+Red+L)*(1+L)` | — | ✅ |
+| `ndwi(green, nir)` | `(Green-NIR)/(Green+NIR)` | McFeeters 1996 | ✅ |
+| `mndwi(green, swir1)` | `(Green-SWIR1)/(Green+SWIR1)` | Xu 2006 | ✅ |
+| `ndbi(nir, swir1)` | `(SWIR1-NIR)/(SWIR1+NIR)` | Zha 2003 | ✅ |
+| `ndsi(green, swir1)` | `(Green-SWIR1)/(Green+SWIR1)` | Hall 1995 | ✅ |
+| `ndmi(nir, swir1)` | `(NIR-SWIR1)/(NIR+SWIR1)` | Wilson & Sader 2002 | ✅ |
+| `nbr(nir, swir2)` | `(NIR-SWIR2)/(NIR+SWIR2)` | — | ✅ |
+| `dnbr(pre_nir, pre_swir2, post_nir, post_swir2)` | `NBR_pre - NBR_post` | USGS burn-severity scale | ❌ |
+| `tct(blue, green, red, nir, swir1, swir2, sensor="sentinel2")` | 3-band linear transform | Nedkov 2017 / Baig et al. 2014 | ❌ |
+| `pca(inputs, n_components=3)` | Principal component analysis | — | ❌ |
+| `texture(input, window=5, features=None)` | GLCM texture features | — | ❌ |
+| `lst(thermal, emissivity=0.97, sensor="landsat8")` | Thermal band → real Kelvin/Celsius | Real Landsat thermal constants | ❌ |
+| `albedo(inputs, sensor="sentinel2")` | Narrowband-to-broadband | Liang 2001 | ❌ |
+| `band_math(inputs, expression)` | Arbitrary expression | — | ✅ |
+| `stack(inputs)` | Multi-band GeoTIFF | — | ❌ |
+
+Every method marked ✅ accepts `chunked=True, tile_size=1024` for
+large rasters, and auto-detects bands when the same path is passed
+for more than one role — see
+[Processing large rasters](#processing-large-rasters-chunked-mode)
+and [Finding your bands](#finding-your-bands) above. Methods marked
+❌ don't have these parameters at all yet.
+
+## CLI reference
+
+Every ✅ method above is also available from the command line, under
+`pygeofetch index`:
+
+```bash
+pygeofetch index ndvi --red B04.tif --nir B08.tif
+pygeofetch index ndre --rededge rededge_band.tif --nir nir_band.tif
+
+# Same merged image passed to both roles -- auto-detected exactly like the Python API
+pygeofetch index ndre --rededge drone.tif --nir drone.tif
+
+# Large raster, memory-safe tiled processing
+pygeofetch index ndvi --red huge.tif --nir huge2.tif --chunked --tile-size 1024
+```
+
+`--chunked` is a flag (no value); `--tile-size` takes an integer and
+is only used when `--chunked` is set. Run `pygeofetch index COMMAND
+--help` for the full option list of any individual command — e.g.
+`pygeofetch index evi --help`.
 
 ## The standalone, `spyndex`-backed `SpectralIndex`
 
@@ -441,4 +601,3 @@ si.compute("GOS", RED=red_array)
 
 `si.info("AKP")` returns the real formula, required bands, and a
 `sensor_note` explaining the same real constraint in prose.
-

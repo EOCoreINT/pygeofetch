@@ -89,7 +89,7 @@ implementation, not assumed):
 
 ```json
 {
-  "version": "2.6.2.6",
+  "version": "2.6.2.9",
   "python": "3.12.1",
   "platform": "Linux",
   "providers_authenticated": ["copernicus", "usgs"],

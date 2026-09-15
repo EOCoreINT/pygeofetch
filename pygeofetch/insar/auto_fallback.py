@@ -293,7 +293,23 @@ def run_multi_modal_deformation(
     # received a scalar `pairs` list, not a per-pixel coherence raster
     # -- build one the same real, honest way the multi-sensor
     # notebooks do (mean across the real per-pair coherence arrays).
-    mean_coherence_raster = np.mean([np.asarray(p.coherence) for p in pairs], axis=0)
+    #
+    # Real, necessary edge case, confirmed directly: when `pairs` is
+    # genuinely empty (a total InSAR failure with zero usable pairs at
+    # all, not just low coherence), `np.mean([], axis=0)` silently
+    # degrades to a scalar `nan` with shape `()` rather than raising --
+    # which then fails the real shape check inside fuse_insar_optical
+    # with a confusing "all input arrays must share the same real
+    # shape" error that gives no hint the real cause was an empty
+    # pairs list. Build a properly-shaped all-NaN raster explicitly in
+    # this case instead: a real, honest signal of "zero real coherence
+    # information available," matching `velocity`'s own real shape so
+    # fuse_insar_optical's fusion logic runs correctly and correctly
+    # concludes optical-only, rather than crashing before it can.
+    if pairs:
+        mean_coherence_raster = np.mean([np.asarray(p.coherence) for p in pairs], axis=0)
+    else:
+        mean_coherence_raster = np.full(np.asarray(velocity).shape, np.nan)
 
     fused = fuse_insar_optical(
         insar_velocity=velocity,

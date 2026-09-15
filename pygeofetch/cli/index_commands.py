@@ -50,11 +50,47 @@ def index() -> None:
     "--nir", required=True, type=click.Path(exists=True), help="NIR band (e.g. B08.tif)"
 )
 @click.option("--output", "-o", default=None)
-def ndvi_cmd(red, nir, output):
-    """NDVI — Normalized Difference Vegetation Index. Range: -1 to +1. Vegetation > 0.3."""
+@click.option(
+    "--chunked", is_flag=True,
+    help="Process in memory-safe tiles for large rasters (e.g. drone orthomosaics) that exceed available RAM or the 4GB GeoTIFF limit.",
+)
+@click.option("--tile-size", default=1024, show_default=True, type=int, help="Tile edge length in pixels when --chunked is set.")
+def ndvi_cmd(red, nir, output, chunked, tile_size):
+    """NDVI — Normalized Difference Vegetation Index. Range: -1 to +1. Vegetation > 0.3.
+
+    Pass the SAME path to --red and --nir to auto-detect both bands from
+    one merged multi-band image (e.g. a drone orthomosaic), using its
+    real, embedded band descriptions.
+    """
     e = _engine()
-    r = e.indices.ndvi(red=red, nir=nir, output=output)
+    r = e.indices.ndvi(red=red, nir=nir, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "NDVI")
+
+
+@index.command("ndre")
+@click.option(
+    "--rededge", required=True, type=click.Path(exists=True), help="Red edge band"
+)
+@click.option(
+    "--nir", required=True, type=click.Path(exists=True), help="NIR band"
+)
+@click.option("--output", "-o", default=None)
+@click.option(
+    "--chunked", is_flag=True,
+    help="Process in memory-safe tiles for large rasters that exceed available RAM or the 4GB GeoTIFF limit.",
+)
+@click.option("--tile-size", default=1024, show_default=True, type=int, help="Tile edge length in pixels when --chunked is set.")
+def ndre_cmd(rededge, nir, output, chunked, tile_size):
+    """NDRE — Normalized Difference Red Edge Index. Range: -1 to +1.
+
+    Less prone to saturation than NDVI in dense canopy -- useful for
+    crop stress and chlorophyll monitoring from drone multispectral
+    sensors. Pass the SAME path to --rededge and --nir to auto-detect
+    both bands from one merged multi-band image.
+    """
+    e = _engine()
+    r = e.indices.ndre(rededge=rededge, nir=nir, output=output, chunked=chunked, tile_size=tile_size)
+    _pr(r, "NDRE")
 
 
 @index.command("evi")
@@ -62,10 +98,16 @@ def ndvi_cmd(red, nir, output):
 @click.option("--red", required=True, type=click.Path(exists=True))
 @click.option("--nir", required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", default=None)
-def evi_cmd(blue, red, nir, output):
-    """EVI — Enhanced Vegetation Index. Better than NDVI in high-biomass areas."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def evi_cmd(blue, red, nir, output, chunked, tile_size):
+    """EVI — Enhanced Vegetation Index. Better than NDVI in high-biomass areas.
+
+    Pass the SAME path to --blue, --red, and --nir to auto-detect all
+    three bands from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.evi(blue=blue, red=red, nir=nir, output=output)
+    r = e.indices.evi(blue=blue, red=red, nir=nir, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "EVI")
 
 
@@ -74,10 +116,16 @@ def evi_cmd(blue, red, nir, output):
 @click.option("--nir", required=True, type=click.Path(exists=True))
 @click.option("--soil-l", default=0.5, show_default=True, type=float)
 @click.option("--output", "-o", default=None)
-def savi_cmd(red, nir, soil_l, output):
-    """SAVI — Soil Adjusted Vegetation Index. Reduces soil brightness influence."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def savi_cmd(red, nir, soil_l, output, chunked, tile_size):
+    """SAVI — Soil Adjusted Vegetation Index. Reduces soil brightness influence.
+
+    Pass the SAME path to --red and --nir to auto-detect both bands
+    from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.savi(red=red, nir=nir, L=soil_l, output=output)
+    r = e.indices.savi(red=red, nir=nir, L=soil_l, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "SAVI")
 
 
@@ -85,10 +133,16 @@ def savi_cmd(red, nir, soil_l, output):
 @click.option("--green", required=True, type=click.Path(exists=True))
 @click.option("--nir", required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", default=None)
-def ndwi_cmd(green, nir, output):
-    """NDWI — Normalized Difference Water Index. Water > 0."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def ndwi_cmd(green, nir, output, chunked, tile_size):
+    """NDWI — Normalized Difference Water Index. Water > 0.
+
+    Pass the SAME path to --green and --nir to auto-detect both bands
+    from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.ndwi(green=green, nir=nir, output=output)
+    r = e.indices.ndwi(green=green, nir=nir, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "NDWI")
 
 
@@ -96,10 +150,16 @@ def ndwi_cmd(green, nir, output):
 @click.option("--green", required=True, type=click.Path(exists=True))
 @click.option("--swir1", required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", default=None)
-def mndwi_cmd(green, swir1, output):
-    """MNDWI — Modified NDWI. Better separation of water from built-up areas."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def mndwi_cmd(green, swir1, output, chunked, tile_size):
+    """MNDWI — Modified NDWI. Better separation of water from built-up areas.
+
+    Pass the SAME path to --green and --swir1 to auto-detect both
+    bands from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.mndwi(green=green, swir1=swir1, output=output)
+    r = e.indices.mndwi(green=green, swir1=swir1, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "MNDWI")
 
 
@@ -107,10 +167,16 @@ def mndwi_cmd(green, swir1, output):
 @click.option("--nir", required=True, type=click.Path(exists=True))
 @click.option("--swir1", required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", default=None)
-def ndbi_cmd(nir, swir1, output):
-    """NDBI — Normalized Difference Built-up Index. Urban > 0."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def ndbi_cmd(nir, swir1, output, chunked, tile_size):
+    """NDBI — Normalized Difference Built-up Index. Urban > 0.
+
+    Pass the SAME path to --nir and --swir1 to auto-detect both bands
+    from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.ndbi(nir=nir, swir1=swir1, output=output)
+    r = e.indices.ndbi(nir=nir, swir1=swir1, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "NDBI")
 
 
@@ -118,10 +184,16 @@ def ndbi_cmd(nir, swir1, output):
 @click.option("--green", required=True, type=click.Path(exists=True))
 @click.option("--swir1", required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", default=None)
-def ndsi_cmd(green, swir1, output):
-    """NDSI — Snow Index. Snow > 0.4."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def ndsi_cmd(green, swir1, output, chunked, tile_size):
+    """NDSI — Snow Index. Snow > 0.4.
+
+    Pass the SAME path to --green and --swir1 to auto-detect both
+    bands from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.ndsi(green=green, swir1=swir1, output=output)
+    r = e.indices.ndsi(green=green, swir1=swir1, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "NDSI")
 
 
@@ -129,10 +201,16 @@ def ndsi_cmd(green, swir1, output):
 @click.option("--nir", required=True, type=click.Path(exists=True))
 @click.option("--swir1", required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", default=None)
-def ndmi_cmd(nir, swir1, output):
-    """NDMI — Moisture Index. Sensitive to canopy water content."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def ndmi_cmd(nir, swir1, output, chunked, tile_size):
+    """NDMI — Moisture Index. Sensitive to canopy water content.
+
+    Pass the SAME path to --nir and --swir1 to auto-detect both bands
+    from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.ndmi(nir=nir, swir1=swir1, output=output)
+    r = e.indices.ndmi(nir=nir, swir1=swir1, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "NDMI")
 
 
@@ -140,10 +218,16 @@ def ndmi_cmd(nir, swir1, output):
 @click.option("--nir", required=True, type=click.Path(exists=True))
 @click.option("--swir2", required=True, type=click.Path(exists=True))
 @click.option("--output", "-o", default=None)
-def nbr_cmd(nir, swir2, output):
-    """NBR — Normalized Burn Ratio. Use dNBR for burn severity."""
+@click.option("--chunked", is_flag=True, help="Process in memory-safe tiles for large rasters.")
+@click.option("--tile-size", default=1024, show_default=True, type=int)
+def nbr_cmd(nir, swir2, output, chunked, tile_size):
+    """NBR — Normalized Burn Ratio. Use dNBR for burn severity.
+
+    Pass the SAME path to --nir and --swir2 to auto-detect both bands
+    from one merged multi-band image.
+    """
     e = _engine()
-    r = e.indices.nbr(nir=nir, swir2=swir2, output=output)
+    r = e.indices.nbr(nir=nir, swir2=swir2, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, "NBR")
 
 
@@ -262,10 +346,15 @@ def albedo_cmd(inputs, sensor, output):
     "--expr", "-e", required=True, help="Python expression. Bands as B[0], B[1], ..."
 )
 @click.option("--output", "-o", default=None)
-def band_math_cmd(inputs, expr, output):
+@click.option(
+    "--chunked", is_flag=True,
+    help="Process in memory-safe tiles for large rasters (e.g. drone orthomosaics) that exceed available RAM or the 4GB GeoTIFF limit.",
+)
+@click.option("--tile-size", default=1024, show_default=True, type=int, help="Tile edge length in pixels when --chunked is set.")
+def band_math_cmd(inputs, expr, output, chunked, tile_size):
     """Arbitrary band arithmetic. Example: --expr '(B[1]-B[0])/(B[1]+B[0])'."""
     e = _engine()
-    r = e.indices.band_math(inputs=list(inputs), expression=expr, output=output)
+    r = e.indices.band_math(inputs=list(inputs), expression=expr, output=output, chunked=chunked, tile_size=tile_size)
     _pr(r, f"band-math ({expr[:40]})")
 
 
