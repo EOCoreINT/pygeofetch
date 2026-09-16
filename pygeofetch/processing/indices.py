@@ -17,8 +17,10 @@ from pygeofetch.processing.base import (
     _safe_write_band,
     _timed,
     chunked_index_compute,
+    clip_output_if_requested,
     detect_band_roles,
     resolve_shared_bands,
+    should_chunk,
 )
 
 logger = logging.getLogger(__name__)
@@ -35,15 +37,23 @@ class SpectralIndices:
     normalised indices.
 
     Example::
-
         from pygeofetch import PyGeoFetch
+
         client = PyGeoFetch()
+
         ndvi = client.indices.ndvi(red="B04.tif", nir="B08.tif")
         evi  = client.indices.evi(blue="B02.tif", red="B04.tif", nir="B08.tif")
+        ndwi = client.indices.ndwi(green="B03.tif", nir="B08.tif")
+        ndsi = client.indices.ndsi(green="B03.tif", swir1="B11.tif")
+        ndmi = client.indices.ndmi(nir="B08.tif", swir1="B11.tif")
+        ndbi = client.indices.ndbi(nir="B08.tif", swir2="B12.tif")
+        ndre = client.indices.ndre(rededge="B05.tif", nir="B08.tif")
+        nbr  = client.indices.nbr(nir="B08.tif", swir2="B12.tif")
     """
 
-    # ── internal helpers ──────────────────────────────────────────────────
 
+    # ── internal helpers ──────────────────────────────────────────────────
+    
     @staticmethod
     def _read(path: str | Path, ref_shape=None, band: int = 1):
         """
@@ -54,7 +64,7 @@ class SpectralIndices:
         Returns (data_float32, profile, nodata).
         """
         return _safe_read_band(path, band=band, out_shape=ref_shape)
-
+    
     @staticmethod
     def _norm_diff(a, b):
         """(a - b) / (a + b) with safe division → NaN where denominator=0."""
@@ -74,8 +84,11 @@ class SpectralIndices:
         red: str | Path,
         nir: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         NDVI — Normalized Difference Vegetation Index.
@@ -94,6 +107,11 @@ class SpectralIndices:
         a drone orthomosaic with all bands in one file), the correct
         bands are auto-detected from its real band descriptions -- no
         manual pre-splitting required.
+
+        If bbox or geometry is supplied, the computed NDVI raster is
+        clipped to it afterward -- same real bbox/GeoJSON-file/dict/
+        shapely-geometry handling and automatic CRS reprojection as
+        Preprocessor.clip(). A no-op if neither is given.
         """
         red_ref, nir_ref = red, nir
         if str(red) == str(nir):
@@ -101,6 +119,8 @@ class SpectralIndices:
             red_ref, nir_ref = resolved["red"], resolved["nir"]
 
         out_path = _resolve_output(Path(red), output, "ndvi")
+        if chunked == "auto":
+            chunked = should_chunk([red_ref, nir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[red_ref, nir_ref],
@@ -114,6 +134,7 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=red_d.shape, band=nir_band)
             result = self._norm_diff(nir_d, red_d)
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         logger.info("NDVI → %s", out_path.name)
         return ProcessingResult(
             success=True, operation="ndvi", output_path=out_path, input_path=Path(red)
@@ -127,8 +148,11 @@ class SpectralIndices:
         rededge: str | Path,
         nir: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         NDRE — Normalized Difference Red Edge Index (Barnes et al. 2000).
@@ -159,6 +183,8 @@ class SpectralIndices:
             rededge_ref, nir_ref = resolved["rededge"], resolved["nir"]
 
         out_path = _resolve_output(Path(rededge), output, "ndre")
+        if chunked == "auto":
+            chunked = should_chunk([rededge_ref, nir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[rededge_ref, nir_ref],
@@ -173,6 +199,7 @@ class SpectralIndices:
             result = self._norm_diff(nir_d, rededge_d)
             self._save(result, profile, out_path)
         logger.info("NDRE → %s", out_path.name)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="ndre", output_path=out_path, input_path=Path(rededge)
         )
@@ -190,8 +217,11 @@ class SpectralIndices:
         C2: float = 7.5,
         L: float = 1.0,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         EVI — Enhanced Vegetation Index.
@@ -218,6 +248,8 @@ class SpectralIndices:
             with np.errstate(divide="ignore", invalid="ignore"):
                 return np.where(denom != 0, G * (nir_d - red_d) / denom, float("nan"))
 
+        if chunked == "auto":
+            chunked = should_chunk([blue_ref, red_ref, nir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[blue_ref, red_ref, nir_ref],
@@ -234,6 +266,7 @@ class SpectralIndices:
             result = _evi_formula([blue_d, red_d, nir_d])
             self._save(result, profile, out_path)
         logger.info("EVI → %s", out_path.name)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="evi", output_path=out_path, input_path=Path(red)
         )
@@ -247,8 +280,11 @@ class SpectralIndices:
         nir: str | Path,
         L: float = 0.5,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         SAVI — Soil Adjusted Vegetation Index.
@@ -274,6 +310,8 @@ class SpectralIndices:
             with np.errstate(divide="ignore", invalid="ignore"):
                 return np.where(denom != 0, (nir_d - red_d) / denom * (1 + L), float("nan"))
 
+        if chunked == "auto":
+            chunked = should_chunk([red_ref, nir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[red_ref, nir_ref],
@@ -287,6 +325,7 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=red_d.shape, band=nir_band)
             result = _savi_formula([red_d, nir_d])
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="savi", output_path=out_path, input_path=Path(red)
         )
@@ -299,8 +338,11 @@ class SpectralIndices:
         green: str | Path,
         nir: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         NDWI — Normalized Difference Water Index (McFeeters 1996).
@@ -318,6 +360,8 @@ class SpectralIndices:
             green_ref, nir_ref = resolved["green"], resolved["nir"]
 
         out_path = _resolve_output(Path(green), output, "ndwi")
+        if chunked == "auto":
+            chunked = should_chunk([green_ref, nir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[green_ref, nir_ref],
@@ -331,6 +375,7 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=green_d.shape, band=nir_band)
             result = self._norm_diff(green_d, nir_d)
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="ndwi", output_path=out_path, input_path=Path(green)
         )
@@ -343,8 +388,11 @@ class SpectralIndices:
         green: str | Path,
         swir1: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         MNDWI — Modified NDWI (Xu 2006).
@@ -363,6 +411,8 @@ class SpectralIndices:
             green_ref, swir_ref = resolved["green"], resolved["swir1"]
 
         out_path = _resolve_output(Path(green), output, "mndwi")
+        if chunked == "auto":
+            chunked = should_chunk([green_ref, swir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[green_ref, swir_ref],
@@ -376,6 +426,7 @@ class SpectralIndices:
             swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape, band=swir_band)
             result = self._norm_diff(green_d, swir_d)
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True,
             operation="mndwi",
@@ -391,8 +442,11 @@ class SpectralIndices:
         nir: str | Path,
         swir1: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         NDBI — Normalized Difference Built-up Index (Zha 2003).
@@ -410,6 +464,8 @@ class SpectralIndices:
             nir_ref, swir_ref = resolved["nir"], resolved["swir1"]
 
         out_path = _resolve_output(Path(nir), output, "ndbi")
+        if chunked == "auto":
+            chunked = should_chunk([nir_ref, swir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[nir_ref, swir_ref],
@@ -423,6 +479,7 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=swir_d.shape, band=nir_band)
             result = self._norm_diff(swir_d, nir_d)
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="ndbi", output_path=out_path, input_path=Path(nir)
         )
@@ -435,8 +492,11 @@ class SpectralIndices:
         green: str | Path,
         swir1: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         NDSI — Normalized Difference Snow Index (Hall 1995).
@@ -454,6 +514,8 @@ class SpectralIndices:
             green_ref, swir_ref = resolved["green"], resolved["swir1"]
 
         out_path = _resolve_output(Path(green), output, "ndsi")
+        if chunked == "auto":
+            chunked = should_chunk([green_ref, swir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[green_ref, swir_ref],
@@ -467,6 +529,7 @@ class SpectralIndices:
             swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape, band=swir_band)
             result = self._norm_diff(green_d, swir_d)
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="ndsi", output_path=out_path, input_path=Path(green)
         )
@@ -479,8 +542,11 @@ class SpectralIndices:
         nir: str | Path,
         swir1: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         NDMI — Normalized Difference Moisture Index (Wilson & Sader 2002).
@@ -499,6 +565,8 @@ class SpectralIndices:
             nir_ref, swir_ref = resolved["nir"], resolved["swir1"]
 
         out_path = _resolve_output(Path(nir), output, "ndmi")
+        if chunked == "auto":
+            chunked = should_chunk([nir_ref, swir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[nir_ref, swir_ref],
@@ -512,6 +580,7 @@ class SpectralIndices:
             swir_d, _, _ = self._read(swir1, ref_shape=nir_d.shape, band=swir_band)
             result = self._norm_diff(nir_d, swir_d)
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="ndmi", output_path=out_path, input_path=Path(nir)
         )
@@ -524,8 +593,11 @@ class SpectralIndices:
         nir: str | Path,
         swir2: str | Path,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         NBR — Normalized Burn Ratio.
@@ -544,6 +616,8 @@ class SpectralIndices:
             nir_ref, swir_ref = resolved["nir"], resolved["swir2"]
 
         out_path = _resolve_output(Path(nir), output, "nbr")
+        if chunked == "auto":
+            chunked = should_chunk([nir_ref, swir_ref])
         if chunked:
             chunked_index_compute(
                 inputs=[nir_ref, swir_ref],
@@ -557,6 +631,7 @@ class SpectralIndices:
             swir2_d, _, _ = self._read(swir2, ref_shape=nir_d.shape, band=swir_band)
             result = self._norm_diff(nir_d, swir2_d)
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True, operation="nbr", output_path=out_path, input_path=Path(nir)
         )
@@ -694,6 +769,7 @@ class SpectralIndices:
         valid = np.all(np.isfinite(X), axis=1)
         X_v = X[valid]
 
+        # Standardize
         mean = X_v.mean(axis=0)
         std = X_v.std(axis=0) + 1e-10
         X_std = (X_v - mean) / std
@@ -972,8 +1048,11 @@ class SpectralIndices:
         inputs: list[str | Path],
         expression: str,
         output: str | None = None,
-        chunked: bool = False,
+        chunked: bool | str = "auto",
         tile_size: int = 1024,
+        bbox=None,
+        geometry=None,
+        geometry_crs: str = "EPSG:4326",
     ) -> ProcessingResult:
         """
         Arbitrary band arithmetic via a Python expression.
@@ -992,10 +1071,16 @@ class SpectralIndices:
                         real, fixed-size tiles and writes a proper
                         tiled, BigTIFF output. Default False preserves
                         existing behavior for normal-sized rasters.
+            bbox, geometry, geometry_crs: If given, the result is
+                        clipped afterward -- same handling as
+                        Preprocessor.clip(). No-op if both are None.
         """
         np = _require_numpy()
         first_path = inputs[0][0] if isinstance(inputs[0], tuple) else inputs[0]
         out_path = _resolve_output(Path(first_path), output, "band_math")
+
+        if chunked == "auto":
+            chunked = should_chunk(inputs)
 
         if chunked:
             chunked_index_compute(
@@ -1015,6 +1100,7 @@ class SpectralIndices:
 
             result = eval(expression, {"B": B, "np": np})  # noqa: S307
             self._save(result, profile, out_path)
+        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
         return ProcessingResult(
             success=True,
             operation="band_math",

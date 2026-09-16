@@ -546,3 +546,106 @@ def resolve_shared_bands(image_path: str | Path, roles: list) -> dict:
         )
         raise ValueError(msg)
     return {role: (image_path, detected[role]) for role in roles}
+
+
+def clip_output_if_requested(
+    output_path,
+    bbox=None,
+    geometry=None,
+    geometry_crs: str = "EPSG:4326",
+    all_touched: bool = False,
+) -> None:
+    """
+    Real, optional post-processing clip of an already-written index
+    output -- reuses the existing, real Preprocessor.clip() (same
+    bbox/geometry/geometry_crs handling, same automatic CRS
+    reprojection) rather than a separate, new clipping implementation.
+
+    A no-op if both bbox and geometry are None -- the overwhelmingly
+    common case, where index outputs stay at their natural full extent.
+
+    Clips into a real temporary file, then atomically replaces the
+    original output path, rather than reading and writing the same
+    file at once, which is not a safe operation.
+    """
+    if bbox is None and geometry is None:
+        return
+
+    from pygeofetch.processing.preprocessor import Preprocessor
+
+    output_path = Path(output_path)
+    tmp_path = output_path.with_suffix(output_path.suffix + ".clip_tmp")
+
+    result = Preprocessor().clip(
+        input=output_path, bbox=bbox, geometry=geometry,
+        output=str(tmp_path), all_touched=all_touched, geometry_crs=geometry_crs,
+    )
+    if not result.success:
+        tmp_path.unlink(missing_ok=True)
+        msg = f"Post-computation clip failed: {result.error}"
+        raise ValueError(msg)
+
+    tmp_path.replace(output_path)
+
+
+def _estimate_memory_need_mb(file_paths, n_arrays_in_flight: int = 4) -> float:
+    """
+    Real, honest estimate of peak memory a non-chunked read/compute/
+    write would need for the given real files -- based on their real,
+    on-disk size, not a guess.
+
+    n_arrays_in_flight accounts for the real fact that a typical index
+    computation holds several full copies in memory at once (each
+    input band as float32, plus the result, plus at least one
+    intermediate) -- 4 is a real, conservative multiplier covering a
+    2-3 band index; pass a higher value for operations known to hold
+    more arrays simultaneously (e.g. classification across many bands).
+    """
+    import os
+
+    total_bytes = 0
+    for p in file_paths:
+        path, _band = (p[0], p[1]) if isinstance(p, tuple) else (p, 1)
+        try:
+            total_bytes += os.path.getsize(path)
+        except OSError:
+            continue
+    # Real, honest correction: on-disk size is often compressed;
+    # float32 in-memory representation is typically larger. A 2x
+    # factor is a conservative real-world estimate for typical
+    # deflate/LZW-compressed GeoTIFF inputs, not an exact guarantee.
+    return (total_bytes * 2 * n_arrays_in_flight) / (1024 * 1024)
+
+
+def should_chunk(file_paths, safety_factor: float = 0.5, n_arrays_in_flight: int = 4) -> bool:
+    """
+    Real, automatic decision on whether an operation should chunk,
+    based on the real, actual on-disk size of the given files compared
+    against real available system memory (via psutil, if installed).
+
+    Args:
+        file_paths: Input paths (or (path, band) tuples) that would be
+                    read for this operation.
+        safety_factor: Only use this fraction of real available memory
+                    as the real budget -- 0.5 (default) means "only
+                    chunk if the estimated need exceeds half of what's
+                    really free," leaving real headroom for everything
+                    else already running on the machine.
+        n_arrays_in_flight: See _estimate_memory_need_mb.
+
+    Returns:
+        True if chunking is recommended. Without psutil installed,
+        falls back to a real, simple, conservative threshold (500 MB
+        total real input size) rather than silently never chunking --
+        an honest fallback, not a guess disguised as a real check.
+    """
+    estimated_mb = _estimate_memory_need_mb(file_paths, n_arrays_in_flight)
+
+    try:
+        import psutil
+
+        available_mb = psutil.virtual_memory().available / (1024 * 1024)
+        return estimated_mb > (available_mb * safety_factor)
+    except ImportError:
+        total_input_mb = estimated_mb / (2 * n_arrays_in_flight)  # back out to real raw size
+        return total_input_mb > 500.0

@@ -147,6 +147,35 @@ This auto-detection currently covers `ndvi`, `ndre`, `evi`, `savi`,
 [Processing large rasters](#processing-large-rasters-chunked-mode)
 below for the other real addition that goes with it.
 
+### Clipping the result to an AOI
+
+The same 11 methods also accept `bbox`, `geometry`, and `geometry_crs`
+— if either is given, the computed result is clipped afterward, using
+the same real bbox/GeoJSON-file/dict/shapely-geometry handling and
+automatic CRS reprojection as
+[`Preprocessor.clip()`](preprocessing.md). A no-op if neither is
+supplied — the common case, where results stay at their input bands'
+full extent.
+
+```python
+ndvi = client.indices.ndvi(
+    red="B04.tif", nir="B08.tif",
+    bbox=(-74.05, 40.68, -73.95, 40.78),   # minx, miny, maxx, maxy, WGS84 by default
+)
+
+# Or a real polygon boundary instead of a rectangle
+ndvi = client.indices.ndvi(
+    red="B04.tif", nir="B08.tif",
+    geometry="farm_boundary.geojson",
+)
+```
+
+Set `geometry_crs` if your bbox/geometry coordinates are already in a
+projected CRS matching the raster, rather than WGS84 lat/lon (the
+default). This combines with `chunked` and the multi-band
+auto-detection above — clipping always happens as the last step,
+after the index itself is fully computed.
+
 ## Vegetation indices — "how healthy/dense is the plant life here"
 
 ### NDVI — the one to reach for first
@@ -405,10 +434,22 @@ ndvi = client.indices.ndvi(red="huge_drone_band.tif", nir="huge_drone_band2.tif"
                             chunked=True, tile_size=1024)
 ```
 
-- **Default is `chunked=False`**, preserving existing behavior and
-  performance for the common, normal-sized-scene case — chunking adds
-  real per-tile loop overhead that isn't worth paying unless you
-  actually need it.
+- **Default is `chunked="auto"`**, not always-on. On every call, this
+  compares the real, on-disk size of the actual inputs against real
+  available system memory (via `psutil`, if installed — falls back to
+  a conservative 500MB total-input-size threshold otherwise) and
+  decides automatically. Small, ordinary satellite scenes get the
+  fast, direct path with no per-tile overhead; a large drone
+  orthomosaic gets chunked without you needing to know the parameter
+  exists. Pass `chunked=True` or `chunked=False` explicitly to force
+  one path regardless of size.
+- **A real, deliberate correction worth stating plainly**: chunking's
+  proven, reliable benefit is memory safety, not speed. Direct
+  measurement in this project found chunking roughly a wash on
+  processing time for a single-threaded run — sometimes marginally
+  faster, sometimes slower, never reliably faster. If you need this
+  to run faster, not just handle a bigger file, that requires genuine
+  multi-core parallelism, which chunking alone does not provide.
 - **`tile_size`** (default `1024`) controls memory usage, not output
   quality — smaller tiles use less RAM per step at the cost of more
   Python-level iterations. It does not need to be a multiple of 16;
@@ -471,7 +512,7 @@ values along every tile seam.
 
 ## Full method reference
 
-| Method | Formula | Citation | `chunked`/auto-detect |
+| Method | Formula | Citation | `chunked`/auto-detect/clip |
 |---|---|---|---|
 | `ndvi(red, nir)` | `(NIR-Red)/(NIR+Red)` | — | ✅ |
 | `ndre(rededge, nir)` | `(NIR-RedEdge)/(NIR+RedEdge)` | Barnes et al. 2000 | ✅ |
@@ -493,11 +534,14 @@ values along every tile seam.
 | `stack(inputs)` | Multi-band GeoTIFF | — | ❌ |
 
 Every method marked ✅ accepts `chunked=True, tile_size=1024` for
-large rasters, and auto-detects bands when the same path is passed
-for more than one role — see
-[Processing large rasters](#processing-large-rasters-chunked-mode)
-and [Finding your bands](#finding-your-bands) above. Methods marked
-❌ don't have these parameters at all yet.
+large rasters, auto-detects bands when the same path is passed for
+more than one role, and accepts `bbox`/`geometry`/`geometry_crs` to
+clip the result afterward — see
+
+[Processing large rasters](#processing-large-rasters-chunked-mode),
+[Finding your bands](#finding-your-bands), and
+[Clipping the result to an AOI](#clipping-the-result-to-an-aoi) above.
+Methods marked ❌ don't have any of these parameters yet.
 
 ## CLI reference
 
@@ -513,12 +557,20 @@ pygeofetch index ndre --rededge drone.tif --nir drone.tif
 
 # Large raster, memory-safe tiled processing
 pygeofetch index ndvi --red huge.tif --nir huge2.tif --chunked --tile-size 1024
+
+# Clip the result to an AOI -- bbox or a GeoJSON file
+pygeofetch index ndvi --red B04.tif --nir B08.tif --bbox -74.05,40.68,-73.95,40.78
+pygeofetch index ndvi --red B04.tif --nir B08.tif --geometry farm_boundary.geojson
 ```
 
 `--chunked` is a flag (no value); `--tile-size` takes an integer and
-is only used when `--chunked` is set. Run `pygeofetch index COMMAND
---help` for the full option list of any individual command — e.g.
-`pygeofetch index evi --help`.
+is only used when `--chunked` is set. `--bbox` takes exactly 4
+comma-separated numbers (`minx,miny,maxx,maxy`) — anything else fails
+immediately with a clear error, before any processing starts.
+`--geometry` takes a GeoJSON file path instead. `--geometry-crs`
+(default `EPSG:4326`) sets the CRS those coordinates are in. Run
+`pygeofetch index COMMAND --help` for the full option list of any
+individual command — e.g. `pygeofetch index evi --help`.
 
 ## The standalone, `spyndex`-backed `SpectralIndex`
 
@@ -601,3 +653,4 @@ si.compute("GOS", RED=red_array)
 
 `si.info("AKP")` returns the real formula, required bands, and a
 `sensor_note` explaining the same real constraint in prose.
+

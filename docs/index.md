@@ -34,6 +34,8 @@ examples for the corrected, working forms.
 - [Optical Pixel Offset Tracking](processing/optical-offset-tracking.md) — measuring large ground displacement where InSAR structurally cannot
 - [Multi-Sensor Pipelines](processing/multi-sensor-pipelines.md) — 5 real pipelines combining InSAR, optical, SAR, and DEM data
 - [Complete Worked Example: Mexico City Subsidence](processing/insar-mexico-city-tutorial.md) — a complete, real, cell-by-cell InSAR run (search to validated subsidence map)
+- [Classification](processing/classification.md) — unsupervised K-means and supervised Random Forest/SVM land-cover classification
+- [Geocoding](core-features/geocoding.md) — place name to coordinates and back, no API key required
 - [Full CLI Reference](reference/cli.md) — full command reference
 
 
@@ -56,6 +58,7 @@ core-features/download.md
 core-features/data-organizer.md
 core-features/providers.md
 core-features/optical-validation.md
+core-features/geocoding.md
 :::
 
 :::{toctree}
@@ -68,6 +71,7 @@ processing/optical-offset-tracking.md
 processing/multi-sensor-pipelines.md
 processing/sar.md
 processing/spectral-indices.md
+processing/classification.md
 processing/landsat.md
 processing/timeseries.md
 processing/preprocessing.md

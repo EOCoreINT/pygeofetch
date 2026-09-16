@@ -635,3 +635,172 @@ class PostProcessor:
                 "size_mb": round(size_mb, 1),
             },
         )
+
+    # ── G9: Vector-vector overlay ────────────────────────────────────────
+
+    @_timed
+    def overlay(
+        self,
+        left: str | Path,
+        right: str | Path,
+        output: str | Path,
+        how: str = "intersection",
+        left_crs: str | None = None,
+        right_crs: str | None = None,
+    ) -> ProcessingResult:
+        """
+        Real polygon overlay between two vector layers -- intersection,
+        union, difference, symmetric_difference, or identity.
+
+        Args:
+            left, right: Vector file paths (GeoJSON, Shapefile, etc.).
+            output:      Output vector file path (format inferred from
+                         extension, e.g. .geojson, .shp).
+            how:         "intersection" (default), "union", "difference"
+                         (left minus right), "symmetric_difference", or
+                         "identity".
+            left_crs, right_crs: Override the CRS to interpret each
+                         input in, if it isn't already set correctly in
+                         the file itself. If the two layers' real CRSs
+                         differ, `right` is reprojected to match `left`
+                         automatically before the real overlay runs.
+
+        Example::
+
+            result = client.post.overlay(
+                "flood_extent.geojson", "parcels.geojson",
+                output="flooded_parcels.geojson", how="intersection",
+            )
+        """
+        gpd = _require_geopandas()
+
+        valid_how = {"intersection", "union", "difference", "symmetric_difference", "identity"}
+        if how not in valid_how:
+            msg = f"overlay: how={how!r} not recognized -- use one of {sorted(valid_how)}"
+            raise ValueError(msg)
+
+        left_gdf = gpd.read_file(left)
+        right_gdf = gpd.read_file(right)
+        if left_crs:
+            left_gdf = left_gdf.set_crs(left_crs, allow_override=True)
+        if right_crs:
+            right_gdf = right_gdf.set_crs(right_crs, allow_override=True)
+
+        if left_gdf.crs is not None and right_gdf.crs is not None and left_gdf.crs != right_gdf.crs:
+            right_gdf = right_gdf.to_crs(left_gdf.crs)
+
+        result_gdf = gpd.overlay(left_gdf, right_gdf, how=how)
+
+        out_path = Path(output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        result_gdf.to_file(out_path)
+
+        logger.info("overlay (%s): %d → %s features → %s", how, len(left_gdf), len(result_gdf), out_path.name)
+        return ProcessingResult(
+            success=True, operation="overlay", output_path=out_path, input_path=Path(left),
+            metadata={"how": how, "n_input_left": len(left_gdf), "n_input_right": len(right_gdf), "n_output": len(result_gdf)},
+        )
+
+    @_timed
+    def dissolve(
+        self,
+        input: str | Path,
+        output: str | Path,
+        by: str | None = None,
+        aggfunc: str = "first",
+    ) -> ProcessingResult:
+        """
+        Real dissolve -- merge polygons sharing the same real attribute
+        value into single, combined geometries (or merge everything
+        into one if `by` is None).
+
+        Args:
+            input:   Vector file path.
+            output:  Output vector file path.
+            by:      Column to group by before dissolving. None merges
+                     every real feature into a single geometry.
+            aggfunc: How to aggregate other real columns within each
+                     group -- "first" (default), "sum", "mean", etc.
+                     (any real pandas groupby-agg function name).
+
+        Example::
+
+            result = client.post.dissolve(
+                "parcels.geojson", output="zones_by_landuse.geojson", by="land_use",
+            )
+        """
+        gpd = _require_geopandas()
+
+        gdf = gpd.read_file(input)
+        n_before = len(gdf)
+        result_gdf = gdf.dissolve(by=by, aggfunc=aggfunc) if by else gdf.dissolve(aggfunc=aggfunc)
+        result_gdf = result_gdf.reset_index()
+
+        out_path = Path(output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        result_gdf.to_file(out_path)
+
+        logger.info("dissolve (by=%s): %d → %d features → %s", by, n_before, len(result_gdf), out_path.name)
+        return ProcessingResult(
+            success=True, operation="dissolve", output_path=out_path, input_path=Path(input),
+            metadata={"by": by, "n_input": n_before, "n_output": len(result_gdf)},
+        )
+
+    @_timed
+    def spatial_join(
+        self,
+        left: str | Path,
+        right: str | Path,
+        output: str | Path,
+        how: str = "inner",
+        predicate: str = "intersects",
+        left_crs: str | None = None,
+        right_crs: str | None = None,
+    ) -> ProcessingResult:
+        """
+        Real spatial join -- attach attributes from `right` to features
+        in `left` based on a real spatial relationship, rather than a
+        shared key column.
+
+        Args:
+            left, right: Vector file paths.
+            output:      Output vector file path.
+            how:         "inner" (default, drop unmatched left features),
+                         "left" (keep all left features, null attributes
+                         where unmatched), or "right".
+            predicate:   Real spatial relationship to test -- "intersects"
+                         (default), "contains", "within", "touches",
+                         "crosses", "overlaps".
+            left_crs, right_crs: Same real CRS-override/auto-reprojection
+                         handling as overlay().
+
+        Example::
+
+            result = client.post.spatial_join(
+                "sample_points.geojson", "administrative_zones.geojson",
+                output="points_with_zone.geojson", predicate="within",
+            )
+        """
+        gpd = _require_geopandas()
+
+        left_gdf = gpd.read_file(left)
+        right_gdf = gpd.read_file(right)
+        if left_crs:
+            left_gdf = left_gdf.set_crs(left_crs, allow_override=True)
+        if right_crs:
+            right_gdf = right_gdf.set_crs(right_crs, allow_override=True)
+
+        if left_gdf.crs is not None and right_gdf.crs is not None and left_gdf.crs != right_gdf.crs:
+            right_gdf = right_gdf.to_crs(left_gdf.crs)
+
+        result_gdf = gpd.sjoin(left_gdf, right_gdf, how=how, predicate=predicate)
+
+        out_path = Path(output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        result_gdf.to_file(out_path)
+
+        logger.info("spatial_join (%s, %s): %d → %d features → %s", how, predicate, len(left_gdf), len(result_gdf), out_path.name)
+        return ProcessingResult(
+            success=True, operation="spatial_join", output_path=out_path, input_path=Path(left),
+            metadata={"how": how, "predicate": predicate, "n_input_left": len(left_gdf), "n_output": len(result_gdf)},
+        )

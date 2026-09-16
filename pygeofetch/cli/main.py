@@ -27,6 +27,7 @@ from pygeofetch.cli.config_commands import config
 from pygeofetch.cli.download_commands import download
 from pygeofetch.cli.index_commands import index
 from pygeofetch.cli.multisensor_commands import multisensor
+from pygeofetch.cli.classify_commands import classify
 from pygeofetch.cli.optical_commands import optical
 from pygeofetch.cli.pipeline_process_commands import proc_pipeline
 from pygeofetch.cli.postprocess_commands import post
@@ -107,6 +108,7 @@ cli.add_command(sar)
 cli.add_command(proc_pipeline)
 cli.add_command(optical)
 cli.add_command(multisensor)
+cli.add_command(classify)
 
 
 # ---------------------------------------------------------------------------
@@ -210,6 +212,98 @@ def version(as_json: bool) -> None:
             f"[bold cyan]PyGeoFetch[/] v{data['version']} | "
             f"Python {data['python']} | {data['platform']}"
         )
+
+
+# ---------------------------------------------------------------------------
+# GEOCODE
+# ---------------------------------------------------------------------------
+
+
+@cli.command()
+@click.argument("query")
+@click.option("--limit", default=1, show_default=True, type=int, help="Max results to return.")
+def geocode(query: str, limit: int) -> None:
+    """Look up a place name and get its coordinates and bounding box.
+
+    Example: pygeofetch geocode "Nairobi, Kenya"
+
+    The printed bbox is ready to paste directly into a SearchQuery.
+    """
+    from pygeofetch.utils.geocoding import geocode as _geocode
+
+    try:
+        results = _geocode(query, limit=limit)
+    except Exception as exc:
+        console.print(f"[red]✗[/] geocode failed: {exc}")
+        sys.exit(1)
+
+    if not results:
+        console.print(f"[yellow]No results found for[/] {query!r}")
+        return
+
+    for r in results:
+        console.print(f"[green]{r['display_name']}[/]")
+        console.print(f"  lat/lon: {r['lat']}, {r['lon']}")
+        console.print(f"  bbox (min_lon, min_lat, max_lon, max_lat): {r['bbox']}")
+
+
+@cli.command(name="reverse-geocode")
+@click.argument("lat", type=float)
+@click.argument("lon", type=float)
+def reverse_geocode_cmd(lat: float, lon: float) -> None:
+    """Look up the real place name at a coordinate.
+
+    Example: pygeofetch reverse-geocode -1.286389 36.817223
+    """
+    from pygeofetch.utils.geocoding import reverse_geocode as _reverse_geocode
+
+    try:
+        place = _reverse_geocode(lat, lon)
+    except Exception as exc:
+        console.print(f"[red]✗[/] reverse-geocode failed: {exc}")
+        sys.exit(1)
+
+    if place is None:
+        console.print(f"[yellow]No real place found at[/] ({lat}, {lon})")
+        return
+    console.print(f"[green]{place['display_name']}[/]")
+
+
+# ---------------------------------------------------------------------------
+# INSAR FEASIBILITY
+# ---------------------------------------------------------------------------
+
+
+@cli.command(name="assess-feasibility")
+@click.option("--bbox", required=True, help="min_lon,min_lat,max_lon,max_lat")
+@click.option("--start-date", required=True)
+@click.option("--end-date", required=True)
+@click.option("--max-temporal-baseline", default=72, show_default=True, type=int)
+@click.option("--deep-check", is_flag=True, help="Also run real, live burst-sync screening on the best track (costs real network calls).")
+def assess_feasibility_cmd(bbox, start_date, end_date, max_temporal_baseline, deep_check) -> None:
+    """Assess InSAR feasibility for an AOI before downloading anything.
+
+    Example: pygeofetch assess-feasibility --bbox 18.85,50.15,19.15,50.35 \\
+             --start-date 2016-01-01 --end-date 2021-06-30
+
+    Reports the real, largest temporally-connected component per track
+    -- an honest upper bound, not a guarantee InSAR will work.
+    """
+    from pygeofetch.core.engine import PyGeoFetch
+    from pygeofetch.insar.feasibility import assess_insar_feasibility
+
+    try:
+        bbox_tuple = tuple(float(x) for x in bbox.split(","))
+    except ValueError:
+        console.print("[red]--bbox must be 4 comma-separated numbers[/]")
+        sys.exit(1)
+
+    client = PyGeoFetch(log_level="WARNING")
+    report = assess_insar_feasibility(
+        client, bbox_tuple, start_date, end_date,
+        max_temporal_baseline_days=max_temporal_baseline, deep_check=deep_check,
+    )
+    report.print_summary()
 
 
 # ---------------------------------------------------------------------------

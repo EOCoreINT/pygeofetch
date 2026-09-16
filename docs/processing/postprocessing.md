@@ -75,3 +75,43 @@ estimate. `cog()` converts to a real Cloud Optimized GeoTIFF
 (internal tiling + overviews), the format most cloud-native raster
 tools (rasterio, GDAL VSI, STAC-based viewers) expect for efficient
 partial reads.
+
+## Vector ↔ vector overlay
+
+Combine, merge, and relate two vector layers by their real geometry —
+genuinely different from `zonal_stats` above, which relates a
+*raster* to vector zones. These three are real, thin wrappers around
+GeoPandas's own overlay engine, so behavior matches
+`geopandas.overlay`/`dissolve`/`sjoin` if you already know them.
+
+```python
+# Which parcels does the flood extent actually touch?
+flooded = client.post.overlay("flood_extent.geojson", "parcels.geojson",
+                               output="flooded_parcels.geojson", how="intersection")
+
+# Merge individual parcels into zones by land use
+zones = client.post.dissolve("parcels.geojson", output="zones.geojson", by="land_use")
+
+# Which zone does each sample point fall inside?
+joined = client.post.spatial_join("sample_points.geojson", "zones.geojson",
+                                   output="points_with_zone.geojson", predicate="within")
+```
+
+| Method | What it does |
+|---|---|
+| `overlay(left, right, output, how="intersection")` | Combine two layers by geometric relationship — `"intersection"`, `"union"`, `"difference"` (left minus right), `"symmetric_difference"`, or `"identity"` |
+| `dissolve(input, output, by=None, aggfunc="first")` | Merge polygons sharing the same value in the `by` column into single geometries; omit `by` to merge everything into one |
+| `spatial_join(left, right, output, how="inner", predicate="intersects")` | Attach `right`'s attributes to `left` by real spatial relationship (`"intersects"`, `"within"`, `"contains"`, `"touches"`, `"crosses"`, `"overlaps"`) instead of a shared key column |
+
+All three reproject `right` to match `left`'s real CRS automatically
+when the two differ — checked and handled, not left to silently
+produce a wrong or empty result. All three require an explicit
+`output` path, since the right vector format (GeoJSON, Shapefile,
+GeoPackage) depends on what you're doing with the result, unlike
+raster outputs which have a sensible default naming convention.
+
+**A common mistake worth flagging directly**: `predicate="intersects"`
+(the default for `spatial_join`) also matches features that merely
+touch at an edge. If you need points genuinely *inside* a polygon,
+not on its boundary, use `predicate="within"` instead.
+

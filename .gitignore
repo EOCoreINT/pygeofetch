@@ -19,6 +19,7 @@ build/
 eggs/
 parts/
 var/
+funding.json/
 *.ipynb/
 *.pdf/
 sdist/
@@ -37,6 +38,7 @@ MANIFEST
 sum_me/
 test_topo/
 *.ipynb/
+commit.txt/
 # ── Virtual Environments ──────────────────────────────────────────────────────
 .venv/
 venv/

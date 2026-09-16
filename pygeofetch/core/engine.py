@@ -40,6 +40,7 @@ from pygeofetch.models.satellite_data import SatelliteData
 from pygeofetch.processing.batch import BatchProcessor
 from pygeofetch.processing.indices import SpectralIndices
 from pygeofetch.processing.postprocessor import PostProcessor
+from pygeofetch.processing.classification import Classifier
 from pygeofetch.processing.preprocessor import Preprocessor
 from pygeofetch.processing.sar import SARProcessor
 from pygeofetch.utils.geo_utils import _normalise_satellite_name
@@ -156,6 +157,7 @@ class PyGeoFetch:
         self.preprocess = Preprocessor()
         self.indices = SpectralIndices()
         self.post = PostProcessor()
+        self.classify = Classifier()
         self.sar = SARProcessor()
         self.batch = BatchProcessor(engine=self)
 
