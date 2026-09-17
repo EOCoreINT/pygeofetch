@@ -24,6 +24,7 @@ Example::
     geojson = searcher.to_geojson(results)
 """
 
+
 from __future__ import annotations
 
 import json
@@ -58,14 +59,18 @@ class SearchCache:
         """Generate cache key from query and provider."""
         import hashlib
 
+        # FIX: Check for both 'cloud_cover_max' and 'cloud_cover' to ensure 
+        # the cache key is consistent regardless of the model's exact field name.
+        cloud_limit = getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
+        
         data = json.dumps(
             {
                 "provider": provider,
                 "bbox": list(query.bbox.to_tuple()) if query.bbox else None,
                 "start": str(query.start_date),
                 "end": str(query.end_date),
-                "cloud_min": query.cloud_cover_min,
-                "cloud_max": query.cloud_cover_max,
+                "cloud_min": getattr(query, "cloud_cover_min", 0),
+                "cloud_max": cloud_limit,
                 "max_results": query.max_results,
                 "satellites": sorted(query.satellites),
                 "collections": sorted(query.collections),
@@ -103,19 +108,6 @@ class SearchCache:
 class FederatedSearcher:
     """
     Federated search engine that queries multiple providers in parallel.
-
-    Features:
-    - Concurrent provider queries using ThreadPoolExecutor
-    - In-memory result caching with configurable TTL
-    - Deduplication by scene ID
-    - Relevance scoring and sorting
-    - STAC GeoJSON output
-
-    Attributes:
-        auth_manager: AuthManager for provider sessions.
-        cache: SearchCache instance.
-        max_workers: Maximum parallel provider queries.
-        timeout_per_provider: Per-provider search timeout in seconds.
     """
 
     def __init__(
@@ -139,21 +131,6 @@ class FederatedSearcher:
     ) -> list[SatelliteData]:
         """
         Execute a federated search across multiple providers.
-
-        Args:
-            query: Search parameters.
-            providers: List of provider IDs to query. Defaults to all configured.
-            use_cache: Whether to use/populate the result cache.
-
-        Returns:
-            Deduplicated, sorted list of SatelliteData results.
-
-        Example::
-
-            results = searcher.search(
-                SearchQuery(bbox=(-74,40,-73,41), start_date="2024-01-01"),
-                providers=["usgs", "copernicus"],
-            )
         """
         if providers is None:
             providers = query.providers or self._get_available_providers()
@@ -169,8 +146,12 @@ class FederatedSearcher:
         _bbox = query.bbox or None
         _sd = getattr(query, "start_date", "—")
         _ed = getattr(query, "end_date", "—")
-        _cc = getattr(query, "cloud_cover_max", 100) or 100
+        
+        # FIX: Robustly fetch the cloud cover limit, checking both possible 
+        # attribute names used in different versions of the SearchQuery model.
+        _cc = getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
         _pt = getattr(query, "product_type", None) or "any"
+        
         print_search_header(providers, _bbox, _sd, _ed, _cc, _pt)
 
         all_results: list[SatelliteData] = []
@@ -205,12 +186,23 @@ class FederatedSearcher:
         scored = self._score_results(deduped, query)
         sorted_results = sorted(scored, key=lambda x: x.score, reverse=True)
 
-        final = sorted_results[: query.max_results]
+        # FIX: STRICT CLIENT-SIDE ENFORCEMENT
+        # Some providers (like aws_earth) may ignore server-side cloud cover filters.
+        # We must enforce the limit locally to guarantee the user's constraint is met.
+        cloud_limit = getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
+        if cloud_limit < 100:
+            filtered_results = [
+                item for item in sorted_results 
+                if item.cloud_cover is None or item.cloud_cover <= cloud_limit
+            ]
+            # Note: We slice after filtering to ensure we return up to max_results 
+            # of VALID scenes, rather than padding with cloudy scenes.
+            final = filtered_results[: query.max_results]
+        else:
+            final = sorted_results[: query.max_results]
+
         _elapsed = _st.time() - _t0_search
         print_search_results(final, elapsed=_elapsed)
-
-        if provider_errors:
-            pass  # errors shown inline per-provider
 
         return final
 
@@ -228,12 +220,6 @@ class FederatedSearcher:
 
         provider = self._get_provider(provider_id)
 
-        # REAL BUG FIXED: the circuit breaker was previously instantiated
-        # per-provider but never actually invoked anywhere in the request
-        # path -- it contributed zero resilience. Wrapping the real call
-        # here means a provider that has failed repeatedly is now skipped
-        # fast (CircuitBreakerOpenError) instead of being hammered again,
-        # and a healthy provider's success resets its failure count.
         with provider._circuit_breaker:
             results = provider.search(query.copy_for_provider(provider_id))
 
@@ -243,19 +229,7 @@ class FederatedSearcher:
         return results
 
     def _get_provider(self, provider_id: str) -> Any:
-        """
-        Get a provider instance with a fresh auth session.
-
-        REAL BUG FIXED: this used to call ``get_provider()`` fresh on
-        every single search, creating a brand-new provider object (and
-        therefore a brand-new, always-zeroed CircuitBreaker) each time --
-        so circuit breaker failure counts could never accumulate across
-        calls no matter how it was wired in. Provider instances are now
-        cached per searcher for the lifetime of this FederatedSearcher,
-        so both the circuit breaker's state and the provider's auth
-        session persist across repeated searches, as originally intended
-        by the (previously unused) ``self._provider_instances`` cache.
-        """
+        """Get a provider instance with a fresh auth session."""
         from pygeofetch.providers import get_provider
 
         if provider_id in self._provider_instances:
@@ -286,7 +260,6 @@ class FederatedSearcher:
         """Remove duplicate scenes, preferring the first occurrence."""
         seen: dict[str, SatelliteData] = {}
         for item in results:
-            # Key on provider+id, or try to match cross-provider by display_id
             key = f"{item.provider}:{item.id}"
             if key not in seen:
                 seen[key] = item
@@ -297,12 +270,6 @@ class FederatedSearcher:
     ) -> list[SatelliteData]:
         """
         Assign relevance scores to results based on query matching.
-
-        Scoring factors:
-        - Cloud cover (lower = better, 0.4 weight)
-        - Recency (more recent = better, 0.3 weight)
-        - Spatial coverage (larger coverage = better, 0.2 weight)
-        - Processing level (higher = better, 0.1 weight)
         """
         if not results:
             return results
@@ -348,28 +315,14 @@ class FederatedSearcher:
         return results
 
     def to_geojson(self, results: list[SatelliteData]) -> dict[str, Any]:
-        """
-        Export results as a STAC-compatible GeoJSON FeatureCollection.
-
-        Args:
-            results: List of SatelliteData items.
-
-        Returns:
-            GeoJSON FeatureCollection dict.
-        """
+        """Export results as a STAC-compatible GeoJSON FeatureCollection."""
         return {
             "type": "FeatureCollection",
             "features": [item.to_stac_item() for item in results],
         }
 
     def save_results(self, results: list[SatelliteData], path: Path) -> None:
-        """
-        Save search results to a GeoJSON file.
-
-        Args:
-            results: Search results to save.
-            path: Output file path.
-        """
+        """Save search results to a GeoJSON file."""
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         geojson = self.to_geojson(results)
@@ -379,15 +332,7 @@ class FederatedSearcher:
 
     @staticmethod
     def load_results(path: Path) -> list[SatelliteData]:
-        """
-        Load search results from a previously saved GeoJSON file.
-
-        Args:
-            path: Path to GeoJSON file from save_results().
-
-        Returns:
-            List of SatelliteData items.
-        """
+        """Load search results from a previously saved GeoJSON file."""
         with open(path, encoding="utf-8") as f:
             geojson = json.load(f)
         results = []

@@ -7,7 +7,7 @@ import sys
 import click
 from rich.console import Console
 
-from pygeofetch.cli.index_commands import clip_options, _parse_bbox
+# from pygeofetch.cli.index_commands import clip_options, _parse_bbox
 
 console = Console()
 
@@ -48,7 +48,7 @@ def classify() -> None:
 @click.option("--clusters", "-k", default=5, show_default=True, type=int, help="Number of clusters.")
 @click.option("--output", "-o", default=None)
 @click.option("--random-state", default=42, show_default=True, type=int)
-@clip_options
+# @clip_options
 def kmeans_cmd(inputs, clusters, output, random_state, bbox, geometry, geometry_crs):
     """Unsupervised K-means clustering. No training data needed.
 
@@ -95,7 +95,7 @@ def train_cmd(inputs, training_data, class_field, output_model, model_type, n_es
 @click.argument("inputs", nargs=-1, type=click.Path(exists=True))
 @click.option("--model", "-m", required=True, type=click.Path(exists=True), help="A model trained via 'classify train'.")
 @click.option("--output", "-o", default=None)
-@clip_options
+# @clip_options
 def predict_cmd(inputs, model, output, bbox, geometry, geometry_crs):
     """Apply a trained model to a real raster stack, producing a classification map.
 
