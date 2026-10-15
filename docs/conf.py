@@ -113,3 +113,36 @@ redirects = {
     "reference/roadmap": "../project/roadmap.html",
     "contributing": "project/contributing.html",
 }
+
+
+# ---- Internationalisation -------------------------------------------------
+# Translations live in locale/<lang>/LC_MESSAGES/*.po. Untranslated text falls
+# back to English, so every language build is complete. Build all languages
+# with tools/build_all.sh.
+import os as _os
+language = _os.environ.get("DOCS_LANG", "en")
+locale_dirs = ["locale/"]
+gettext_compact = False
+gettext_uuid = False
+LANGUAGES = [
+    ("en", "English"), ("fr", "Français"), ("es", "Español"), ("pt", "Português"),
+    ("de", "Deutsch"), ("zh_CN", "简体中文"), ("ar", "العربية"),
+]
+html_context = globals().get("html_context", {})
+html_context.update({"languages": LANGUAGES, "current_language": language})
+
+# --- UI string translations (navbar, breadcrumb) read from locale/<lang>/LC_MESSAGES/chrome.po
+def _load_chrome(lang):
+    try:
+        import polib
+        po = polib.pofile(_os.path.join(_os.path.dirname(__file__), "locale", lang, "LC_MESSAGES", "chrome.po"))
+        return {e.msgid: e.msgstr for e in po if e.msgstr}
+    except Exception:
+        return {}
+_chrome = _load_chrome(language)
+def setup(app):
+    def _ctx(app, pagename, templatename, context, doctree):
+        context["gf_t"] = lambda s: _chrome.get(s, s)
+    app.connect("html-page-context", _ctx)
+html_context["gf_partial"] = language not in ("en",)
+html_context["gf_rtl"] = language in ("ar",)

@@ -14,6 +14,12 @@ server-side quirks are untested. Test it in your own environment before dependin
 production.
 :::
 
+## Overview
+
+Almost every pygeofetch call expects numbers: a bounding box in longitude and latitude, or a GeoJSON geometry. Geocoding is the bridge for the common case where you only have a name. You pass a place such as a town, a district or a landmark, and it returns one or more matches, each with its centre point, a ready-to-use bounding box and the full display name of the place that was found.
+
+The typical use is the first line of an analysis. Geocode the study area, read the display name to confirm that the service understood the place you meant, take the bounding box from the result and hand it straight to a `SearchQuery`. Reverse geocoding works the other way and is handy for labelling a coordinate in a report. Because the service is a public one with usage limits, geocode once and keep the bounding box instead of calling it repeatedly inside a loop.
+
 ## Why Nominatim specifically
 
 Uses [Nominatim](https://nominatim.openstreetmap.org) (OpenStreetMap's

@@ -5,6 +5,12 @@ orchestration. This page covers conventions and worked examples. The exact
 options of every command are in the [Command reference](cli-commands.md), which is
 generated from the installed package.
 
+## Overview
+
+Everything the library does can also be run from a terminal, which makes pygeofetch usable from shell scripts, schedulers and continuous-integration jobs without writing Python. Commands are organised in groups that follow the workflow: `auth` for credentials, `providers` for browsing sources, `search` and `download` for acquisition, `preprocess`, `index`, `classify`, `sar` and `multisensor` for processing, and `pipeline` for YAML orchestration. Each group has its own help, so `pygeofetch search run --help` shows exactly what that command accepts.
+
+This page gives the conventions and worked recipes, and the [command reference](cli-commands.md) lists every option. The reference is generated from the installed package, so it always matches the version you are running.
+
 ## Conventions
 
 ```text

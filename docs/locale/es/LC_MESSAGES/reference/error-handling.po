@@ -1,0 +1,318 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:1
+msgid "Error handling and resilience"
+msgstr "Gestión de errores y resiliencia"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:3
+msgid ""
+"This page describes how pygeofetch reports failures and which parts of the "
+"download path retry automatically."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:6
+msgid "Exceptions"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:8
+msgid ""
+"Provider code raises subclasses of `ProviderError`, defined in "
+"`pygeofetch.providers.base`:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Exception"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Raised when"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`ProviderError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Base class for everything below."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`AuthenticationError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Credentials are missing, expired or rejected."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`SearchError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "A search request fails."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`DownloadError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "A download request fails."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`QuotaExceededError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "The provider's quota or rate limit is exceeded."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`ProviderUnavailableError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "The provider is temporarily unavailable."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:19
+msgid "Other exceptions you may meet:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Module"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Meaning"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`CircuitBreakerOpenError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`pygeofetch.utils.retry_handler`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "A provider failed repeatedly and its breaker is open (see below)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`OpticalValidationError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`pygeofetch.validation.optical_validator`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "A validation setting is invalid."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`StreamingUnsupportedError`, `AOIOutsideRasterError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`pygeofetch.streaming`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "The asset is an archive, or the AOI does not intersect the raster."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`MissingDependencyError`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "`pygeofetch.core.data_formats`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid ""
+"An optional dependency (for example Zarr or GeoParquet support) is missing."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:39
+msgid "Search does not raise for a failed provider"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:41
+msgid ""
+"`client.search()` runs providers in parallel. A provider that times out or "
+"raises is logged and **excluded**, and the results from the other providers "
+"are returned. You get an empty list, not an exception, if every provider "
+"fails. Check the log, or run `pygeofetch auth test PROVIDER`, when a search "
+"unexpectedly returns nothing. The `--on-provider-failure abort` and `retry` "
+"values are accepted but have no effect; see [Known issues](known-issues.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:48
+msgid "Downloads return results, not exceptions"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:50
+msgid ""
+"`client.download()` returns one `DownloadResult` per input item. Failures "
+"are reported as `status=\"failed\"` with `error` and `error_type` set (the "
+"exception class name, or a provider-specific value such as "
+"`ProductOffline`). The list length and order always match the input. Inspect"
+" results rather than wrapping the call in `try`:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:61
+msgid "Common problems"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Symptom"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Likely cause and fix"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Authentication fails"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid ""
+"Run `pygeofetch auth test PROVIDER`. Re-add credentials with `auth add`. "
+"Environment variables are **not** read for credentials."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "A provider times out"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Raise `search run --timeout 120` (per-provider seconds, default 60)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Zero results"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid ""
+"Widen `--cloud-cover 0-30`, check the bbox is "
+"`min_lon,min_lat,max_lon,max_lat` (longitude first), and check the date "
+"range. For Copernicus Sentinel-2 L2A the processing level value is "
+"`S2MSI2A`, not `L2A`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Keyring errors in Docker or over SSH"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid ""
+"There is no keyring daemon. Use `PyGeoFetch(auth_backend=\"file\")`, or set "
+"`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Rate limiting"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid ""
+"Use `download run --parallel 1 --bandwidth-limit 2MB`. Commercial providers "
+"are the strictest."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Post-processing fails"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Usually a missing `rasterio` or GDAL: `pip install \"pygeofetch[geo]\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid "Downloaded data \"not found\" by your own code"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
+msgid ""
+"Files are under `<destination>/<provider>/`, and archives are not extracted."
+" See [Downloading](../data-access/download.md#where-files-are-written)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:73
+msgid "Download resilience"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:75
+msgid ""
+"**Retries.** A download is attempted `retry_attempts + 1` times (default 3 "
+"retries). A retry follows a provider failure, an exception, or a file that "
+"fails validation after download (for example a truncated file). The delay "
+"before retry *n* is `retry_delay_seconds x 2^n`, capped at 60 seconds. When "
+"`retry_strategy` contains `\"jitter\"` (the default is `exponential_jitter`)"
+" the delay is multiplied by a random factor between 0.5 and 1.0."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:81
+msgid ""
+"**Resume.** `resume=True` skips scenes whose file already exists and passes "
+"validation. A missing or corrupt file is downloaded again from the start. "
+"The Copernicus provider additionally continues a partial file across retries"
+" with an HTTP `Range` request. See [Downloading](../data-"
+"access/download.md#resuming)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:86
+msgid ""
+"**Integrity.** After each download the file is checked for truncation or "
+"corruption. With `verify_checksum=True`, the file is also compared with the "
+"checksum **the provider supplied** in the asset metadata (MD5 if present, "
+"otherwise SHA256). A mismatch is logged and sets `checksum_verified=False` "
+"on the result. It does not retry or fail the download. If the provider "
+"supplied no checksum, nothing is compared. The `checksum_algorithm` option "
+"does not choose the algorithm."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:93
+msgid ""
+"**Search cache.** Results are cached per query. `PyGeoFetch(cache_ttl=3600)`"
+" sets the lifetime, and `search run --no-cache` bypasses it."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:96
+msgid "Circuit breaker"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:98
+msgid ""
+"`FederatedSearcher` keeps one provider instance per provider ID for its "
+"lifetime, and wraps each provider search in that provider's circuit breaker."
+" After `failure_threshold` consecutive failures (default 5), the breaker "
+"opens and further calls fail immediately with `CircuitBreakerOpenError`, "
+"which appears as a normal per-provider search error. After "
+"`recovery_timeout` (default 60 seconds) one call is allowed through, and a "
+"success resets the count. The breaker lives for the life of the `PyGeoFetch`"
+" instance, so a new process starts with all breakers closed."
+msgstr ""

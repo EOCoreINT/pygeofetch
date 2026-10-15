@@ -1,0 +1,653 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:1
+msgid "Providers"
+msgstr "المزوّدون"
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:3
+msgid ""
+"pygeofetch registers **22 provider integrations** behind one query model. "
+"Twenty are functional. Two are registered but cannot return data: "
+"`esa_scihub` (its upstream service was decommissioned) and "
+"`google_earth_engine` (not implemented). They are listed under [Registered "
+"but not usable](#registered-but-not-usable)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:14
+msgid "Choosing a provider"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "I need..."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Use"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Free Sentinel-2 or Landsat, no account"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`planetary_computer`, `element84`, `aws_earth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "To analyse a small area without downloading scenes"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`planetary_computer` or `element84` with [streaming](streaming.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Sentinel-1 SLC for InSAR"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"`alaska_satellite_facility` (free Earthdata account to download) or "
+"`copernicus`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Sentinel-1/2/3/5P from the official source"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`copernicus`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Landsat 1-9 collections and historical imagery"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`usgs`, `earth_explorer_additional`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "MODIS, VIIRS, ICESat-2, GEDI, ASTER"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`nasa_earthdata`, `nasa_earthdata_cloud`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "A DEM for a bounding box"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`opentopography`, `jaxa_earth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Sub-metre commercial imagery"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`airbus_oneatlas`, `maxar_gbdx`, `planet`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Free sample high-resolution imagery for disasters"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`digitalglobe` (Maxar Open Data)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Geostationary weather imagery"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`noaa_big_data`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Brazilian, Indian regional data"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`inpe_cbers`, `isro_bhuvan`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Your own GeoServer layer"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`geoserver_generic`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:31
+msgid "Status legend"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Symbol"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Meaning"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🟢"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Implemented against the provider's current API documentation."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🟡"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Open data; search works without credentials."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Credentials needed (search, download, or both; see the notes)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔴"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Registered but not usable."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:40
+msgid ""
+"Provider APIs change. If a provider behaves differently from what is written"
+" here, please [open an "
+"issue](https://github.com/EOCoreINT/pygeofetch/issues). Verification against"
+" live accounts is not available for every provider."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:44
+msgid "Open, no credentials needed"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Provider ID"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Status"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Data and behaviour"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`planetary_computer`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Microsoft Planetary Computer STAC catalogue. Sentinel-1/2, Landsat 8/9, "
+"MODIS, NAIP, ALOS DEM. SAS tokens are generated per asset. Per-band COGs, so"
+" [streaming](streaming.md) works."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`element84`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Earth Search v1. Sentinel-2 L2A, Landsat Collection 2, Sentinel-1 RTC, "
+"Copernicus DEM. All COG; [streaming](streaming.md) works."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`aws_earth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"AWS Open Data Registry. Sentinel-2 COGs, Landsat Collection 2, NAIP, with "
+"direct S3 access."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"GOES-16/17/18 imagery from the public, unsigned `noaa-goes16/17/18` S3 "
+"buckets. Listed and downloaded directly rather than through a search API."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`alaska_satellite_facility`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"ASF DAAC: Sentinel-1 SLC/GRD, ALOS PALSAR, ERS, JERS. **Search is public.** "
+"It uses a WKT `intersectsWith` polygon, not a plain bbox, and no cloud-cover"
+" parameter (SAR is not affected by cloud). **Downloading needs a free NASA "
+"Earthdata Login** (username and password, or an EDL bearer token)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`digitalglobe`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Maxar Open Data Program imagery, released for **disaster response** events "
+"only. It is a static STAC catalogue on S3, with no server-side search: "
+"pygeofetch filters events by their extent and date, then scans items. "
+"`event_scan_limit` (default 60) caps how many events are scanned per call."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`jaxa_earth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"ALOS World 3D (AW3D30), a 30 m global DSM. A static 1°×1° tile grid, so "
+"\"search\" computes which tiles overlap your bbox and makes no network call."
+" There are no date or cloud filters. Tiles are served through the public "
+"OpenTopography mirror."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`inpe_cbers`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Brazil Data Cube STAC API (`data.inpe.br/bdc/stac/v1`): CBERS-4, CBERS-4A, "
+"Amazonia-1."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"A generic client for **any** GeoServer's OGC WFS `GetFeature`. You must "
+"configure both `endpoint` (the GeoServer base URL) and `layer` (a `typeName`"
+" the server advertises). Default is no auth; HTTP Basic is the standard "
+"secured mode, and an optional bearer token supports servers behind an OAuth2"
+" proxy."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:58
+msgid "Credentials required"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Credentials"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 Username and password (OAuth2)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Copernicus Data Space Ecosystem: Sentinel-1/2/3/5P. Scenes are delivered as "
+"`.SAFE.zip`, which cannot be [streamed](streaming.md). Includes burst-family"
+" and orbit-file support for [InSAR](../processing/sar-insar/insar.md). The "
+"processing-level filter value for Sentinel-2 L2A is `S2MSI2A`, not `L2A`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`usgs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 Username and **M2M Application Token**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Landsat 1-9, MODIS, EO-1 and more through the Machine-to-Machine API. USGS "
+"replaced password login with an M2M token on 26 February 2025. First request"
+" M2M access at `ers.cr.usgs.gov/profile/access` (access type \"MACHINE\"; "
+"approval can take a couple of days), then generate an Application Token from"
+" your ERS profile. A token generated before approval does not work. The "
+"token replaces the password."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`earth_explorer_additional`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 Same as `usgs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Declassified and historical imagery (Corona, KH-7 GAMBIT, KH-9 Hexagon) and "
+"early Landsat. A thin subclass of `usgs` with different default dataset "
+"codes. `declassii` (KH-7/KH-9 mapping camera) is confirmed; `declassi` and "
+"`declassiii` follow the same naming but are not independently confirmed."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`nasa_earthdata`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 Earthdata Login"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"NASA CMR: MODIS, VIIRS, ICESat-2, GEDI, ASTER. Search is public; download "
+"requires an account."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`nasa_earthdata_cloud`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 Earthdata Login plus per-DAAC S3 credentials"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Cloud-hosted NASA data on AWS. Each DAAC (PO.DAAC, GES DISC, LP DAAC, ORNL "
+"DAAC, GHRC DAAC, NSIDC) issues its own S3 credentials, and one DAAC's "
+"credentials do not work for another's buckets. They are fetched on demand "
+"for each granule's DAAC and cached until expiry. Search is public."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`sentinel_hub`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 OAuth2 client"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Catalog API (STAC). Collections are plain STAC IDs such as `sentinel-2-l2a`,"
+" not Process-API codes such as `S2L2A`. Cloud filtering uses CQL2-JSON."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`opentopography`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 API key"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Global DEMs (SRTM, Copernicus DEM, ALOS World 3D, NASADEM) through "
+"`/API/globaldem`; USGS 3DEP rasters (1 m / 10 m / 30 m; the 1 m product is "
+"academic-use only) through `/API/usgsdem`; and LiDAR point-cloud **dataset "
+"discovery** through `/API/otCatalog`. Point-cloud extraction is not "
+"automated: OpenTopography has no single-request bbox clip for point clouds."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`isro_bhuvan`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 Free account"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"ISRO's **Bhoonidhi** STAC platform (`bhoonidhi-api.nrsc.gov.in`): "
+"ResourceSat-2/2A, EOS-04, EOS-06, a Sentinel-1A mirror, CartoSat-1 and "
+"NISAR. Rate limits: 20 auth requests per hour per IP, 3 searches per second "
+"per IP, 3 concurrent downloads per user per IP."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:71
+msgid "Commercial, sub-metre imagery"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:73
+msgid ""
+"These need a paid account or contract with the vendor. pygeofetch provides "
+"search and download; the licence is the one you purchase."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`airbus_oneatlas`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Pléiades (50 cm), Pléiades Neo (30 cm) and SPOT 6/7 from the OneAtlas "
+"**Living Library** (archive imagery). The API key is exchanged for a token; "
+"results include footprints and download links. Create the key in your "
+"OneAtlas account."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`maxar_gbdx`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "🔐 Bearer token"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Maxar's **Discovery API** (`api.maxar.com/discovery/v1`): WorldView-1/2/3/4."
+" The old GBDX platform was shut down on 4 January 2022. Maxar has rebranded "
+"to Vantor; the API domain is unchanged at the time of writing. The provider "
+"ID stays `maxar_gbdx` for backward compatibility."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`planet`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"PlanetScope, SkySat, RapidEye. HTTP Basic auth with the API key as username."
+" The asset type requested on download depends on the item type (SkySat has "
+"no `ortho_analytic_4b_sr`); override it in config."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:82
+msgid ""
+"True centimetre resolution is not available from satellites; the sharpest "
+"commercial optical imagery is about 30 cm. See [Choosing very-high-"
+"resolution imagery](#choosing-very-high-resolution-imagery)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:85
+msgid "Registered but not usable"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "What happens"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`esa_scihub`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Targets the Copernicus Open Access Hub, which ESA decommissioned on 2 "
+"November 2023. `search()` and `download()` fail immediately with a message "
+"pointing to `copernicus`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "`google_earth_engine`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid ""
+"Not implemented. Earth Engine needs a service-account JWT flow and its own "
+"asset and computation API, neither of which exists in pygeofetch yet. Calls "
+"fail immediately with an explanation."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:92
+msgid ""
+"The modules `providers/eodag_provider.py` and `providers/terrabotics.py` are"
+" present in the source tree but are **not registered** and cannot be "
+"selected. `eodag_provider` only wrapped the third-party `eodag` package; "
+"`terrabotics` has no public API to verify against."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:96
+msgid "Choosing very-high-resolution imagery"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Source"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Resolution"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Cost"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Notes"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Maxar WorldView (including Legion)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "30 cm class"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Paid, per km²"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Via `maxar_gbdx`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Airbus Pléiades Neo"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "30 cm"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Paid, per km² with minimum order sizes"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Via `airbus_oneatlas`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Airbus Pléiades"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "50 cm"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Paid"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Planet SkySat"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "about 50 cm"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Subscription or tasking"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Via `planet`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Maxar Open Data"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "30-50 cm"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Free"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:0
+msgid "Disaster events only (`digitalglobe`)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:106
+msgid ""
+"Distinguish **archive** imagery (already captured, quick and cheaper, date "
+"not controllable) from **tasking** (a new capture on request, current, costs"
+" more and can take weeks). Imagery at 1-10 cm per pixel comes from drones or"
+" aircraft, not satellites."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:110
+msgid "In Python"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:119
+msgid ""
+"`PyGeoFetch` itself has no `.providers()` method. Provider listing is a "
+"module-level function."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:122
+msgid "Provider maintenance"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/providers.md:124
+msgid ""
+"Provider APIs change without notice. Each provider module documents the "
+"endpoints it uses at the top of its source file. When you find a provider "
+"whose current API differs, an issue with the failing request and response is"
+" the most useful report. See [Contributing](../project/contributing.md) for "
+"adding or repairing a provider."
+msgstr ""

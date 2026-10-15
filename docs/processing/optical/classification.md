@@ -16,6 +16,12 @@ classifier, built directly on the same raster I/O conventions as
 usable with `client.post.vectorize()` and `client.post.zonal_stats()`,
 which already expected "a classification raster" as input.
 
+## Overview
+
+Classification turns a multi-band image into a map of categories, such as water, forest, bare ground and built-up land. pygeofetch offers two routes that suit different starting points. If you have no labelled examples, K-means clustering finds natural groups in the spectral data, and you decide afterwards what each group represents. If you do have labelled training areas, Random Forest or a support vector machine learns the spectral signature of each class and applies it to the whole scene.
+
+For a first pass, run K-means with a small number of clusters and look at the result next to the original image; it shows quickly whether the classes you care about are spectrally separable at all. When you need a map you can report, use the supervised route: collect training samples that cover the variety within each class, hold some back for testing, and read the accuracy figures before trusting the output. Both routes read and write ordinary GeoTIFF files, so the class map can be clipped, vectorised and analysed with the other tools in the package.
+
 ## Quick start
 
 ```python

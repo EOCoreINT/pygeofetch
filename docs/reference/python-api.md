@@ -10,6 +10,12 @@ The main entry point is the `PyGeoFetch` class. Data models live in `pygeofetch.
 :depth: 2
 ```
 
+## Overview
+
+The Python API is organised around one object, the `PyGeoFetch` client, and a small set of models. You describe a request with `SearchQuery`, call `client.search()` to obtain a list of `SatelliteData` scenes, and pass those scenes to `client.download()` or `client.stream()`. Download behaviour is controlled with `DownloadOptions`, and each download returns a `DownloadResult` that records the outcome. Processing capabilities are exposed as namespaces on the same client, for example `client.indices`, `client.preprocess`, `client.sar` and `client.post`, so that one import is enough for most workflows.
+
+Because the models are Pydantic classes, they validate their inputs and can be converted to and from dictionaries and JSON, which makes it easy to store a query, log a result or build requests from configuration. The sections below list the fields of each model, the methods of the client and the namespaces it carries.
+
 ## Full workflow example
 
 ```python

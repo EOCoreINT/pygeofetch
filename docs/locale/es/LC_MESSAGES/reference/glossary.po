@@ -1,0 +1,193 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:1
+msgid "Glossary"
+msgstr "Glosario"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:3
+msgid ""
+"**AOI (area of interest).** The geographic region you care about, usually a "
+"bounding box `(min_lon, min_lat, max_lon, max_lat)` in EPSG:4326."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:6
+msgid ""
+"**Asset.** One file belonging to a scene, such as a band, a thumbnail, "
+"metadata or an archive. Modelled by `SatelliteAsset`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:9
+msgid ""
+"**Baseline (processing baseline).** The version of the Sentinel-2 processing"
+" chain. From 04.00, L2A reflectance carries a +1000 digital-number offset."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:12
+msgid ""
+"**Burst.** One of the sub-swaths-in-time of a Sentinel-1 TOPS acquisition. "
+"Burst-level synchronisation matters for InSAR stacks."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:15
+msgid ""
+"**Circuit breaker.** A guard that stops calling a provider after repeated "
+"failures and retries after a recovery timeout. See [Error handling](error-"
+"handling.md#circuit-breaker)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:18
+msgid ""
+"**COG (Cloud-Optimized GeoTIFF).** A GeoTIFF with internal tiling and "
+"overviews, so a client can read part of it with HTTP range requests. See "
+"[Streaming](../data-access/streaming.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:21
+msgid ""
+"**Coherence.** A 0 to 1 measure of phase similarity between two SAR "
+"acquisitions. Low coherence means the surface changed or decorrelated."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:24
+msgid ""
+"**Cosine correction.** A simple topographic illumination correction that "
+"divides reflectance by the cosine of the solar incidence angle."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:27
+msgid ""
+"**CFAR.** Constant false alarm rate, a thresholding method for detecting "
+"bright targets in SAR imagery."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:30
+msgid "**DEM.** Digital elevation model."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:32
+msgid ""
+"**DoD (DEM of Difference).** The subtraction of two DEMs, used to measure "
+"volume change."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:34
+msgid ""
+"**DN (digital number).** The raw integer pixel value before scaling to "
+"reflectance."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:36
+msgid ""
+"**GRD.** Ground Range Detected: Sentinel-1 amplitude imagery without phase."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:38
+msgid ""
+"**InSAR.** Interferometric SAR: using the phase difference between two "
+"acquisitions to measure surface deformation."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:41
+msgid "**Interferogram.** The phase difference image formed from two SLCs."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:43
+msgid ""
+"**L1C / L2A.** Sentinel-2 top-of-atmosphere (L1C) and surface reflectance "
+"(L2A) products."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:45
+msgid ""
+"**Landsat Collection 2.** USGS's reprocessed Landsat archive, delivered at "
+"Level-1 and Level-2."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:47
+msgid ""
+"**NDVI.** Normalized Difference Vegetation Index, `(NIR - Red) / (NIR + "
+"Red)`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:49
+msgid ""
+"**Offset tracking.** Measuring displacement by cross-correlating image "
+"patches. Works on optical and SAR amplitude imagery."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:52
+msgid ""
+"**Post-processing action.** A step run after a download, such as `unzip`, "
+"clip, reproject or COG conversion."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:55
+msgid ""
+"**Provider.** An adapter for one data source. See [Providers](../data-"
+"access/providers.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:57
+msgid ""
+"**SAFE.** The Sentinel product directory format, usually delivered as "
+"`.SAFE.zip`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:59
+msgid ""
+"**SAR.** Synthetic aperture radar, an active microwave sensor that images "
+"day and night through cloud."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:62
+msgid ""
+"**SBAS.** Small BAseline Subset: a time-series InSAR method that combines "
+"many short-baseline interferograms."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:65
+msgid ""
+"**SLC.** Single Look Complex: SAR imagery that preserves phase, needed for "
+"InSAR."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:67
+msgid ""
+"**STAC.** SpatioTemporal Asset Catalog: a standard JSON format for "
+"describing geospatial assets, used by many providers."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:70
+msgid ""
+"**Streaming.** Reading only the pixels you need from a remote file instead "
+"of downloading all of it."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:73
+msgid ""
+"**TOPS.** Terrain Observation by Progressive Scans, the Sentinel-1 wide-"
+"swath acquisition mode."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:75
+msgid ""
+"**Unwrapping.** Converting wrapped interferometric phase (modulo 2 pi) to "
+"continuous phase; pygeofetch uses `snaphu`."
+msgstr ""

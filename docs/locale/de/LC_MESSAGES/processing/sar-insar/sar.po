@@ -1,0 +1,458 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:1
+msgid "SAR Processing"
+msgstr "SAR-Verarbeitung"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:8
+msgid ""
+"Looking to combine SAR with a *different* sensor type (optical, DEM) rather "
+"than multiple dates of SAR alone? See [Multi-Sensor "
+"Pipelines](../multisensor.md) — flood mapping, vegetation disturbance, and "
+"InSAR+optical fusion all live there."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:14
+msgid ""
+"Speckle filtering, radiometric calibration, flood mapping, interferometric "
+"coherence, and five standard end-to-end processing pipelines built on top of"
+" them. These are from-scratch implementations, not wrappers around an "
+"external SAR toolkit."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:19
+msgid "Two `SARProcessor` classes exist"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:22
+msgid ""
+"`client.sar` (from `PyGeoFetch()`) is "
+"`pygeofetch.processing.sar.SARProcessor`. `from pygeofetch.sar import "
+"SARProcessor` is a separate class (`pygeofetch.sar.processor.SARProcessor`) "
+"with the same methods and its own implementation. They are not kept in sync:"
+" for example, only the standalone class reads complex SLC input correctly "
+"for `coherence()`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:28
+msgid "Overview"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:30
+msgid ""
+"Radar imagery behaves differently from optical imagery. It is measured by "
+"the satellite's own signal, so it works at night and through cloud, and it "
+"responds to surface roughness, moisture and structure rather than colour. It"
+" also carries speckle, a granular noise that comes from the way radar "
+"returns add up, and that noise has to be reduced before the image can be "
+"interpreted. The SAR tools in pygeofetch cover the standard first steps for "
+"Sentinel-1 style data: speckle filtering, radiometric calibration, flood "
+"mapping from backscatter, and interferometric coherence."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:32
+msgid ""
+"A typical flood workflow shows how the pieces fit. Despeckle the image with "
+"a filter such as Lee, convert to decibels, and apply a threshold so that "
+"smooth open water, which reflects the radar away from the sensor and appears"
+" dark, is separated from land. If you also have an image from before the "
+"event, change detection between the two dates is more reliable than a single"
+" threshold because it ignores permanently dark surfaces. The five standard "
+"pipelines further down chain these steps for common tasks, so you can run a "
+"whole analysis with one call and still inspect the intermediate files."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid ""
+"Synthetic SAR scene before and after Lee filtering, and the resulting flood "
+"mask"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:37
+msgid ""
+"<span class=\"gf-tag synthetic\">Synthetic</span> A simulated radar scene "
+"processed with `client.sar`. Left: raw backscatter with speckle. Centre: "
+"after a Lee filter. Right: the flood mask from a -15 dB threshold. Real "
+"scenes are noisier and less uniform, so choose the threshold by inspecting "
+"your own data."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:40
+msgid "`client.sar`: the built-in processor"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:53
+msgid ""
+"All four methods read via a block-by-block fallback, so they work directly "
+"on tiled/COG/compressed GeoTIFFs without a full-scene decode crashing on "
+"large files."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:57
+msgid "Despeckling"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "Filter"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "Real algorithm"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "`\"lee\"` (default)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "Classic adaptive Lee filter — local mean/variance weighting"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "`\"enhanced_lee\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "Coefficient-of-variation-thresholded Lee, sharper edge preservation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "`\"frost\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "Exponentially-weighted local averaging, adaptive to local CV"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "`\"gamma\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "Gamma-MAP-style adaptive filter"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "`\"boxcar\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
+msgid "Plain uniform-window averaging (fastest, least edge-preserving)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:71
+msgid ""
+"`window` must be odd (default 5). `num_looks` affects the Lee/Gamma noise-"
+"variance threshold — set it to the real number of looks in your input if "
+"known; the default of 1 is conservative (least aggressive smoothing)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:76
+msgid "Radiometric calibration"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:82
+msgid ""
+"Converts SAR digital numbers (DN) to backscatter coefficients: `sigma0 = DN²"
+" / A²`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:87
+msgid ""
+"**Limitation.** The calibration constant `A` is fixed at `1.0` (identity). "
+"It is not a per-scene calibration look-up table read from the Sentinel-1 "
+"annotation XML, which absolute radiometric accuracy requires. `gamma0` and "
+"`beta0` use a **fixed nominal incidence angle** (38°) rather than the per-"
+"pixel local incidence angle from a DEM. This is adequate for *relative* "
+"comparisons within one scene (flood detection and change detection, which is"
+" what every pipeline below uses it for). It is **not** adequate for "
+"absolute, cross-scene radiometric work. That would need the Sentinel-1 "
+"calibration vectors and a terrain model."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:95
+msgid "Flood mapping"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:104
+msgid "Two modes:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:105
+msgid ""
+"**Simple threshold** (no `reference`): backscatter below `threshold` dB "
+"flags water (open water is a near-specular reflector at typical incidence "
+"angles, so it returns very little energy to the sensor)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:108
+msgid ""
+"**Change detection** (`reference` given): compares pre/post-event "
+"backscatter, sensitivity `abs(threshold * 0.5)`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:111
+msgid "`detect_direction` matters more than it might look:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "Value"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "Detects"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "Why"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "`\"decrease\"` (default)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "Backscatter dropping"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid ""
+"The correct signature for **open water** — a newly-flooded field becomes a "
+"smooth, near-specular surface"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "`\"increase\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "Backscatter rising"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid ""
+"The correct signature for **flooded urban/built-up areas** — water at a "
+"building's base creates a double-bounce (ground-wall-sensor) reflection "
+"stronger than dry ground alone"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "`\"both\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid "Either direction"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
+msgid ""
+"The robust choice when an AOI mixes open water and dense urban flooding — a "
+"one-directional threshold **structurally cannot** detect the other pattern "
+"at all, not just detect it poorly"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:119
+msgid "flood_map() alone is not a complete workflow"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:122
+msgid ""
+"Calling `flood_map()` directly on raw DN values gives poor, unreliable "
+"results — its dB-scale threshold assumes calibrated input. See "
+"[`flood_mapping_pipeline`](#flood_mapping_pipeline) below, which handles the"
+" prerequisite chain for you."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:127
+msgid "Interferometric coherence"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:133
+msgid ""
+"Formula: `coherence = |<s1·conj(s2)>| / sqrt(<|s1|^2><|s2|^2>)`, range `[0, "
+"1]`. Both inputs must be **co-registered complex SLC** rasters (`complex64` "
+"GeoTIFFs). High coherence indicates a stable surface between the two "
+"acquisition dates; low coherence indicates change or temporal decorrelation "
+"(vegetation growth, surface disturbance, etc.)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:140
+msgid "`client.sar.coherence()` fails on complex SLC input"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:143
+msgid ""
+"In the current code, `client.sar.coherence()` (and therefore `pygeofetch sar"
+" coherence`) reads complex bands through a shared loader that casts to real "
+"`float32`, discarding the phase, and then fails with `ValueError: cannot "
+"reshape array of size ... into shape ...`. The same method on the standalone"
+" class, `pygeofetch.sar.SARProcessor`, reads complex bands directly with "
+"`rasterio` and works. Until `client.sar` is fixed, use the standalone class "
+"for coherence:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:155
+msgid ""
+"The coherence formula itself lives in "
+"`pygeofetch.utils.sar_math.estimate_interferometric_coherence` and is shared"
+" by the standalone class and the multi-sensor vegetation-disturbance "
+"pipeline. See [Known issues](../../reference/known-issues.md#sar-coherence-"
+"fails-on-complex-input)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:160
+msgid "Five standard SAR processing pipelines"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:162
+msgid ""
+"`pygeofetch.sar.pipelines` orchestrates the atomic operations above into "
+"five widely-used end-to-end workflows — because remembering and correctly "
+"ordering the prerequisite steps each analysis actually needs is easy to get "
+"wrong (e.g. flood mapping on raw, uncalibrated DN gives poor results, a "
+"common mistake)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:168
+msgid ""
+"Every pipeline takes a `pygeofetch.sar.SARProcessor` instance (the "
+"standalone class, not `client.sar`)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:184
+msgid ""
+"Every pipeline returns a `PipelineResult`: `success`, `final_output`, "
+"`stages` (every intermediate `ProcessingResult`, not just the final one — "
+"useful for inspecting exactly what each step produced), and `metadata` "
+"(pipeline-specific extras, like a change mask path or pixel counts)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:190
+msgid "`standard_grd_preprocessing_pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:192
+msgid ""
+"The standard Sentinel-1 GRD chain nearly every SAR analysis starts with: "
+"calibrate (DN → sigma0/gamma0/beta0), then despeckle — in that order, not "
+"the reverse. Despeckling raw, uncalibrated DN conflates backscatter with the"
+" sensor's raw digital-number scaling, and filtering in dB space (calibrate's"
+" default) is standard practice since speckle noise behaves closer to "
+"additive once log-converted, which Lee/boxcar-style filters (designed for "
+"additive noise) handle better."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:208
+msgid "`flood_mapping_pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:210
+msgid ""
+"Calibrates and despeckles the flood-event image (and a pre-event reference, "
+"if doing change-based detection) before running `flood_map()` — enforcing "
+"the prerequisite chain rather than leaving it to the caller."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:223
+msgid "`change_detection_pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:225
+msgid ""
+"standard bi-temporal amplitude change detection: calibrate and despeckle "
+"both dates, then flag pixels whose backscatter changed by more than "
+"`change_threshold_db`. Since both calibrated rasters are already in dB, the "
+"log-ratio change metric reduces to a simple subtraction (`post_dB - pre_dB`)"
+" — standard math, not an approximation."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:232
+msgid ""
+"General-purpose beyond flood mapping: burn-scar mapping, deforestation and "
+"clear-cut detection, construction/urban change, and disaster damage "
+"assessment (collapsed structures show a sharp backscatter change)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:243
+msgid "`coherence_disturbance_pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:245
+msgid ""
+"Computes interferometric coherence between two co-registered SLC "
+"acquisitions, then flags low-coherence pixels as a disturbance mask. "
+"Complementary to `change_detection_pipeline` above: that one needs GRD "
+"(amplitude) data and detects backscatter magnitude change; this one needs "
+"SLC (phase-preserving) data and detects phase-stability loss. common uses: "
+"deforestation and selective logging (vegetation disturbance decorrelates "
+"radar phase almost immediately), and general surface disturbance monitoring."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:260
+msgid "`bright_target_detection_pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:262
+msgid ""
+"standard CA-CFAR (cell-averaging Constant False Alarm Rate) bright-target "
+"detection: calibrate — but deliberately **do not despeckle**, since speckle "
+"filtering would smooth away exactly the small, bright targets this pipeline "
+"looks for — then flag pixels significantly brighter than their local "
+"background, estimated from a annulus of pixels between a guard window and a "
+"larger background window (excluding the guard region so a target's own "
+"bright halo doesn't inflate its own background estimate)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:271
+msgid ""
+"common uses: ship/vessel detection (maritime surveillance, illegal fishing "
+"monitoring), and more generally any small, strongly radar-reflective object "
+"against a comparatively uniform background (metal structures, vehicles, "
+"equipment) — a real, complementary technique to optical detection for "
+"conditions optical can't cover: cloud cover and night-time passes."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:287
+msgid "The standalone `pygeofetch.sar.SARProcessor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:298
+msgid ""
+"`SARProcessor` has the same methods as `client.sar` (`despeckle`, "
+"`calibrate`, `flood_map`, `coherence`) and is what the five pipelines above "
+"expect."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:301
+msgid "The `backend=` parameter is not implemented"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:304
+msgid ""
+"The `pygeofetch.sar` module docstring and the `sar` and `ost` extras "
+"describe a pluggable backend: `SARProcessor(backend=\"sarxarray\")` or "
+"`SARProcessor(backend=\"ost\")`. In the current code `SARProcessor` has no "
+"`__init__`, so `SARProcessor(backend=\"sarxarray\")` raises `TypeError: "
+"SARProcessor() takes no arguments`. The helper modules "
+"`pygeofetch/sar/_native.py`, `_sarxarray.py` and `_ost.py` exist but nothing"
+" imports them. Terrain correction (`terrain_correct`) and the `sarxarray` "
+"workflow are therefore not reachable through the public API. See [Known "
+"issues](../../reference/known-issues.md#sar-backends-are-not-wired-in)."
+msgstr ""

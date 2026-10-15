@@ -1,0 +1,170 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:1
+msgid "Landsat Extraction"
+msgstr "Extraction Landsat"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:13
+msgid ""
+"Not wired into `PyGeoFetch` (there's no `client.landsat`) — always a "
+"standalone import, unlike `client.indices`/`client.sar`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:16
+msgid "Overview"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:18
+msgid ""
+"Landsat has the longest continuous optical record available, but its "
+"products need careful handling: band numbers differ between sensor "
+"generations, reflectance and temperature values are stored as scaled "
+"integers, and quality information is packed into a bit mask. "
+"`LandsatExtractor` takes a downloaded Landsat scene and returns a ready-to-"
+"use object with correctly named bands, scale factors applied and, if you ask"
+" for it, clouds and shadows masked."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:20
+msgid ""
+"You normally use it right after a USGS download. Pass the download result, "
+"receive a scene object, and ask it for bands by name, for example red and "
+"near infrared, instead of remembering which numbered file holds which band "
+"for Landsat 5, 7, 8 or 9. Because the output is consistent across sensors, "
+"the same index code can be run over decades of imagery, which is what makes "
+"Landsat suitable for long time series."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:22
+msgid "Two easy-to-get-wrong things this handles"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:24
+msgid ""
+"**Band mapping differs by sensor.** OLI (Landsat 8/9) and TM/ETM+ (4/5/7) "
+"use different band numbers for the same wavelength — `SR_B4` is Red on OLI, "
+"NIR on TM/ETM+. Sensor is auto-detected from the filename "
+"(`_detect_sensor()`) and the correct map applied."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:28
+msgid ""
+"**Delivery format differs by provider.** Not every provider delivers one "
+"archive — Planetary Computer downloads each band as its own separate asset "
+"file (`SR_B4.TIF`, `SR_B5.TIF`, `QA_PIXEL.TIF`, ...) rather than one `.tar` "
+"bundle, so `DownloadResult.output_paths` holds many files, not one. "
+"`process_scene()` detects this automatically (`_resolve_individual_files()`)"
+" and uses those files directly, skipping tar extraction entirely — the same "
+"call works regardless of which delivery style the provider used."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:37
+msgid "`process_scene()` — the full chain"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:45
+msgid ""
+"The full chain in one call: extract bundle → scale bands → cloud-mask → "
+"return. `source` accepts a `DownloadResult` (preferred — uses "
+"`.output_path`/`.output_paths` directly) or a direct path to a `.tar` "
+"bundle. `bands` defaults to "
+"`[\"blue\",\"green\",\"red\",\"nir\",\"swir1\",\"swir2\"]` — pass fewer for "
+"faster processing when you only need, e.g., `[\"red\",\"nir\"]` for NDVI. "
+"`label` namespaces the extraction subfolder when processing multiple scenes "
+"into the same `output_dir` (e.g. `label=\"before\"` / `label=\"after\"` for "
+"change detection). `mask_clouds` overrides the instance-level setting for "
+"just this call."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:56
+msgid "Individual building-block methods"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:58
+msgid ""
+"`process_scene()` is a convenience wrapper — each step is also independently"
+" callable:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid "Method"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid "What it does"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid "`extract_bundle(tar_path, output_dir)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid ""
+"Extract every band + QA GeoTIFF from a Landsat C2L2 `.tar` bundle. Returns "
+"`{member_filename: extracted_path}`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid "`load_scaled_band(path)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid ""
+"Load one band and apply the correct **official USGS scale factor + offset**,"
+" auto-selected by band type (surface reflectance `SR_B*` vs. surface "
+"temperature `ST_B*`). Fill pixels (`DN=0`, the Collection 2 fill value) "
+"become NaN. Returns `(scaled_array, rasterio_profile)`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid "`cloud_mask(qa_pixel_path, shape=None)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid ""
+"Decode Landsat Collection 2 `QA_PIXEL` bit flags into a cloud/shadow mask "
+"(`True` = masked out). Checks bits 1 (Dilated Cloud), 3 (Cloud), and 4 "
+"(Cloud Shadow) per the official Landsat 8-9 C2 Level-2 Science Product "
+"Guide, Table 6-2/6-3 — the same bit positions apply across the full Landsat "
+"4-9 Collection 2 `QA_PIXEL` spec."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid "`find_band(extracted_files, band_suffix)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
+msgid "Look up an extracted file by band suffix, e.g. `\"SR_B4\"` or `\"QA_PIXEL\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:80
+msgid "`LandsatScene` — the returned object"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:88
+msgid "Verification basis"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:90
+msgid ""
+"Radiometric scaling verified against USGS's own worked examples: DN 18639 → "
+"0.313 reflectance; DN 44947 → 302.6 K. Cloud masking decodes `QA_PIXEL` bits"
+" per the official Science Product Guide, not an approximated threshold."
+msgstr ""

@@ -1,0 +1,529 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:1
+msgid "InSAR Processing"
+msgstr "InSAR 处理"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:9
+msgid ""
+"Looking for a complete, cell-by-cell worked example rather than an API "
+"reference? See [Complete Worked Example: Mexico City Subsidence](insar-"
+"mexico-city-tutorial.md) — a full search-to- validated-subsidence-map run, "
+"cross-referenced against a published result (Cigna & Tapete 2021)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:17
+msgid ""
+"Need to combine InSAR with optical data specifically? See [Optical Pixel "
+"Offset Tracking](optical-offset-tracking.md)'s fusion section, or the "
+"formalized, reusable [InSAR + Optical Displacement Fusion "
+"pipeline](../multisensor.md#1-insar--optical-displacement-fusion)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:24
+msgid ""
+"**Re-verified against a fresh source upload after this page and the tutorial"
+" were originally written**: the InSAR module had substantial internal "
+"changes since then (900+ diff lines in `interferogram.py` alone; large diffs"
+" across nearly every file in `pygeofetch/insar/`). Directly re-checked the "
+"signatures of every function/class this page and the tutorial document — "
+"`search_and_select_consistent_stack`, `PreflightGate`, "
+"`select_burst_synchronized_dates`, `SLCExtractor.extract_consistent_stack`, "
+"`InterferogramGenerator.process_pair`, `PhaseUnwrapper.unwrap_pair`, "
+"`build_sbas_network`, `select_reliable_reference_pixel`, "
+"`bridge_unwrap_regions`, `SBASTimeSeries.invert`, `RiskMapper.compute_risk` "
+"— against the fresh source. All matched exactly; the large diffs were "
+"internal refactoring/implementation changes, not breaking changes to the "
+"public API documented here."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:39
+msgid ""
+"Coregistration, interferogram formation, phase unwrapping, and SBAS time "
+"series inversion, in pure Python. No SNAP or ISCE required for the core "
+"pipeline."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:43
+msgid "Overview"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:45
+msgid ""
+"Interferometric SAR measures how far the ground has moved along the "
+"satellite's line of sight by comparing the phase of two radar images of the "
+"same place. A change of half a wavelength, about 2.8 cm for Sentinel-1, "
+"produces one full colour cycle (a fringe) in the interferogram, so the "
+"method can detect movements of millimetres to centimetres over wide areas, "
+"which is why it is used for subsidence, landslides, volcanoes and "
+"infrastructure monitoring."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:47
+msgid ""
+"The chain has several stages and pygeofetch implements them in Python. "
+"Scenes of the same track and burst geometry are selected and checked in a "
+"preflight step, the single-look complex images are extracted and co-"
+"registered, interferograms and coherence are formed, the phase is unwrapped,"
+" and atmospheric and orbital effects are reduced. For a series of dates, the"
+" small-baseline (SBAS) method combines many short-baseline interferograms "
+"into a displacement time series and a velocity map. The preflight checks "
+"matter in practice, because most failed InSAR runs come from scene "
+"combinations that were never suitable, and it is far cheaper to find that "
+"out before downloading large SLC files."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:49
+msgid ""
+"Interferometry only works where the surface stays coherent between "
+"acquisitions. Vegetated, wet or rapidly changing ground decorrelates and no "
+"processing can recover a signal from it, and surfaces that move more than a "
+"fraction of a wavelength between neighbouring pixels cannot be unwrapped. "
+"Always look at coherence first, as in the example below, and use the "
+"[optical offset tracking](optical-offset-tracking.md) tools where InSAR "
+"cannot work."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "Coherence image over Bu'ertai showing mostly low coherence"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:54
+msgid ""
+"<span class=\"gf-tag real\">Real</span> Sentinel-1 coherence over the "
+"Bu'ertai coal mine area for 2023-04-22 to 2023-06-21. Most of the scene is "
+"between about 0.2 and 0.4, too low for reliable phase measurement, so "
+"conventional InSAR covers very little of the area. See the [case "
+"studies](../../workflows/case-studies.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:57
+msgid "The four-step chain"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "Step"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "What it does"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "1. SLC Extraction"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "Sub-swath extraction from `.SAFE` archives via embedded GCP matching"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "2. Interferogram"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "Coregistration with ESD, formation, topographic phase removal"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "3. Unwrapping"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "SNAPHU-based phase unwrapping via `snaphu-py`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "4. Time Series"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
+msgid "SBAS inversion with reference-pixel normalization"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:66
+msgid "End-to-end example"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:85
+msgid "SLC extraction"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:87
+msgid ""
+"Sentinel-1 IW SLC spans 3 sub-swaths per polarisation; your AOI typically "
+"falls in just one, and which one varies per scene. `SLCExtractor` reads each"
+" sub-swath's embedded GCPs via rasterio and picks the one that overlaps your"
+" AOI."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:92
+msgid ""
+"Passing a `DownloadResult` object (rather than a raw path) is preferred — "
+"`extract_pair()` reads `.output_path` directly, avoiding filename/subfolder "
+"mismatch bugs."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:96
+msgid "Interferogram generation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:98
+msgid ""
+"`InterferogramGenerator.process_pair()` handles GDAL's `complex_int16` dtype"
+" — the actual format Sentinel-1 SLC TIFFs use, not just "
+"`complex64`/`complex128`. Missing this silently discards phase data."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:102
+msgid ""
+"Topographic phase removal is R²-gated (> 0.5) so deformation signal isn't "
+"mistaken for terrain phase."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:105
+msgid "Phase unwrapping"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:107
+msgid ""
+"SNAPHU (Chen & Zebker 2001) via `snaphu-py` — the same algorithm ASF's On-"
+"Demand InSAR and ISCE2/3 use in production."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:110
+msgid "SBAS time series"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:112
+msgid ""
+"Berardino et al. (2002) SBAS inversion, with optional MintPy delegation for "
+"the full correction chain."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:117
+msgid ""
+"**The reference pixel matters more than almost anything else here.** Phase "
+"unwrapping only recovers phase relative to an arbitrary per-interferogram "
+"offset. Combining unwrapped interferograms without a common, stable "
+"reference pixel corrupts the entire result. In one verification run, "
+"referencing inside a synthetic subsidence bowl gave 103 mm/yr RMSE against a"
+" 100 mm/yr true signal; a verified-stable reference gave 8.84 mm/yr RMSE. "
+"Always pass an explicit, independently-verified `reference_pixel`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:126
+msgid ""
+"Advanced safeguards: custom DEMs, layover/shadow, and topographic residuals"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:128
+msgid ""
+"`pygeofetch.insar.advanced_safeguards` adds three general-purpose "
+"capabilities — general-purpose meaning exactly that: the physics here "
+"applies identically to a volcanic edifice, mountainous landslide terrain, a "
+"high-relief urban area, or an open-pit mine. None of it is mining-specific, "
+"even though this project's own validation work happens to use a mine as its "
+"stress test."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:135
+msgid ""
+"These three functions belong to different stages of the real InSAR chain, "
+"stated explicitly because conflating them is an easy mistake:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:139
+msgid "`prepare_custom_dem` — before interferogram generation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:141
+msgid ""
+"Aligns a custom, high-resolution DEM (UAV photogrammetry, airborne LiDAR) to"
+" a reference SAR raster's exact grid via `rasterio.warp.reproject`, for "
+"topographic-phase removal during interferogram formation. Useful when a "
+"coarse global DEM (SRTM, Copernicus DEM) under-resolves terrain — a UAV DEM "
+"over an active volcanic crater, LiDAR over a landslide body, or a high-"
+"resolution urban DSM."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:159
+msgid "`generate_insar_mask` — before interferogram generation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:161
+msgid ""
+"geometry-based layover/shadow masking from a DEM and the real acquisition "
+"geometry (incidence angle, heading, look side) — flags which pixels are "
+"structurally unusable for InSAR *before* any interferogram is even formed, "
+"independent of coherence."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:177
+msgid ""
+"The physics: a pixel is in **layover** when local terrain slope toward the "
+"radar is steep enough that the local incidence angle drops to zero or below "
+"(the near-range part of the slope arrives at the sensor before the far-range"
+" part, folding the image over itself), and in **shadow** when slope facing "
+"away from the radar pushes the local incidence angle to 90° or beyond (the "
+"radar beam physically can't reach it). Verified against a synthetic cone "
+"DEM: a steep cone (76° slope vs. 35° incidence) correctly shows layover on "
+"the radar-facing flank *and* shadow on the opposite flank simultaneously; a "
+"gentler cone (31° slope, below the incidence angle) correctly shows neither."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:188
+msgid ""
+"`build_sbas_design_matrix_with_topo` — during SBAS inversion, after "
+"unwrapping"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:190
+msgid ""
+"This is standard residual DEM-error co-estimation (Berardino et al. 2002; "
+"Fattahi & Amelung 2013), applied to the *already unwrapped* phase stack — "
+"not topographic phase removal, which already happened earlier using whatever"
+" DEM the interferogram stage used. This corrects for the *residual* error "
+"left over in that earlier DEM, a real, separate, later correction."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:211
+msgid ""
+"Real physics: a residual DEM error `epsilon` contributes phase `(4π/λ) × "
+"(B_perp / (R·sin θ)) × epsilon`, linear in `epsilon` exactly like the "
+"familiar velocity term is linear in time — which is why both can be solved "
+"for jointly in one linear least-squares system per pixel. The topographic-"
+"residual column added here has been checked against this exact analytical "
+"formula to machine precision, not just \"does it run.\""
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:219
+msgid "Atmospheric correction"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:221
+msgid ""
+"Elevation-correlated (no extra deps, same R²-gating), or ERA5-based via "
+"PyAPS (`pygeofetch[insar-full]`, needs free CDS API credentials)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:224
+msgid "Orbit files"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:233
+msgid ""
+"Served by ESA as `.EOF.zip`; extraction is automatic and always returns a "
+"directly-usable `.EOF` path."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:236
+msgid "Data validation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:238
+msgid ""
+"`DataValidator` runs automatically at pipeline entry points, not just "
+"available-but-unused: input SLC sanity checks (complex dtype, NaN, dynamic "
+"range) at the start of every `process_pair()` call, coherence range checks "
+"after estimation, and SBAS network connectivity checks before the expensive "
+"inversion runs."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:251
+msgid ""
+"Catches a failure mode a naive dtype check misses: amplitude-only data cast "
+"to a complex dtype (`+ 0j`) passes both the dtype check and the amplitude-"
+"variation check — it's `complex64`, and amplitude does vary. The validator "
+"specifically checks for near-zero imaginary part everywhere, which SAR phase"
+" never has."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:257
+msgid "Real orbit-based coregistration"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:259
+msgid ""
+"TOPS mode needs ~0.001-pixel coregistration accuracy (Yagüe-Martínez et al. "
+"2016) — orbit-based geometric coregistration is the proven method for "
+"reaching it, not a shape-matching guess. Ground points are sampled directly "
+"from a DEM's own geographic coordinates (closed-form, always converges) and "
+"located in both orbits via a zero-Doppler time solve."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:279
+msgid ""
+"Supply all four (plus a DEM) and orbit-based coregistration is used "
+"automatically. Omit any of the four and it falls back cleanly to shape-based"
+" resampling, with a clear log line stating which path ran."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:285
+msgid ""
+"**Limitation.** The lower-level `solve_ground_point()` (an alternative, "
+"pixel-driven geolocation solve) has a known reliability gap and is "
+"deliberately not exported as a primary API. It fails safely, but is not "
+"recommended for unattended use."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:289
+msgid "LOS-to-vertical conversion"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:291
+msgid ""
+"InSAR measures line-of-sight range change — the true 3D displacement vector "
+"projected onto the satellite's single viewing direction. With one geometry, "
+"that's one equation and three unknowns. `los_to_vertical_displacement()` "
+"applies the standard literature technique (Fialko et al. 2001; Hooper et al."
+" 2012): assume horizontal motion is negligible."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:306
+msgid ""
+"This is an assumption, not a measurement — defensible for vertically-"
+"dominated sources like mining/groundwater subsidence, actively wrong for "
+"landslides or fault creep with a lateral component. Sentinel-1's near-polar "
+"orbit is also nearly blind to north-south motion regardless of this "
+"conversion."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:312
+msgid "Automatic visualization"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:319
+msgid ""
+"A visualization failure only logs a warning — it never blocks or loses the "
+"actual GeoTIFF output."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:322
+msgid "GPU acceleration"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:328
+msgid ""
+"Optional CuPy backend for coherence estimation and SBAS inversion's large "
+"matrix solve. `use_gpu` defaults to `False` — opt-in, not opt-out."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:332
+msgid "Risk mapping with uncertainty quantification"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:348
+msgid ""
+"Four distinct uncertainty-quantification methods, not one formula presented "
+"four ways:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "`method=`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "Real basis"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "`\"bayesian\"` (default)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "Conjugate Normal-Normal Bayesian update on the trend/slope"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "`\"monte_carlo\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "Monte Carlo simulation, `n_simulations` draws"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "`\"bootstrap\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid ""
+"**Residual** bootstrap resampling — not naive time-index resampling, which "
+"would double-count temporal autocorrelation in the residuals"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "`\"analytical\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
+msgid "Closed-form analytical uncertainty propagation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:358
+msgid ""
+"`risk_function` defaults to a trend-magnitude-over-variability ratio but "
+"accepts any `(data_array, time_years) -> risk_array` callable, so a domain-"
+"specific risk definition (e.g. weighting recent acceleration more heavily) "
+"can be substituted directly."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:365
+msgid ""
+"`RiskMapper.__init__` does not modify the `ts_result` you pass in, so the "
+"same object can be reused safely afterwards."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:368
+msgid ""
+"`RiskMapper` accepts a `TimeSeriesResult` from `SBASTimeSeries.invert()` "
+"directly (matches its `.displacement`/`.dates` attributes), or any "
+"object/dict exposing a 3D `(time, y, x)` array under one of "
+"`data`/`displacement`/`deformation`/`timeseries`/`stack` and a matching per-"
+"time-step label under one of "
+"`times`/`dates`/`time`/`date`/`acquisition_dates`/`date_list`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:375
+msgid ""
+"`validate_risk_map()` compares a computed risk map against real ground truth"
+" or reference data — `rmse`, `mae`, `r2` for accuracy, plus `coverage` and "
+"`sharpness` for calibration quality (does the stated confidence interval "
+"actually contain the true value the stated fraction of the time, and how "
+"tight is it)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:381
+msgid "InSARProject — search to interferogram in a handful of calls"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:383
+msgid ""
+"A high-level workflow wrapper for the full search → download → extract → "
+"interferogram chain, built on the verified lower-level pieces above."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:401
+msgid ""
+"If you want every burst-aware ESD, flat-earth, and unwrapping step fully "
+"explicit instead of wrapped inside this convenience layer, use "
+"`SLCExtractor` / `InterferogramGenerator` directly."
+msgstr ""

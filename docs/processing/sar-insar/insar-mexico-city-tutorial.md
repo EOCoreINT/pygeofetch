@@ -14,6 +14,50 @@ Every function referenced on this page exists in the installed package. Where th
 notebook recorded a problem found and fixed during the project, that context is kept, because
 it explains why a step is written the way it is.
 :::
+## Results of the reference run
+
+The stages below were run end to end on Sentinel-1 SLC data for Iztapalapa, Mexico City: track 147, descending, July 2016 to September 2017, with a 30 m SRTM DEM and precise orbit files. The project is published as [EOCoreINT/mexico-subsidence-project](https://github.com/EOCoreINT/mexico-subsidence-project), and the figures and numbers in this section come from that repository. The figures are **real**: they are outputs of the notebook this page reproduces.
+
+**Selecting and screening scenes.** The search found 115 candidate scenes, and 67 were downloaded, about 7.5 GB each and roughly 500 GB in total. A preflight gate had already removed scenes that would have been unusable, by checking truncation, AOI coverage, a 60-day temporal-connectivity limit and burst timing from small annotation files, which the project estimates avoided about 360 GB of unnecessary downloads. Scenes are drawn on a map before downloading so you can see how the radar swaths cover the area of interest.
+
+:::{figure} /_static/img/mexico_search_footprints.jpg
+:alt: Map of Sentinel-1 scene footprints in cyan over Mexico with the yellow area of interest
+
+<span class="gf-tag real">Real</span> Search footprints from Copernicus for Sentinel-1B on 2017-06-19, drawn with `MapViewer` over a satellite basemap. The yellow square is the area of interest, and the pop-up shows the scene metadata. Click the image to enlarge.
+:::
+
+**From interferogram to unwrapped phase.** Pairs were formed with a temporal baseline of at most 24 days and a perpendicular baseline of at most 150 m: 78 interferograms in all, multilooked 8 by 4 to give about 20 m ground resolution, filtered with a Goldstein filter, and unwrapped with SNAPHU in deformation mode. The wrapped phase shows the fringes, and the unwrapped phase turns them into continuous values.
+
+:::{figure} /_static/img/mexico_wrapped_phase.jpg
+:alt: Wrapped interferometric phase with regular colour fringes across the scene
+
+<span class="gf-tag real">Real</span> Wrapped interferometric phase for the pair 2017-01-02 to 2017-01-08. The colour cycles are fringes, each one a phase change of 2 pi. The dense, regular fringes are most likely a smooth orbital-geometry ramp rather than ground motion, which is why flattening and later deramping are part of the chain. Noisy patches mark low coherence.
+:::
+
+:::{figure} /_static/img/mexico_coherence.jpg
+:alt: Radar amplitude, coherence map and coherence histogram for an example interferogram
+
+<span class="gf-tag real">Real</span> Amplitude, coherence and the histogram of coherence for an example interferogram. The scene-wide mean coherence is 0.51 and the urban-proxy mean is 0.61, so urban areas hold phase better than the rest. The horizontal bands most likely follow the burst structure of Sentinel-1 TOPS data.
+:::
+
+:::{figure} /_static/img/mexico_unwrapped_phase.jpg
+:alt: Unwrapped phase shown as a smooth ramp from left to right for the pair 2017-01-02 to 2017-01-08
+
+<span class="gf-tag real">Real</span> Unwrapped phase for the same pair, with 100 percent of pixels reliable in that scene. The smooth left-to-right ramp is most likely an orbital contribution, not deformation. The project's SBAS step applies a robust deramping before estimating motion.
+:::
+
+**Time series and what it shows.** After excluding pairs that failed the reliability checks, the network that remained was fragmented: 58 acquisition dates split into 17 connected groups, and the inversion ran on the largest group, 10 dates joined by 11 interferograms. The retained vertical velocities, from the 2nd to the 98th percentile, ran from about -35.5 to -2.9 cm per year, with negative values meaning subsidence. For comparison, Cigna and Tapete (2021) report a peak of about -39 cm per year in Iztapalapa from more than 300 scenes over 2014 to 2020, so the sign and rough magnitude are consistent, though this is a directional check and not a validation.
+
+:::{figure} /_static/img/mexico_sbas_results.jpg
+:alt: Four panels: mean vertical velocity, uncertainty map, reliable pixel mask and displacement time series
+
+<span class="gf-tag real">Real</span> SBAS output for the largest connected group of dates. Top left: mean vertical velocity in mm per year at the reliable pixels only. Top right: the uncertainty map. Bottom left: the reliable-pixel mask, with white pixels valid. Bottom right: vertical displacement of the high-subsidence cluster over the 10 dates of this group.
+:::
+
+:::{warning}
+**Read the coverage before the numbers.** Only about 0.2 percent of pixels (22 of 10,686 in the final inversion) had enough coherent pairs above the 0.40 threshold, so the velocities describe a small number of stable scatterers, not the whole city. The inversion rests on 10 dates and 11 pairs, and 96.5 percent of the 2,211 possible pairs were excluded. The result has not been validated against GNSS, levelling or an external InSAR product, and the project's own README lists a few unexplained count differences between stages (for example 67 downloaded scenes against 58 dates in the network). Treat the figures as a demonstration that the chain runs and returns a plausible sign and magnitude, not as a subsidence map to act on.
+:::
+
 ## Why this AOI
 
 Mexico City's Iztapalapa borough is one of ESA's own two official
@@ -744,10 +788,7 @@ write_provenance_manifest(
 
 :::{note}
 
-The measured cm/yr peak, mean coherence and pair counts are not quoted as fixed figures. They
-depend on which scenes are in the archive on the day you run it. Run the cells above against
-the current archive to get today's numbers; the provenance manifest makes any specific run's
-numbers checkable afterwards.
+The numbers in [Results of the reference run](#results-of-the-reference-run) belong to one execution against the archive as it was then. They depend on which scenes are available on the day you run it, so expect different counts and velocities. The provenance manifest makes any specific run checkable afterwards.
 :::
 ## What this demonstrates end to end
 

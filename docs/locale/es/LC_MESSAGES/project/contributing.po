@@ -1,0 +1,147 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:1
+msgid "Contributing"
+msgstr "Contribuir"
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:3
+msgid ""
+"Contributions of all kinds are welcome: bug reports, fixes, new providers, "
+"tests and documentation. The repository's `CONTRIBUTING.md` holds the "
+"authoritative guidelines; this page is a short orientation."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:7
+msgid "Development setup"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:16
+msgid ""
+"See [Testing](../reference/testing.md) for how the suite is organised and "
+"why the `test` extra is the right one."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:19
+msgid "Where to start"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:21
+msgid ""
+"Each item below links to the page that describes the current behaviour."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:23
+msgid ""
+"**Close a documented gap** (all listed in [Known issues](../reference/known-"
+"issues.md))"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:25
+msgid ""
+"Make `FederatedSearcher` honour `--on-provider-failure abort` and `retry`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:26
+msgid "Register the `monitor` command group in `cli/main.py`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:27
+msgid ""
+"Connect the [Settings layer](../reference/configuration.md) to search, "
+"download and the engine."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:28
+msgid ""
+"Fix `client.sar.coherence` for complex input by reusing the approach in "
+"`pygeofetch.sar.processor`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:29
+msgid "Declare `rich` and `shapely` as dependencies."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:30
+msgid "Delete the stale `multisensor/_init.py`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:32
+msgid "**Improve quality**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:34
+msgid ""
+"Add a GCS export test with a mocked bucket, to match the S3 coverage in "
+"`tests/test_pipeline_process_export.py`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:35
+msgid ""
+"Add post-processing actions (see [Pipelines](../workflows/pipelines.md))."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:36
+msgid ""
+"Extend terrain-corrected change detection beyond the cosine correction to "
+"C-correction, Minnaert or SCS+C for steep terrain ([Multi-sensor "
+"pipelines](../processing/multisensor.md))."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:37
+msgid ""
+"Re-verify providers whose upstream APIs may have changed. A failing provider"
+" is a live bug report, not a stub to reimplement."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:39
+msgid "Conventions"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:41
+msgid ""
+"Add a test for every fix, and derive expected values independently of the "
+"code under test."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:42
+msgid "Do not make tests depend on network access."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:43
+msgid ""
+"When you change a CLI command, regenerate its reference page: `python "
+"tools/gen_cli_reference.py`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:44
+msgid ""
+"Keep documentation claims verifiable: run the example before you publish it."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:46
+msgid "Licence"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:48
+msgid ""
+"MIT. Copyright Samuel Appiah Kubi. pygeofetch is part of the PyGeoVision "
+"platform: pygeofetch handles data acquisition and processing, and "
+"PyGeoVision builds the Earth observation machine-learning layer on top."
+msgstr ""

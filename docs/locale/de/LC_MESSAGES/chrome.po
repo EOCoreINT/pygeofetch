@@ -1,0 +1,61 @@
+#
+msgid ""
+msgstr ""
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Documentation"
+msgstr "Dokumentation"
+
+msgid "Tutorials"
+msgstr "Tutorials"
+
+msgid "Community"
+msgstr "Community"
+
+msgid "Download"
+msgstr "Herunterladen"
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "Version:"
+msgstr "Version:"
+
+msgid "Home"
+msgstr "Startseite"
+
+msgid "Getting started"
+msgstr "Erste Schritte"
+
+msgid "Data access"
+msgstr "Datenzugriff"
+
+msgid "Optical processing"
+msgstr "Optische Verarbeitung"
+
+msgid "SAR and InSAR"
+msgstr "SAR und InSAR"
+
+msgid "Multi-sensor"
+msgstr "Multisensor"
+
+msgid "Workflows"
+msgstr "Workflows"
+
+msgid "Visualization"
+msgstr "Visualisierung"
+
+msgid "Reference"
+msgstr "Referenz"
+
+msgid "Project"
+msgstr "Projekt"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Partly translated"
+msgstr "Teilweise übersetzt: Nicht übersetzte Seiten erscheinen auf Englisch."

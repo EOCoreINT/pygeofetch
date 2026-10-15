@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/docker.md:1
+msgid "Docker & Containers"
+msgstr "Docker et conteneurs"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/docker.md:5
+msgid ""
+"**Image availability is not guaranteed by the Python package.** The "
+"`Dockerfile`, `docker-compose.yml` and published images live in the "
+"repository, not in the PyPI package. Confirm that `docker pull "
+"pygeofetch/pygeofetch:latest` succeeds before relying on it in CI/CD. If it "
+"does not, build from source as shown below."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/docker.md:10
+msgid "Quick start with the published image"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/docker.md:34
+msgid "Docker Compose for scheduled pipelines"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/docker.md:55
+msgid ""
+"**Credentials are not read from environment variables** such as "
+"`PYGEOFETCH_PLANET_API_KEY`, `PYGEOFETCH_COPERNICUS_USERNAME` or "
+"`PYGEOFETCH_COPERNICUS_PASSWORD`. No such mechanism exists. The general "
+"settings variables above (`PYGEOFETCH_GENERAL__LOG_LEVEL` and similar) are "
+"read by `Settings`, which only the `config` commands use (see "
+"[Configuration](configuration.md)). Supply credentials by mounting "
+"`~/.pygeofetch` or by calling `add_credentials()` at start-up."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/docker.md:72
+msgid ""
+"`PLANET_API_KEY`/`COPERNICUS_USER`/`COPERNICUS_PASS` here are your own "
+"environment variable names (populated by Compose's `${VAR}` substitution "
+"from your `.env` file or CI secrets, same as before) — your own setup code "
+"reads them, not pygeofetch automatically."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/docker.md:89
+msgid ""
+"Given the default credential storage caveat in [Security "
+"Model](security.md), the encrypted-file backend (`auth_backend=\"file\"`, "
+"already the real default) combined with a mounted `~/.pygeofetch` volume, as"
+" shown above, is the straightforward path for headless container use -- "
+"there's no environment-variable credential path to prefer instead, per the "
+"correction above."
+msgstr ""

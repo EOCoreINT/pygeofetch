@@ -1,0 +1,1009 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:1
+msgid "Python API Reference"
+msgstr "Référence de l'API Python"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:3
+msgid ""
+"Use pygeofetch as a library in your own scripts, notebooks, or applications."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:6
+msgid ""
+"The main entry point is the `PyGeoFetch` class. Data models live in "
+"`pygeofetch.models`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:13
+msgid "Overview"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:15
+msgid ""
+"The Python API is organised around one object, the `PyGeoFetch` client, and "
+"a small set of models. You describe a request with `SearchQuery`, call "
+"`client.search()` to obtain a list of `SatelliteData` scenes, and pass those"
+" scenes to `client.download()` or `client.stream()`. Download behaviour is "
+"controlled with `DownloadOptions`, and each download returns a "
+"`DownloadResult` that records the outcome. Processing capabilities are "
+"exposed as namespaces on the same client, for example `client.indices`, "
+"`client.preprocess`, `client.sar` and `client.post`, so that one import is "
+"enough for most workflows."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:17
+msgid ""
+"Because the models are Pydantic classes, they validate their inputs and can "
+"be converted to and from dictionaries and JSON, which makes it easy to store"
+" a query, log a result or build requests from configuration. The sections "
+"below list the fields of each model, the methods of the client and the "
+"namespaces it carries."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:19
+msgid "Full workflow example"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:65
+msgid "`SearchQuery`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:67
+msgid ""
+"Describes what to search for. Every field is optional. Without an area "
+"(`bbox`, `geometry` or `geometry_geojson`), a search is not spatially "
+"restricted, which most providers reject or answer with very large result "
+"sets."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Field"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Type"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Description"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`bbox`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`tuple[float,4] | BoundingBox | str | dict | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Accepts a `(minlon, minlat, maxlon, maxlat)` tuple, a `BoundingBox`, a "
+"`\"minlon,minlat,maxlon,maxlat\"` string, or a dict — all coerced to "
+"`BoundingBox`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`geometry`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`dict | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "GeoJSON geometry dict. Alternative to `bbox`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`start_date` / `end_date`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`date | datetime | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Temporal filter."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`cloud_cover_min` / `cloud_cover_max`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`float`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "0–100. Default `0` / `100`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`satellites`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`list[str]`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "e.g. `[\"Sentinel-2\", \"Landsat-8\"]`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`sensors`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Sensor/instrument names."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`collections`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Data collection identifiers."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`processing_levels`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "e.g. `[\"L2A\"]`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`resolution_min_m` / `resolution_max_m`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`float | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Spatial resolution in metres. **Not** `resolution_min`/`resolution_max`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`product_type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`str | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`\"GRD\"`, `\"SLC\"`, `\"GRD-COG\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`polarisation`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "e.g. `\"VV\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`max_results`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`int`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "1–10000. Default 100."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`sort_by`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`str`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`\"datetime\"`, `\"cloud_cover\"`, `\"score\"`, `\"satellite\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`sort_ascending`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`bool`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `False`. **Not** a `sort_order: \"asc\"/\"desc\"` string."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`providers`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Restrict search to specific providers."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`cql2_filter`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "CQL2 expression, STAC-capable providers only."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`on_provider_failure`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`\"skip\"`, `\"abort\"`, `\"retry\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`timeout_seconds`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Per-provider timeout in seconds. Default 60."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`ids`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Retrieve specific item IDs."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`geometry_geojson`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "GeoJSON geometry dict (alternative to `bbox`)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`pass_direction`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "SAR orbit pass, `\"ASCENDING\"` or `\"DESCENDING\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`page` / `page_size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Pagination, default `1` / `100` (`page_size` 1-1000)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`provider_filters`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`dict[str, dict]`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Extra filters per provider, keyed by provider ID."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:95
+msgid "`DownloadOptions`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`parallel`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "1–32. Default 4."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`retry_attempts`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "0–10. Default 3. **Not** `retry`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`retry_delay_seconds`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default 1.0, doubles each attempt."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Per-download timeout. Default 300."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`resume`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `True`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`verify_checksum`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `False`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`checksum_algorithm`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`ChecksumAlgorithm`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `SHA256`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`on_failure`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`bandwidth_limit_mbps`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Speed cap in **Mbps** (a float), not a `\"10MB\"` string. `None` = "
+"unlimited."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`priority`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Higher = higher priority."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`bands`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`list[str] | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default: all data assets."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`post_process`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`list[PostProcessAction]`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"**Must** be `PostProcessAction` objects — a plain string list raises a "
+"`ValidationError`. See below."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`overwrite`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `False` (skip existing)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`extract_archives`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Not used by any code. Extract archives with the `unzip` [post-processing "
+"action](../data-access/download.md#archives)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`retry_strategy`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `\"exponential_jitter\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`chunk_size_mb`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `16.0`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`max_file_size_gb`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Optional size cap."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`flatten_directory`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`output_format`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Default `\"original\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`notify_webhook` / `notify_email`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Notification targets."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:120
+msgid "Constructing `post_process` correctly"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:133
+msgid ""
+"The CLI's `--post-process \"reproject:EPSG:4326,cog\"` string form is parsed"
+" into exactly this shape internally — it's only when constructing "
+"`DownloadOptions` directly in Python that raw strings don't work."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:138
+msgid "`DownloadResult`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:140
+msgid ""
+"Returned by `download()`, `download_from_file()` and `stream()`, one per "
+"input item and in input order."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`status`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`DownloadStatus`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"`pending`, `downloading`, `completed`, `failed`, `skipped` or `cached`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`data_id`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "The `SatelliteData.id` this result is for."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`provider`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Provider ID."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`output_path`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`Path | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "First output file."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`output_paths`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`list[Path]`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Every output file. After the `unzip` action these are the extracted files."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`bytes_downloaded`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Size of the files written. For streamed results this is the size on disk, "
+"not network traffic."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`duration_seconds`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Wall-clock time."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`error` / `error_type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Failure message and the exception class name or provider-specific code."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`retries_used` / `attempt_number`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Retry bookkeeping."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`checksum_verified`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"See [Error handling](error-handling.md#download-resilience) for what this "
+"does and does not guarantee."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`post_process_completed`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Post-processing steps that ran."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`from_cache`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "The file already existed and was reused."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`aoi_coverage`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Streamed results only: fraction (0-1) of the AOI covered by the streamed "
+"raster."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:158
+msgid "`SatelliteData`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:160
+msgid "One scene returned by a search."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`id`, `provider`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Scene ID and the provider that returned it."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`satellite`, `sensor`, `collection`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Platform, instrument and collection."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`datetime`, `start_datetime`, `end_datetime`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`datetime | None`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Acquisition time or interval."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`bbox`, `geometry`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`tuple`, `dict`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Footprint as a bounding box and as GeoJSON."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`cloud_cover`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Percent."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`processing_level`, `data_format`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "enums"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`UNKNOWN` when the provider does not say."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`assets`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`dict[str, SatelliteAsset]`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Downloadable files, keyed by asset name. Each asset has `href`, `title`, "
+"`media_type`, `roles`, `size_bytes`, `checksum_md5` and `checksum_sha256`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"`product_type`, `polarisation`, `pass_direction`, `relative_orbit`, "
+"`orbit_number`, `incidence_angle`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "various"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "SAR metadata."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`resolution_m`, `gsd_m`, `off_nadir_angle`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Resolution and viewing geometry."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`score`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"Relevance score assigned by the searcher. See [Searching](../data-"
+"access/search.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`properties`, `links`, `stac_extensions`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Raw provider metadata."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:176
+msgid ""
+"`SatelliteData.from_stac_item()` and `to_stac_item()` convert to and from "
+"STAC items."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:178
+msgid "`PyGeoFetch` methods"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:180
+msgid ""
+"**`__init__(config_path=None, log_level=\"INFO\", log_json=False, "
+"cache_ttl=3600, max_search_workers=8, progress_callback=None, "
+"auth_backend=\"file\", validate_optical=False, "
+"optical_validation_config=None)`** `validate_optical` sets the instance-"
+"level default for optical preflight validation (see [Optical Data Validation"
+" & Preflight](../data-access/optical-validation.md)), applied automatically "
+"by both `search()` and `download()` unless overridden per call. Defaults to "
+"`False` — fully opt-in, existing behavior unchanged unless explicitly "
+"enabled. `optical_validation_config` is the `OpticalValidationConfig` to use"
+" when enabled; defaults to `OpticalValidationConfig()`'s own defaults if not"
+" given. Neither parameter requires `shapely` to be installed unless "
+"validation is actually turned on — the import is lazy."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:191
+msgid ""
+"**`search(query: SearchQuery, providers: list[str] | None = None, use_cache:"
+" bool = True, validate_optical: bool | None = None) -> "
+"list[SatelliteData]`** Federated search. Returns deduplicated, scored "
+"results. `validate_optical=None` (default) falls back to the instance-level "
+"setting from `__init__`; pass `True`/`False` to override just this call. "
+"When active, results are filtered through "
+"`OpticalPreflightValidator.run_preflight()` before being returned — the AOI "
+"is derived automatically from `query.bbox`/`query.geometry`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:199
+msgid ""
+"**`search_and_save(query, output: Path, providers=None) -> "
+"list[SatelliteData]`** Search and write results to a GeoJSON file in one "
+"call."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:202
+msgid ""
+"**`download(data, destination: Path, options: DownloadOptions | None = None,"
+" item_done_callback=None, validate_optical: bool | None = None, aoi: Polygon"
+" | None = None) -> list[DownloadResult]`** Accepts a single `SatelliteData` "
+"or a list. `validate_optical` works the same way as on `search()` — a "
+"independent gate, useful for items that never went through `search()` at all"
+" (e.g. loaded via `download_from_file()`). Rejected items are **never "
+"attempted** — a synthesized `DownloadResult(status=FAILED, error=...)` "
+"stands in at that item's original position instead, so the returned list's "
+"length and order always match `data` regardless of how many items were "
+"rejected. `aoi` is optional here (there's no query to derive one from); "
+"without it, AOI-dependent checks are skipped while every other check still "
+"runs."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:214
+msgid ""
+"**`download_from_file(search_results_path: Path, destination: Path, "
+"options=None) -> list[DownloadResult]`** Load a GeoJSON results file (from "
+"`search_and_save`) and download it directly."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:217
+msgid ""
+"**`add_credentials(provider: str, *, username=None, password=None, "
+"api_key=None, client_id=None, client_secret=None, token=None, "
+"access_key=None, secret_key=None, **kwargs) -> None`** Stored in the system "
+"keyring (or Fernet-encrypted file fallback — see [Security "
+"Model](security.md)). Overrides matching env vars for the process."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:221
+msgid "**`status() -> dict`** Registered providers, auth status, cache stats."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:224
+msgid ""
+"**`clear_cache() -> int`** Clears the in-memory search result cache; returns"
+" entries cleared."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:227
+msgid ""
+"**`stream(data, bbox, destination, bands=None, parallel=4, overwrite=False, "
+"bbox_crs=\"EPSG:4326\", block_size=1024) -> list[DownloadResult]`** Reads "
+"only the AOI window of each band from Cloud-Optimized GeoTIFFs and writes "
+"small local GeoTIFFs, instead of downloading whole scenes. Supported for "
+"providers that serve per-band COGs (`planetary_computer`, `element84`). See "
+"[Streaming](../data-access/streaming.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:232
+msgid ""
+"**`fetch_orbit_file(product_name: str, output_dir: str = \"./orbits/\", "
+"orbit_type: str = \"precise\") -> str | None`** Downloads a Sentinel-1 "
+"precise/restituted orbit file, extracts the `.EOF` automatically."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:235
+msgid ""
+"**`pipeline(name: str) -> ProcessingPipeline`** Creates a chainable "
+"processing pipeline over one file — see [Pipelines & Batch "
+"Processing](../workflows/pipelines.md)'s \"Python Processing Pipeline\" "
+"section for the full guide. Not related to the YAML acquisition-pipeline "
+"mechanism (`pygeofetch pipeline run`) despite the shared name."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:241
+msgid ""
+"**`batch_process(inputs, chain, output_dir=\".\", parallel=2) -> "
+"list[ProcessingResult]`** Runs the same processing chain over many files in "
+"parallel — shorthand for `client.batch.process(...)`. See [Pipelines & Batch"
+" Processing](../workflows/pipelines.md)'s \"Batch Processing\" section."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:246
+msgid "Client namespaces"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:248
+msgid "`PyGeoFetch` instances expose processing engines as attributes:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Attribute"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Class"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "Documented in"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`client.auth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`AuthManager`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "[Authentication](../data-access/authentication.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`client.preprocess`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`Preprocessor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid ""
+"[Preprocessing](../processing/optical/preprocessing.md), "
+"[Terrain](../processing/optical/terrain.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`client.indices`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`SpectralIndices`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "[Spectral indices](../processing/optical/spectral-indices.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`client.post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`PostProcessor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "[Post-processing](../processing/optical/postprocessing.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`client.sar`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`SARProcessor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "[SAR](../processing/sar-insar/sar.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`client.classify`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`Classifier`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "[Classification](../processing/optical/classification.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`client.batch`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "`BatchProcessor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
+msgid "[Pipelines](../workflows/pipelines.md)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:260
+msgid ""
+"Landsat extraction (`pygeofetch.processor.LandsatExtractor`), time series "
+"(`TimeSeriesAnalyzer`), the standalone `SpectralIndex`, the multi-sensor "
+"pipelines and the InSAR modules are standalone imports, not attributes of "
+"the client."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:266
+msgid ""
+"`PyGeoFetch` has **no** `.providers()` method. List providers via "
+"`pygeofetch.providers.list_providers()` / `list_provider_info()` — see "
+"[Providers](../data-access/providers.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:270
+msgid "Optical validation quick reference"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:272
+msgid ""
+"See [Optical Data Validation & Preflight](../data-access/optical-"
+"validation.md) for the full guide."
+msgstr ""

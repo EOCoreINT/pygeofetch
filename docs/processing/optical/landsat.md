@@ -13,6 +13,12 @@ print(scene.available_bands())
 Not wired into `PyGeoFetch` (there's no `client.landsat`) — always a
 standalone import, unlike `client.indices`/`client.sar`.
 
+## Overview
+
+Landsat has the longest continuous optical record available, but its products need careful handling: band numbers differ between sensor generations, reflectance and temperature values are stored as scaled integers, and quality information is packed into a bit mask. `LandsatExtractor` takes a downloaded Landsat scene and returns a ready-to-use object with correctly named bands, scale factors applied and, if you ask for it, clouds and shadows masked.
+
+You normally use it right after a USGS download. Pass the download result, receive a scene object, and ask it for bands by name, for example red and near infrared, instead of remembering which numbered file holds which band for Landsat 5, 7, 8 or 9. Because the output is consistent across sensors, the same index code can be run over decades of imagery, which is what makes Landsat suitable for long time series.
+
 ## Two easy-to-get-wrong things this handles
 
 - **Band mapping differs by sensor.** OLI (Landsat 8/9) and TM/ETM+

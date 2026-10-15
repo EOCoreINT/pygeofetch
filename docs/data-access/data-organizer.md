@@ -6,6 +6,12 @@ optical work. `pygeofetch.core.data_organizer.DataOrganizer` turns that
 into a structured hierarchy, plus a manifest mapping the
 structure back to the underlying scene metadata.
 
+## Overview
+
+A download folder fills up quickly: scenes from several satellites, dates and orbits end up side by side, named by whatever convention each provider uses. That is awkward for any workflow that needs scenes grouped by date or by orbit, and it is a real obstacle for interferometry, where only scenes that share a track and are synchronised in time can be paired. `DataOrganizer` takes the scenes and their download results and arranges the files into a folder hierarchy that you choose, for example by satellite and then by date.
+
+You use it after downloading. Give it the list of scenes together with their results, tell it how to group them and where to put the output, and it copies the files into the hierarchy (or links or moves them, if you choose) and writes a manifest. The manifest is a JSON record that maps every file back to the scene metadata it came from, so later steps can find a scene's footprint, date or orbit without re-searching. For radar work, `prepare_insar_stack()` goes one step further and groups burst-synchronised SLC scenes into stacks that are ready for the interferometry modules.
+
 ## Basic usage
 
 ```python

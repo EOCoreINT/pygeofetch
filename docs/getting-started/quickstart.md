@@ -4,6 +4,12 @@ The full path from nothing installed to a file on disk, using a
 free, no-account provider — no login, no API key, no waiting on an
 approval email.
 
+## What you will do
+
+This walk-through takes you from an empty environment to a scene on disk in four short steps, using a provider that needs no account so that nothing stands between you and a first result. You install the package, run a search that writes its findings to a GeoJSON file, download the best-ranked scene from that file, and check the result. Afterwards the same workflow is repeated in Python so you can see how the command line and the API map onto each other: every command in the command-line interface has a counterpart on the `PyGeoFetch` client, and they share the same query and download options.
+
+Two ideas are worth holding on to as you read. First, search and download are separate steps. A search only returns descriptions of scenes (identifier, date, footprint, cloud cover and the list of files), which is why it is fast and why you can run it as often as you like before deciding what to download. Second, the GeoJSON results file is the hand-off between the two steps, so you can search today, review the file, and download later or on another machine. Once this works, move on to [Searching](../data-access/search.md) to learn the filters, and to [Authentication](../data-access/authentication.md) when you want providers that require a login.
+
 ## 1. Install
 
 ```bash

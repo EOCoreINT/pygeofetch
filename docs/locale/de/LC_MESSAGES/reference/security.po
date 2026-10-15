@@ -1,0 +1,179 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:1
+msgid "Security"
+msgstr "Sicherheit"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:3
+msgid "Credential storage"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:5
+msgid ""
+"pygeofetch stores provider credentials with one of two backends, selected by"
+" the `auth_backend` argument of `PyGeoFetch()` (not by configuration; see "
+"[Configuration](configuration.md)):"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid "`auth_backend`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid "Storage"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid "Notes"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid "`\"file\"` (**default**)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid "`~/.pygeofetch/credentials.enc`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid ""
+"Sensitive fields (`password`, `api_key`, `token`, `secret_key`, "
+"`client_secret`) are encrypted with Fernet. The key is generated on first "
+"use and stored separately in `~/.pygeofetch/credentials.key`. Both files are"
+" created with mode `0600`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid "`\"keyring\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid "The operating-system keyring"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
+msgid ""
+"macOS Keychain, Windows Credential Manager, or the Linux Secret Service, "
+"through the `keyring` package."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:14
+msgid ""
+"Prefer `PyGeoFetch(auth_backend=\"keyring\")` when a keyring is available, "
+"because it hands storage to the operating system instead of a key file "
+"sitting next to the encrypted data. Anyone who can read both files in "
+"`~/.pygeofetch/` can decrypt the file backend."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:18
+msgid ""
+"Earlier releases only base64-encoded the file backend. Existing users are "
+"migrated on first use; the old `credentials.json` is left in place, unused, "
+"and can be deleted."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:28
+msgid "Credentials and environment variables"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:30
+msgid ""
+"Credentials are **not** loaded from environment variables. In CI or a "
+"container, read your own secrets and pass them to `add_credentials()`. See "
+"[Authentication](../data-access/authentication.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:34
+msgid "Exporting credentials"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:36
+msgid ""
+"`pygeofetch auth export` writes stored credentials to a JSON file for "
+"backup. That file contains secrets in plain text. Store it securely and "
+"delete it when done."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:39
+msgid "Network security"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:41
+msgid ""
+"Provider connections use TLS through `httpx` or `requests`. No code path "
+"sets `verify=False`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:42
+msgid ""
+"Standard `HTTP_PROXY` and `HTTPS_PROXY` environment variables are honoured "
+"by the HTTP clients."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:43
+msgid ""
+"Provider requests have per-request timeouts (60 seconds by default for "
+"searches; configurable with `search run --timeout`)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:45
+msgid ""
+"The `security.verify_ssl` and `proxy.*` entries in the settings model are "
+"not read by the search and download code. See "
+"[Configuration](configuration.md#what-controls-behaviour)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:48
+msgid "Data integrity"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:50
+msgid ""
+"With `verify_checksum=True`, a downloaded file is compared with the checksum"
+" the provider supplied, when there is one. A mismatch is logged and recorded"
+" on the result. See [Error handling](error-handling.md#download-resilience)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:51
+msgid ""
+"Files that fail a post-download validation (for example truncation) are "
+"retried."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:52
+msgid "Existing files are skipped, not overwritten, unless `overwrite=True`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:53
+msgid ""
+"Archive extraction (`unzip`) rejects paths that would escape the destination"
+" directory."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:55
+msgid "Reporting vulnerabilities"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/security.md:57
+msgid ""
+"Do not open public GitHub issues for security vulnerabilities. See the "
+"repository's `SECURITY.md`, or `CONTRIBUTING.md` if there is no separate "
+"policy, for the disclosure contact."
+msgstr ""

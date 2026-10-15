@@ -1,0 +1,229 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:1
+msgid "Changelog"
+msgstr "Änderungsprotokoll"
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:3
+msgid ""
+"A thematic record of notable changes, compiled from the project's audit "
+"history. It is not a release-by-release log: entries are grouped by area, "
+"and the package's version strings are inconsistent (see [Known "
+"issues](../reference/known-issues.md)), so no version numbers are attached. "
+"For commit-level history use the GitHub repository."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:8
+msgid "Data access"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:10
+msgid "**Added**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:12
+msgid ""
+"`PyGeoFetch.stream()` and `pygeofetch.streaming`: read only the pixels under"
+" an AOI from Cloud-Optimized GeoTIFFs using HTTP range requests. Archives "
+"(Copernicus `.zip`, USGS `.tar`) are refused. See [Streaming](../data-"
+"access/streaming.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:13
+msgid ""
+"Optical data validation and preflight (`pygeofetch.validation`): a pre-"
+"download quality gate covering AOI coverage, cloud cover, required bands, "
+"processing level and temporal bounds, wired into `search()` and `download()`"
+" through `validate_optical`. See [Optical validation](../data-"
+"access/optical-validation.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:14
+msgid ""
+"`DataOrganizer`: date, orbit, satellite and processing-level hierarchies, a "
+"manifest, and `prepare_insar_stack()`. See [Data organizer](../data-"
+"access/data-organizer.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:16
+msgid "**Providers rewritten against their real APIs**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:18
+msgid ""
+"`airbus_oneatlas` (previously non-functional: fake authentication, fictional"
+" endpoint, no downloadable assets)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:19
+msgid ""
+"`noaa_big_data` (now lists public S3 objects instead of calling a fictional "
+"REST endpoint)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:20
+msgid ""
+"`digitalglobe`, `maxar_gbdx` (GBDX was shut down in 2022), "
+"`alaska_satellite_facility`, `inpe_cbers`, `jaxa_earth`, `isro_bhuvan`, "
+"`earth_explorer_additional`, `geoserver_generic`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:21
+msgid ""
+"Targeted fixes in `nasa_earthdata`, `nasa_earthdata_cloud`, `planet` and "
+"`sentinel_hub`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:22
+msgid ""
+"`esa_scihub` and `google_earth_engine` now fail with an explanatory message "
+"instead of crashing on a missing method."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:24
+msgid "Reliability and security"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:26
+msgid ""
+"The circuit breaker is now invoked, and provider instances persist so "
+"failure counts accumulate. See [Error handling](../reference/error-"
+"handling.md#circuit-breaker)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:27
+msgid ""
+"Default credential storage uses Fernet encryption instead of base64, with "
+"automatic migration. See [Security](../reference/security.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:28
+msgid ""
+"Pipeline `process` and `export` steps, previously stubs, now run post-"
+"processing actions and transfer files to local disk, S3 or GCS with optional"
+" webhook notification. See [Pipelines](../workflows/pipelines.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:30
+msgid "Processing"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:32
+msgid "**Optical**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:34
+msgid ""
+"Six geology and mineral-exploration spectral indices, and a fix for `RVI`, "
+"which was clipped to a constant by a normalized-difference range. See "
+"[Spectral indices](../processing/optical/spectral-indices.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:35
+msgid ""
+"Optical pixel offset tracking, horizontal strain with outlier protection, "
+"and coherence-weighted InSAR fusion. See [Optical offset "
+"tracking](../processing/sar-insar/optical-offset-tracking.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:37
+msgid "**SAR and InSAR**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:39
+msgid ""
+"Five standard SAR pipelines in `pygeofetch.sar.pipelines`, and a fix to "
+"`pygeofetch.sar.SARProcessor.coherence()` for complex SLC input. The same "
+"defect remains in `client.sar`; see [Known issues](../reference/known-"
+"issues.md#sar-coherence-fails-on-complex-input)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:40
+msgid ""
+"InSAR advanced safeguards: geometric layover and shadow masking, custom DEM "
+"alignment, and topographic-residual co-estimation in SBAS. See "
+"[InSAR](../processing/sar-insar/insar.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:42
+msgid "**Multi-sensor**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:44
+msgid ""
+"Five pipelines combining two sensors: InSAR with optical displacement, SAR "
+"with optical flood mapping, terrain-corrected optical change detection, DEM-"
+"of-Difference volume, and NDVI with coherence classification. Also available"
+" as `pygeofetch multisensor` commands. See [Multi-sensor "
+"pipelines](../processing/multisensor.md)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:45
+msgid ""
+"Audit fixes: optical and DEM nodata handling, geodesic area for volume on "
+"geographic grids, the Sentinel-2 baseline 04.00 offset parameters, class 255"
+" as nodata, and solar position checked against an independent reference "
+"(0.19 degrees zenith, 0.49 degrees azimuth)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:47
+msgid "Packaging and quality"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:49
+msgid ""
+"Corrected five dependency pins in `pyproject.toml` that referenced versions "
+"never published (`whitebox`, `whiteboxgui`, `sidecar`, `contextily`, "
+"`opensartoolkit`)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:50
+msgid ""
+"Resolved seven `mypy` errors in `scheduler.py`, `authenticator.py` and "
+"`viz/plot.py`, including a removed `matplotlib.cm.get_cmap` call."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:52
+msgid "Documentation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:54
+msgid ""
+"Restructured into Getting started, Data access, Processing, Workflows, "
+"Visualization, Reference and Project, with redirects from the old URLs."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:55
+msgid "Switched the theme to Furo and added grid-card navigation."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:56
+msgid ""
+"The CLI command reference is now generated from the code "
+"(`tools/gen_cli_reference.py`)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:57
+msgid ""
+"Corrected claims that did not match the code: credentials are not read from "
+"environment variables; `--resume` does not continue partial files; the "
+"Settings layer is not applied at runtime; `extract_archives` is unused; "
+"downloads are nested under `<destination>/<provider>/`."
+msgstr ""

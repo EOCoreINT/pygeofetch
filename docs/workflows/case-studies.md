@@ -1,65 +1,141 @@
 # Case studies
 
-End-to-end sketches showing how the pieces fit together. Each uses commands and functions
-documented elsewhere in this site.
+These case studies show how pygeofetch is used on real questions, from the first search to a map you can interpret. Each one lists what was done, what the result shows, and what it does not show. Figures are marked **Real** when they come from an analysis run on real satellite data, or **Synthetic** when they were generated from simulated scenes to illustrate a function.
 
 :::{important}
-These are workflow outlines, not benchmarked results. The processing steps were tested on
-synthetic and sample data. Search and download calls were **not** run against live providers
-while this documentation was written, so check provider names, collection IDs and credentials
-against your account before relying on them.
+The search and download calls in the code samples were not executed against live providers while this documentation was written. Check provider names, collection identifiers and credentials against your own account before relying on them. The processing steps were verified on the figures' underlying data or on synthetic scenes, as stated in each section.
 :::
+
+## Vegetation trend in the Obuasi Municipal District, Ghana (2018 to 2024)
+
+**The question.** Is vegetation in the district recovering, holding steady or declining, and where? Obuasi sits in a gold-mining belt in the Ashanti Region, so land cover is changing for several reasons at once: mining, settlement, farming and regrowth.
+
+**The approach.** USGS Landsat data was used to build one dry-season NDVI composite per year from 2018 to 2024. Comparing dry seasons removes most of the seasonal swing in greenness, so what remains is mostly the multi-year signal. For every pixel, a linear trend was estimated across the seven annual values, and its slope, in NDVI units per year, is the trend measure shown on the map. The slopes were then grouped into four classes: strong decline, moderate decline, stable and increasing.
+
+:::{figure} /_static/img/obuasi_ndvi_trend.png
+:alt: Map of per-pixel NDVI trend for Obuasi from 2018 to 2024, red for decline and blue for increase
+
+<span class="gf-tag real">Real</span> NDVI trend per pixel, 2018 to 2024, from dry-season composites. Red shows declining greenness and blue shows increasing greenness, in NDVI units per year. White areas inside the district are masked pixels. Click the image to enlarge.
+:::
+
+The slope map is the most informative view because it keeps the magnitude of change. The strongest and most extensive decline sits along the western edge of the district, west of about 1.70 degrees west, while the centre is close to zero. The very dark blue blocks are not vegetation gain: they are water bodies, where NDVI is low and unstable from year to year, and they should be ignored when reading the map.
+
+:::{figure} /_static/img/obuasi_trend_classes.png
+:alt: Classified map of vegetation trend with four classes: strong decline, moderate decline, stable and increasing
+
+<span class="gf-tag real">Real</span> The same trend classified into four classes. About 32 percent of the district shows decline (9.2 percent strong, 22.8 percent moderate), 57.5 percent is stable, and 10.5 percent is increasing. Percentages exclude masked pixels.
+:::
+
+**How to reproduce the workflow.** The search, download and index steps use pygeofetch. The code below is an illustrative sketch of that workflow, not the original script: the scene selection is left to you, and the trend is a simple least-squares fit that you can replace with a robust method.
+
+```python
+from datetime import date
+
+import numpy as np
+import rasterio
+from pygeofetch import PyGeoFetch
+from pygeofetch.models import SearchQuery
+
+client = PyGeoFetch()
+client.add_credentials("usgs", username="USER", api_key="M2M_APPLICATION_TOKEN")
+
+bbox = (-1.76, 6.15, -1.63, 6.24)       # min_lon, min_lat, max_lon, max_lat
+years = list(range(2018, 2025))
+
+# 1. For each year, search the dry season (January and February in this sketch) and
+#    download the red and near-infrared bands of the best scene.
+for year in years:
+    query = SearchQuery(bbox=bbox, start_date=date(year, 1, 1), end_date=date(year, 2, 28),
+                        cloud_cover_max=20, max_results=20)
+    scenes = client.search(query, providers=["usgs"])
+    # ... choose a scene, call client.download(...), then compute NDVI per year:
+    # client.indices.ndvi(red=red_path, nir=nir_path, output=f"ndvi_{year}.tif")
+
+# 2. Stack the yearly NDVI rasters and fit a per-pixel least-squares trend.
+stack = np.stack([rasterio.open(f"ndvi_{y}.tif").read(1) for y in years]).astype("float32")
+stack[stack == -9999.0] = np.nan                       # pygeofetch's nodata value
+x = np.array(years, dtype="float32") - np.mean(years)
+valid = np.isfinite(stack).all(axis=0)                 # require every year
+mean = np.where(valid, np.nanmean(stack, axis=0), np.nan)
+slope = ((stack - mean) * x[:, None, None]).sum(axis=0) / (x ** 2).sum()
+slope[~valid] = np.nan                                 # NDVI per year
+```
+
+**What to take from it, and what not to.** A trend map tells you where vegetation greenness changed, not why. A decline can be clearing for mining or farming, a change in crop type, drought stress or a change in the composite dates, and only field knowledge or higher-resolution imagery can separate them. Treat the classes as a screening layer that shows where to look next.
+
+*Source: the Obuasi trend maps and the percentages above are taken from the project's own analysis, as published in the repository README.*
+
+## Mexico City subsidence with InSAR (Iztapalapa, 2016 to 2017)
+
+**The question.** Can a pure-Python interferometry chain recover the sign and rough size of land subsidence in a place where it is well documented? Iztapalapa, on the old lake bed of Mexico City, is one of the areas where the ground sinks fastest, and published work reports a peak near -39 cm per year from several years of Sentinel-1 data. The project tested pygeofetch on the same area with far less data: Sentinel-1 track 147, descending, from July 2016 to September 2017.
+
+**What the chain did.** It searched for same-geometry scenes, screened them with a preflight gate before downloading, formed 78 interferograms, unwrapped them, and combined the reliable ones with the small-baseline method. After reliability filtering, 58 dates split into 17 connected groups, and the largest group of 10 dates gave vertical velocities between about -35.5 and -2.9 cm per year (2nd to 98th percentile).
+
+:::{figure} /_static/img/mexico_sbas_results.jpg
+:alt: SBAS results for Mexico City: velocity at reliable pixels, uncertainty, reliable-pixel mask and displacement time series
+
+<span class="gf-tag real">Real</span> SBAS output for the Mexico City run. Only the pixels in the reliable-pixel mask (bottom left, white) carry a velocity (top left). The full set of figures, from scene footprints to wrapped and unwrapped phase, is in the [worked example](../processing/sar-insar/insar-mexico-city-tutorial.md#results-of-the-reference-run).
+:::
+
+**What it shows, and what it does not.** The sign and rough magnitude are consistent with the published result, which is what the project set out to test. But only about 0.2 percent of pixels were usable, the network was fragile, and the result has not been validated, so it is a demonstration of the workflow and not a measurement to rely on. Compare this with Bu'ertai above: there the same chain reported that it could not recover the signal at all, and that honest failure is as useful as a success.
+
+## Bu'ertai Mine, China: when conventional InSAR fails
+
+**The question.** Can interferometry measure subsidence over an active coal mine? The Bu'ertai Mine in the Shendong Coalfield is a published case where underground extraction causes large displacement that is concentrated in a small area.
+
+**What happened.** The case study ran the full chain on real Sentinel-1 data: same-track scene selection, a preflight check on burst synchronisation and baselines, interferogram generation, and an SBAS network. Several interferometric pairs returned zero reliable coverage, and the final network covered only about 0.1 percent of the area of interest. The reason is physical. One interferometric fringe represents about 28 mm of line-of-sight motion at Sentinel-1's wavelength, and phase can only be unwrapped reliably if it changes by less than half a fringe, about 14 mm, between adjacent pixels. Where the surface moves more than that within one revisit, the phase cannot be unwrapped.
+
+:::{figure} /_static/img/buertai_coherence.png
+:alt: Coherence image between two Sentinel-1 acquisitions over Bu'ertai, mostly low values with a few brighter patches
+
+<span class="gf-tag real">Real</span> Interferometric coherence between Sentinel-1 acquisitions on 2023-04-22 and 2023-06-21. Most of the scene has coherence between about 0.2 and 0.4, which is too low for a reliable phase measurement. The few brighter patches are stable surfaces such as built-up areas and bare ground.
+:::
+
+This is the value of reporting the failure instead of hiding it. pygeofetch's [optical offset tracking](../processing/sar-insar/optical-offset-tracking.md) measures displacement from pairs of optical images, where large movements remain measurable, and the [InSAR and optical fusion](../processing/multisensor.md) pipeline uses each source where it is reliable. The [Mexico City worked example](../processing/sar-insar/insar-mexico-city-tutorial.md) above shows the opposite case, a smooth subsidence bowl that InSAR handles well.
+
+## Demonstration: indices and radar flood mapping on synthetic scenes
+
+The two figures below were produced by `tools/gen_figures.py` from simulated scenes, using pygeofetch's own `client.indices` and `client.sar` code. They show what each function takes in and returns. They are not measurements of any real place.
+
+:::{figure} /_static/img/demo_indices.png
+:alt: False-colour synthetic scene with NDVI and NDWI maps showing forest, fields, a river and a built-up block
+
+<span class="gf-tag synthetic">Synthetic</span> A simulated landscape with forest, fields, a river and a built-up block. NDVI separates vegetation from water and buildings, and NDWI highlights the river.
+:::
+
+:::{figure} /_static/img/demo_sar.png
+:alt: Raw SAR backscatter with speckle, the same scene after a Lee filter, and a flood mask at minus 15 decibels
+
+<span class="gf-tag synthetic">Synthetic</span> A simulated four-look radar scene with two flooded areas. The Lee filter suppresses speckle while keeping edges, and a threshold at -15 dB then maps the water.
+:::
+
+The speckle in real radar images is the reason a filter comes before any threshold: on the raw image a single threshold would label many scattered pixels, while after filtering the flooded areas stand out as solid regions.
 
 ## Monitoring artisanal mining expansion
 
 **Goal.** Detect new bare ground and disturbed vegetation around a concession over time.
 
-1. **Find scenes.** Search Sentinel-2 L2A with low cloud cover over a fixed AOI, for each season.
-   See [Searching](../data-access/search.md).
+1. **Find scenes.** Search Sentinel-2 L2A with low cloud cover over a fixed AOI, for each season. See [Searching](../data-access/search.md).
 2. **Get only the AOI.** Use [`stream()`](../data-access/streaming.md) with a Planetary Computer or Element84 source so you do not download full tiles.
 3. **Correct the offset.** For Sentinel-2 L2A at baseline 04.00 or later, set `optical_offset=-1000` and `optical_scale=10000` where the pipeline asks for it. See [Multi-sensor pipelines](../processing/multisensor.md).
 4. **Compute indices.** NDVI for vegetation loss and a bare-soil index for exposed ground. See [Spectral indices](../processing/optical/spectral-indices.md).
 5. **Add radar.** Use the NDVI plus SAR coherence pipeline to separate cloud-affected gaps from real disturbance, since coherence is unaffected by cloud.
 6. **Map and report.** Use [Visualization](../visualization/plotter.md) to produce maps and change summaries.
 
-**Caveats.** Mining detection from spectral change is an indicator, not evidence of activity. Field validation is needed before drawing conclusions about specific locations.
+Mining detection from spectral change is an indicator, not evidence of activity. Field validation is needed before drawing conclusions about specific locations.
 
 ## Mineral exploration screening
 
-**Goal.** Highlight alteration zones for follow-up fieldwork.
-
-1. Download Sentinel-2 or Landsat scenes for the licence area ([Landsat](../processing/optical/landsat.md)).
-2. Compute the geology indices (iron oxide, clay, ferrous minerals, and similar) from [Spectral indices](../processing/optical/spectral-indices.md).
-3. Classify with [Classification](../processing/optical/classification.md) using training areas from known occurrences.
-4. Add terrain context with [Terrain](../processing/optical/terrain.md).
-
-Spectral indices screen; they do not identify mineralogy. Treat the result as a ranking of
-places to visit.
+**Goal.** Highlight alteration zones for follow-up fieldwork. Download Sentinel-2 or Landsat scenes for the licence area ([Landsat](../processing/optical/landsat.md)), compute the geology indices (iron oxide, clay, ferrous minerals and similar) from [Spectral indices](../processing/optical/spectral-indices.md), classify with [Classification](../processing/optical/classification.md) using training areas from known occurrences, and add terrain context with [Terrain](../processing/optical/terrain.md). Spectral indices screen; they do not identify mineralogy. Treat the result as a ranking of places to visit.
 
 ## Drought and vegetation time series
 
-**Goal.** Track seasonal vegetation condition over several years for a district.
-
-1. Define the AOI and a monthly date loop.
-2. Search and stream or download one low-cloud scene per month.
-3. Compute NDVI per scene and stack with [Time series](../processing/optical/timeseries.md).
-4. Compare each month with its multi-year mean to find anomalies.
-5. Schedule the acquisition with a [YAML pipeline](pipelines.md) so new scenes are fetched automatically.
+**Goal.** Track seasonal vegetation condition over several years for a district. Define the AOI and a monthly date loop, search and stream or download one low-cloud scene per month, compute NDVI per scene and stack with [Time series](../processing/optical/timeseries.md), and compare each month with its multi-year mean to find anomalies. A [YAML pipeline](pipelines.md) can run the acquisition on a schedule so new scenes arrive automatically.
 
 ## Flood extent after a storm
 
-**Goal.** Map flooding quickly, including under cloud.
-
-1. Search Sentinel-1 GRD before and after the event ([SAR](../processing/sar-insar/sar.md)).
-2. Run the flood-mapping SAR pipeline for a radar-only extent.
-3. If cloud-free optical data exists, use the SAR plus optical flood pipeline to refine it ([Multi-sensor pipelines](../processing/multisensor.md)).
-4. Export the flood mask and compute affected area.
+**Goal.** Map flooding quickly, including under cloud. Search Sentinel-1 GRD before and after the event ([SAR](../processing/sar-insar/sar.md)), run the flood-mapping SAR pipeline for a radar-only extent, and, if cloud-free optical data exists, use the SAR plus optical flood pipeline to refine it ([Multi-sensor pipelines](../processing/multisensor.md)). Export the flood mask and compute the affected area.
 
 ## Ground deformation with InSAR
 
-**Goal.** Measure subsidence or slope movement.
-
-Follow the worked example in [InSAR Mexico City tutorial](../processing/sar-insar/insar-mexico-city-tutorial.md),
-then see [InSAR](../processing/sar-insar/insar.md) for SBAS and the preflight checks. Note that
-Copernicus delivers SLC as zip archives, so [streaming](../data-access/streaming.md) does not
-apply and you must download full products.
+**Goal.** Measure subsidence or slope movement. Follow the worked example in the [InSAR Mexico City tutorial](../processing/sar-insar/insar-mexico-city-tutorial.md), then see [InSAR](../processing/sar-insar/insar.md) for SBAS and the preflight checks. Copernicus delivers SLC as zip archives, so [streaming](../data-access/streaming.md) does not apply and you must download full products.

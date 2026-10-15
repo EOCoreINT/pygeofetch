@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 260" role="img" aria-label="pygeofetch data flow: providers, federated search, download or stream, processing, outputs">
+  <style>
+    .box{fill:var(--gf-svg-box,#fff);stroke:#2a6fb0;stroke-width:1.6;rx:10}
+    .t{font:600 14px Ubuntu,system-ui,sans-serif;fill:var(--gf-svg-text,#1c1e21)}
+    .s{font:400 11.5px Ubuntu,system-ui,sans-serif;fill:var(--gf-svg-sub,#5a5c63)}
+    .flow{stroke:#2a6fb0;stroke-width:2;fill:none;stroke-dasharray:6 6;animation:dash 1.2s linear infinite}
+    .head{fill:#2a6fb0}
+    @keyframes dash{to{stroke-dashoffset:-12}}
+    @media (prefers-color-scheme:dark){.box{fill:#242526}.t{fill:#e3e3e3}.s{fill:#b0b3b8}}
+    @media (prefers-reduced-motion:reduce){.flow{animation:none}}
+  </style>
+  <g>
+    <rect class="box" x="10" y="70" width="150" height="120"/><text class="t" x="85" y="105" text-anchor="middle">22 providers</text>
+    <text class="s" x="85" y="128" text-anchor="middle">Copernicus, USGS,</text><text class="s" x="85" y="144" text-anchor="middle">Planetary Computer,</text><text class="s" x="85" y="160" text-anchor="middle">ASF, Planet, ...</text>
+    <rect class="box" x="215" y="70" width="150" height="120"/><text class="t" x="290" y="105" text-anchor="middle">Federated search</text>
+    <text class="s" x="290" y="128" text-anchor="middle">one SearchQuery,</text><text class="s" x="290" y="144" text-anchor="middle">parallel, cached,</text><text class="s" x="290" y="160" text-anchor="middle">de-duplicated</text>
+    <rect class="box" x="420" y="20" width="150" height="100"/><text class="t" x="495" y="52" text-anchor="middle">download()</text>
+    <text class="s" x="495" y="75" text-anchor="middle">whole files, resume,</text><text class="s" x="495" y="91" text-anchor="middle">checksums</text>
+    <rect class="box" x="420" y="140" width="150" height="100"/><text class="t" x="495" y="172" text-anchor="middle">stream()</text>
+    <text class="s" x="495" y="195" text-anchor="middle">only your AOI from</text><text class="s" x="495" y="211" text-anchor="middle">COG range requests</text>
+    <rect class="box" x="625" y="70" width="150" height="120"/><text class="t" x="700" y="105" text-anchor="middle">Processing</text>
+    <text class="s" x="700" y="128" text-anchor="middle">indices, SAR, InSAR,</text><text class="s" x="700" y="144" text-anchor="middle">classification,</text><text class="s" x="700" y="160" text-anchor="middle">multi-sensor</text>
+    <rect class="box" x="830" y="70" width="120" height="120"/><text class="t" x="890" y="105" text-anchor="middle">Outputs</text>
+    <text class="s" x="890" y="128" text-anchor="middle">GeoTIFF, COG,</text><text class="s" x="890" y="144" text-anchor="middle">GeoParquet,</text><text class="s" x="890" y="160" text-anchor="middle">maps, S3/GCS</text>
+  </g>
+  <g>
+    <path class="flow" d="M160 130 H215"/><path class="flow" d="M365 130 C392 130 392 70 420 70"/><path class="flow" d="M365 130 C392 130 392 190 420 190"/>
+    <path class="flow" d="M570 70 C597 70 597 130 625 130"/><path class="flow" d="M570 190 C597 190 597 130 625 130"/><path class="flow" d="M775 130 H830"/>
+  </g>
+</svg>

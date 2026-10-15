@@ -17,6 +17,12 @@ sinks = pp.identify_depressions("dem.tif")                # enclosed basins with
 network = pp.extract_drainage_network("dem.tif")          # real channels from D8 flow accumulation
 ```
 
+## Overview
+
+A digital elevation model contains more information than height. Terrain analysis extracts the shape of the land from it: how steep each cell is, which way it faces, whether it curves inward or outward, where water would collect and where streams would form. These derived layers are the basis of flood-susceptibility screening, landslide and erosion studies, site selection and the illumination corrections used in optical processing.
+
+The methods share a pattern. Provide a DEM, optionally clip it to your area, and each function returns a raster of the derived quantity that you can view, threshold or combine with other layers. Slope, aspect and hillshade describe the surface, the wetness index and curvature describe how water is likely to behave on it, and depression and drainage extraction identify enclosed basins and channels.
+
 ## `terrain_derivatives()` — slope, aspect, hillshade
 
 ```python

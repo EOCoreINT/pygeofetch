@@ -40,6 +40,20 @@ Coregistration, interferogram formation, phase unwrapping, and SBAS
 time series inversion, in pure Python. No SNAP or ISCE required for
 the core pipeline.
 
+## Overview
+
+Interferometric SAR measures how far the ground has moved along the satellite's line of sight by comparing the phase of two radar images of the same place. A change of half a wavelength, about 2.8 cm for Sentinel-1, produces one full colour cycle (a fringe) in the interferogram, so the method can detect movements of millimetres to centimetres over wide areas, which is why it is used for subsidence, landslides, volcanoes and infrastructure monitoring.
+
+The chain has several stages and pygeofetch implements them in Python. Scenes of the same track and burst geometry are selected and checked in a preflight step, the single-look complex images are extracted and co-registered, interferograms and coherence are formed, the phase is unwrapped, and atmospheric and orbital effects are reduced. For a series of dates, the small-baseline (SBAS) method combines many short-baseline interferograms into a displacement time series and a velocity map. The preflight checks matter in practice, because most failed InSAR runs come from scene combinations that were never suitable, and it is far cheaper to find that out before downloading large SLC files.
+
+Interferometry only works where the surface stays coherent between acquisitions. Vegetated, wet or rapidly changing ground decorrelates and no processing can recover a signal from it, and surfaces that move more than a fraction of a wavelength between neighbouring pixels cannot be unwrapped. Always look at coherence first, as in the example below, and use the [optical offset tracking](optical-offset-tracking.md) tools where InSAR cannot work.
+
+:::{figure} /_static/img/buertai_coherence.png
+:alt: Coherence image over Bu'ertai showing mostly low coherence
+
+<span class="gf-tag real">Real</span> Sentinel-1 coherence over the Bu'ertai coal mine area for 2023-04-22 to 2023-06-21. Most of the scene is between about 0.2 and 0.4, too low for reliable phase measurement, so conventional InSAR covers very little of the area. See the [case studies](../../workflows/case-studies.md).
+:::
+
 ## The four-step chain
 
 | Step | What it does |

@@ -18,6 +18,12 @@ whether you're fusing InSAR and optical, or computing DEM volumes.
 :depth: 1
 ```
 
+## Choosing a pipeline
+
+Each pipeline answers a question that one sensor handles poorly on its own. Radar sees through cloud and measures surface motion and water, but cannot tell vegetation types apart; optical imagery shows vegetation and land cover but is blocked by cloud. The pipelines combine the two, or combine imagery with elevation data, so that each source covers the other's weakness.
+
+Pick by the question. For ground movement over areas where interferometry partly fails, use the InSAR and optical displacement fusion. For flood extent when clouds obscure part of the event, use the SAR and optical flood mapping. To compare optical scenes on sloping ground without illumination differences creating false change, use terrain-corrected change detection. To measure volume gained or lost, for example in a pit or a stockpile, compare two elevation models with the DEM-of-Difference pipeline. And to find vegetation disturbance below the canopy, combine NDVI with radar coherence. Every pipeline returns a result object with the output raster, the quality information needed to judge it, and the parameters used, so that an analysis can be reproduced.
+
 ## 1. InSAR + Optical Displacement Fusion
 
 ```python

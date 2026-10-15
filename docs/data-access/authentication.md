@@ -19,6 +19,14 @@ passed `auth_backend="keyring"`. This matters for the CI/CD section
 below: `auth_backend="file"` there isn't opting into anything
 unusual, it's just being explicit about the same default behavior.
 :::
+## Overview
+
+Some providers are open and need nothing from you, while others, including the Copernicus Data Space Ecosystem, USGS, NASA Earthdata and the commercial vendors, require an account. pygeofetch asks for each credential once, stores it in an encrypted file or in your operating system's keyring, and then supplies it automatically whenever a search or download involves that provider. You never pass a password to `search()` or `download()`; you only name the provider.
+
+The usual routine is short. Check the [Providers](providers.md) page to see which authentication type a provider uses, register for the account on the provider's website, add the credential with `pygeofetch auth add` (or `client.add_credentials()` in Python), and confirm it with `pygeofetch auth test`. The test checks the stored credential against the provider, so it is the quickest way to find a mistyped token before a long download. If a credential later expires or is rotated, add the new one under the same provider name.
+
+How credentials are kept matters in shared and automated environments. The default encrypted file lives in your home directory and is protected by a key stored beside it, which is convenient on a personal machine but only as safe as that directory. On a workstation with a keyring, `auth_backend="keyring"` hands storage to the operating system. In containers and continuous-integration jobs there is usually no keyring, and environment variables are not read for credentials, so the pattern is to read your own secrets and register them in code at the start of the job, as shown in the headless section below.
+
 ## Adding credentials
 
 ```bash

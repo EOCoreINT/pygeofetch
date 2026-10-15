@@ -12,6 +12,12 @@ For the formalized, reusable pipeline that fuses this with InSAR
 in [Multi-Sensor Pipelines](../multisensor.md).
 :::
 
+## Overview
+
+Optical offset tracking measures how far the ground surface moved between two dates by following texture. The images are divided into small patches, and for each patch the software finds where the same pattern lies in the later image. The shift of that pattern is the displacement. Unlike interferometry, it does not depend on phase, so it still works when movement is large or the surface has decorrelated, for example in landslides, glaciers, mine subsidence and earthquake ruptures, at the price of lower sensitivity: displacements smaller than a fraction of a pixel are hard to measure.
+
+In practice you choose two images of the same area acquired under similar illumination, run the offset computation to get east-west and north-south displacement rasters, and then derive strain from them if you need to see where the surface is stretching or compressing. Offsets contain spurious matches, so the outlier protection described below is not optional, and results should be checked visually. Where InSAR and optical tracking are both available, the fusion function selects the more reliable source for each pixel, using coherence to decide.
+
 ## Why this exists alongside InSAR
 
 [InSAR](insar.md) is far more precise (millimetres, not metres) — but

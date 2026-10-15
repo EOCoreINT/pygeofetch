@@ -1,0 +1,229 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:1
+msgid "Geocoding"
+msgstr "Géocodage"
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:3
+msgid ""
+"Turn a place name into coordinates, or coordinates into a place name — "
+"without needing a bbox or lat/lon in hand before you start. Everything else "
+"in pygeofetch assumes you already have numeric coordinates; this is the one "
+"piece that gets you there from a name."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:9
+msgid ""
+"**Not yet verified against the live service.** The parsing logic (field "
+"names and the `boundingbox` ordering) was checked against [Nominatim's API "
+"documentation](https://nominatim.org/release-docs/latest/api/Output/). No "
+"live HTTP round trip has been run, so network behaviour, rate-limit "
+"responses and server-side quirks are untested. Test it in your own "
+"environment before depending on it in production."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:17
+msgid "Overview"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:19
+msgid ""
+"Almost every pygeofetch call expects numbers: a bounding box in longitude "
+"and latitude, or a GeoJSON geometry. Geocoding is the bridge for the common "
+"case where you only have a name. You pass a place such as a town, a district"
+" or a landmark, and it returns one or more matches, each with its centre "
+"point, a ready-to-use bounding box and the full display name of the place "
+"that was found."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:21
+msgid ""
+"The typical use is the first line of an analysis. Geocode the study area, "
+"read the display name to confirm that the service understood the place you "
+"meant, take the bounding box from the result and hand it straight to a "
+"`SearchQuery`. Reverse geocoding works the other way and is handy for "
+"labelling a coordinate in a report. Because the service is a public one with"
+" usage limits, geocode once and keep the bounding box instead of calling it "
+"repeatedly inside a loop."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:23
+msgid "Why Nominatim specifically"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:25
+msgid ""
+"Uses [Nominatim](https://nominatim.openstreetmap.org) (OpenStreetMap's free "
+"geocoding service) because it requires no API key — consistent with "
+"pygeofetch's other no-account-needed providers. Real usage policy limits "
+"free requests to 1/second; this is enforced automatically, not left for you "
+"to violate accidentally."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:31
+msgid "Quick start"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:46
+msgid "Forward geocoding — name to coordinates"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:52
+msgid ""
+"Returns a list of dicts, one per match (Nominatim may return several for an "
+"ambiguous query like a common place name) — empty list if nothing matched, "
+"never an exception for \"not found.\" Each result has:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Key"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Real content"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "`lat`, `lon`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Real WGS84 coordinates of the match's center point"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "`bbox`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid ""
+"`(min_lon, min_lat, max_lon, max_lat)` — ready to pass directly to "
+"`SearchQuery`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "`display_name`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid ""
+"The full matched place name — check this to confirm the geocoder understood "
+"your query correctly, especially for ambiguous names"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "`place_type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Nominatim's own classification (`city`, `building`, `natural`, etc.)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:64
+msgid ""
+"**Always check `display_name`** before trusting a result for an ambiguous "
+"query — \"Springfield\" alone will match *a* Springfield, not necessarily "
+"the one you meant."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:68
+msgid "Reverse geocoding — coordinates to name"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:77
+msgid ""
+"Returns `None` if nothing is found at that point (open ocean, for instance) "
+"— check for this before accessing the result, rather than assume every "
+"coordinate resolves to a place."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:81
+msgid "CLI reference"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:90
+msgid "Common pitfalls"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:92
+msgid ""
+"**Trusting the first result for an ambiguous name without checking "
+"`display_name`.** Common city/street names exist in many countries — always "
+"look at what actually matched, not just its coordinates."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:95
+msgid ""
+"**Geocoding in a tight loop without spacing requests out.** The built-in "
+"1-second throttle handles this automatically within a single process, but "
+"running many parallel processes against Nominatim simultaneously can still "
+"violate the shared usage policy — Nominatim can and does rate-limit or block"
+" abusive traffic."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:100
+msgid ""
+"**Assuming `reverse_geocode` always returns something.** Points over water, "
+"polar regions, or other areas with no OSM data return `None` — a valid "
+"outcome, not a bug."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:103
+msgid ""
+"**Not handling network failures.** The parsing logic is verified against "
+"Nominatim's own official documentation, but no live request has been made in"
+" this project's own testing — wrap calls in your own error handling until "
+"you've confirmed actual runtime behavior in your environment."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:109
+msgid "Full function reference"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Function"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Real purpose"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "`geocode(query, limit=1, timeout=10.0)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Place name → coordinates + bbox"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "`reverse_geocode(lat, lon, timeout=10.0)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
+msgid "Coordinates → place name"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:116
+msgid ""
+"Both live in `pygeofetch.utils.geocoding` and are not currently attached to "
+"the main `PyGeoFetch` client object (e.g. there is no `client.geocode(...)`)"
+" — import them directly as shown above."
+msgstr ""

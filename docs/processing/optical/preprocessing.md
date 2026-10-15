@@ -21,6 +21,12 @@ read via a block-by-block fallback (works on tiled/COG/compressed
 inputs without a full-scene decode), and return a `ProcessingResult`
 whose `.output_path` is the new raster on disk.
 
+## Overview
+
+Raw optical scenes are rarely ready for analysis. The signal that reaches the sensor includes the atmosphere between the ground and the satellite, shadows cast by terrain, clouds, and the arbitrary grid and projection of the scene itself. The preprocessing engine groups the steps that deal with these problems so that an index or a classification is computed from comparable, cleaned data. It is available as `client.preprocess` and as the `pygeofetch preprocess` commands.
+
+A sensible order is to correct first, then mask, then cut and combine. Atmospheric correction brings values closer to surface reflectance, topographic correction reduces the brightness difference between sunlit and shaded slopes, and cloud masking marks pixels that should not be trusted. After that you clip the scene to your area, reproject it to the coordinate system you want, and, if one date is not enough, mosaic neighbouring scenes or build a composite from several dates, filling cloud gaps from other acquisitions. Each method takes a file and returns a new file, so you can inspect the intermediate result after every step and stop at the point where the data is good enough for your question.
+
 ## Quick reference
 
 | Method | Options | What it's for |

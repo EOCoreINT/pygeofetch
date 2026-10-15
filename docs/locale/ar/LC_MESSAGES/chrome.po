@@ -1,0 +1,61 @@
+#
+msgid ""
+msgstr ""
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Documentation"
+msgstr "التوثيق"
+
+msgid "Tutorials"
+msgstr "الدروس"
+
+msgid "Community"
+msgstr "المجتمع"
+
+msgid "Download"
+msgstr "تنزيل"
+
+msgid "Search"
+msgstr "بحث"
+
+msgid "Version:"
+msgstr "الإصدار:"
+
+msgid "Home"
+msgstr "الرئيسية"
+
+msgid "Getting started"
+msgstr "البدء"
+
+msgid "Data access"
+msgstr "الوصول إلى البيانات"
+
+msgid "Optical processing"
+msgstr "المعالجة البصرية"
+
+msgid "SAR and InSAR"
+msgstr "SAR وInSAR"
+
+msgid "Multi-sensor"
+msgstr "متعدد المستشعرات"
+
+msgid "Workflows"
+msgstr "مسارات العمل"
+
+msgid "Visualization"
+msgstr "التصور المرئي"
+
+msgid "Reference"
+msgstr "المرجع"
+
+msgid "Project"
+msgstr "المشروع"
+
+msgid "Language"
+msgstr "اللغة"
+
+msgid "Partly translated"
+msgstr "ترجمة جزئية: تظهر الصفحات غير المترجمة بالإنجليزية."

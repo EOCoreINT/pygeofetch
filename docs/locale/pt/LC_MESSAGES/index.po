@@ -1,0 +1,302 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:130
+msgid "Getting started"
+msgstr "Primeiros passos"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:140
+msgid "Data access"
+msgstr "Acesso a dados"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:69
+#: ../../home/claude/work/docs_audit/docs_out/index.md:154
+msgid "Optical processing"
+msgstr "Processamento óptico"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:76
+#: ../../home/claude/work/docs_audit/docs_out/index.md:167
+msgid "SAR and InSAR"
+msgstr "SAR e InSAR"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:178
+msgid "Multi-sensor"
+msgstr "Multissensor"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:185
+msgid "Workflows"
+msgstr "Fluxos de trabalho"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:193
+msgid "Visualization"
+msgstr "Visualização"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:201
+msgid "Reference"
+msgstr "Referência"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:217
+msgid "Project"
+msgstr "Projeto"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:1
+msgid "pygeofetch"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:3
+msgid ""
+"**One CLI and one Python API for finding, downloading and processing "
+"satellite data.** pygeofetch searches 22 data providers through a single "
+"query model, downloads or streams only what you need, and provides optical, "
+"SAR, InSAR and multi-sensor processing in Python."
+msgstr ""
+"**Uma única CLI e uma única API Python para encontrar, baixar e processar "
+"dados de satélite.** O pygeofetch consulta 22 provedores de dados com um "
+"modelo de consulta único, baixa ou transmite apenas o que você precisa e "
+"oferece processamento óptico, SAR, InSAR e multissensor em Python."
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:17
+msgid "Overview"
+msgstr "Visão geral"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:19
+msgid ""
+"Earth observation data is spread across dozens of archives, each with its "
+"own search interface, authentication scheme, file layout and rate limits. "
+"pygeofetch puts one consistent layer over them. You describe what you want "
+"once, as an area, a date range and a few filters, and the same query runs "
+"against any combination of providers. The results come back in a single data"
+" model, so the code that follows does not care whether a scene came from "
+"Copernicus, USGS, Microsoft Planetary Computer or a commercial vendor."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:21
+msgid ""
+"From there you decide how much data to move. When you need the original "
+"products, downloads run in parallel with retries, resume and optional "
+"checksum comparison. When you only need a study area, streaming reads just "
+"the pixels inside your bounding box from Cloud-Optimized GeoTIFFs, which can"
+" reduce a multi-hundred-megabyte band to a few megabytes. Either route "
+"leaves ordinary GeoTIFF files that the processing modules, or any other GIS "
+"tool, can read."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:23
+msgid ""
+"The processing layer covers the common analyses in one package: spectral "
+"indices and classification for optical imagery, speckle filtering, "
+"calibration and flood mapping for radar, a pure-Python interferometry chain "
+"through to SBAS time series, and pipelines that combine two sensors, such as"
+" radar with optical imagery for flood extent or vegetation disturbance. "
+"Everything is available from Python and from the `pygeofetch` command line, "
+"and repeatable work can be written as YAML pipelines and run on a schedule."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:26
+msgid ""
+"pygeofetch is under active development and the documentation states what has"
+" and has not been verified. The [Known issues](reference/known-issues.md) "
+"page lists behaviours that differ from what you might expect, and every "
+"feature page says what it was tested against."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:29
+msgid "A first analysis in three steps"
+msgstr "Uma primeira análise em três passos"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:43
+msgid ""
+"The [Quick start](getting-started/quickstart.md) walks through the same "
+"steps with explanations, and the [case studies](workflows/case-studies.md) "
+"show complete analyses with their results."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:48
+msgid "Get started"
+msgstr "Começar"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:52
+msgid ""
+"Install, run a first search and download a scene in five minutes, with no "
+"account."
+msgstr ""
+"Instale, faça uma primeira busca e baixe uma cena em cinco minutos, sem "
+"conta."
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:55
+msgid "Find and download data"
+msgstr "Encontrar e baixar dados"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:59
+msgid ""
+"Federated search across providers, authenticated downloads, resume, "
+"checksums and caching."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:62
+msgid "Analyse an area without downloading scenes"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:66
+msgid ""
+"Read only your area of interest from Cloud-Optimized GeoTIFFs over HTTP "
+"range requests."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:73
+msgid ""
+"Spectral indices, classification, terrain, Landsat extraction and time "
+"series."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:80
+msgid ""
+"Despeckling, calibration, flood mapping and a pure-Python InSAR chain "
+"through to SBAS."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:83
+msgid "Multi-sensor pipelines"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:87
+msgid ""
+"Flood mapping, DEM differencing, vegetation disturbance, terrain-corrected "
+"change and InSAR-optical fusion."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:90
+msgid "Command-line reference"
+msgstr "Referência da linha de comando"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:94
+msgid "Every command and option, generated from the installed package."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:97
+msgid "Python API reference"
+msgstr "Referência da API Python"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:101
+msgid "`PyGeoFetch`, `SearchQuery`, `DownloadOptions`, `DownloadResult`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "Known issues"
+msgstr "Problemas conhecidos"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:108
+msgid ""
+"Documented limitations and behaviours that differ from what you might "
+"expect."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:112
+msgid "Who it is for"
+msgstr "Para quem é?"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:114
+msgid ""
+"**Researchers** who need data from several archives without learning each "
+"provider's API."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:115
+msgid ""
+"**Engineers** who run acquisition and processing unattended, on a schedule."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:116
+msgid ""
+"**Teams** that want open, scriptable Earth observation tooling without a "
+"commercial platform."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:118
+msgid "How the documentation is organised"
+msgstr "Como a documentação está organizada"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "Section"
+msgstr "Seção"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "Use it to"
+msgstr "Use para"
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "**Getting started**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid ""
+"Install pygeofetch, run a first workflow, understand the core concepts."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "**Data access**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid ""
+"Authenticate, search, download or stream, validate optical quality, and "
+"organise files."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "**Processing**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid ""
+"Compute indices, classify, correct terrain, process SAR and InSAR, and "
+"combine sensors."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "**Workflows**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "Chain steps into YAML pipelines and follow end-to-end examples."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "**Visualization**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "Plot results and browse footprints on a map."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "**Reference**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "Look up exact commands, parameters, settings, errors and known issues."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "**Project**"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/index.md:104
+msgid "Contribute, read the changelog and see what is planned."
+msgstr ""

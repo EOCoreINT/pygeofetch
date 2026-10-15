@@ -47,6 +47,12 @@ logs.
 disk, uploads to S3 (`s3://...`) or GCS (`gs://...`), and can POST a webhook notification on
 completion.
 :::
+## Overview
+
+When the same sequence of steps is run repeatedly, such as every week or for every new scene, it is better written down than typed. A YAML pipeline describes the whole acquisition: the area and dates to search, the filters to apply, what to download, the processing steps to run and where to export the results. You can run it once, run it on a cron schedule, or hand it to a colleague, and it behaves the same way each time.
+
+A pipeline file has a few named sections. The search step says what to look for, the filter step trims the results, the download step fetches them, the process steps apply post-processing actions or indices, and the export step sends the finished files to local disk, S3 or GCS with an optional webhook notification. Start from one of the built-in templates, validate the file before running it, and run it with the CLI. For work on files you already have, the Python processing pipeline lets you chain operations in code instead, and batch processing applies a function across many files in parallel.
+
 ## Pipeline steps
 
 | Step | Config keys | Status |

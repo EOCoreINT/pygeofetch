@@ -1,0 +1,217 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:1
+msgid "Roadmap"
+msgstr "路线图"
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:4
+msgid ""
+"This page lists open work that follows from the [known "
+"issues](../reference/known-issues.md). It is a proposal compiled during the "
+"documentation audit, **not a commitment by the maintainers**. For priorities"
+" and voting, use GitHub Discussions on "
+"[EOCoreINT/pygeofetch](https://github.com/EOCoreINT/pygeofetch)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:10
+msgid "Correctness"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Item"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Why"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Fix `client.sar.coherence` for complex input"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Currently raises `ValueError`; the standalone processor already works."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Wire in or remove the SAR backends (`_native`, `_sarxarray`, `_ost`)"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "`SARProcessor(backend=...)` is documented in code but unreachable."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Implement `--on-provider-failure abort` and `retry`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "The flag is accepted and ignored."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Honour `extract_archives`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "The option is declared and unused."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Make checksum mismatches retry or fail"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Verification is advisory today."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:20
+msgid "Configuration and packaging"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Apply the Settings layer at runtime"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid ""
+"Files and `PYGEOFETCH_*` variables currently change nothing but `config "
+"get`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Read credentials from environment variables"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Needed for CI and containers."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Declare `rich` and `shapely`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "A clean install can fail on `--help`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Unify version strings"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Three different values are in the source."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Register `monitor`, remove `multisensor/_init.py`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Dead or unreachable code."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:30
+msgid "Providers and data access"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Remove or unregister `esa_scihub` and `google_earth_engine`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "They count as providers but cannot return data."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Apply `sort_by` for STAC providers"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Currently ignored."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Cross-provider de-duplication"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Dedup uses provider plus ID only."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Merge `stac_compute` and `streaming`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Two overlapping implementations."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Live integration tests for streaming"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Verified only against a local range server."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:40
+msgid "Processing"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Absolute SAR radiometric calibration from product metadata"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "The current constant is suitable for relative comparison only."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Remaining `Affine * tuple` call sites"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Deprecated arithmetic in four modules."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Advanced topographic correction"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
+msgid "Cosine correction under-corrects on steep terrain."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:48
+msgid "Documentation"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:50
+msgid "Keep the generated CLI reference in CI with `tools/check_docs.py`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:51
+msgid "Add provider-specific tutorials once live access can be tested."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:53
+msgid "Completed work is in the [changelog](changelog.md)."
+msgstr ""

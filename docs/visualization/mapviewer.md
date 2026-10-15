@@ -16,6 +16,12 @@ mv.save("interactive_map.html")
 `add_raster()` needs `rioxarray` and `localtileserver` alongside
 `leafmap` — all three are declared in the `[viz]` extra.
 
+## Overview
+
+The map viewer is for exploration. Before downloading anything, you can draw the footprints of your search results on a map to see how well they cover your area, and after processing you can overlay rasters and vectors on a basemap to judge them in context. Maps are interactive, so you can pan, zoom and toggle layers, and a split-panel view places two layers side by side with a slider, which is the quickest way to compare before and after.
+
+Maps are built in a notebook or script and can be saved as a self-contained HTML file that opens in any browser, so a result can be shared with someone who has no Python installed.
+
 ## Search result footprints — see before you download
 
 ```python

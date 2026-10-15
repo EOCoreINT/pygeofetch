@@ -3,6 +3,14 @@
 Federated search across multiple providers simultaneously. Results are
 deduplicated, scored, and returned sorted.
 
+## Overview
+
+A search begins with a description of what you are looking for, not with a particular provider. You give pygeofetch an area (a bounding box or a GeoJSON geometry), a date range and any filters that matter, such as maximum cloud cover, satellite, processing level or resolution, and you name the providers to ask. The same description is translated into each provider's own API, the queries run in parallel, and the answers are merged into one list of `SatelliteData` records that all look the same, whatever their origin.
+
+In practice a search session has three moves. Start broad, with a short list of providers and a generous cloud-cover limit, to see how many scenes exist and which satellites they come from. Narrow the query once you know what is available, tightening dates or cloud cover until the list is a size you can reason about. Then save the result, either as a GeoJSON file from the command line or as the list returned by `client.search()` in Python, and pass it to the download or streaming step. Results are cached for the lifetime set by `cache_ttl`, so repeating a query while you refine downstream steps does not cost another round trip.
+
+Two behaviours are useful to know before you rely on search in a script. A provider that times out or fails is logged and left out rather than stopping the search, so an empty list can mean that every provider failed, and the log tells you which. And results are de-duplicated by provider and scene identifier, so the same physical scene offered by two providers appears twice; choose the provider you prefer for the download. The sections below describe each filter and output format, and [Downloading](download.md) and [Streaming](streaming.md) explain what to do with the results.
+
 ## What "federated search" actually does
 
 Searching across multiple providers isn't just "call each one and

@@ -7,6 +7,12 @@ pip install "pygeofetch[viz]"
 Static plotting for almost any raster output: indices, SAR intensity,
 classifications, comparisons, and 3D terrain.
 
+## Overview
+
+Plotting is how you check that an analysis did what you expected. The plotter produces static figures from the files pygeofetch writes, so that you can inspect an index, a classification, a radar image or a before-and-after comparison without leaving Python. `quicklook` is the fastest route: give it a raster and it chooses sensible colours and limits, and the purpose-built plots add the extras that particular outputs need, such as a legend with class names or a diverging colour scale centred on zero for change maps.
+
+Figures can be saved at publication resolution and used directly in reports. Choose the colour map to match the meaning of the data: a diverging scale for change, a sequential scale for quantities, and a categorical palette for classes, as in the vegetation trend maps in the [case studies](../workflows/case-studies.md).
+
 ## quicklook — one call for almost anything
 
 ```python

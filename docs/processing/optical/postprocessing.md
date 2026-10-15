@@ -10,6 +10,12 @@ stats = client.post.zonal_stats("ndvi.tif", "parcels.geojson", output="stats.csv
 cog = client.post.cog("scene.tif", compress="deflate")
 ```
 
+## Overview
+
+Raster results are not always the end product. Planners and managers often need polygons they can open in a GIS, summary statistics per parcel or district, and files that are small enough to share. The postprocessing tools convert an analysis result into those forms: thresholded rasters become polygons, polygons are smoothed and regularised into cleaner shapes, statistics are computed for each zone you supply, and finished rasters are compressed or written as Cloud-Optimized GeoTIFFs.
+
+A typical sequence starts from an index or class map, vectorises the cells that meet a condition, cleans the geometry, and then summarises the raster under each parcel or administrative boundary into a table. The vector-to-vector tools, such as buffer, centroids, dissolve and overlay, then prepare the layers for the final map or report.
+
 ## Raster → vector
 
 ```python

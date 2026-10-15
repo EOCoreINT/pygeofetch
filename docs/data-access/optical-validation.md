@@ -15,6 +15,12 @@ extra). It's imported lazily — a base `pip install pygeofetch` never
 requires it, and neither does `PyGeoFetch()` unless optical validation
 is actually turned on.
 :::
+## Overview
+
+Optical scenes can be unsuitable for a given job in ways that search filters do not catch: the footprint may cover only a corner of your area, a band you need may be missing, the processing level may be the wrong one, or the date may fall outside the window you meant. Downloading such a scene costs bandwidth and time, and you find out only afterwards. Optical validation puts a quality gate in front of the download so that those scenes are rejected, or flagged, before any data moves.
+
+The simplest way to use it is to switch it on when you create the client. From then on every search and download is checked against your area and your settings: scenes that fail a hard check are removed from the results, and softer concerns are logged as warnings. You can also run the validator on its own, on any list of scenes, when you want to inspect the verdicts without changing your pipeline. Each check can be turned off independently, which matters for radar searches, where optical-specific checks such as required bands do not apply.
+
 ## Quick start — wired into search() and download()
 
 The simplest way to use this is the built-in toggle on `PyGeoFetch`

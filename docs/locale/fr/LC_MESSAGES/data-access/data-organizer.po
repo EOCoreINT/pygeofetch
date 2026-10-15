@@ -1,0 +1,201 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:1
+msgid "Organizing Downloaded Data"
+msgstr "Organiser les données téléchargées"
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:3
+msgid ""
+"A flat directory of dozens of downloaded scenes across dates, orbits, and "
+"sensors is unusable for downstream InSAR or multi-date optical work. "
+"`pygeofetch.core.data_organizer.DataOrganizer` turns that into a structured "
+"hierarchy, plus a manifest mapping the structure back to the underlying "
+"scene metadata."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:9
+msgid "Overview"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:11
+msgid ""
+"A download folder fills up quickly: scenes from several satellites, dates "
+"and orbits end up side by side, named by whatever convention each provider "
+"uses. That is awkward for any workflow that needs scenes grouped by date or "
+"by orbit, and it is a real obstacle for interferometry, where only scenes "
+"that share a track and are synchronised in time can be paired. "
+"`DataOrganizer` takes the scenes and their download results and arranges the"
+" files into a folder hierarchy that you choose, for example by satellite and"
+" then by date."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:13
+msgid ""
+"You use it after downloading. Give it the list of scenes together with their"
+" results, tell it how to group them and where to put the output, and it "
+"copies the files into the hierarchy (or links or moves them, if you choose) "
+"and writes a manifest. The manifest is a JSON record that maps every file "
+"back to the scene metadata it came from, so later steps can find a scene's "
+"footprint, date or orbit without re-searching. For radar work, "
+"`prepare_insar_stack()` goes one step further and groups burst-synchronised "
+"SLC scenes into stacks that are ready for the interferometry modules."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:15
+msgid "Basic usage"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:31
+msgid "With `group_by=[\"satellite\", \"date\"]`, this produces:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:44
+msgid "Configuration"
+msgstr "Configuration"
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:46
+msgid ""
+"`OrganizerConfig` controls the grouping hierarchy and how files are placed "
+"into it:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "Field"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "Default"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "Meaning"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "`group_by`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "`[\"date\"]`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid ""
+"Ordered list of `\"date\"`, `\"orbit\"`, `\"satellite\"`, "
+"`\"processing_level\"` — applied in order, so `[\"satellite\", \"date\"]` "
+"nests date folders inside satellite folders."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "`file_operation`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "`\"copy\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "`\"copy\"`, `\"symlink\"`, or `\"move\"`."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "`manifest_filename`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "`\"manifest.json\"`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
+msgid "Written to the root of `output_dir` after organizing."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:55
+msgid "Copy is the default for a reason"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:58
+msgid ""
+"`file_operation` defaults to `\"copy\"`, not `\"move\"` — verified directly "
+"that the original downloaded file survives an `organize()` call. A grouping "
+"bug that also deleted your only copy of an already-downloaded scene would be"
+" a serious, unrecoverable failure mode. Opt into `\"move\"` explicitly once "
+"you trust your own grouping configuration, or use `\"symlink\"` to avoid "
+"duplicating large scenes on disk while keeping the original flat layout "
+"intact too."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:66
+msgid ""
+"`organize()` is also idempotent — running it twice on the same input doesn't"
+" re-copy, error, or double-count."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:69
+msgid "The manifest"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:71
+msgid "`manifest.json` maps every organized scene back to its metadata:"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:94
+msgid ""
+"`OrganizeReport` (returned by `organize()`) also reports what *couldn't* be "
+"organized, rather than silently dropping it: `skipped_no_output` (a "
+"successful download with no file path attached) and "
+"`skipped_failed_download` (the download itself failed) are both real, "
+"separate counts — inspect them if `report.grouped` is lower than you expect."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:101
+msgid "Preparing an InSAR stack"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:115
+msgid ""
+"`prepare_insar_stack()` groups downloaded SLCs by track/relative orbit and "
+"flags orphaned scenes (no `relative_orbit` metadata at all, so they can't be"
+" placed in any track)."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:119
+msgid ""
+"When you supply orbit files and a ground point, it goes further: it reuses "
+"[`pygeofetch.insar.stack_selection.select_burst_synchronized_dates`](../processing/sar-"
+"insar/insar.md) — the same already-verified burst-timing classification the "
+"InSAR pipeline itself uses — rather than a second, independent "
+"implementation of that check. `report.ready_paths` then only includes the "
+"dates that actually pass burst-sync classification."
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:126
+msgid "Behaviour without orbit files"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:129
+msgid ""
+"Without orbit files, burst-sync compatibility cannot be checked, because "
+"orbit files are a separate download step. `prepare_insar_stack()` still "
+"returns the track and date grouping, but `report.burst_sync_checked` is "
+"`False` and `report.ready_paths` includes every date, not only the burst-"
+"sync-compatible ones. Check `burst_sync_checked` before treating the stack "
+"as ready for coregistration."
+msgstr ""

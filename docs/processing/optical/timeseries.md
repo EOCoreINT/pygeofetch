@@ -24,6 +24,12 @@ anom = ts.anomaly(stack, baseline=["2022-01-15"])
 series = ts.zone_series(stack, "parcels.geojson", zone_id=3)
 ```
 
+## Overview
+
+A single image shows a moment; a series shows change. The time-series analyser turns a set of dated rasters into a stack and answers the common questions about it: how fast is each pixel changing, how does a field or district behave through time, and which dates deviate from what is normal. It computes the chosen index for every date, aligns the grids so that the dates can be compared pixel by pixel, and then offers trend fitting, zonal series and anomaly detection on the stack.
+
+Plan the inputs before you run it. Use the same season each year when you want to compare years, so that the natural annual cycle does not swamp the signal, and keep the same sensor and processing level where you can. The trend map the analyser produces has the same form as the vegetation trend shown in the [Obuasi case study](../../workflows/case-studies.md), with the slope of each pixel in index units per year.
+
 ## `build_index_stack()`
 
 ```python

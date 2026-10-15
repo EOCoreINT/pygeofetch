@@ -6,6 +6,12 @@ pygeofetch doctor
 
 This is exactly what `doctor` checks, in order.
 
+## Overview
+
+`pygeofetch doctor` is the first thing to run after installing and the first thing to run when something does not work. It checks the Python version, that the required packages import, which optional feature groups are available, whether a keyring backend is usable, and whether three open providers can be reached. Each line of the output says what was checked and whether it passed, so most installation problems can be located without reading a traceback.
+
+If a check fails, the message usually names the missing extra or the network problem. Install the extra it points to, or check your proxy and firewall settings, and run the command again. Include the output of `doctor` when you report a problem, since it records the environment the failure happened in.
+
 ## What it actually checks, in order
 
 **1. Python version** — must be 3.9+ (pygeofetch's minimum).

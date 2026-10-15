@@ -4,6 +4,12 @@ Parallel, resumable downloads with retry, checksum verification, band selection 
 optional post-processing chain. To avoid downloading whole scenes at all, see
 [Streaming](streaming.md).
 
+## Overview
+
+Downloading is where search results become files. You pass the scenes you selected, a destination folder and, optionally, a set of options, and pygeofetch fetches them in parallel, retries failures, can resume work that was interrupted, and reports a result for every scene whether or not it succeeded. Because the result list matches the input list, you can always tell which scenes arrived and which need another attempt.
+
+Most downloads can be made much smaller by asking only for what you need. Choosing bands, for providers that deliver one file per band, avoids transferring the rest of the scene, and the post-processing chain can unpack, reproject or compress files as they arrive. If you only need a small area, [streaming](streaming.md) reads just that area and skips the download of whole files altogether. Plan for the layout on disk: files are written under the destination in a folder per provider, and archives are not unpacked unless you ask.
+
 ## Quick examples
 
 ```bash

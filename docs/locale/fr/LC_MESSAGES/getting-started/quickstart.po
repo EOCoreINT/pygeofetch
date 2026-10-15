@@ -1,0 +1,203 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:1
+msgid "Quick Start (5 Minutes)"
+msgstr "Démarrage rapide (5 minutes)"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:3
+msgid ""
+"The full path from nothing installed to a file on disk, using a free, no-"
+"account provider — no login, no API key, no waiting on an approval email."
+msgstr ""
+"Le chemin complet entre une machine vierge et un fichier sur disque, avec un"
+" fournisseur gratuit et sans compte : sans identifiant, sans clé d'API, sans"
+" attendre un e-mail de validation."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:7
+msgid "What you will do"
+msgstr "Ce que vous allez faire"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:9
+msgid ""
+"This walk-through takes you from an empty environment to a scene on disk in "
+"four short steps, using a provider that needs no account so that nothing "
+"stands between you and a first result. You install the package, run a search"
+" that writes its findings to a GeoJSON file, download the best-ranked scene "
+"from that file, and check the result. Afterwards the same workflow is "
+"repeated in Python so you can see how the command line and the API map onto "
+"each other: every command in the command-line interface has a counterpart on"
+" the `PyGeoFetch` client, and they share the same query and download "
+"options."
+msgstr ""
+"Ce guide vous mène d'un environnement vide à une scène sur disque en quatre "
+"courtes étapes, avec un fournisseur qui ne demande aucun compte, pour que "
+"rien ne vous sépare d'un premier résultat. Vous installez le paquet, lancez "
+"une recherche qui écrit ses résultats dans un fichier GeoJSON, téléchargez "
+"la scène la mieux classée de ce fichier, puis vérifiez le résultat. Le même "
+"flux de travail est ensuite répété en Python afin de voir comment la ligne "
+"de commande et l'API se correspondent : chaque commande de l'interface en "
+"ligne de commande a un équivalent sur le client `PyGeoFetch`, et les deux "
+"partagent les mêmes options de requête et de téléchargement."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:11
+msgid ""
+"Two ideas are worth holding on to as you read. First, search and download "
+"are separate steps. A search only returns descriptions of scenes "
+"(identifier, date, footprint, cloud cover and the list of files), which is "
+"why it is fast and why you can run it as often as you like before deciding "
+"what to download. Second, the GeoJSON results file is the hand-off between "
+"the two steps, so you can search today, review the file, and download later "
+"or on another machine. Once this works, move on to [Searching](../data-"
+"access/search.md) to learn the filters, and to [Authentication](../data-"
+"access/authentication.md) when you want providers that require a login."
+msgstr ""
+"Deux idées méritent d'être retenues. Premièrement, la recherche et le "
+"téléchargement sont deux étapes distinctes. Une recherche ne renvoie que la "
+"description des scènes (identifiant, date, emprise, couverture nuageuse et "
+"liste des fichiers), ce qui la rend rapide et vous permet de la lancer aussi"
+" souvent que vous voulez avant de décider quoi télécharger. Deuxièmement, le"
+" fichier de résultats GeoJSON fait le lien entre les deux étapes : vous "
+"pouvez chercher aujourd'hui, examiner le fichier, puis télécharger plus tard"
+" ou sur une autre machine. Une fois que cela fonctionne, passez à "
+"[Recherche](../data-access/search.md) pour découvrir les filtres, et à "
+"[Authentification](../data-access/authentication.md) lorsque vous voulez des"
+" fournisseurs qui exigent une connexion."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:13
+msgid "1. Install"
+msgstr "1. Installer"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:19
+msgid "2. Search"
+msgstr "2. Rechercher"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:31
+msgid ""
+"This searches AWS Earth's open Sentinel-2 archive and writes a real GeoJSON "
+"results file rather than just printing to the terminal."
+msgstr ""
+"Cette commande interroge l'archive Sentinel-2 ouverte d'AWS Earth et écrit "
+"un véritable fichier de résultats GeoJSON au lieu de simplement afficher "
+"dans le terminal."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:34
+msgid "3. Download"
+msgstr "3. Télécharger"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:43
+msgid "Reads that same file and downloads the top-ranked scene."
+msgstr "Lit ce même fichier et télécharge la scène la mieux classée."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:45
+msgid "4. Verify"
+msgstr "4. Vérifier"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:51
+msgid ""
+"A Sentinel-2 scene, on disk, ready to open in QGIS or load with rasterio."
+msgstr ""
+"Une scène Sentinel-2 sur disque, prête à être ouverte dans QGIS ou chargée "
+"avec rasterio."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:54
+msgid "The same thing in Python"
+msgstr "La même chose en Python"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:56
+msgid ""
+"If you'd rather script this than use the CLI, here's the exact same five "
+"minutes as Python:"
+msgstr ""
+"Si vous préférez scripter plutôt qu'utiliser la CLI, voici exactement les "
+"mêmes cinq minutes en Python :"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:81
+msgid ""
+"No credentials, no `auth add` step needed — `aws_earth` is a real, free, no-"
+"account provider, same as the CLI example above."
+msgstr ""
+"Aucun identifiant, aucune étape `auth add` : `aws_earth` est un fournisseur "
+"gratuit et sans compte, comme dans l'exemple CLI ci-dessus."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:84
+msgid "What's next"
+msgstr "Et ensuite ?"
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:86
+msgid ""
+"**See it on a map first** — before committing to a download, view footprints"
+" and hover for scene details. See "
+"[MapViewer](../visualization/mapviewer.md)."
+msgstr ""
+"**Voir d'abord sur une carte** — avant de vous engager dans un "
+"téléchargement, affichez les emprises et survolez-les pour les détails d'une"
+" scène. Voir [MapViewer](../visualization/mapviewer.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:89
+msgid ""
+"**Compute something** — NDVI, water indices, burn severity, and more, one "
+"line each. See [Spectral Indices](../processing/optical/spectral-"
+"indices.md)."
+msgstr ""
+"**Calculer quelque chose** — NDVI, indices d'eau, sévérité des incendies et "
+"plus, en une ligne chacun. Voir [Indices "
+"spectraux](../processing/optical/spectral-indices.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:91
+msgid ""
+"**Skip cloudy/off-target scenes automatically** — a configurable pre-"
+"download quality gate for optical imagery. See [Optical Data Validation & "
+"Preflight](../data-access/optical-validation.md)."
+msgstr ""
+"**Ignorer automatiquement les scènes nuageuses ou hors cible** — un contrôle"
+" qualité configurable avant téléchargement pour l'imagerie optique. Voir "
+"[Validation et contrôle préalable des données optiques](../data-"
+"access/optical-validation.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:94
+msgid ""
+"**Working with SAR/Sentinel-1?** Despeckling, calibration, and the full "
+"InSAR chain are different from optical workflows. See [SAR "
+"Processing](../processing/sar-insar/sar.md) or [InSAR "
+"Processing](../processing/sar-insar/insar.md)."
+msgstr ""
+"**Vous travaillez avec du SAR / Sentinel-1 ?** Le filtrage du speckle, la "
+"calibration et la chaîne InSAR complète diffèrent des flux optiques. Voir "
+"[Traitement SAR](../processing/sar-insar/sar.md) ou [Traitement "
+"InSAR](../processing/sar-insar/insar.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:97
+msgid ""
+"**Doing this on a schedule?** Turn a one-off search into a repeatable "
+"pipeline. See [Pipelines & Batch Processing](../workflows/pipelines.md)."
+msgstr ""
+"**Vous le faites régulièrement ?** Transformez une recherche ponctuelle en "
+"pipeline reproductible. Voir [Pipelines et traitement par "
+"lots](../workflows/pipelines.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:99
+msgid ""
+"**Something went wrong?** Auth errors, timeouts, zero results, keyring "
+"issues on Docker/SSH. See [Error Handling & Resilience](../reference/error-"
+"handling.md)."
+msgstr ""
+"**Un problème ?** Erreurs d'authentification, délais dépassés, zéro "
+"résultat, problèmes de trousseau sous Docker/SSH. Voir [Gestion des erreurs "
+"et résilience](../reference/error-handling.md)."

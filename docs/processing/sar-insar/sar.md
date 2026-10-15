@@ -25,6 +25,18 @@ wrappers around an external SAR toolkit.
 They are not kept in sync: for example, only the standalone class reads complex SLC input
 correctly for `coherence()`.
 :::
+## Overview
+
+Radar imagery behaves differently from optical imagery. It is measured by the satellite's own signal, so it works at night and through cloud, and it responds to surface roughness, moisture and structure rather than colour. It also carries speckle, a granular noise that comes from the way radar returns add up, and that noise has to be reduced before the image can be interpreted. The SAR tools in pygeofetch cover the standard first steps for Sentinel-1 style data: speckle filtering, radiometric calibration, flood mapping from backscatter, and interferometric coherence.
+
+A typical flood workflow shows how the pieces fit. Despeckle the image with a filter such as Lee, convert to decibels, and apply a threshold so that smooth open water, which reflects the radar away from the sensor and appears dark, is separated from land. If you also have an image from before the event, change detection between the two dates is more reliable than a single threshold because it ignores permanently dark surfaces. The five standard pipelines further down chain these steps for common tasks, so you can run a whole analysis with one call and still inspect the intermediate files.
+
+:::{figure} /_static/img/demo_sar.png
+:alt: Synthetic SAR scene before and after Lee filtering, and the resulting flood mask
+
+<span class="gf-tag synthetic">Synthetic</span> A simulated radar scene processed with `client.sar`. Left: raw backscatter with speckle. Centre: after a Lee filter. Right: the flood mask from a -15 dB threshold. Real scenes are noisier and less uniform, so choose the threshold by inspecting your own data.
+:::
+
 ## `client.sar`: the built-in processor
 
 ```python
