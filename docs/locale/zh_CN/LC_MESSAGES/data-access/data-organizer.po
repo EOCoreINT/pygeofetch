@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,10 +29,13 @@ msgid ""
 "hierarchy, plus a manifest mapping the structure back to the underlying "
 "scene metadata."
 msgstr ""
+"跨日期、轨道和传感器的数十个已下载场景堆在一个扁平目录中，无法用于后续的 InSAR "
+"或多日期光学工作。`pygeofetch.core.data_organizer.DataOrganizer` "
+"会将其整理为结构化的层级目录，并生成一份清单，将该结构映射回底层的场景元数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:9
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:11
 msgid ""
@@ -45,6 +48,8 @@ msgid ""
 " files into a folder hierarchy that you choose, for example by satellite and"
 " then by date."
 msgstr ""
+"下载文件夹很快就会变得杂乱：来自多颗卫星、不同日期和轨道的场景并排放置，各自按提供方使用的命名约定命名。这对任何需要按日期或轨道对场景分组的工作流都很不便，对干涉测量更是实际的障碍，因为只有共享同一轨道且时间同步的场景才能配对。`DataOrganizer`"
+" 接收场景及其下载结果，并将文件整理为您选择的文件夹层级，例如先按卫星、再按日期。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:13
 msgid ""
@@ -57,14 +62,18 @@ msgid ""
 "`prepare_insar_stack()` goes one step further and groups burst-synchronised "
 "SLC scenes into stacks that are ready for the interferometry modules."
 msgstr ""
+"它在下载之后使用。将场景列表连同其结果交给它，告诉它如何分组以及输出放在哪里，它就会把文件复制到层级目录中（如果您选择，也可以建立链接或移动），并写出一份清单。该清单是一个"
+" JSON "
+"记录，将每个文件映射回其来源的场景元数据，这样后续步骤无需重新检索，就能找到场景的覆盖范围、日期或轨道。对于雷达工作，`prepare_insar_stack()`"
+" 更进一步，会将突发同步的 SLC 场景分组为可直接用于干涉测量模块的堆栈。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:15
 msgid "Basic usage"
-msgstr ""
+msgstr "基本用法"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:31
 msgid "With `group_by=[\"satellite\", \"date\"]`, this produces:"
-msgstr ""
+msgstr "使用 `group_by=[\"satellite\", \"date\"]` 时，会生成："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:44
 msgid "Configuration"
@@ -74,19 +83,19 @@ msgstr "配置"
 msgid ""
 "`OrganizerConfig` controls the grouping hierarchy and how files are placed "
 "into it:"
-msgstr ""
+msgstr "`OrganizerConfig` 控制分组层级以及文件放入其中的方式："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Field"
-msgstr ""
+msgstr "字段"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Default"
-msgstr ""
+msgstr "默认值"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Meaning"
-msgstr ""
+msgstr "含义"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "`group_by`"
@@ -102,6 +111,8 @@ msgid ""
 "`\"processing_level\"` — applied in order, so `[\"satellite\", \"date\"]` "
 "nests date folders inside satellite folders."
 msgstr ""
+"由 `\"date\"`、`\"orbit\"`、`\"satellite\"`、`\"processing_level\"` "
+"组成的有序列表，按顺序应用，因此 `[\"satellite\", \"date\"]` 会将日期文件夹嵌套在卫星文件夹内。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "`file_operation`"
@@ -125,11 +136,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Written to the root of `output_dir` after organizing."
-msgstr ""
+msgstr "整理完成后写入 `output_dir` 的根目录。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:55
 msgid "Copy is the default for a reason"
-msgstr ""
+msgstr "默认使用复制是有原因的"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:58
 msgid ""
@@ -141,20 +152,23 @@ msgid ""
 "duplicating large scenes on disk while keeping the original flat layout "
 "intact too."
 msgstr ""
+"`file_operation` 默认为 `\"copy\"`，而非 `\"move\"`，并已直接验证原始下载文件在调用 `organize()` "
+"后依然保留。如果分组中的错误还删除了您唯一一份已下载场景的副本，那将是严重且无法恢复的故障模式。请在信任自己的分组配置之后，再明确选择 "
+"`\"move\"`，或者使用 `\"symlink\"`，这样既可避免在磁盘上重复存储大型场景，又能保留原始的扁平布局。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:66
 msgid ""
 "`organize()` is also idempotent — running it twice on the same input doesn't"
 " re-copy, error, or double-count."
-msgstr ""
+msgstr "`organize()` 还是幂等的：对同一输入运行两次，不会重复复制、报错或重复计数。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:69
 msgid "The manifest"
-msgstr ""
+msgstr "清单"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:71
 msgid "`manifest.json` maps every organized scene back to its metadata:"
-msgstr ""
+msgstr "`manifest.json` 将每个已整理的场景映射回其元数据："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:94
 msgid ""
@@ -164,10 +178,14 @@ msgid ""
 "`skipped_failed_download` (the download itself failed) are both real, "
 "separate counts — inspect them if `report.grouped` is lower than you expect."
 msgstr ""
+"`OrganizeReport`（由 `organize()` "
+"返回）还会报告*无法*整理的内容，而不是悄悄丢弃它们：`skipped_no_output`（下载成功但没有附带文件路径）和 "
+"`skipped_failed_download`（下载本身失败）是两个真实且相互独立的计数。如果 `report.grouped` "
+"低于预期，请检查它们。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:101
 msgid "Preparing an InSAR stack"
-msgstr ""
+msgstr "准备 InSAR 堆栈"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:115
 msgid ""
@@ -175,6 +193,8 @@ msgid ""
 "flags orphaned scenes (no `relative_orbit` metadata at all, so they can't be"
 " placed in any track)."
 msgstr ""
+"`prepare_insar_stack()` 会按轨道/相对轨道对已下载的 SLC 分组，并标记孤立场景（完全没有 `relative_orbit` "
+"元数据，因此无法归入任何轨道）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:119
 msgid ""
@@ -185,10 +205,14 @@ msgid ""
 "implementation of that check. `report.ready_paths` then only includes the "
 "dates that actually pass burst-sync classification."
 msgstr ""
+"当您提供轨道文件和地面点时，它会更进一步：复用 "
+"[`pygeofetch.insar.stack_selection.select_burst_synchronized_dates`](../processing/sar-"
+"insar/insar.md)，即 InSAR 流水线自身使用的、已验证的突发时序分类，而不是对该检查另行独立实现。此时 "
+"`report.ready_paths` 只包含真正通过突发同步分类的日期。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:126
 msgid "Behaviour without orbit files"
-msgstr ""
+msgstr "没有轨道文件时的行为"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:129
 msgid ""
@@ -199,3 +223,6 @@ msgid ""
 "sync-compatible ones. Check `burst_sync_checked` before treating the stack "
 "as ready for coregistration."
 msgstr ""
+"没有轨道文件时，无法检查突发同步兼容性，因为轨道文件是单独的下载步骤。`prepare_insar_stack()` 仍会返回轨道和日期的分组，但 "
+"`report.burst_sync_checked` 为 `False`，且 `report.ready_paths` "
+"包含所有日期，而不仅仅是与突发同步兼容的日期。在将堆栈视为可用于配准之前，请先检查 `burst_sync_checked`。"

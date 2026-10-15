@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,27 +23,32 @@ msgstr "Módulos InSAR avanzados"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:3
 msgid "Four modules that build on the InSAR and optical chains:"
-msgstr ""
+msgstr "Cuatro módulos que se apoyan en las cadenas InSAR y óptica:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:5
 msgid ""
 "An **auto-fallback router** that decides between InSAR and optical "
 "displacement."
 msgstr ""
+"Un **enrutador de respaldo automático** que decide entre desplazamiento "
+"InSAR y óptico."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:6
 msgid "**Uncertainty export** for phase and displacement rasters."
 msgstr ""
+"**Exportación de incertidumbre** para ráster de fase y de desplazamiento."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:7
 msgid "**Geotechnical risk mapping** from an SBAS time series."
-msgstr ""
+msgstr "**Mapeo de riesgo geotécnico** a partir de una serie temporal SBAS."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:8
 msgid ""
 "**Lightweight prefetch**: read Sentinel-1 annotation metadata from a remote "
 "SLC ZIP without downloading the measurement data."
 msgstr ""
+"**Prefetch ligero**: lee los metadatos de anotación de Sentinel-1 de un ZIP "
+"SLC remoto sin descargar los datos de medición."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:10
 msgid ""
@@ -54,10 +59,17 @@ msgid ""
 "the robust one. See [Optical offset tracking](optical-offset-"
 "tracking.md#strain-turning-displacement-into-a-risk-metric)."
 msgstr ""
+"`compute_horizontal_strain` en `pygeofetch.optical.offset_tracking` ya "
+"incluye protección frente a valores atípicos basada en MAD "
+"(`mad_outlier_threshold`, valor predeterminado 8.0). Se añadió después de "
+"que apareciera un artefacto de deformación del 617 % en la ejecución de "
+"validación de Bu'ertai. No existe una variante robusta aparte: la función "
+"base es la robusta. Consulta [Seguimiento de desplazamiento óptico](optical-"
+"offset-tracking.md#strain-turning-displacement-into-a-risk-metric)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:16
 msgid "1. The Auto-Fallback Multi-Modal Router"
-msgstr ""
+msgstr "1. El enrutador multimodal de respaldo automático"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:18
 msgid "`pygeofetch.insar.auto_fallback.run_multi_modal_deformation()`"
@@ -65,7 +77,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:37
 msgid "What this actually adds"
-msgstr ""
+msgstr "Qué añade realmente esto"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:39
 msgid ""
@@ -79,10 +91,19 @@ msgid ""
 " saving over always running both, which is what the existing multi-sensor "
 "pipeline does unconditionally."
 msgstr ""
+"Esto **no** reimplementa la fusión: "
+"`pygeofetch.multisensor.insar_optical_displacement_pipeline` y "
+"`fuse_insar_optical` ya lo hacen, y este enrutador las llama directamente. "
+"Su valor distintivo es la *decisión*: si la fracción de píxeles fiables de "
+"InSAR y la coherencia media superan ambas ya umbrales configurables "
+"(`reliable_fraction_threshold`, `mean_coherence_threshold`, ambos con valor "
+"predeterminado `0.3`), el procesamiento óptico se **omite por completo**: un"
+" ahorro de cómputo y ancho de banda frente a ejecutar siempre ambos, que es "
+"lo que hace de forma incondicional el pipeline multisensor existente."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:49
 msgid "Reliability metrics"
-msgstr ""
+msgstr "Métricas de fiabilidad"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:51
 msgid ""
@@ -92,10 +113,16 @@ msgid ""
 "available: coverage from `np.isfinite(velocity).mean()`, mean coherence "
 "averaged across the interferogram pairs used."
 msgstr ""
+"`TimeSeriesResult` (el tipo de salida propio de SBAS) no incluye ningún "
+"campo `reliable_fraction` ni de coherencia: `SBASTimeSeries.invert()` solo "
+"rellena `metadata={\"method\": ...}`. El enrutador calcula ambas métricas a "
+"partir de lo disponible: la cobertura a partir de "
+"`np.isfinite(velocity).mean()` y la coherencia media promediada entre los "
+"pares de interferogramas utilizados."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:57
 msgid "Mask value conventions"
-msgstr ""
+msgstr "Convenciones de valores de la máscara"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:59
 msgid ""
@@ -107,10 +134,17 @@ msgid ""
 "other's would invert the meaning of \"good\" and \"bad\". Each function's "
 "docstring documents its own convention."
 msgstr ""
+"La salida `reliability_source` de `fuse_insar_optical` usa `2=InSAR-"
+"dominant, 1=transition, 0=optical-dominant`. El `processing_source_mask` de "
+"este enrutador usa una convención **distinta y deliberada**: `0=Optical "
+"Fallback, 1=InSAR Valid, 2=Blended`. No son intercambiables: pasar la "
+"máscara de una función a código que espera la de la otra invertiría el "
+"significado de \"bueno\" y \"malo\". El docstring de cada función documenta "
+"su propia convención."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:66
 msgid "Failure behaviour"
-msgstr ""
+msgstr "Comportamiento ante fallos"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:68
 msgid ""
@@ -119,10 +153,15 @@ msgid ""
 "values. It does not return a degraded InSAR-only result. Either metric alone"
 " can trigger the fallback (OR logic)."
 msgstr ""
+"Cuando ambos umbrales fallan y no se suministraron entradas ópticas, el "
+"enrutador lanza un `ValueError` que nombra los valores actuales de "
+"`reliable_fraction` y de coherencia. No devuelve un resultado degradado solo"
+" de InSAR. Cualquiera de las dos métricas por sí sola puede activar el "
+"respaldo (lógica OR)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:72
 msgid "2. Uncertainty Quantification Export"
-msgstr ""
+msgstr "2. Exportación de cuantificación de incertidumbre"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:74
 msgid "`pygeofetch.processing.uq_exporter`"
@@ -130,13 +169,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:98
 msgid "The formula, reused not reinvented"
-msgstr ""
+msgstr "La fórmula, reutilizada y no reinventada"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:100
 msgid ""
 "\\sigma_\\phi = \\frac{\\sqrt{1-\\gamma^2}}{\\gamma\\sqrt{2N}}, \\qquad\n"
 "\\sigma_{disp} = \\frac{\\lambda}{4\\pi}\\sigma_\\phi"
 msgstr ""
+"\\sigma_\\phi = \\frac{\\sqrt{1-\\gamma^2}}{\\gamma\\sqrt{2N}}, \\qquad\n"
+"\\sigma_{disp} = \\frac{\\lambda}{4\\pi}\\sigma_\\phi"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:105
 msgid ""
@@ -146,10 +187,16 @@ msgid ""
 "generate realistic synthetic decorrelation noise) — confirmed numerically "
 "identical by direct test, so the two can never silently diverge."
 msgstr ""
+"Esta es la cota estándar de Cramér-Rao de la incertidumbre de la fase "
+"interferométrica. En lugar de deducirla una segunda vez, este módulo "
+"reutiliza la **misma fórmula exacta** ya presente en "
+"`pygeofetch.insar.synthetic` (usada allí para generar ruido de decorrelación"
+" sintético realista), confirmada como numéricamente idéntica mediante una "
+"prueba directa, de modo que las dos nunca puedan divergir en silencio."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:112
 msgid "What `write_provenance_manifest` needed"
-msgstr ""
+msgstr "Lo que necesitaba `write_provenance_manifest`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:114
 msgid ""
@@ -159,6 +206,11 @@ msgid ""
 "confirms the output feeds straight into the actual function without "
 "adaptation."
 msgstr ""
+"Su firma existente ya acepta un parámetro genérico `quality: dict`: no hizo "
+"falta cambiar nada. `summarize_uncertainty_for_provenance` construye el "
+"diccionario con la forma adecuada para entregárselo, y una prueba de "
+"integración directa confirma que la salida alimenta la función real sin "
+"adaptación."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:120
 msgid ""
@@ -166,10 +218,14 @@ msgid ""
 "(higher coherence → lower uncertainty; more looks → lower uncertainty), a "
 "two-band GeoTIFF round-trip, and the real provenance-manifest integration."
 msgstr ""
+"**Pasan 12/12 pruebas**, incluidas la coincidencia exacta de la fórmula, la "
+"monotonicidad física (mayor coherencia → menor incertidumbre; más looks → "
+"menor incertidumbre), un ciclo de escritura y lectura de GeoTIFF de dos "
+"bandas y la integración real con el manifiesto de procedencia."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:125
 msgid "3. Domain-Specific Geotechnical Risk Mapper"
-msgstr ""
+msgstr "3. Mapeador de riesgo geotécnico específico del dominio"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:127
 msgid "`pygeofetch.geotech.risk_mapper`"
@@ -177,7 +233,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:145
 msgid "The cited standard behind the strain cap"
-msgstr ""
+msgstr "La norma citada detrás del límite de deformación"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:147
 msgid ""
@@ -186,6 +242,10 @@ msgid ""
 " \"very severe\" damage category threshold. This is a cited, standard, not a"
 " placeholder."
 msgstr ""
+"`RiskMapperConfig.max_severe_strain` tiene como valor predeterminado **1.0 "
+"%**: el propio umbral de la categoría de daño \"muy severo\" del *Subsidence"
+" Engineering Handbook* del National Coal Board (1975), real y publicado. Es "
+"un estándar citado, no un valor de relleno."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:152
 msgid ""
@@ -196,10 +256,17 @@ msgid ""
 " risk index, independent of whatever outlier protection already ran upstream"
 " in `compute_horizontal_strain` itself."
 msgstr ""
+"`RiskMapperConfig.strain_cap` (10 % por defecto) es un techo "
+"**independiente** y más estricto: una respuesta directa y explícita al "
+"propio artefacto de deformación del 617 % real y observado en este proyecto."
+" El conjunto de pruebas reproduce ese escenario exacto (strain=6.17) y "
+"confirma que el límite lo neutraliza antes de que pueda dominar el índice de"
+" riesgo, con independencia de la protección frente a valores atípicos que ya"
+" se haya ejecutado antes en el propio `compute_horizontal_strain`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:159
 msgid "An note on `compute_curvature`'s interface"
-msgstr ""
+msgstr "Una nota sobre la interfaz de `compute_curvature`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:161
 msgid ""
@@ -211,10 +278,18 @@ msgid ""
 "classic single-field convention. Pass a zero array as `dy` to reproduce "
 "standard single-field curvature exactly."
 msgstr ""
+"La convención estándar de subsidencia minera calcula la curvatura a partir "
+"de un *único* campo de desplazamiento vertical. Esta implementación "
+"generaliza a la *magnitud* del desplazamiento a partir de dos componentes "
+"horizontales (`dx`, `dy`) para una aplicabilidad multimodal más amplia "
+"(movimiento lateral de deslizamientos, deslizamiento cosísmico), documentado"
+" explícitamente como una desviación de la convención clásica de campo único,"
+" no idéntica a ella. Pasa un arreglo de ceros como `dy` para reproducir "
+"exactamente la curvatura estándar de campo único."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:170
 msgid "Combination logic"
-msgstr ""
+msgstr "Lógica de combinación"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:172
 msgid ""
@@ -224,6 +299,11 @@ msgid ""
 "one severe indicator alone is cause for concern. `\"mean\"` is available as "
 "a simpler, alternative."
 msgstr ""
+"`config.combination=\"max_weighted\"` (predeterminado) calcula `0.6 * "
+"max(scores) + 0.4 * mean(scores)`: un único factor severo domina el índice "
+"en lugar de diluirse con dos leves, en línea con la práctica geotécnica, "
+"donde un solo indicador severo ya es motivo de preocupación. `\"mean\"` está"
+" disponible como alternativa más simple."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:179
 msgid ""
@@ -232,10 +312,14 @@ msgid ""
 "that `max_weighted` gives materially higher risk than a plain mean for the "
 "same inputs."
 msgstr ""
+"**Pasan 15/15 pruebas**, incluida una comprobación analítica exacta de la "
+"curvatura (la segunda derivada constante conocida de un campo parabólico) y "
+"la verificación directa de que `max_weighted` da un riesgo materialmente "
+"mayor que una media simple para las mismas entradas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:184
 msgid "4. Lightweight, Annotation-Only STAC Prefetch"
-msgstr ""
+msgstr "4. Prefetch STAC ligero, solo de anotaciones"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:186
 msgid "`pygeofetch.stac_compute.lightweight_prefetch`"
@@ -243,7 +327,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:207
 msgid "Background"
-msgstr ""
+msgstr "Antecedentes"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:209
 msgid ""
@@ -254,6 +338,13 @@ msgid ""
 "implements the same real technique directly with `httpx` (already a core "
 "pygeofetch dependency) rather than adding `fsspec` as a new one."
 msgstr ""
+"La herramienta de código abierto publicada `asfsmd` (Valentino, PyPI/GitHub)"
+" ya hace exactamente esto contra el archivo de ASF: abre el directorio "
+"central de un ZIP SLC remoto de Sentinel-1 mediante solicitudes HTTP de "
+"rango y extrae solo el XML de anotación, sin obtener nunca los ráster de "
+"medición. Este módulo implementa la misma técnica real directamente con "
+"`httpx` (ya una dependencia central de pygeofetch) en lugar de añadir "
+"`fsspec` como una nueva."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:218
 msgid ""
@@ -265,10 +356,19 @@ msgid ""
 "Sentinel-1 packed products as not accessible through S3, so range support "
 "there is tested per request, not assumed."
 msgstr ""
+"**Esto solo funciona si el servidor admite solicitudes HTTP de rango.** "
+"`supports_range_requests()` envía una solicitud de rango de prueba y "
+"comprueba si hay un `206 Partial Content`. Un `200 OK` significa que el "
+"servidor ignoró el rango y devolvió el archivo completo, lo cual esta "
+"comprobación no acepta como compatibilidad. ASF funciona así (como muestra "
+"la herramienta `asfsmd`). Copernicus Data Space documenta que los productos "
+"empaquetados de Sentinel-1 no son accesibles a través de S3, por lo que la "
+"compatibilidad con rangos allí se comprueba en cada solicitud, no se da por "
+"supuesta."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:225
 msgid "Local ZIP layout"
-msgstr ""
+msgstr "Estructura del ZIP local"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:227
 msgid ""
@@ -279,10 +379,16 @@ msgid ""
 "reconstructs a small, valid local ZIP that **preserves the original internal"
 " member paths**, as a drop-in replacement for the full SAFE zip."
 msgstr ""
+"Extraer los archivos de anotación a una carpeta plana sería incompatible con"
+" `pygeofetch.insar.annotation.parse_slc_geometry`, que abre su entrada "
+"mediante un simple `zipfile.ZipFile(path)` y busca en `zf.namelist()` los "
+"miembros que contienen la subcadena `\"/annotation/\"`. Por tanto, el módulo"
+" reconstruye un ZIP local pequeño y válido que **conserva las rutas internas"
+" originales de los miembros**, como sustituto directo del ZIP SAFE completo."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:235
 msgid "Tests"
-msgstr ""
+msgstr "Pruebas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:237
 msgid ""
@@ -292,10 +398,16 @@ msgid ""
 "measurement data was never transferred, with bytes counted by the server. A "
 "mocked test covers the handoff into `select_burst_synchronized_dates`."
 msgstr ""
+"Las pruebas se ejecutan contra un manejador HTTP local que implementa "
+"solicitudes de rango (el `http.server` integrado de Python ignora la "
+"cabecera `Range` y devuelve `200 OK` con el contenido completo). En las "
+"pruebas, el 98.7 % de los datos de medición de un archivo de 5 MB nunca se "
+"transfirió, con los bytes contados por el servidor. Una prueba con "
+"simulación (mock) cubre el traspaso a `select_burst_synchronized_dates`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:242
 msgid "5. Platform notes"
-msgstr ""
+msgstr "5. Notas sobre plataformas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:244
 msgid ""
@@ -303,15 +415,23 @@ msgid ""
 "`\"/\"` checks (`\"/annotation/\" in name`) are on ZIP member names, which "
 "always use forward slashes regardless of the host OS."
 msgstr ""
+"Los módulos usan `pathlib.Path` para las rutas del sistema de archivos. Las "
+"únicas comprobaciones literales de `\"/\"` (`\"/annotation/\" in name`) son "
+"sobre nombres de miembros de ZIP, que siempre usan barras diagonales sea "
+"cual sea el sistema operativo anfitrión."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:247
 msgid ""
 "No Linux-only system calls (`os.fork`, Unix `signal` handling) and no "
 "hardcoded `/tmp` or `/usr` paths."
 msgstr ""
+"Sin llamadas al sistema exclusivas de Linux (`os.fork`, manejo de `signal` "
+"de Unix) y sin rutas `/tmp` o `/usr` codificadas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:248
 msgid ""
 "The `snaphu` command-line fallback in `pygeofetch/insar/unwrap.py` locates "
 "the executable with `shutil.which(\"snaphu\")`."
 msgstr ""
+"El respaldo de línea de comandos de `snaphu` en `pygeofetch/insar/unwrap.py`"
+" localiza el ejecutable con `shutil.which(\"snaphu\")`."

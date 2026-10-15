@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,14 +26,17 @@ msgid ""
 "pygeofetch requires **Python 3.9 or newer**. The package metadata lists "
 "Python 3.9 to 3.12 as tested; newer versions may work but are not declared."
 msgstr ""
+"تتطلب pygeofetch **Python 3.9 أو أحدث**. تذكر بيانات الحزمة الوصفية أن "
+"الإصدارات من Python 3.9 إلى 3.12 مختبَرة؛ وقد تعمل الإصدارات الأحدث لكنها "
+"غير مُعلَنة."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "Notes"
-msgstr ""
+msgstr "ملاحظات"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "3.9"
@@ -44,6 +47,7 @@ msgid ""
 "Supported. `eval_type_backport` is installed automatically so Pydantic can "
 "evaluate `str"
 msgstr ""
+"مدعوم. يُثبَّت `eval_type_backport` تلقائيًا ليتمكن Pydantic من تقييم `str"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "3.10 to 3.12"
@@ -51,21 +55,21 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "Supported and declared."
-msgstr ""
+msgstr "مدعوم ومُعلَن."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "3.13 and later"
-msgstr ""
+msgstr "3.13 وما بعده"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid ""
 "Not declared. Some optional dependencies (for example `keplergl`) do not "
 "build there."
-msgstr ""
+msgstr "غير مُعلَن. بعض التبعيات الاختيارية (مثل `keplergl`) لا تُبنى هناك."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:12
 msgid "Basic install"
-msgstr ""
+msgstr "التثبيت الأساسي"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:18
 msgid ""
@@ -76,6 +80,11 @@ msgid ""
 "optional extras, so a basic install stays light. A virtual environment is "
 "recommended:"
 msgstr ""
+"يضيف التثبيت الأساسي `httpx` و`click` و`pydantic` و`pydantic-settings` "
+"و`PyYAML` و`cryptography` و`keyring` و`tenacity` و`python-dateutil` "
+"و`requests` و`anyio` و`numpy` و`tqdm`. ويوفّر البحث والتنزيل بمصادقة "
+"والتخزين المؤقت وواجهة سطر الأوامر. أما ميزات المعالجة فهي إضافات اختيارية، "
+"فيبقى التثبيت الأساسي خفيفًا. يُنصح باستخدام بيئة افتراضية:"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:31
 msgid ""
@@ -87,22 +96,29 @@ msgid ""
 " shapely`, or use the `geo` extra, which includes `shapely`. See [Known "
 "issues](../reference/known-issues.md#undeclared-dependencies)."
 msgstr ""
+"تستورد واجهة سطر الأوامر الحزمة `rich`، ويستورد التحقق البصري الحزمة "
+"`shapely`. ولا تُعلَن أي منهما ضمن التبعيات الأساسية في `pyproject.toml` "
+"(أما وصفة conda في `meta.yaml` فتُدرج `rich`، لذا لا يتأثر تثبيت conda). إذا"
+" فشل `pygeofetch --help` مع `ModuleNotFoundError: No module named 'rich'`، "
+"أو فشل استيراد `shapely`، فنفّذ `pip install rich shapely`، أو استخدم "
+"الإضافة `geo` التي تتضمن `shapely`. راجع [المشكلات "
+"المعروفة](../reference/known-issues.md#undeclared-dependencies)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:38
 msgid "Optional extras"
-msgstr ""
+msgstr "الإضافات الاختيارية"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Extra"
-msgstr ""
+msgstr "الإضافة"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Installs"
-msgstr ""
+msgstr "ما تثبّته"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Needed for"
-msgstr ""
+msgstr "مطلوبة من أجل"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[geo]`"
@@ -110,13 +126,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "rasterio, geopandas, pyarrow, shapely, pyproj"
-msgstr ""
+msgstr "rasterio وgeopandas وpyarrow وshapely وpyproj"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "Raster post-processing (reproject, COG, clip, compress), optical validation,"
 " and [streaming](../data-access/streaming.md)"
 msgstr ""
+"المعالجة اللاحقة للصور النقطية (إعادة الإسقاط وCOG والقص والضغط)، والتحقق "
+"البصري، و[البث](../data-access/streaming.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[processor]`"
@@ -127,12 +145,16 @@ msgid ""
 "rasterio, rioxarray, xarray, eoreader, spyndex, scipy, scikit-image, "
 "geopandas"
 msgstr ""
+"rasterio وrioxarray وxarray وeoreader وspyndex وscipy وscikit-image "
+"وgeopandas"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "[Spectral indices](../processing/optical/spectral-indices.md) (including the"
 " 6 geology indices), Landsat extraction, time series"
 msgstr ""
+"[المؤشرات الطيفية](../processing/optical/spectral-indices.md) (بما فيها "
+"مؤشرات الجيولوجيا الستة)، واستخراج Landsat، والسلاسل الزمنية"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[sar]`"
@@ -140,7 +162,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "sarxarray"
-msgstr ""
+msgstr "sarxarray"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
@@ -148,6 +170,9 @@ msgid ""
 "currently reachable; see [Known issues](../reference/known-issues.md#sar-"
 "backends-are-not-wired-in)."
 msgstr ""
+"مخصصة للواجهة الخلفية `sarxarray` في `SARProcessor`. هذه الواجهة غير قابلة "
+"للوصول حاليًا؛ راجع [المشكلات المعروفة](../reference/known-issues.md#sar-"
+"backends-are-not-wired-in)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[insar]`"
@@ -155,13 +180,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "scipy, shapely, xarray"
-msgstr ""
+msgstr "scipy وshapely وxarray"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "The [InSAR](../processing/sar-insar/insar.md) pipeline (SLC extraction to "
 "SBAS) and its advanced safeguards"
 msgstr ""
+"خط معالجة [InSAR](../processing/sar-insar/insar.md) (من استخراج SLC حتى "
+"SBAS) وضماناته المتقدمة"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[insar-full]`"
@@ -169,12 +196,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "snaphu, scipy (add `insar` as well)"
-msgstr ""
+msgstr "snaphu وscipy (أضف `insar` أيضًا)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "SNAPHU phase unwrapping (falls back to a `snaphu` executable on your `PATH`)"
 msgstr ""
+"فك التفاف الطور بـ SNAPHU (مع الرجوع إلى ملف `snaphu` تنفيذي في `PATH`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[ost]`"
@@ -182,7 +210,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "opensartoolkit"
-msgstr ""
+msgstr "opensartoolkit"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
@@ -190,6 +218,9 @@ msgid ""
 "SNAP). Not currently reachable; see [Known issues](../reference/known-"
 "issues.md#sar-backends-are-not-wired-in)."
 msgstr ""
+"مخصصة للواجهة الخلفية `\"ost\"` (تصحيح التضاريس بنطاق-دوبلر، ويحتاج SNAP). "
+"غير قابلة للوصول حاليًا؛ راجع [المشكلات المعروفة](../reference/known-"
+"issues.md#sar-backends-are-not-wired-in)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[cloud]`"
@@ -197,11 +228,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "boto3, pystac, planetary-computer"
-msgstr ""
+msgstr "boto3 وpystac وplanetary-computer"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "S3 and GCS export, and the test suite"
-msgstr ""
+msgstr "التصدير إلى S3 وGCS، وحزمة الاختبارات"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[viz]`"
@@ -209,11 +240,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "matplotlib, leafmap, folium, plotly and others"
-msgstr ""
+msgstr "matplotlib وleafmap وfolium وplotly وغيرها"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`Plotter` and `MapViewer`"
-msgstr ""
+msgstr "`Plotter` و`MapViewer`"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[viz-3d]`"
@@ -221,13 +252,14 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "keplergl"
-msgstr ""
+msgstr "keplergl"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "3D Kepler.gl maps. Separate because `keplergl` does not build on every "
 "platform."
 msgstr ""
+"خرائط Kepler.gl ثلاثية الأبعاد. منفصلة لأن `keplergl` لا تُبنى على كل منصة."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[notebook]`"
@@ -235,11 +267,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "ipython, ipywidgets, jupyter"
-msgstr ""
+msgstr "ipython وipywidgets وjupyter"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Notebook workflows"
-msgstr ""
+msgstr "سير عمل دفاتر الملاحظات"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[schedule]`"
@@ -247,11 +279,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "croniter"
-msgstr ""
+msgstr "croniter"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Cron scheduling of pipelines"
-msgstr ""
+msgstr "جدولة خطوط المعالجة بـ Cron"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[dev]`"
@@ -259,11 +291,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "pytest, pytest-cov, pytest-mock, ruff, black, mypy, build, twine"
-msgstr ""
+msgstr "pytest وpytest-cov وpytest-mock وruff وblack وmypy وbuild وtwine"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Linting, formatting, type checking, building"
-msgstr ""
+msgstr "الفحص (Linting) والتنسيق وفحص الأنواع والبناء"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[test]`"
@@ -275,11 +307,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Everything needed to run `pytest tests/`"
-msgstr ""
+msgstr "كل ما يلزم لتشغيل `pytest tests/`"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[full]` (alias `[all]`)"
-msgstr ""
+msgstr "`pygeofetch[full]` (الاسم البديل `[all]`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
@@ -291,34 +323,36 @@ msgid ""
 "Everything that installs reliably across platforms. `viz-3d` and `sar` are "
 "excluded: `sarxarray` has no release that supports Python 3.9."
 msgstr ""
+"كل ما يُثبَّت بموثوقية عبر المنصات. وتُستثنى `viz-3d` و`sar`: فـ `sarxarray`"
+" ليس لها إصدار يدعم Python 3.9."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:57
 msgid "Combine extras as needed:"
-msgstr ""
+msgstr "ادمج الإضافات حسب الحاجة:"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:64
 msgid "Which extra do I need?"
-msgstr ""
+msgstr "أي إضافة أحتاج؟"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "I want to..."
-msgstr ""
+msgstr "أريد أن..."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Install"
-msgstr ""
+msgstr "التثبيت"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Search and download only"
-msgstr ""
+msgstr "أبحث وأنزّل فقط"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "*(none)*"
-msgstr ""
+msgstr "*(لا شيء)*"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Clip, reproject or convert downloads"
-msgstr ""
+msgstr "أقص التنزيلات أو أعيد إسقاطها أو أحوّلها"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`geo`"
@@ -326,11 +360,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Stream an area of interest"
-msgstr ""
+msgstr "أبث منطقة اهتمام"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Use the full spectral index catalogue"
-msgstr ""
+msgstr "أستخدم كتالوج المؤشرات الطيفية الكامل"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`processor`"
@@ -338,15 +372,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Process Sentinel-1 SLC with InSAR"
-msgstr ""
+msgstr "أعالج Sentinel-1 SLC بـ InSAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`insar,insar-full` (the second adds unwrapping)"
-msgstr ""
+msgstr "`insar,insar-full` (الثانية تضيف فك الالتفاف)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Schedule pipelines with cron"
-msgstr ""
+msgstr "أجدول خطوط المعالجة بـ cron"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`schedule`"
@@ -354,7 +388,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Use the notebook examples"
-msgstr ""
+msgstr "أستخدم أمثلة دفاتر الملاحظات"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`notebook`, `viz`"
@@ -362,7 +396,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Contribute or run the tests"
-msgstr ""
+msgstr "أساهم في المشروع أو أشغّل الاختبارات"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`test`"
@@ -370,7 +404,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Draw maps and plots"
-msgstr ""
+msgstr "أرسم الخرائط والمخططات"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`viz`"
@@ -378,7 +412,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:78
 msgid "Other install routes"
-msgstr ""
+msgstr "طرق تثبيت أخرى"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:80
 msgid ""
@@ -387,18 +421,21 @@ msgid ""
 "`conda-forge` before the extras: they are much easier to obtain as binaries "
 "there than to build with pip."
 msgstr ""
+"**conda.** يتضمن المستودع وصفة conda (`meta.yaml`) للحزمة الأساسية. ثبّت "
+"المكتبات الجيومكانية مثل `rasterio` و`gdal` من `conda-forge` قبل الإضافات: "
+"فالحصول عليها كملفات ثنائية من هناك أسهل بكثير من بنائها باستخدام pip."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:90
 msgid "**Docker.** See [Docker](../reference/docker.md)."
-msgstr ""
+msgstr "**Docker.** راجع [Docker](../reference/docker.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:92
 msgid "**Upgrade.**"
-msgstr ""
+msgstr "**الترقية.**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:98
 msgid "Development install"
-msgstr ""
+msgstr "تثبيت التطوير"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:107
 msgid ""
@@ -407,18 +444,22 @@ msgid ""
 "export or the `noaa_big_data` provider fail with `ModuleNotFoundError`. For "
 "linting and type checking only, `pip install -e \".[dev]\"` is lighter."
 msgstr ""
+"توجد حزمة الاختبارات في مجلد `tests/` مسطّح. استخدم `[test]` لا `[dev,all]`:"
+" فـ `[dev,all]` لا تتضمن `boto3`، لذا تفشل الاختبارات التي تلمس تصدير S3 أو "
+"المزوّد `noaa_big_data` مع `ModuleNotFoundError`. وللفحص وفحص الأنواع فقط، "
+"فإن `pip install -e \".[dev]\"` أخف."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:111
 msgid "Install problems"
-msgstr ""
+msgstr "مشكلات التثبيت"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Symptom"
-msgstr ""
+msgstr "العَرَض"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Fix"
-msgstr ""
+msgstr "الحل"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`ModuleNotFoundError: rich` on `pygeofetch --help`"
@@ -426,65 +467,70 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pip install rich`. See the note above."
-msgstr ""
+msgstr "`pip install rich`. راجع الملاحظة أعلاه."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`ModuleNotFoundError: boto3` in tests"
-msgstr ""
+msgstr "`ModuleNotFoundError: boto3` في الاختبارات"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Install `[test]`, which includes `cloud`."
-msgstr ""
+msgstr "ثبّت `[test]` التي تتضمن `cloud`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`rasterio` fails to build"
-msgstr ""
+msgstr "فشل بناء `rasterio`"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "Use a wheel (`pip install --upgrade pip` first) or install from `conda-"
 "forge`."
 msgstr ""
+"استخدم حزمة جاهزة (wheel) (نفّذ `pip install --upgrade pip` أولًا) أو ثبّتها"
+" من `conda-forge`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pip install \"pygeofetch[viz]\"` is slow or fails on one package"
-msgstr ""
+msgstr "`pip install \"pygeofetch[viz]\"` بطيء أو يفشل عند حزمة واحدة"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "`viz` pulls about two dozen packages. Install only `matplotlib` for basic "
 "plots."
 msgstr ""
+"تجلب `viz` نحو أربع وعشرين حزمة. ثبّت `matplotlib` فقط للرسوم الأساسية."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`keplergl` fails to build"
-msgstr ""
+msgstr "فشل بناء `keplergl`"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "It is isolated in `viz-3d`; skip it unless you need Kepler.gl maps."
-msgstr ""
+msgstr "إنها معزولة في `viz-3d`؛ تجاوزها ما لم تحتج إلى خرائط Kepler.gl."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Keyring errors over SSH or in Docker"
-msgstr ""
+msgstr "أخطاء keyring عبر SSH أو في Docker"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "There is no keyring daemon. See [Error handling](../reference/error-"
 "handling.md#common-problems)."
 msgstr ""
+"لا توجد عملية keyring خلفية (daemon). راجع [معالجة "
+"الأخطاء](../reference/error-handling.md#common-problems)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "SNAPHU not found when unwrapping"
-msgstr ""
+msgstr "تعذّر العثور على SNAPHU عند فك الالتفاف"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Install `insar-full`, or put a `snaphu` executable on `PATH`."
-msgstr ""
+msgstr "ثبّت `insar-full`، أو ضع ملف `snaphu` تنفيذيًا في `PATH`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:123
 msgid "Verify the install"
-msgstr ""
+msgstr "التحقق من التثبيت"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:130
 msgid ""
@@ -492,3 +538,6 @@ msgid ""
 "dependency groups are importable, the keyring backend, and connectivity to "
 "three open providers. See [Diagnostics](diagnostics.md)."
 msgstr ""
+"يفحص `doctor` إصدار Python والحزم المطلوبة ومجموعات التبعيات الاختيارية "
+"القابلة للاستيراد وواجهة keyring الخلفية والاتصال بثلاثة مزوّدين مفتوحين. "
+"راجع [التشخيص](diagnostics.md)."

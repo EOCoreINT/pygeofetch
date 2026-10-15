@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,7 +57,7 @@ msgstr "项目"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:1
 msgid "pygeofetch"
-msgstr ""
+msgstr "pygeofetch"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:3
 msgid ""
@@ -83,6 +83,9 @@ msgid ""
 " model, so the code that follows does not care whether a scene came from "
 "Copernicus, USGS, Microsoft Planetary Computer or a commercial vendor."
 msgstr ""
+"地球观测数据分散在数十个存档库中，每个库都有各自的检索界面、认证方式、文件布局和速率限制。pygeofetch "
+"在它们之上提供了一个统一的层。您只需描述一次所需内容，即区域、日期范围和若干过滤条件，同一个查询就可以在任意数量的数据提供方上运行。结果以单一数据模型返回，因此后续代码无需关心某个场景来自"
+" Copernicus、USGS、Microsoft Planetary Computer 还是商业供应商。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:21
 msgid ""
@@ -94,6 +97,9 @@ msgid ""
 "leaves ordinary GeoTIFF files that the processing modules, or any other GIS "
 "tool, can read."
 msgstr ""
+"接下来由您决定要传输多少数据。需要原始产品时，下载会并行进行，并支持重试、断点续传和可选的校验和比对。如果只需要研究区域，流式读取只会从 Cloud-"
+"Optimized GeoTIFF 中读取边界框内的像素，可将数百兆字节的波段缩减到几兆字节。无论采用哪种方式，最终得到的都是普通的 GeoTIFF "
+"文件，处理模块或任何其他 GIS 工具都可以读取。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:23
 msgid ""
@@ -105,6 +111,9 @@ msgid ""
 "Everything is available from Python and from the `pygeofetch` command line, "
 "and repeatable work can be written as YAML pipelines and run on a schedule."
 msgstr ""
+"处理层在一个软件包中涵盖了常见分析：光学影像的光谱指数与分类，雷达的斑点滤波、定标和洪水制图，直至 SBAS 时间序列的纯 Python "
+"干涉测量处理链，以及结合两种传感器的流程，例如利用雷达与光学影像提取洪水范围或植被扰动。所有功能都可以通过 Python 和 `pygeofetch` "
+"命令行使用，可重复的工作可以编写为 YAML 流水线并按计划运行。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:26
 msgid ""
@@ -113,6 +122,8 @@ msgid ""
 "page lists behaviours that differ from what you might expect, and every "
 "feature page says what it was tested against."
 msgstr ""
+"pygeofetch 正在积极开发中，文档会说明哪些内容已经验证、哪些尚未验证。[已知问题](reference/known-"
+"issues.md)页面列出了与您预期可能不同的行为，每个功能页面也会说明其测试所依据的对象。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:29
 msgid "A first analysis in three steps"
@@ -124,6 +135,9 @@ msgid ""
 "steps with explanations, and the [case studies](workflows/case-studies.md) "
 "show complete analyses with their results."
 msgstr ""
+"[快速入门](getting-"
+"started/quickstart.md)会带您逐步完成同样的步骤并附有说明，[案例研究](workflows/case-"
+"studies.md)则展示了完整的分析及其结果。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:48
 msgid "Get started"
@@ -143,39 +157,39 @@ msgstr "查找并下载数据"
 msgid ""
 "Federated search across providers, authenticated downloads, resume, "
 "checksums and caching."
-msgstr ""
+msgstr "跨提供方联合检索、需认证的下载、断点续传、校验和与缓存。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:62
 msgid "Analyse an area without downloading scenes"
-msgstr ""
+msgstr "无需下载场景即可分析区域"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:66
 msgid ""
 "Read only your area of interest from Cloud-Optimized GeoTIFFs over HTTP "
 "range requests."
-msgstr ""
+msgstr "通过 HTTP 范围请求，仅从 Cloud-Optimized GeoTIFF 中读取您的感兴趣区域。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:73
 msgid ""
 "Spectral indices, classification, terrain, Landsat extraction and time "
 "series."
-msgstr ""
+msgstr "光谱指数、分类、地形、Landsat 提取与时间序列。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:80
 msgid ""
 "Despeckling, calibration, flood mapping and a pure-Python InSAR chain "
 "through to SBAS."
-msgstr ""
+msgstr "去斑点、定标、洪水制图，以及直至 SBAS 的纯 Python InSAR 处理链。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:83
 msgid "Multi-sensor pipelines"
-msgstr ""
+msgstr "多传感器流水线"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:87
 msgid ""
 "Flood mapping, DEM differencing, vegetation disturbance, terrain-corrected "
 "change and InSAR-optical fusion."
-msgstr ""
+msgstr "洪水制图、DEM 差分、植被扰动、地形校正变化检测与 InSAR-光学融合。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:90
 msgid "Command-line reference"
@@ -183,7 +197,7 @@ msgstr "命令行参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:94
 msgid "Every command and option, generated from the installed package."
-msgstr ""
+msgstr "所有命令和选项，由已安装的软件包生成。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:97
 msgid "Python API reference"
@@ -201,7 +215,7 @@ msgstr "已知问题"
 msgid ""
 "Documented limitations and behaviours that differ from what you might "
 "expect."
-msgstr ""
+msgstr "已记录的限制，以及与您预期可能不同的行为。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:112
 msgid "Who it is for"
@@ -211,18 +225,18 @@ msgstr "适用人群"
 msgid ""
 "**Researchers** who need data from several archives without learning each "
 "provider's API."
-msgstr ""
+msgstr "**研究人员**：需要从多个存档库获取数据，而不想逐一学习各提供方的 API。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:115
 msgid ""
 "**Engineers** who run acquisition and processing unattended, on a schedule."
-msgstr ""
+msgstr "**工程师**：需要按计划无人值守地运行数据获取与处理。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:116
 msgid ""
 "**Teams** that want open, scriptable Earth observation tooling without a "
 "commercial platform."
-msgstr ""
+msgstr "**团队**：希望使用开放、可脚本化的地球观测工具，而无需商业平台。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:118
 msgid "How the documentation is organised"
@@ -238,61 +252,61 @@ msgstr "适用于"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Getting started**"
-msgstr ""
+msgstr "**快速入门**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid ""
 "Install pygeofetch, run a first workflow, understand the core concepts."
-msgstr ""
+msgstr "安装 pygeofetch，运行第一个工作流，了解核心概念。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Data access**"
-msgstr ""
+msgstr "**数据获取**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid ""
 "Authenticate, search, download or stream, validate optical quality, and "
 "organise files."
-msgstr ""
+msgstr "认证、检索、下载或流式读取、验证光学质量以及整理文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Processing**"
-msgstr ""
+msgstr "**处理**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid ""
 "Compute indices, classify, correct terrain, process SAR and InSAR, and "
 "combine sensors."
-msgstr ""
+msgstr "计算指数、分类、校正地形、处理 SAR 和 InSAR，以及组合多种传感器。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Workflows**"
-msgstr ""
+msgstr "**工作流**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Chain steps into YAML pipelines and follow end-to-end examples."
-msgstr ""
+msgstr "将各步骤串联为 YAML 流水线，并参考端到端示例。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Visualization**"
-msgstr ""
+msgstr "**可视化**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Plot results and browse footprints on a map."
-msgstr ""
+msgstr "绘制结果并在地图上浏览覆盖范围。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Reference**"
-msgstr ""
+msgstr "**参考**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Look up exact commands, parameters, settings, errors and known issues."
-msgstr ""
+msgstr "查阅确切的命令、参数、设置、错误和已知问题。"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Project**"
-msgstr ""
+msgstr "**项目**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Contribute, read the changelog and see what is planned."
-msgstr ""
+msgstr "参与贡献、阅读更新日志并了解后续计划。"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,11 +25,11 @@ msgstr "搜索卫星数据"
 msgid ""
 "Federated search across multiple providers simultaneously. Results are "
 "deduplicated, scored, and returned sorted."
-msgstr ""
+msgstr "同时跨多个提供方进行联合检索。结果会经过去重、评分并排序后返回。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:6
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:8
 msgid ""
@@ -42,6 +42,9 @@ msgid ""
 "list of `SatelliteData` records that all look the same, whatever their "
 "origin."
 msgstr ""
+"检索始于对所需内容的描述，而不是某个特定的提供方。您向 pygeofetch 提供一个区域（边界框或 GeoJSON "
+"几何）、一个日期范围以及任何重要的过滤条件，例如最大云量、卫星、处理级别或分辨率，并指定要查询的提供方。同一描述会被转换为各提供方自己的 "
+"API，查询并行运行，答案被合并为一个由 `SatelliteData` 记录组成的列表，无论来源如何，这些记录的形式都相同。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:10
 msgid ""
@@ -55,6 +58,9 @@ msgid ""
 "lifetime set by `cache_ttl`, so repeating a query while you refine "
 "downstream steps does not cost another round trip."
 msgstr ""
+"实际上，一次检索通常有三个动作。先从宽泛开始，使用较短的提供方列表和较宽松的云量上限，了解有多少场景以及它们来自哪些卫星。在知道有哪些可用数据之后再收窄查询，收紧日期或云量，直到列表的大小便于您分析。然后保存结果，可以在命令行中保存为"
+" GeoJSON 文件，也可以在 Python 中保存为 `client.search()` 返回的列表，并将其传给下载或流式读取步骤。结果会按 "
+"`cache_ttl` 设定的时长缓存，因此在优化下游步骤时重复查询不会再产生额外的网络往返。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:12
 msgid ""
@@ -67,17 +73,18 @@ msgid ""
 "describe each filter and output format, and [Downloading](download.md) and "
 "[Streaming](streaming.md) explain what to do with the results."
 msgstr ""
+"在脚本中依赖检索之前，有两点行为值得了解。超时或失败的提供方会被记录日志并被排除，而不会中止检索，因此空列表可能意味着所有提供方都失败了，日志会告诉您是哪些。此外，结果按提供方和场景标识符去重，因此由两个提供方提供的同一个实际场景会出现两次；请选择您偏好的提供方进行下载。下面各节介绍每个过滤条件和输出格式，[下载](download.md)和[流式读取](streaming.md)则说明如何处理这些结果。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:14
 msgid "What \"federated search\" actually does"
-msgstr ""
+msgstr "“联合检索”实际做了什么"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:16
 msgid ""
 "Searching across multiple providers isn't just \"call each one and "
 "concatenate the results\" — three steps happen after the raw per-provider "
 "results come back:"
-msgstr ""
+msgstr "跨多个提供方检索并不只是“逐个调用再拼接结果”，在各提供方的原始结果返回之后还会发生三个步骤："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:20
 msgid ""
@@ -85,34 +92,36 @@ msgid ""
 " a slow or unresponsive provider doesn't block the others; see `--on-"
 "provider-failure` below for what happens if one errors out entirely."
 msgstr ""
+"**各提供方的检索并行运行**（`max_search_workers`，默认为 "
+"8），缓慢或无响应的提供方不会阻塞其他提供方；如果某个提供方完全出错会怎样，请参阅下面的 `--on-provider-failure`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:24
 msgid ""
 "**Deduplication** — removes exact duplicates, keyed on "
 "`f\"{provider}:{scene_id}\"`."
-msgstr ""
+msgstr "**去重**：移除完全重复的条目，以 `f\"{provider}:{scene_id}\"` 为键。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:26
 msgid ""
 "**Scoring** — every result gets a `0.0`-`1.0` relevance score, used for the "
 "default sort order. The formula, verified against source:"
-msgstr ""
+msgstr "**评分**：每个结果都会得到一个 `0.0` 到 `1.0` 的相关性分数，用于默认排序。以下公式已对照源代码验证："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Factor"
-msgstr ""
+msgstr "因子"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Weight"
-msgstr ""
+msgstr "权重"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "How it's computed"
-msgstr ""
+msgstr "计算方式"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Cloud cover"
-msgstr ""
+msgstr "云量"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "40%"
@@ -120,11 +129,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "`(100 - cloud_cover) / 100 * 0.4` — lower cloud cover scores higher"
-msgstr ""
+msgstr "`(100 - cloud_cover) / 100 * 0.4`，云量越低得分越高"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Recency"
-msgstr ""
+msgstr "时效性"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "up to 30%"
@@ -134,37 +143,37 @@ msgstr ""
 msgid ""
 "Linearly decays to 0 over 1 year old; a scene from today scores the full "
 "0.3, a scene older than a year contributes 0"
-msgstr ""
+msgstr "在 1 年内线性衰减至 0；今天的场景得满分 0.3，超过一年的场景贡献为 0"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Processing level"
-msgstr ""
+msgstr "处理级别"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "10% flat bonus"
-msgstr ""
+msgstr "固定 10% 加成"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid ""
 "Applied if the scene is L2/L2A/L2SP/analysis-ready — not scaled, just added "
 "or not"
-msgstr ""
+msgstr "场景为 L2/L2A/L2SP/分析就绪级别时适用，不按比例缩放，只有加或不加"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "*(baseline)*"
-msgstr ""
+msgstr "*（基线）*"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "50%→60% blended with cloud score"
-msgstr ""
+msgstr "50%→60%，与云量得分混合"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Every result starts at a neutral 0.5 baseline"
-msgstr ""
+msgstr "每个结果都从中性的 0.5 基线开始"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:37
 msgid "Deduplication is only provider+ID based"
-msgstr ""
+msgstr "去重仅基于提供方与 ID"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:39
 msgid ""
@@ -175,10 +184,13 @@ msgid ""
 "footprint and datetime. When searching overlapping STAC catalogues, de-"
 "duplicate on your own key, such as the Sentinel-2 granule ID."
 msgstr ""
+"**限制。**去重仅基于提供方和 ID。如果两个*不同*的提供方索引了同一个场景（例如 `aws_earth` 和 "
+"`planetary_computer` 都提供同一个 Sentinel-2 图块），您会得到**两份副本**。系统不会按采集 ID "
+"或按覆盖范围与日期时间进行跨提供方匹配。检索重叠的 STAC 目录时，请使用您自己的键（例如 Sentinel-2 granule ID）进行去重。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Scoring uses three factors"
-msgstr ""
+msgstr "评分使用三个因子"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:47
 msgid ""
@@ -188,27 +200,30 @@ msgid ""
 "available separately as a hard filter through [optical validation](optical-"
 "validation.md) (`check_aoi_coverage`), not as a scoring input."
 msgstr ""
+"评分函数的文档字符串列出了第四个因子，即空间覆盖（权重 0.2），但实现中并未应用。如上所示，评分只使用云量、时效性和处理级别。AOI "
+"覆盖可通过[光学验证](optical-"
+"validation.md)（`check_aoi_coverage`）单独作为硬性过滤条件使用，而不是评分的输入。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:53
 msgid "CLI examples"
-msgstr ""
+msgstr "CLI 示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:94
 msgid "Search flags"
-msgstr ""
+msgstr "检索参数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Flag"
-msgstr ""
+msgstr "参数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Type"
-msgstr ""
+msgstr "类型"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Description"
-msgstr ""
+msgstr "说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--bbox`"
@@ -216,13 +231,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "string"
-msgstr ""
+msgstr "字符串"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid ""
 "`\"minlon,minlat,maxlon,maxlat\"`. Longitude first. Alternative to "
 "`--geometry-file`."
-msgstr ""
+msgstr "`\"minlon,minlat,maxlon,maxlat\"`。经度在前。可替代 `--geometry-file`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--geometry-file`"
@@ -230,11 +245,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "path"
-msgstr ""
+msgstr "路径"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "GeoJSON file with a search AOI polygon; extracts bbox automatically."
-msgstr ""
+msgstr "包含检索 AOI 多边形的 GeoJSON 文件；自动提取边界框。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--start-date` / `--end-date`"
@@ -242,11 +257,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "date"
-msgstr ""
+msgstr "日期"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`YYYY-MM-DD`. `--end-date` defaults to today if omitted."
-msgstr ""
+msgstr "`YYYY-MM-DD`。省略时 `--end-date` 默认为今天。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--cloud-cover`"
@@ -254,11 +269,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "range"
-msgstr ""
+msgstr "范围"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`min-max` percent, e.g. `0-20`."
-msgstr ""
+msgstr "`min-max` 百分比，例如 `0-20`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--resolution`"
@@ -266,7 +281,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`min-max` metres, e.g. `10-30`."
-msgstr ""
+msgstr "`min-max` 米，例如 `10-30`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--providers`"
@@ -274,11 +289,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "list"
-msgstr ""
+msgstr "列表"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Comma-separated provider IDs."
-msgstr ""
+msgstr "以逗号分隔的提供方 ID。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--satellites`"
@@ -286,7 +301,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Comma-separated satellite names, e.g. `Sentinel-2,Landsat-8`."
-msgstr ""
+msgstr "以逗号分隔的卫星名称，例如 `Sentinel-2,Landsat-8`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--processing-level`"
@@ -302,11 +317,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "int"
-msgstr ""
+msgstr "整数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Default 100."
-msgstr ""
+msgstr "默认为 100。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--sort-by`"
@@ -314,11 +329,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "choice"
-msgstr ""
+msgstr "选项"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`datetime`, `cloud_cover`, `score`, `satellite`. Default `datetime`."
-msgstr ""
+msgstr "`datetime`、`cloud_cover`、`score`、`satellite`。默认为 `datetime`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--sort-order`"
@@ -326,7 +341,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`asc` or `desc`. Default `desc`."
-msgstr ""
+msgstr "`asc` 或 `desc`。默认为 `desc`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--cql2`"
@@ -334,7 +349,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "CQL2 filter expression, sent as CQL2-JSON to STAC APIs."
-msgstr ""
+msgstr "CQL2 过滤表达式，以 CQL2-JSON 形式发送给 STAC API。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--output`"
@@ -343,7 +358,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid ""
 "Save results to this file — needed before `download run --from-search`."
-msgstr ""
+msgstr "将结果保存到此文件，运行 `download run --from-search` 之前需要它。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--format`"
@@ -360,7 +375,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid ""
 "`skip`, `abort`, `retry`. **Only `skip` is real** — see the note below."
-msgstr ""
+msgstr "`skip`、`abort`、`retry`。**只有 `skip` 是真正有效的**，请参阅下面的说明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--timeout`"
@@ -368,7 +383,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Per-provider timeout in seconds. Default 60."
-msgstr ""
+msgstr "每个提供方的超时时间，单位为秒。默认为 60。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--no-cache`"
@@ -376,11 +391,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "flag"
-msgstr ""
+msgstr "标志"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Bypass the in-memory result cache."
-msgstr ""
+msgstr "绕过内存中的结果缓存。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--validate-optical`"
@@ -393,6 +408,8 @@ msgid ""
 "See [Optical Data Validation & Preflight](optical-validation.md). Not "
 "appropriate for SAR/InSAR searches."
 msgstr ""
+"在返回结果之前对其运行光学预检验证（AOI 覆盖、云量、所需波段、处理级别、时间范围）。请参阅[光学数据验证与预检](optical-"
+"validation.md)。不适用于 SAR/InSAR 检索。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--optical-max-cloud-cover`"
@@ -400,13 +417,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "float"
-msgstr ""
+msgstr "浮点数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid ""
 "Override the max cloud cover threshold used by `--validate-optical` (default"
 " 20.0)."
-msgstr ""
+msgstr "覆盖 `--validate-optical` 使用的最大云量阈值（默认为 20.0）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--optical-min-coverage`"
@@ -416,7 +433,7 @@ msgstr ""
 msgid ""
 "Override the min AOI coverage ratio used by `--validate-optical`, 0-1 "
 "(default 0.8)."
-msgstr ""
+msgstr "覆盖 `--validate-optical` 使用的最小 AOI 覆盖率，范围 0-1（默认为 0.8）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--optical-required-bands`"
@@ -426,7 +443,7 @@ msgstr ""
 msgid ""
 "Comma-separated required bands for `--validate-optical` (default "
 "`B02,B03,B04,B08,SCL`)."
-msgstr ""
+msgstr "`--validate-optical` 所需波段，以逗号分隔（默认为 `B02,B03,B04,B08,SCL`）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:122
 msgid ""
@@ -437,14 +454,17 @@ msgid ""
 " are returned. To abort when a provider fails, or to retry it, implement "
 "that in your calling code."
 msgstr ""
+"**`--on-provider-failure` 没有任何效果。**CLI 接受 `abort` 和 `retry` 并将其存储在 "
+"`SearchQuery` 上，但 `FederatedSearcher.search()` "
+"并不读取该字段。每个提供方始终并行运行。超时或抛出异常的提供方会被记录日志并被排除，其他提供方的结果仍会返回。如需在提供方失败时中止或对其重试，请在您的调用代码中实现。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:128
 msgid "Output formats"
-msgstr ""
+msgstr "输出格式"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Format"
-msgstr ""
+msgstr "格式"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`table`"
@@ -452,7 +472,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Pretty terminal table (default) — ID, date, cloud%, score, satellite"
-msgstr ""
+msgstr "美观的终端表格（默认）：ID、日期、云量%、得分、卫星"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`json`"
@@ -460,7 +480,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Full JSON array, all fields — good for scripting"
-msgstr ""
+msgstr "完整的 JSON 数组，包含所有字段，适合脚本处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`stac`"
@@ -468,7 +488,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "STAC 1.0 `ItemCollection`, compatible with `pystac-client`"
-msgstr ""
+msgstr "STAC 1.0 `ItemCollection`，与 `pystac-client` 兼容"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`geojson`"
@@ -476,7 +496,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`FeatureCollection` — open in QGIS, ArcGIS, Leaflet"
-msgstr ""
+msgstr "`FeatureCollection`，可在 QGIS、ArcGIS、Leaflet 中打开"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`geoparquet`"
@@ -484,7 +504,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "GeoParquet file (requires geopandas) — best for large result sets"
-msgstr ""
+msgstr "GeoParquet 文件（需要 geopandas），最适合大型结果集"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`csv`"
@@ -492,7 +512,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "id, provider, satellite, datetime, cloud_cover, bbox"
-msgstr ""
+msgstr "id、provider、satellite、datetime、cloud_cover、bbox"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`ids`"
@@ -500,24 +520,24 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Scene IDs only, one per line — good for shell scripting"
-msgstr ""
+msgstr "仅场景 ID，每行一个，适合 shell 脚本"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:140
 msgid "CQL2 filter examples"
-msgstr ""
+msgstr "CQL2 过滤示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:150
 msgid ""
 "CQL2 is supported by STAC-native providers: Planetary Computer, Element84, "
 "AWS Earth."
-msgstr ""
+msgstr "STAC 原生提供方支持 CQL2：Planetary Computer、Element84、AWS Earth。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:153
 msgid "Python API"
-msgstr ""
+msgstr "Python API"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:178
 msgid ""
 "Full `SearchQuery` field reference: [Python API "
 "Reference](../reference/python-api.md)."
-msgstr ""
+msgstr "`SearchQuery` 的完整字段参考：[Python API 参考](../reference/python-api.md)。"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,6 +31,13 @@ msgid ""
 "from WARNINGS (log and proceed), and make every check independently "
 "toggleable."
 msgstr ""
+"Ein Datenqualitäts-Gate vor dem Download für optische Bilddaten (Sentinel-2,"
+" Landsat und die `SatelliteData`-Ergebnisse jedes anderen Anbieters) — an "
+"derselben Stelle in der Pipeline und mit derselben Philosophie wie "
+"`pygeofetch.insar.preflight` für InSAR: bestätigte Fehler bei der "
+"Aufnahmeplanung abfangen, *bevor* Bandbreite verbraucht wird, HARTE Fehler "
+"(Szene verwerfen) von WARNUNGEN (protokollieren und fortfahren) "
+"unterscheiden und jede Prüfung einzeln schaltbar machen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:13
 msgid ""
@@ -39,10 +46,14 @@ msgid ""
 "and neither does `PyGeoFetch()` unless optical validation is actually turned"
 " on."
 msgstr ""
+"`pygeofetch.validation` benötigt `shapely` (das Extra `geo` oder `insar`). "
+"Es wird verzögert importiert — ein einfaches `pip install pygeofetch` "
+"benötigt es nie, und `PyGeoFetch()` ebenfalls nicht, solange die optische "
+"Validierung nicht tatsächlich eingeschaltet ist."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:18
 msgid "Overview"
-msgstr ""
+msgstr "Überblick"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:20
 msgid ""
@@ -54,6 +65,14 @@ msgid ""
 "puts a quality gate in front of the download so that those scenes are "
 "rejected, or flagged, before any data moves."
 msgstr ""
+"Optische Szenen können für eine bestimmte Aufgabe auf eine Weise ungeeignet "
+"sein, die Suchfilter nicht erfassen: Der Footprint deckt womöglich nur eine "
+"Ecke Ihres Gebiets ab, ein benötigtes Band fehlt, die Prozessierungsstufe "
+"ist die falsche, oder das Datum liegt außerhalb des gewünschten "
+"Zeitfensters. Der Download einer solchen Szene kostet Bandbreite und Zeit, "
+"und Sie merken es erst danach. Die optische Validierung stellt dem Download "
+"ein Qualitäts-Gate voran, sodass solche Szenen verworfen oder markiert "
+"werden, bevor Daten übertragen werden."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:22
 msgid ""
@@ -66,20 +85,33 @@ msgid ""
 "which matters for radar searches, where optical-specific checks such as "
 "required bands do not apply."
 msgstr ""
+"Am einfachsten schalten Sie sie beim Erzeugen des Clients ein. Von da an "
+"wird jede Suche und jeder Download gegen Ihr Gebiet und Ihre Einstellungen "
+"geprüft: Szenen, die eine harte Prüfung nicht bestehen, werden aus den "
+"Ergebnissen entfernt, und weichere Bedenken werden als Warnungen "
+"protokolliert. Sie können den Validator auch eigenständig auf eine beliebige"
+" Liste von Szenen anwenden, wenn Sie die Bewertungen einsehen möchten, ohne "
+"Ihre Pipeline zu ändern. Jede Prüfung lässt sich einzeln abschalten, was bei"
+" Radarsuchen wichtig ist, bei denen optikspezifische Prüfungen wie "
+"erforderliche Bänder nicht zutreffen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:24
 msgid "Quick start — wired into search() and download()"
-msgstr ""
+msgstr "Schnellstart — in search() und download() eingebunden"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:26
 msgid ""
 "The simplest way to use this is the built-in toggle on `PyGeoFetch` itself —"
 " no manual wiring needed:"
 msgstr ""
+"Am einfachsten verwenden Sie den eingebauten Schalter von `PyGeoFetch` "
+"selbst — keine manuelle Verdrahtung nötig:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:47
 msgid "Toggle per call instead of (or in addition to) at construction time:"
 msgstr ""
+"Den Schalter pro Aufruf statt (oder zusätzlich zu) der Einstellung bei der "
+"Konstruktion setzen:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:58
 msgid ""
@@ -88,10 +120,15 @@ msgid ""
 "scene would fail the missing-bands check. Either leave it off for those, or "
 "pass a config with `check_required_bands=False`."
 msgstr ""
+"Die Standardwerte für `required_bands` (`B02, B03, B04, B08, SCL`) sind "
+"optische Bandnamen. Aktivieren Sie `validate_optical` nicht für SAR/InSAR-"
+"Suchen — jede SAR-Szene würde die Prüfung auf fehlende Bänder nicht "
+"bestehen. Lassen Sie es dafür entweder ausgeschaltet oder übergeben Sie eine"
+" Konfiguration mit `check_required_bands=False`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:63
 msgid "Direct use — as its own module"
-msgstr ""
+msgstr "Direkte Nutzung — als eigenes Modul"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:65
 msgid ""
@@ -99,6 +136,10 @@ msgid ""
 "GeoJSON file that never went through `search()`, or just wanting the full "
 "per-scene report rather than a filtered list):"
 msgstr ""
+"Für mehr Kontrolle (eigene Konfigurationen pro AOI, Validierung von Szenen "
+"aus einer gespeicherten GeoJSON-Datei, die nie durch `search()` gelaufen "
+"ist, oder wenn Sie den vollständigen Bericht pro Szene statt einer "
+"gefilterten Liste wünschen):"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:79
 msgid ""
@@ -107,22 +148,27 @@ msgid ""
 "in the same representation and order they arrived in — no conversion needed "
 "either side, so it slots directly between `search()` and `download()`."
 msgstr ""
+"`run_preflight()` akzeptiert `SatelliteData`-Objekte (was "
+"`PyGeoFetch.search()` zurückgibt) *oder* einfache STAC-ähnliche Dicts und "
+"gibt sie in derselben Darstellung und Reihenfolge zurück, in der sie ankamen"
+" — auf keiner Seite ist eine Konvertierung nötig, sodass es sich direkt "
+"zwischen `search()` und `download()` einfügt."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:85
 msgid "Configuration — every check independently toggleable"
-msgstr ""
+msgstr "Konfiguration — jede Prüfung einzeln schaltbar"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Field"
-msgstr ""
+msgstr "Feld"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Default"
-msgstr ""
+msgstr "Standard"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_aoi_coverage`"
@@ -135,6 +181,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes whose footprint doesn't sufficiently overlap the AOI."
 msgstr ""
+"Szenen verwerfen, deren Footprint das AOI nicht ausreichend überlappt."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`min_coverage_ratio`"
@@ -147,6 +194,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Minimum fraction of the AOI's area the scene must cover, `[0, 1]`."
 msgstr ""
+"Minimaler Anteil der AOI-Fläche, den die Szene abdecken muss, `[0, 1]`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_cloud_cover`"
@@ -154,7 +202,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Flag scenes exceeding `max_cloud_cover_pct`."
-msgstr ""
+msgstr "Szenen markieren, die `max_cloud_cover_pct` überschreiten."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`max_cloud_cover_pct`"
@@ -166,7 +214,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Cloud cover threshold, percent."
-msgstr ""
+msgstr "Schwellenwert der Wolkenbedeckung in Prozent."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`cloud_cover_is_hard_failure`"
@@ -181,6 +229,8 @@ msgid ""
 "If `True`, exceeding the threshold rejects the scene instead of just "
 "warning."
 msgstr ""
+"Bei `True` wird die Szene bei Überschreiten des Schwellenwerts verworfen, "
+"statt nur zu warnen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_snow_ice_cover`"
@@ -191,6 +241,8 @@ msgid ""
 "Off by default — most providers don't report it consistently, and it's "
 "irrelevant to most AOIs."
 msgstr ""
+"Standardmäßig aus — die meisten Anbieter melden sie nicht konsistent, und "
+"für die meisten AOIs ist sie irrelevant."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`max_snow_ice_pct`"
@@ -202,7 +254,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Snow/ice cover threshold, percent."
-msgstr ""
+msgstr "Schwellenwert der Schnee-/Eisbedeckung in Prozent."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_required_bands`"
@@ -210,7 +262,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes missing any `required_bands`."
-msgstr ""
+msgstr "Szenen verwerfen, denen eines der `required_bands` fehlt."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`required_bands`"
@@ -225,6 +277,8 @@ msgid ""
 "Matched via pygeofetch's band-alias table — see the note below, not just a "
 "case-insensitive string match."
 msgstr ""
+"Abgeglichen über die Band-Alias-Tabelle von pygeofetch — siehe den Hinweis "
+"unten; kein bloßer Zeichenkettenvergleich ohne Groß-/Kleinschreibung."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_processing_level`"
@@ -232,7 +286,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes not at `expected_level`."
-msgstr ""
+msgstr "Szenen verwerfen, die nicht der `expected_level` entsprechen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`expected_level`"
@@ -248,6 +302,9 @@ msgid ""
 " `ProcessingLevel.L2A`, and a STAC collection id like `\"sentinel-2-l2a\"` "
 "all compare equal — see the note below."
 msgstr ""
+"Locker abgeglichen — `\"L2A\"`, `\"Level-2A\"`, `\"S2MSI2A\"`, das eigene "
+"`ProcessingLevel.L2A` von pygeofetch und eine STAC-Collection-ID wie "
+"`\"sentinel-2-l2a\"` gelten alle als gleich — siehe den Hinweis unten."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_nodata_margins`"
@@ -259,6 +316,9 @@ msgid ""
 " Off by default to avoid false positives on legitimately edge-adjacent AOIs "
 "— see the note below."
 msgstr ""
+"Heuristik: Szenen markieren, bei denen das AOI überwiegend im Randbereich "
+"der Szene liegt. Standardmäßig aus, um Fehlalarme bei AOIs zu vermeiden, die"
+" berechtigterweise am Rand liegen — siehe den Hinweis unten."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`nodata_margin_buffer_deg`"
@@ -273,6 +333,8 @@ msgid ""
 "How far to shrink the footprint inward (degrees, ~1 km at the equator) "
 "before checking AOI overlap."
 msgstr ""
+"Wie weit der Footprint vor der Prüfung der AOI-Überlappung nach innen "
+"verkleinert wird (Grad, ~1 km am Äquator)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`nodata_margin_min_aoi_fraction`"
@@ -287,6 +349,8 @@ msgid ""
 "Minimum fraction of the AOI that must fall within the shrunk footprint to be"
 " considered safe."
 msgstr ""
+"Minimaler Anteil des AOI, der innerhalb des verkleinerten Footprints liegen "
+"muss, damit es als sicher gilt."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_temporal_bounds`"
@@ -294,7 +358,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes outside `[start_date, end_date]`."
-msgstr ""
+msgstr "Szenen außerhalb von `[start_date, end_date]` verwerfen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`treat_warnings_as_errors`"
@@ -305,6 +369,8 @@ msgid ""
 "If `True`, any WARNING (not just ERROR) excludes the scene from the returned"
 " list."
 msgstr ""
+"Bei `True` schließt jede WARNUNG (nicht nur ERROR) die Szene aus der "
+"zurückgegebenen Liste aus."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:116
 msgid ""
@@ -313,6 +379,11 @@ msgid ""
 "checks (snow/ice cover, nodata margins) default **off** — a disabled check "
 "costs nothing; it's simply skipped."
 msgstr ""
+"Die folgenreichsten Prüfungen (AOI-Abdeckung, Wolkenbedeckung, erforderliche"
+" Bänder, Prozessierungsstufe, zeitliche Grenzen) sind standardmäßig **an**. "
+"Aufwendigere oder speziellere Prüfungen (Schnee-/Eisbedeckung, Nodata-"
+"Ränder) sind standardmäßig **aus** — eine deaktivierte Prüfung kostet "
+"nichts; sie wird einfach übersprungen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:123
 msgid ""
@@ -324,6 +395,14 @@ msgid ""
 "the corner of the swath\" case, not cloud-masked interior gaps — that's not "
 "a margin issue and isn't this check's job."
 msgstr ""
+"**`validate_nodata_margins` ist eine von Natur aus ungenaue Heuristik**, "
+"keine Prüfung auf Rasterebene — sie kann die tatsächlichen Nodata-Masken pro"
+" Pixel nicht sehen, da diese erst nach dem Download der Datei existieren. "
+"Sie verkleinert den Szenen-Footprint um `nodata_margin_buffer_deg` nach "
+"innen und prüft, wie viel des AOI noch in dieser verkleinerten Form liegt. "
+"Sie erfasst den häufigen Fall \"das AOI schneidet die Ecke des Streifens "
+"an\", nicht aber wolkenmaskierte Lücken im Inneren — das ist kein "
+"Randproblem und nicht die Aufgabe dieser Prüfung."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:134
 msgid ""
@@ -331,6 +410,9 @@ msgid ""
 "providers (`aws_earth`, `element84`, `planetary_computer`, `sentinel_hub`), "
 "validation handles two specifics:"
 msgstr ""
+"**STAC-Anbieter und `required_bands` / `expected_level`.** Bei STAC-"
+"basierten Anbietern (`aws_earth`, `element84`, `planetary_computer`, "
+"`sentinel_hub`) behandelt die Validierung zwei Besonderheiten:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:138
 msgid ""
@@ -342,6 +424,13 @@ msgid ""
 "`resolve_band_keys()` uses for downloads), so `\"red\"` is recognised as "
 "`B04`."
 msgstr ""
+"**Bandnamen.** Earth Search v1 und AWS-Earth-Items stellen Sentinel-2-Bänder"
+" unter semantischen Asset-Schlüsseln (`red`, `green`, `blue`, `nir`, `scl`) "
+"statt `B04`, `B03`, `B02`, `B08`, `SCL` bereit. `required_bands` wird über "
+"die Band-Alias-Tabelle von pygeofetch abgeglichen "
+"(`pygeofetch.models.satellite_data._ALIAS_TO_CANONICAL`, dieselbe Tabelle, "
+"die `resolve_band_keys()` für Downloads verwendet), sodass `\"red\"` als "
+"`B04` erkannt wird."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:143
 msgid ""
@@ -351,16 +440,24 @@ msgid ""
 "validator does not use `s2:processing_baseline`, which is a version string "
 "such as `05.10`, not a level."
 msgstr ""
+"**Prozessierungsstufe.** STAC-Items tragen nicht zuverlässig eine "
+"Prozessierungsstufe. `SatelliteData.from_stac_item()` leitet sie aus der "
+"Collection-ID ab (zum Beispiel ergibt `sentinel-2-l2a` den Wert `L2A`), wenn"
+" keine explizite Eigenschaft existiert. Der Validator verwendet nicht "
+"`s2:processing_baseline`, das ein Versionsstring wie `05.10` ist und keine "
+"Stufe."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:148
 msgid ""
 "With the default configuration, Sentinel-2 L2A scenes from these providers "
 "pass validation."
 msgstr ""
+"Mit der Standardkonfiguration bestehen Sentinel-2-L2A-Szenen dieser Anbieter"
+" die Validierung."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:150
 msgid "AOI coverage and multi-tile satellites"
-msgstr ""
+msgstr "AOI-Abdeckung und Satelliten mit mehreren Kacheln"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:152
 msgid ""
@@ -375,10 +472,21 @@ msgid ""
 "tiles, and each individual scene's low coverage number is an accurate "
 "description of geometry, not a defect."
 msgstr ""
+"Wenn `check_aoi_coverage` jedes Ergebnis eines breitstreifigen, gekachelten "
+"Satelliten (Sentinel-2-MGRS-Kacheln, Landsat-WRS-2-Szenen) verwirft und Ihr "
+"AOI eine Kachelgrenze überspannt, **dann funktioniert die Prüfung korrekt "
+"und es liegt kein Fehler vor**. Eine einzelne Sentinel-2-Kachel, die nur die"
+" westliche Hälfte Ihres AOI abdeckt, kann für sich allein keine 80 % AOI-"
+"Abdeckung erreichen — egal wie gut die Szene tatsächlich ist —, weil die "
+"andere Hälfte des AOI von einer *anderen* Kachel abgedeckt wird. Direkt "
+"bestätigt: Liefert eine Suche Ergebnisse aus den Kacheln `18TXK`, `18TXL`, "
+"`18TWK` und `18TWL` für eine Bbox, überspannt diese Bbox ein "
+"2×2-Kachelraster, und der niedrige Abdeckungswert jeder einzelnen Szene "
+"beschreibt die Geometrie korrekt und ist kein Defekt."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:164
 msgid "For AOIs that legitimately span multiple tiles:"
-msgstr ""
+msgstr "Für AOIs, die berechtigterweise mehrere Kacheln überspannen:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:165
 msgid ""
@@ -386,63 +494,79 @@ msgid ""
 "cover the AOI (e.g. `0.15`–`0.3` depending on how many tiles the AOI spans),"
 " and rely on `--max-items`/multiple downloads to build a full mosaic, **or**"
 msgstr ""
+"Senken Sie `min_coverage_ratio`, um zu berücksichtigen, dass keine einzelne "
+"Szene das AOI je vollständig abdeckt (z. B. `0.15`–`0.3`, je nachdem, wie "
+"viele Kacheln das AOI überspannt), und verlassen Sie sich auf `--max-"
+"items`/mehrere Downloads, um ein vollständiges Mosaik aufzubauen, **oder**"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:169
 msgid ""
 "Disable `check_aoi_coverage` for multi-tile searches and rely on the other "
 "checks (bands, cloud cover, processing level, date range) instead, **or**"
 msgstr ""
+"Deaktivieren Sie `check_aoi_coverage` für Suchen über mehrere Kacheln und "
+"verlassen Sie sich stattdessen auf die anderen Prüfungen (Bänder, "
+"Wolkenbedeckung, Prozessierungsstufe, Zeitraum), **oder**"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:172
 msgid ""
 "Use a smaller AOI that fits within a single tile when the workflow needs one"
 " scene, not a mosaic."
 msgstr ""
+"Verwenden Sie ein kleineres AOI, das in eine einzelne Kachel passt, wenn der"
+" Workflow eine Szene und kein Mosaik benötigt."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:175
 msgid "Hard failures vs. warnings"
-msgstr ""
+msgstr "Harte Fehler vs. Warnungen"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Behavior"
-msgstr ""
+msgstr "Verhalten"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Examples"
-msgstr ""
+msgstr "Beispiele"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "**Hard failure** (`ERROR`)"
-msgstr ""
+msgstr "**Harter Fehler** (`ERROR`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid ""
 "Scene excluded from `run_preflight()`'s returned list; logged as an error"
 msgstr ""
+"Szene wird aus der von `run_preflight()` zurückgegebenen Liste "
+"ausgeschlossen; als Fehler protokolliert"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid ""
 "Missing required band, 0% AOI coverage, wrong processing level, out-of-range"
 " date"
 msgstr ""
+"Fehlendes erforderliches Band, 0 % AOI-Abdeckung, falsche "
+"Prozessierungsstufe, Datum außerhalb des Bereichs"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "**Warning** (`WARNING`)"
-msgstr ""
+msgstr "**Warnung** (`WARNING`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Scene kept; logged as a warning"
-msgstr ""
+msgstr "Szene wird behalten; als Warnung protokolliert"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid ""
 "Cloud cover above threshold (unless `cloud_cover_is_hard_failure=True`), "
 "snow/ice above threshold, nodata-margin risk"
 msgstr ""
+"Wolkenbedeckung über dem Schwellenwert (außer bei "
+"`cloud_cover_is_hard_failure=True`), Schnee/Eis über dem Schwellenwert, "
+"Risiko durch Nodata-Ränder"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:191
 msgid "Custom exception"
-msgstr ""
+msgstr "Eigene Ausnahme"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:203
 msgid ""
@@ -452,22 +576,28 @@ msgid ""
 "per-scene — hard failures are filtered out and logged, not raised, so a few "
 "bad scenes in a large search never abort the whole run."
 msgstr ""
+"`OpticalValidationError` ist eine Unterklasse von `ValueError`, sodass "
+"bestehende `except ValueError`-Stellen unverändert weiterarbeiten. Sie wird "
+"direkt von der Low-Level-Methode `validate_bands()` ausgelöst; "
+"`run_preflight()` selbst löst nie pro Szene eine Ausnahme aus — harte Fehler"
+" werden herausgefiltert und protokolliert, nicht ausgelöst, sodass einige "
+"fehlerhafte Szenen in einer großen Suche nie den gesamten Lauf abbrechen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:210
 msgid "Full method reference"
-msgstr ""
+msgstr "Vollständige Methodenreferenz"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Method"
-msgstr ""
+msgstr "Methode"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Returns"
-msgstr ""
+msgstr "Rückgabe"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Notes"
-msgstr ""
+msgstr "Hinweise"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_aoi_coverage(footprint, aoi)`"
@@ -482,6 +612,8 @@ msgid ""
 "Fraction of the AOI's area covered by the scene footprint, `[0, 1]`. "
 "Coverage of the AOI, not a symmetric IoU."
 msgstr ""
+"Anteil der AOI-Fläche, der vom Szenen-Footprint abgedeckt wird, `[0, 1]`. "
+"Abdeckung des AOI, kein symmetrisches IoU."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_cloud_cover(scene)`"
@@ -489,7 +621,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Cloud cover percentage, `0.0` if unreported."
-msgstr ""
+msgstr "Prozentsatz der Wolkenbedeckung, `0.0`, wenn nicht gemeldet."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_snow_ice_cover(scene)`"
@@ -497,7 +629,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Snow/ice cover percentage, `0.0` if unreported."
-msgstr ""
+msgstr "Prozentsatz der Schnee-/Eisbedeckung, `0.0`, wenn nicht gemeldet."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_bands(available_assets)`"
@@ -511,6 +643,8 @@ msgstr ""
 msgid ""
 "Present required bands; raises `OpticalValidationError` if any are missing."
 msgstr ""
+"Vorhandene erforderliche Bänder; löst `OpticalValidationError` aus, wenn "
+"welche fehlen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_processing_level(scene)`"
@@ -522,7 +656,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Loose alias matching against `expected_level`."
-msgstr ""
+msgstr "Lockerer Alias-Abgleich gegen `expected_level`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_nodata_margins(footprint, aoi)`"
@@ -530,7 +664,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "The geometry-only heuristic described above."
-msgstr ""
+msgstr "Die oben beschriebene reine Geometrie-Heuristik."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_temporal_bounds(dt, start, end)`"
@@ -539,6 +673,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Inclusive range check; missing dates are not treated as failures."
 msgstr ""
+"Bereichsprüfung einschließlich der Grenzen; fehlende Daten gelten nicht als "
+"Fehler."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_scene(scene, aoi, start_date=None, end_date=None)`"
@@ -553,6 +689,8 @@ msgid ""
 "Runs every enabled check against one scene. `aoi` may be `None` — AOI-"
 "dependent checks are skipped gracefully rather than raising."
 msgstr ""
+"Führt jede aktivierte Prüfung für eine Szene aus. `aoi` darf `None` sein — "
+"vom AOI abhängige Prüfungen werden dann ohne Fehler übersprungen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`run_preflight(catalog_results, aoi, start_date=None, end_date=None)`"
@@ -567,10 +705,12 @@ msgid ""
 "The main orchestrator — validates every scene, logs issues, returns the safe"
 " subset."
 msgstr ""
+"Der Hauptorchestrator — validiert jede Szene, protokolliert Probleme und "
+"gibt die sichere Teilmenge zurück."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:224
 msgid "Real footprint geometry, with a bbox fallback"
-msgstr ""
+msgstr "Echte Footprint-Geometrie, mit Bbox als Fallback"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:226
 msgid ""
@@ -579,3 +719,8 @@ msgid ""
 " bbox rectangle when it doesn't — see [Providers](providers.md) for which "
 "providers return precise footprint geometry today."
 msgstr ""
+"Wie der Rest der Anbieterschicht von pygeofetch verwendet "
+"`validate_aoi_coverage` die Footprint-Geometrie einer Szene, wenn der "
+"Anbieter sie liefert, und greift andernfalls auf ein Bbox-Rechteck zurück — "
+"siehe [Anbieter](providers.md) dazu, welche Anbieter heute präzise "
+"Footprint-Geometrie zurückgeben."

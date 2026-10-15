@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,12 @@ msgid ""
 "the whole raster into memory. If your study area is a few kilometres across "
 "inside a 110 km tile, almost all of that transfer and memory is wasted."
 msgstr ""
+"`client.download()` lädt jedes ausgewählte Asset als vollständige Datei "
+"herunter. Bei einem Sentinel-2-Band sind das 100-300 MB, und beim Lesen mit "
+"`rasterio` wird das gesamte Raster in den Speicher dekodiert. Wenn Ihr "
+"Untersuchungsgebiet nur wenige Kilometer groß ist und in einer 110-km-Kachel"
+" liegt, sind fast die gesamte Übertragung und der gesamte Speicher "
+"verschwendet."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:8
 msgid ""
@@ -36,10 +42,14 @@ msgid ""
 "GeoTIFF](https://cogeo.org/) (COG) over HTTP, converts your bounding box to "
 "a pixel window, and requests just the byte ranges for that window."
 msgstr ""
+"**Streaming** liest nur die Pixel unter Ihrem Interessengebiet (AOI). "
+"pygeofetch öffnet jedes Band über HTTP als [Cloud-Optimized "
+"GeoTIFF](https://cogeo.org/) (COG), wandelt Ihre Bounding Box in ein "
+"Pixelfenster um und fordert nur die Byte-Bereiche für dieses Fenster an."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Verification status"
-msgstr ""
+msgstr "Verifizierungsstatus"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:15
 msgid ""
@@ -49,28 +59,36 @@ msgid ""
 "Element84 services. Run one real scene and check the output before relying "
 "on it in production."
 msgstr ""
+"Das Streaming-Modul wird gegen einen lokalen HTTP-Server getestet, der "
+"Range-Requests implementiert und die ausgelieferten Bytes zählt, sowie gegen"
+" simulierte Anbieterantworten. Es wurde **nicht** gegen die Live-Dienste von"
+" Planetary Computer oder Element84 ausgeführt. Führen Sie eine echte Szene "
+"aus und prüfen Sie das Ergebnis, bevor Sie es produktiv einsetzen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:21
 msgid "When streaming works"
-msgstr ""
+msgstr "Wann Streaming funktioniert"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:23
 msgid ""
 "Streaming needs each band to be a separately addressable, range-readable "
 "raster. That depends on how a provider packages its data."
 msgstr ""
+"Streaming setzt voraus, dass jedes Band ein einzeln adressierbares, per "
+"Range-Request lesbares Raster ist. Das hängt davon ab, wie ein Anbieter "
+"seine Daten verpackt."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Provider"
-msgstr ""
+msgstr "Anbieter"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Packaging"
-msgstr ""
+msgstr "Verpackung"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Streaming"
-msgstr ""
+msgstr "Streaming"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`planetary_computer`"
@@ -78,11 +96,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "One COG per band"
-msgstr ""
+msgstr "Ein COG pro Band"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Supported (SAS tokens are signed automatically)"
-msgstr ""
+msgstr "Unterstützt (SAS-Tokens werden automatisch signiert)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`element84`"
@@ -90,7 +108,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Supported"
-msgstr ""
+msgstr "Unterstützt"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`aws_earth`"
@@ -98,11 +116,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "COGs on S3"
-msgstr ""
+msgstr "COGs auf S3"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Expected to work; not tested"
-msgstr ""
+msgstr "Sollte funktionieren; nicht getestet"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`copernicus`"
@@ -110,11 +128,12 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "One `.SAFE.zip` per scene"
-msgstr ""
+msgstr "Eine `.SAFE.zip` pro Szene"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "**Not possible**: a zip is not randomly accessible raster"
 msgstr ""
+"**Nicht möglich**: Eine ZIP-Datei ist kein wahlfrei zugängliches Raster"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`usgs`"
@@ -122,11 +141,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "One `.tar` per scene"
-msgstr ""
+msgstr "Eine `.tar` pro Szene"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "**Not possible**"
-msgstr ""
+msgstr "**Nicht möglich**"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`opentopography`"
@@ -134,11 +153,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "DEM clipped to your bounding box server-side"
-msgstr ""
+msgstr "DEM serverseitig auf Ihre Bounding Box zugeschnitten"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Not needed: the download is already AOI-only"
-msgstr ""
+msgstr "Nicht nötig: Der Download enthält bereits nur das AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:35
 msgid ""
@@ -146,10 +165,13 @@ msgid ""
 "`error_type=\"streaming_unsupported\"` instead of silently downloading the "
 "whole file."
 msgstr ""
+"Wenn ein Asset ein Archiv ist, liefert Streaming ein fehlgeschlagenes "
+"Ergebnis mit `error_type=\"streaming_unsupported\"`, statt stillschweigend "
+"die gesamte Datei herunterzuladen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:38
 msgid "Stream a scene"
-msgstr ""
+msgstr "Eine Szene streamen"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:75
 msgid ""
@@ -160,10 +182,18 @@ msgid ""
 "1024 pixels by default) regardless of scene size. Files are written "
 "atomically, and existing files are skipped unless `overwrite=True`."
 msgstr ""
+"Jedes Band wird nach `<destination>/<provider>/<scene-id>_<band>.tif` "
+"geschrieben, mit derselben Anbieter-Unterordner-Konvention wie bei "
+"`download()` (siehe [Download-Struktur](download.md#where-files-are-"
+"written)). Die Ausgabedateien sind klein: nur das AOI-Fenster, Block für "
+"Block kopiert, sodass der Spitzenspeicherbedarf unabhängig von der "
+"Szenengröße einen Block beträgt (standardmäßig 1024 x 1024 Pixel). Dateien "
+"werden atomar geschrieben, und vorhandene Dateien werden übersprungen, außer"
+" bei `overwrite=True`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:82
 msgid "Check AOI coverage"
-msgstr ""
+msgstr "AOI-Abdeckung prüfen"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:84
 msgid ""
@@ -172,22 +202,27 @@ msgid ""
 "streamed result carries `aoi_coverage`, the fraction (0-1) of your AOI the "
 "streamed raster covers. Reject scenes below your threshold:"
 msgstr ""
+"Eine Sentinel-2-Kachelgrenze kann Ihr AOI durchschneiden. Das Lesen des "
+"Fensters gelingt dann, liefert aber ein **partielles** Raster, das "
+"größtenteils leer ist. Jedes gestreamte Ergebnis enthält `aoi_coverage`, den"
+" Anteil (0-1) Ihres AOI, den das gestreamte Raster abdeckt. Verwerfen Sie "
+"Szenen unterhalb Ihres Schwellenwerts:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:93
 msgid "Parameters of `client.stream()`"
-msgstr ""
+msgstr "Parameter von `client.stream()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Parameter"
-msgstr ""
+msgstr "Parameter"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Default"
-msgstr ""
+msgstr "Standard"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`data`"
@@ -195,7 +230,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "A `SatelliteData` or a list of them."
-msgstr ""
+msgstr "Ein `SatelliteData` oder eine Liste davon."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`bbox`"
@@ -205,6 +240,8 @@ msgstr ""
 msgid ""
 "AOI as `(minx, miny, maxx, maxy)`, a `BoundingBox`, or a shapely geometry."
 msgstr ""
+"AOI als `(minx, miny, maxx, maxy)`, als `BoundingBox` oder als shapely-"
+"Geometrie."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`destination`"
@@ -212,7 +249,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Output directory."
-msgstr ""
+msgstr "Ausgabeverzeichnis."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`bands`"
@@ -227,6 +264,8 @@ msgid ""
 "Band names or asset keys. `None` streams every raster asset. A name that "
 "matches no asset is an error, not a fallback."
 msgstr ""
+"Bandnamen oder Asset-Schlüssel. `None` streamt jedes Raster-Asset. Ein Name,"
+" der zu keinem Asset passt, ist ein Fehler und kein Fallback."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`parallel`"
@@ -238,7 +277,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Scenes streamed concurrently."
-msgstr ""
+msgstr "Gleichzeitig gestreamte Szenen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`overwrite`"
@@ -250,7 +289,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Re-stream files that already exist."
-msgstr ""
+msgstr "Bereits vorhandene Dateien erneut streamen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`bbox_crs`"
@@ -262,7 +301,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "CRS of `bbox`."
-msgstr ""
+msgstr "CRS von `bbox`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`block_size`"
@@ -274,41 +313,48 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Block edge in pixels for the copy loop."
-msgstr ""
+msgstr "Blockkantenlänge in Pixeln für die Kopierschleife."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:106
 msgid ""
 "`DownloadResult.bytes_downloaded` is the **size of the files written to "
 "disk**, not network traffic."
 msgstr ""
+"`DownloadResult.bytes_downloaded` ist die **Größe der auf die Festplatte "
+"geschriebenen Dateien**, nicht der Netzwerkverkehr."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:109
 msgid "Read into memory without writing files"
-msgstr ""
+msgstr "In den Speicher lesen, ohne Dateien zu schreiben"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:111
 msgid ""
 "For interactive analysis, `read_scene_bands()` returns the AOI window of "
 "each band as a NumPy array:"
 msgstr ""
+"Für die interaktive Analyse liefert `read_scene_bands()` das AOI-Fenster "
+"jedes Bandes als NumPy-Array:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:128
 msgid ""
 "`read_scene_bands()` is the one to use when you only need the numbers. "
 "`client.stream()` is the one to use when later steps need files on disk."
 msgstr ""
+"`read_scene_bands()` verwenden Sie, wenn Sie nur die Zahlenwerte benötigen. "
+"`client.stream()` verwenden Sie, wenn spätere Schritte Dateien auf der "
+"Festplatte brauchen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:131
 msgid "Lower-level functions"
-msgstr ""
+msgstr "Funktionen auf niedrigerer Ebene"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Function"
-msgstr ""
+msgstr "Funktion"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Use"
-msgstr ""
+msgstr "Verwenden"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`read_window(href, bbox, ...)`"
@@ -317,6 +363,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Read the AOI window of one raster URL or path into memory."
 msgstr ""
+"Liest das AOI-Fenster einer Raster-URL oder eines Raster-Pfads in den "
+"Speicher."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`stream_window_to_geotiff(href, bbox, out_path, ...)`"
@@ -324,7 +372,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Copy one AOI window to a local GeoTIFF, block by block."
-msgstr ""
+msgstr "Kopiert ein AOI-Fenster Block für Block in ein lokales GeoTIFF."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`stream_scene(data, bbox, destination, ...)`"
@@ -332,7 +380,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Stream one `SatelliteData` record."
-msgstr ""
+msgstr "Streamt einen `SatelliteData`-Datensatz."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`stream_many(items, bbox, destination, ...)`"
@@ -341,6 +389,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Stream several in parallel; result order matches input order."
 msgstr ""
+"Streamt mehrere parallel; die Reihenfolge der Ergebnisse entspricht der "
+"Reihenfolge der Eingabe."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`select_streamable_assets(data, bands)`"
@@ -348,41 +398,43 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "See which assets would be streamed, without reading anything."
-msgstr ""
+msgstr "Zeigt, welche Assets gestreamt würden, ohne etwas zu lesen."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:141
 msgid "These live in `pygeofetch.streaming`."
-msgstr ""
+msgstr "Diese befinden sich in `pygeofetch.streaming`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:143
 msgid "How much does it save?"
-msgstr ""
+msgstr "Wie viel wird eingespart?"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:145
 msgid ""
 "Measured against a local range-request server with a 36.6 MB single-band COG"
 " and a 2.5 km AOI:"
 msgstr ""
+"Gemessen gegen einen lokalen Range-Request-Server mit einem 36,6 MB großen "
+"Einzelband-COG und einem 2,5-km-AOI:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Operation"
-msgstr ""
+msgstr "Vorgang"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Bytes served"
-msgstr ""
+msgstr "Ausgelieferte Bytes"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Share of file"
-msgstr ""
+msgstr "Anteil der Datei"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`read_window`, full resolution"
-msgstr ""
+msgstr "`read_window`, volle Auflösung"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "455 KB, 3 range requests"
-msgstr ""
+msgstr "455 KB, 3 Range-Requests"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "1.24%"
@@ -406,7 +458,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "422 KB served, 103 KB written"
-msgstr ""
+msgstr "422 KB ausgeliefert, 103 KB geschrieben"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "1.15%"
@@ -418,26 +470,34 @@ msgid ""
 "Real savings depend on AOI size, tile layout and the provider's COG block "
 "structure. Small AOIs in large tiles gain the most."
 msgstr ""
+"Die Pixelwerte wurden als identisch mit einem lokalen Lesevorgang desselben "
+"Fensters verifiziert. Die tatsächlichen Einsparungen hängen von der AOI-"
+"Größe, dem Kachellayout und der COG-Blockstruktur des Anbieters ab. Kleine "
+"AOIs in großen Kacheln profitieren am meisten."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:158
 msgid "Behaviour to be aware of"
-msgstr ""
+msgstr "Zu beachtendes Verhalten"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:160
 msgid ""
 "**Rectangular window.** The window is your AOI's bounding box rounded "
 "outward to whole pixels. It is not masked to a polygon."
 msgstr ""
+"**Rechteckiges Fenster.** Das Fenster ist die Bounding Box Ihres AOI, nach "
+"außen auf ganze Pixel gerundet. Es wird nicht auf ein Polygon maskiert."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:161
 msgid "**Rotated or sheared rasters** raise `NotImplementedError`."
-msgstr ""
+msgstr "**Rotierte oder gescherte Raster** lösen `NotImplementedError` aus."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:162
 msgid ""
 "**JP2 assets** are accepted but untested. Windowed JPEG 2000 reads are "
 "slower and less predictable than COG."
 msgstr ""
+"**JP2-Assets** werden akzeptiert, sind aber ungetestet. Fensterbasierte "
+"JPEG-2000-Lesevorgänge sind langsamer und weniger vorhersehbar als COG."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:163
 msgid ""
@@ -446,6 +506,10 @@ msgid ""
 "provider passes collection names through verbatim. Use "
 "`satellites=[\"sentinel-2\"]`, which maps to `sentinel-2-l2a`."
 msgstr ""
+"**Collections für Planetary Computer.** "
+"`SearchQuery(collections=[\"SENTINEL-2\"])` liefert keine Treffer, weil der "
+"Anbieter Collection-Namen unverändert weiterreicht. Verwenden Sie "
+"`satellites=[\"sentinel-2\"]`, was auf `sentinel-2-l2a` abgebildet wird."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:164
 msgid ""
@@ -453,6 +517,9 @@ msgid ""
 "assets when a band name matches nothing. Streaming treats an unmatched band "
 "as an error, because the fallback would be expensive."
 msgstr ""
+"**Strikter Bandabgleich.** Das reguläre `download()` greift auf *alle* "
+"Assets zurück, wenn ein Bandname zu nichts passt. Streaming behandelt ein "
+"nicht zugeordnetes Band als Fehler, weil der Fallback teuer wäre."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:165
 msgid ""
@@ -462,34 +529,48 @@ msgid ""
 "sensor pipelines](../processing/multisensor.md) accept `optical_offset` and "
 "`optical_scale` for this."
 msgstr ""
+"**Sentinel-2-L2A-Offset.** Szenen, die mit Baseline 04.00 oder später "
+"prozessiert wurden, speichern `DN = reflectance x 10000 + 1000`. Indizes wie"
+" NDVI sind nicht offsetinvariant, daher ziehen Sie den Offset ab, bevor Sie "
+"sie berechnen. Die [Multisensor-Pipelines](../processing/multisensor.md) "
+"akzeptieren hierfür `optical_offset` und `optical_scale`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:167
 msgid "Other streaming tools"
-msgstr ""
+msgstr "Weitere Streaming-Werkzeuge"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:169
 msgid ""
 "`pygeofetch.stac_compute` and the `pygeofetch stream` commands predate this "
 "module and work on a **single URL** rather than on search results:"
 msgstr ""
+"`pygeofetch.stac_compute` und die `pygeofetch stream`-Befehle gab es schon "
+"vor diesem Modul; sie arbeiten mit einer **einzelnen URL** statt mit "
+"Suchergebnissen:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:172
 msgid ""
 "`pygeofetch stream cog-window URL --bbox ... --output out.tif` reads one "
 "window from one COG."
 msgstr ""
+"`pygeofetch stream cog-window URL --bbox ... --output out.tif` liest ein "
+"Fenster aus einem COG."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:173
 msgid ""
 "`pygeofetch stream to-zarr`, `to-geoparquet` and `zarr-to-tif` convert local"
 " data to cloud-native formats."
 msgstr ""
+"`pygeofetch stream to-zarr`, `to-geoparquet` und `zarr-to-tif` konvertieren "
+"lokale Daten in Cloud-native Formate."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:174
 msgid ""
 "`pygeofetch.stac_compute.burst_streaming` reads Sentinel-1 SLC bursts "
 "remotely for InSAR."
 msgstr ""
+"`pygeofetch.stac_compute.burst_streaming` liest Sentinel-1-SLC-Bursts für "
+"InSAR aus der Ferne."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:176
 msgid ""
@@ -497,3 +578,6 @@ msgid ""
 "authentication, coverage reporting and resume. Use the `stream` commands for"
 " a URL you already have."
 msgstr ""
+"Verwenden Sie `client.stream()` für Szenen aus einer Suche, mit Anbieter-"
+"Authentifizierung, Abdeckungsbericht und Wiederaufnahme. Verwenden Sie die "
+"`stream`-Befehle für eine URL, die Sie bereits haben."

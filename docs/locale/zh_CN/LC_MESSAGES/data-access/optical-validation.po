@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,6 +31,9 @@ msgid ""
 "from WARNINGS (log and proceed), and make every check independently "
 "toggleable."
 msgstr ""
+"针对光学影像（Sentinel-2、Landsat 以及任何其他提供商的 `SatelliteData` "
+"结果）的下载前数据质量关口——它在流程中的位置和理念与 InSAR 自己的 `pygeofetch.insar.preflight` "
+"相同：在耗费带宽*之前*发现已确认的采集规划错误，区分硬性失败（拒绝该场景）与警告（记录日志并继续），并让每项检查都可以独立开关。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:13
 msgid ""
@@ -39,10 +42,12 @@ msgid ""
 "and neither does `PyGeoFetch()` unless optical validation is actually turned"
 " on."
 msgstr ""
+"`pygeofetch.validation` 需要 `shapely`（`geo` 或 `insar` 附加依赖）。它是延迟导入的——基础的 `pip"
+" install pygeofetch` 从不需要它，除非真正开启了光学验证，否则 `PyGeoFetch()` 也不需要。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:18
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:20
 msgid ""
@@ -54,6 +59,7 @@ msgid ""
 "puts a quality gate in front of the download so that those scenes are "
 "rejected, or flagged, before any data moves."
 msgstr ""
+"光学场景可能以搜索过滤器无法捕捉的方式而不适用于特定任务：覆盖范围可能只涵盖你区域的一角，所需波段可能缺失，处理级别可能不对，或者日期可能落在你想要的时间窗口之外。下载这样的场景会耗费带宽和时间，而你事后才会发现。光学验证在下载之前设置了一道质量关口，使这些场景在任何数据传输之前就被拒绝或标记。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:22
 msgid ""
@@ -66,20 +72,21 @@ msgid ""
 "which matters for radar searches, where optical-specific checks such as "
 "required bands do not apply."
 msgstr ""
+"最简单的用法是在创建客户端时将其开启。此后每一次搜索和下载都会根据你的区域和设置进行检查：未通过硬性检查的场景会从结果中移除，较轻微的问题则记录为警告。当你想在不改变流程的情况下查看判定结果时，也可以对任意场景列表单独运行验证器。每项检查都可以单独关闭，这对雷达搜索很重要，因为诸如必需波段之类的光学专用检查并不适用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:24
 msgid "Quick start — wired into search() and download()"
-msgstr ""
+msgstr "快速开始——集成到 search() 和 download() 中"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:26
 msgid ""
 "The simplest way to use this is the built-in toggle on `PyGeoFetch` itself —"
 " no manual wiring needed:"
-msgstr ""
+msgstr "最简单的用法是使用 `PyGeoFetch` 自身内置的开关——无需手动串接："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:47
 msgid "Toggle per call instead of (or in addition to) at construction time:"
-msgstr ""
+msgstr "也可以在每次调用时切换（或在构造时设置之外另行切换）："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:58
 msgid ""
@@ -88,10 +95,13 @@ msgid ""
 "scene would fail the missing-bands check. Either leave it off for those, or "
 "pass a config with `check_required_bands=False`."
 msgstr ""
+"默认的 `required_bands`（`B02, B03, B04, B08, SCL`）是光学波段名称。请不要为 SAR/InSAR 搜索启用 "
+"`validate_optical`——每个 SAR 场景都会因缺少波段检查而失败。对这类搜索要么保持关闭，要么传入 "
+"`check_required_bands=False` 的配置。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:63
 msgid "Direct use — as its own module"
-msgstr ""
+msgstr "直接使用——作为独立模块"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:65
 msgid ""
@@ -99,6 +109,8 @@ msgid ""
 "GeoJSON file that never went through `search()`, or just wanting the full "
 "per-scene report rather than a filtered list):"
 msgstr ""
+"如需更多控制（按 AOI 自定义配置、验证从未经过 `search()` 的已保存 GeoJSON "
+"文件中的场景，或者只想要完整的逐场景报告而不是过滤后的列表）："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:79
 msgid ""
@@ -107,22 +119,24 @@ msgid ""
 "in the same representation and order they arrived in — no conversion needed "
 "either side, so it slots directly between `search()` and `download()`."
 msgstr ""
+"`run_preflight()` 接受 `SatelliteData` 对象（`PyGeoFetch.search()` 返回的内容）*或*普通的类 "
+"STAC 字典，并以与传入时相同的表示形式和顺序返回——两端都无需转换，因此可以直接插入 `search()` 和 `download()` 之间。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:85
 msgid "Configuration — every check independently toggleable"
-msgstr ""
+msgstr "配置——每项检查都可独立开关"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Field"
-msgstr ""
+msgstr "字段"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Default"
-msgstr ""
+msgstr "默认值"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Description"
-msgstr ""
+msgstr "说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_aoi_coverage`"
@@ -134,7 +148,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes whose footprint doesn't sufficiently overlap the AOI."
-msgstr ""
+msgstr "拒绝覆盖范围与 AOI 重叠不足的场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`min_coverage_ratio`"
@@ -146,7 +160,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Minimum fraction of the AOI's area the scene must cover, `[0, 1]`."
-msgstr ""
+msgstr "场景必须覆盖的 AOI 面积的最小比例，`[0, 1]`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_cloud_cover`"
@@ -154,7 +168,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Flag scenes exceeding `max_cloud_cover_pct`."
-msgstr ""
+msgstr "标记超过 `max_cloud_cover_pct` 的场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`max_cloud_cover_pct`"
@@ -166,7 +180,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Cloud cover threshold, percent."
-msgstr ""
+msgstr "云量阈值，百分比。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`cloud_cover_is_hard_failure`"
@@ -180,7 +194,7 @@ msgstr ""
 msgid ""
 "If `True`, exceeding the threshold rejects the scene instead of just "
 "warning."
-msgstr ""
+msgstr "若为 `True`，超过阈值时会拒绝该场景，而不仅仅是警告。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_snow_ice_cover`"
@@ -190,7 +204,7 @@ msgstr ""
 msgid ""
 "Off by default — most providers don't report it consistently, and it's "
 "irrelevant to most AOIs."
-msgstr ""
+msgstr "默认关闭——大多数提供商不会一致地报告该信息，并且它与大多数 AOI 无关。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`max_snow_ice_pct`"
@@ -202,7 +216,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Snow/ice cover threshold, percent."
-msgstr ""
+msgstr "积雪/冰覆盖阈值，百分比。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_required_bands`"
@@ -210,7 +224,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes missing any `required_bands`."
-msgstr ""
+msgstr "拒绝缺少任何 `required_bands` 的场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`required_bands`"
@@ -224,7 +238,7 @@ msgstr ""
 msgid ""
 "Matched via pygeofetch's band-alias table — see the note below, not just a "
 "case-insensitive string match."
-msgstr ""
+msgstr "通过 pygeofetch 的波段别名表进行匹配——请参见下方说明，而不只是不区分大小写的字符串匹配。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_processing_level`"
@@ -232,7 +246,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes not at `expected_level`."
-msgstr ""
+msgstr "拒绝不属于 `expected_level` 的场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`expected_level`"
@@ -248,6 +262,9 @@ msgid ""
 " `ProcessingLevel.L2A`, and a STAC collection id like `\"sentinel-2-l2a\"` "
 "all compare equal — see the note below."
 msgstr ""
+"宽松匹配——`\"L2A\"`、`\"Level-2A\"`、`\"S2MSI2A\"`、pygeofetch 自己的 "
+"`ProcessingLevel.L2A`，以及像 `\"sentinel-2-l2a\"` 这样的 STAC 集合 ID "
+"都视为相等——请参见下方说明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_nodata_margins`"
@@ -258,7 +275,7 @@ msgid ""
 "Heuristic: flag scenes where the AOI sits mostly in the scene's edge margin."
 " Off by default to avoid false positives on legitimately edge-adjacent AOIs "
 "— see the note below."
-msgstr ""
+msgstr "启发式：标记 AOI 大部分位于场景边缘区域的场景。默认关闭，以避免对确实靠近边缘的 AOI 产生误报——请参见下方说明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`nodata_margin_buffer_deg`"
@@ -272,7 +289,7 @@ msgstr ""
 msgid ""
 "How far to shrink the footprint inward (degrees, ~1 km at the equator) "
 "before checking AOI overlap."
-msgstr ""
+msgstr "在检查 AOI 重叠之前，将覆盖范围向内收缩的幅度（度，赤道处约 1 km）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`nodata_margin_min_aoi_fraction`"
@@ -286,7 +303,7 @@ msgstr ""
 msgid ""
 "Minimum fraction of the AOI that must fall within the shrunk footprint to be"
 " considered safe."
-msgstr ""
+msgstr "AOI 落在收缩后覆盖范围内、才算安全的最小比例。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`check_temporal_bounds`"
@@ -294,7 +311,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "Reject scenes outside `[start_date, end_date]`."
-msgstr ""
+msgstr "拒绝 `[start_date, end_date]` 之外的场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:56
 msgid "`treat_warnings_as_errors`"
@@ -304,7 +321,7 @@ msgstr ""
 msgid ""
 "If `True`, any WARNING (not just ERROR) excludes the scene from the returned"
 " list."
-msgstr ""
+msgstr "若为 `True`，任何 WARNING（不仅是 ERROR）都会将该场景排除在返回列表之外。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:116
 msgid ""
@@ -313,6 +330,8 @@ msgid ""
 "checks (snow/ice cover, nodata margins) default **off** — a disabled check "
 "costs nothing; it's simply skipped."
 msgstr ""
+"最关键的检查（AOI "
+"覆盖率、云量、必需波段、处理级别、时间范围）默认**开启**。较重或较小众的检查（积雪/冰覆盖、无数据边缘）默认**关闭**——被禁用的检查没有任何开销，只是被跳过。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:123
 msgid ""
@@ -324,6 +343,10 @@ msgid ""
 "the corner of the swath\" case, not cloud-masked interior gaps — that's not "
 "a margin issue and isn't this check's job."
 msgstr ""
+"**`validate_nodata_margins` "
+"本质上是一种近似的启发式方法**，而不是栅格级别的检查——它看不到实际的逐像素无数据掩膜，因为这些掩膜在文件下载之前并不存在。它按 "
+"`nodata_margin_buffer_deg` 将场景覆盖范围向内收缩，并检查 AOI 仍有多少落在收缩后的形状内。它能捕捉常见的“AOI "
+"切到条带角落”情形，而无法捕捉被云掩膜的内部空洞——那不是边缘问题，也不是这项检查的职责。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:134
 msgid ""
@@ -331,6 +354,8 @@ msgid ""
 "providers (`aws_earth`, `element84`, `planetary_computer`, `sentinel_hub`), "
 "validation handles two specifics:"
 msgstr ""
+"**STAC 提供商与 `required_bands` / `expected_level`。** 对于基于 STAC "
+"的提供商（`aws_earth`、`element84`、`planetary_computer`、`sentinel_hub`），验证会处理两个特殊情况："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:138
 msgid ""
@@ -342,6 +367,11 @@ msgid ""
 "`resolve_band_keys()` uses for downloads), so `\"red\"` is recognised as "
 "`B04`."
 msgstr ""
+"**波段名称。** Earth Search v1 和 AWS Earth "
+"的条目以语义化的资产键（`red`、`green`、`blue`、`nir`、`scl`）暴露 Sentinel-2 波段，而不是 "
+"`B04`、`B03`、`B02`、`B08`、`SCL`。`required_bands` 通过 pygeofetch "
+"的波段别名表（`pygeofetch.models.satellite_data._ALIAS_TO_CANONICAL`，与下载时 "
+"`resolve_band_keys()` 使用的是同一张表）进行匹配，因此 `\"red\"` 会被识别为 `B04`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:143
 msgid ""
@@ -351,16 +381,19 @@ msgid ""
 "validator does not use `s2:processing_baseline`, which is a version string "
 "such as `05.10`, not a level."
 msgstr ""
+"**处理级别。** STAC 条目并不可靠地携带处理级别。当不存在显式属性时，`SatelliteData.from_stac_item()` 会从集合"
+" ID 推导出一个级别（例如 `sentinel-2-l2a` 得到 `L2A`）。验证器不使用 "
+"`s2:processing_baseline`，因为它是类似 `05.10` 的版本字符串，而不是级别。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:148
 msgid ""
 "With the default configuration, Sentinel-2 L2A scenes from these providers "
 "pass validation."
-msgstr ""
+msgstr "在默认配置下，来自这些提供商的 Sentinel-2 L2A 场景可通过验证。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:150
 msgid "AOI coverage and multi-tile satellites"
-msgstr ""
+msgstr "AOI 覆盖率与多瓦片卫星"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:152
 msgid ""
@@ -375,10 +408,15 @@ msgid ""
 "tiles, and each individual scene's low coverage number is an accurate "
 "description of geometry, not a defect."
 msgstr ""
+"如果 `check_aoi_coverage` 拒绝了宽幅、分瓦片卫星（Sentinel-2 的 MGRS 瓦片、Landsat 的 WRS-2 "
+"场景）的所有结果，并且你的 AOI 跨越瓦片边界，**这说明该检查在正确工作，而不是缺陷**。仅覆盖你 AOI 西半部的单个 Sentinel-2 "
+"瓦片，无论实际场景多么优质，自身都无法达到 80% 的 AOI 覆盖率，因为 AOI 的另一半由一个*完全不同*的瓦片提供。已直接确认：某个 bbox "
+"的搜索返回了来自瓦片 `18TXK`、`18TXL`、`18TWK` 和 `18TWL` 的结果，意味着该 bbox 跨越了 2×2 "
+"的瓦片网格，每个场景较低的覆盖率数值都准确描述了几何关系，而不是缺陷。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:164
 msgid "For AOIs that legitimately span multiple tiles:"
-msgstr ""
+msgstr "对于确实跨越多个瓦片的 AOI："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:165
 msgid ""
@@ -386,63 +424,65 @@ msgid ""
 "cover the AOI (e.g. `0.15`–`0.3` depending on how many tiles the AOI spans),"
 " and rely on `--max-items`/multiple downloads to build a full mosaic, **or**"
 msgstr ""
+"降低 `min_coverage_ratio`，以反映没有任何单个场景能完整覆盖 AOI 这一事实（例如 `0.15`–`0.3`，取决于 AOI "
+"跨越多少个瓦片），并依靠 `--max-items`/多次下载来构建完整的镶嵌，**或者**"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:169
 msgid ""
 "Disable `check_aoi_coverage` for multi-tile searches and rely on the other "
 "checks (bands, cloud cover, processing level, date range) instead, **or**"
-msgstr ""
+msgstr "对多瓦片搜索禁用 `check_aoi_coverage`，转而依靠其他检查（波段、云量、处理级别、日期范围），**或者**"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:172
 msgid ""
 "Use a smaller AOI that fits within a single tile when the workflow needs one"
 " scene, not a mosaic."
-msgstr ""
+msgstr "当工作流需要单个场景而不是镶嵌时，使用能够落在单个瓦片内的较小 AOI。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:175
 msgid "Hard failures vs. warnings"
-msgstr ""
+msgstr "硬性失败与警告"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Behavior"
-msgstr ""
+msgstr "行为"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Examples"
-msgstr ""
+msgstr "示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "**Hard failure** (`ERROR`)"
-msgstr ""
+msgstr "**硬性失败**（`ERROR`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid ""
 "Scene excluded from `run_preflight()`'s returned list; logged as an error"
-msgstr ""
+msgstr "场景被排除在 `run_preflight()` 返回的列表之外；记录为错误"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid ""
 "Missing required band, 0% AOI coverage, wrong processing level, out-of-range"
 " date"
-msgstr ""
+msgstr "缺少必需波段、AOI 覆盖率为 0%、处理级别错误、日期超出范围"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "**Warning** (`WARNING`)"
-msgstr ""
+msgstr "**警告**（`WARNING`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Scene kept; logged as a warning"
-msgstr ""
+msgstr "保留该场景；记录为警告"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid ""
 "Cloud cover above threshold (unless `cloud_cover_is_hard_failure=True`), "
 "snow/ice above threshold, nodata-margin risk"
-msgstr ""
+msgstr "云量高于阈值（除非 `cloud_cover_is_hard_failure=True`）、积雪/冰高于阈值、存在无数据边缘风险"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:191
 msgid "Custom exception"
-msgstr ""
+msgstr "自定义异常"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:203
 msgid ""
@@ -452,22 +492,25 @@ msgid ""
 "per-scene — hard failures are filtered out and logged, not raised, so a few "
 "bad scenes in a large search never abort the whole run."
 msgstr ""
+"`OpticalValidationError` 是 `ValueError` 的子类，因此现有的 `except ValueError` "
+"调用处无需改动即可继续工作。它由底层的 `validate_bands()` 方法直接抛出；`run_preflight()` "
+"本身从不针对单个场景抛出异常——硬性失败会被过滤并记录，而不是抛出，因此大型搜索中的少数坏场景绝不会中止整个运行。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:210
 msgid "Full method reference"
-msgstr ""
+msgstr "完整方法参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Returns"
-msgstr ""
+msgstr "返回值"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Notes"
-msgstr ""
+msgstr "备注"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_aoi_coverage(footprint, aoi)`"
@@ -481,7 +524,7 @@ msgstr ""
 msgid ""
 "Fraction of the AOI's area covered by the scene footprint, `[0, 1]`. "
 "Coverage of the AOI, not a symmetric IoU."
-msgstr ""
+msgstr "场景覆盖范围所覆盖的 AOI 面积比例，`[0, 1]`。这是对 AOI 的覆盖率，而不是对称的 IoU。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_cloud_cover(scene)`"
@@ -489,7 +532,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Cloud cover percentage, `0.0` if unreported."
-msgstr ""
+msgstr "云量百分比，未报告时为 `0.0`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_snow_ice_cover(scene)`"
@@ -497,7 +540,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Snow/ice cover percentage, `0.0` if unreported."
-msgstr ""
+msgstr "积雪/冰覆盖百分比，未报告时为 `0.0`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_bands(available_assets)`"
@@ -510,7 +553,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid ""
 "Present required bands; raises `OpticalValidationError` if any are missing."
-msgstr ""
+msgstr "存在的必需波段；若有缺失则抛出 `OpticalValidationError`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_processing_level(scene)`"
@@ -522,7 +565,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Loose alias matching against `expected_level`."
-msgstr ""
+msgstr "与 `expected_level` 进行宽松的别名匹配。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_nodata_margins(footprint, aoi)`"
@@ -530,7 +573,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "The geometry-only heuristic described above."
-msgstr ""
+msgstr "上文所述的仅基于几何的启发式方法。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_temporal_bounds(dt, start, end)`"
@@ -538,7 +581,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "Inclusive range check; missing dates are not treated as failures."
-msgstr ""
+msgstr "包含端点的范围检查；缺失的日期不视为失败。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`validate_scene(scene, aoi, start_date=None, end_date=None)`"
@@ -552,7 +595,7 @@ msgstr ""
 msgid ""
 "Runs every enabled check against one scene. `aoi` may be `None` — AOI-"
 "dependent checks are skipped gracefully rather than raising."
-msgstr ""
+msgstr "对一个场景运行所有已启用的检查。`aoi` 可以为 `None`——依赖 AOI 的检查会被平稳跳过，而不是抛出异常。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:132
 msgid "`run_preflight(catalog_results, aoi, start_date=None, end_date=None)`"
@@ -566,11 +609,11 @@ msgstr ""
 msgid ""
 "The main orchestrator — validates every scene, logs issues, returns the safe"
 " subset."
-msgstr ""
+msgstr "主要的编排器——验证每个场景，记录问题，返回安全的子集。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:224
 msgid "Real footprint geometry, with a bbox fallback"
-msgstr ""
+msgstr "真实的覆盖范围几何，带 bbox 回退"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/optical-validation.md:226
 msgid ""
@@ -579,3 +622,5 @@ msgid ""
 " bbox rectangle when it doesn't — see [Providers](providers.md) for which "
 "providers return precise footprint geometry today."
 msgstr ""
+"与 pygeofetch 提供商层的其余部分一样，当提供商提供场景的覆盖范围几何时，`validate_aoi_coverage` 会使用它，否则回退为"
+" bbox 矩形——关于目前哪些提供商会返回精确的覆盖范围几何，请参见[提供商](providers.md)。"

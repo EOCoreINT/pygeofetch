@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,27 +23,27 @@ msgstr "高级 InSAR 模块"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:3
 msgid "Four modules that build on the InSAR and optical chains:"
-msgstr ""
+msgstr "四个构建于 InSAR 和光学处理链之上的模块："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:5
 msgid ""
 "An **auto-fallback router** that decides between InSAR and optical "
 "displacement."
-msgstr ""
+msgstr "一个**自动回退路由器**，用于在 InSAR 与光学位移之间做出选择。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:6
 msgid "**Uncertainty export** for phase and displacement rasters."
-msgstr ""
+msgstr "针对相位和位移栅格的**不确定性导出**。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:7
 msgid "**Geotechnical risk mapping** from an SBAS time series."
-msgstr ""
+msgstr "基于 SBAS 时间序列的**岩土工程风险制图**。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:8
 msgid ""
 "**Lightweight prefetch**: read Sentinel-1 annotation metadata from a remote "
 "SLC ZIP without downloading the measurement data."
-msgstr ""
+msgstr "**轻量级预取**：从远程 SLC ZIP 中读取 Sentinel-1 标注元数据，而无需下载测量数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:10
 msgid ""
@@ -54,10 +54,14 @@ msgid ""
 "the robust one. See [Optical offset tracking](optical-offset-"
 "tracking.md#strain-turning-displacement-into-a-risk-metric)."
 msgstr ""
+"`pygeofetch.optical.offset_tracking` 中的 `compute_horizontal_strain` 已经包含基于 "
+"MAD 的离群值保护（`mad_outlier_threshold`，默认 8.0）。它是在布尔台验证运行中出现 617% "
+"应变伪影之后添加的。没有单独的稳健变体：基础函数本身就是稳健的那个。参见 [光学偏移跟踪](optical-offset-"
+"tracking.md#strain-turning-displacement-into-a-risk-metric)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:16
 msgid "1. The Auto-Fallback Multi-Modal Router"
-msgstr ""
+msgstr "1. 自动回退多模态路由器"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:18
 msgid "`pygeofetch.insar.auto_fallback.run_multi_modal_deformation()`"
@@ -65,7 +69,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:37
 msgid "What this actually adds"
-msgstr ""
+msgstr "它实际增加了什么"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:39
 msgid ""
@@ -79,10 +83,14 @@ msgid ""
 " saving over always running both, which is what the existing multi-sensor "
 "pipeline does unconditionally."
 msgstr ""
+"它并**没有**重新实现融合——`pygeofetch.multisensor.insar_optical_displacement_pipeline`"
+" 和 `fuse_insar_optical` 已经做了这件事，而此路由器直接调用它们。它独特的价值在于*决策*：如果 InSAR "
+"自身的可靠像元比例和平均相干性都已经达到可配置的阈值（`reliable_fraction_threshold`、`mean_coherence_threshold`，默认均为"
+" `0.3`），则**完全跳过**光学处理——相比总是同时运行两者（现有的多传感器流程就是无条件这样做的），这节省了计算和带宽。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:49
 msgid "Reliability metrics"
-msgstr ""
+msgstr "可靠性指标"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:51
 msgid ""
@@ -92,10 +100,14 @@ msgid ""
 "available: coverage from `np.isfinite(velocity).mean()`, mean coherence "
 "averaged across the interferogram pairs used."
 msgstr ""
+"`TimeSeriesResult`（SBAS 自身的输出类型）不带 `reliable_fraction` "
+"或相干性字段：`SBASTimeSeries.invert()` 只填充 `metadata={\"method\": "
+"...}`。路由器根据现有信息计算这两个指标：覆盖率来自 "
+"`np.isfinite(velocity).mean()`，平均相干性则对所用干涉图配对取平均。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:57
 msgid "Mask value conventions"
-msgstr ""
+msgstr "掩膜取值约定"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:59
 msgid ""
@@ -107,10 +119,14 @@ msgid ""
 "other's would invert the meaning of \"good\" and \"bad\". Each function's "
 "docstring documents its own convention."
 msgstr ""
+"`fuse_insar_optical` 自身的 `reliability_source` 输出使用 `2=InSAR-dominant, "
+"1=transition, 0=optical-dominant`。此路由器的 `processing_source_mask` "
+"使用**另一种、有意为之的**约定：`0=Optical Fallback, 1=InSAR Valid, "
+"2=Blended`。两者不可互换：把一个函数的掩膜传给期望另一种约定的代码，会颠倒“好”与“坏”的含义。每个函数的文档字符串都记录了它自己的约定。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:66
 msgid "Failure behaviour"
-msgstr ""
+msgstr "失败时的行为"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:68
 msgid ""
@@ -119,10 +135,12 @@ msgid ""
 "values. It does not return a degraded InSAR-only result. Either metric alone"
 " can trigger the fallback (OR logic)."
 msgstr ""
+"当两个阈值都未通过且没有提供光学输入时，路由器会抛出 `ValueError`，并指明当前的 `reliable_fraction` "
+"和相干性数值。它不会返回降级的仅 InSAR 结果。任一指标单独就可以触发回退（OR 逻辑）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:72
 msgid "2. Uncertainty Quantification Export"
-msgstr ""
+msgstr "2. 不确定性量化导出"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:74
 msgid "`pygeofetch.processing.uq_exporter`"
@@ -130,13 +148,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:98
 msgid "The formula, reused not reinvented"
-msgstr ""
+msgstr "公式是复用的，而非重新发明"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:100
 msgid ""
 "\\sigma_\\phi = \\frac{\\sqrt{1-\\gamma^2}}{\\gamma\\sqrt{2N}}, \\qquad\n"
 "\\sigma_{disp} = \\frac{\\lambda}{4\\pi}\\sigma_\\phi"
 msgstr ""
+"\\sigma_\\phi = \\frac{\\sqrt{1-\\gamma^2}}{\\gamma\\sqrt{2N}}, \\qquad\n"
+"\\sigma_{disp} = \\frac{\\lambda}{4\\pi}\\sigma_\\phi"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:105
 msgid ""
@@ -146,10 +166,12 @@ msgid ""
 "generate realistic synthetic decorrelation noise) — confirmed numerically "
 "identical by direct test, so the two can never silently diverge."
 msgstr ""
+"这是标准的 Cramér-Rao 干涉相位不确定性下界。与其再推导一遍，此模块复用了 `pygeofetch.insar.synthetic` "
+"中已有的**完全相同的公式**（那里用它来生成逼真的合成去相干噪声）——通过直接测试确认数值完全一致，因此两者绝不会在无提示的情况下产生分歧。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:112
 msgid "What `write_provenance_manifest` needed"
-msgstr ""
+msgstr "`write_provenance_manifest` 需要什么"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:114
 msgid ""
@@ -159,6 +181,9 @@ msgid ""
 "confirms the output feeds straight into the actual function without "
 "adaptation."
 msgstr ""
+"它现有的签名已经接受一个通用的 `quality: dict` "
+"参数——它本身无需任何改动。`summarize_uncertainty_for_provenance` "
+"会构建出恰当形状的字典交给它，并且直接的集成测试确认输出无需适配就能直接送入实际函数。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:120
 msgid ""
@@ -166,10 +191,12 @@ msgid ""
 "(higher coherence → lower uncertainty; more looks → lower uncertainty), a "
 "two-band GeoTIFF round-trip, and the real provenance-manifest integration."
 msgstr ""
+"**12/12 个测试通过**，包括公式完全一致、物理单调性（相干性越高 → 不确定性越低；视数越多 → 不确定性越低）、双波段 GeoTIFF "
+"往返，以及真实的来源清单集成。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:125
 msgid "3. Domain-Specific Geotechnical Risk Mapper"
-msgstr ""
+msgstr "3. 面向特定领域的岩土工程风险制图器"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:127
 msgid "`pygeofetch.geotech.risk_mapper`"
@@ -177,7 +204,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:145
 msgid "The cited standard behind the strain cap"
-msgstr ""
+msgstr "应变上限背后引用的标准"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:147
 msgid ""
@@ -186,6 +213,9 @@ msgid ""
 " \"very severe\" damage category threshold. This is a cited, standard, not a"
 " placeholder."
 msgstr ""
+"`RiskMapperConfig.max_severe_strain` 默认为 **1.0%**——这是已发表的英国国家煤炭局（National "
+"Coal Board，1975）《Subsidence Engineering "
+"Handbook》中“非常严重”破坏类别的真实阈值。这是一个有引用来源的标准，而不是占位值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:152
 msgid ""
@@ -196,10 +226,13 @@ msgid ""
 " risk index, independent of whatever outlier protection already ran upstream"
 " in `compute_horizontal_strain` itself."
 msgstr ""
+"`RiskMapperConfig.strain_cap`（默认 10%）是一个**单独的**、更严格的上限——这是对本项目自身真实观察到的 617% "
+"应变伪影的直接、明确的回应。测试套件重现了这一完全相同的场景（strain=6.17），并确认该上限会在它主导风险指数之前将其抑制，无论上游的 "
+"`compute_horizontal_strain` 本身已经运行了何种离群值保护。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:159
 msgid "An note on `compute_curvature`'s interface"
-msgstr ""
+msgstr "关于 `compute_curvature` 接口的说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:161
 msgid ""
@@ -211,10 +244,12 @@ msgid ""
 "classic single-field convention. Pass a zero array as `dy` to reproduce "
 "standard single-field curvature exactly."
 msgstr ""
+"标准的采矿沉陷惯例是根据*单一*垂直位移场计算曲率。此实现将其推广为由两个水平分量（`dx`、`dy`）得到的位移*幅值*，以获得更广泛的多模态适用性（横向滑坡运动、同震滑移）——并明确说明这是对经典单一场惯例的偏离，而不是与之相同。传入全零数组作为"
+" `dy`，即可精确重现标准的单一场曲率。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:170
 msgid "Combination logic"
-msgstr ""
+msgstr "组合逻辑"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:172
 msgid ""
@@ -224,6 +259,9 @@ msgid ""
 "one severe indicator alone is cause for concern. `\"mean\"` is available as "
 "a simpler, alternative."
 msgstr ""
+"`config.combination=\"max_weighted\"`（默认）计算 `0.6 * max(scores) + 0.4 * "
+"mean(scores)`——单个严重因子会主导指数，而不会被两个轻微因子稀释，这与岩土工程实践相符：只要有一个严重指标，就值得关注。`\"mean\"`"
+" 可作为更简单的替代选项。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:179
 msgid ""
@@ -232,10 +270,12 @@ msgid ""
 "that `max_weighted` gives materially higher risk than a plain mean for the "
 "same inputs."
 msgstr ""
+"**15/15 个测试通过**，包括精确的解析曲率检验（抛物线场已知的恒定二阶导数），以及直接验证对于相同输入，`max_weighted` "
+"给出的风险明显高于简单平均。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:184
 msgid "4. Lightweight, Annotation-Only STAC Prefetch"
-msgstr ""
+msgstr "4. 轻量级、仅标注的 STAC 预取"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:186
 msgid "`pygeofetch.stac_compute.lightweight_prefetch`"
@@ -243,7 +283,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:207
 msgid "Background"
-msgstr ""
+msgstr "背景"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:209
 msgid ""
@@ -254,6 +294,9 @@ msgid ""
 "implements the same real technique directly with `httpx` (already a core "
 "pygeofetch dependency) rather than adding `fsspec` as a new one."
 msgstr ""
+"已发表的开源工具 `asfsmd`（Valentino，PyPI/GitHub）已经针对 ASF 存档做了完全相同的事情：通过 HTTP "
+"范围请求打开远程 Sentinel-1 SLC ZIP 的中央目录，只提取标注 XML，而从不获取测量栅格。此模块直接使用 `httpx`（已是 "
+"pygeofetch 的核心依赖）实现了同样的真实技术，而不是新增 `fsspec` 作为依赖。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:218
 msgid ""
@@ -265,10 +308,14 @@ msgid ""
 "Sentinel-1 packed products as not accessible through S3, so range support "
 "there is tested per request, not assumed."
 msgstr ""
+"**只有服务器支持 HTTP 范围请求时，这才有效。** `supports_range_requests()` "
+"会发送一个试探性的范围请求并检查是否返回 `206 Partial Content`。`200 OK` "
+"表示服务器忽略了范围并返回了整个文件，此检查不会将其视为支持。ASF 就是这样工作的（如 `asfsmd` 工具所示）。Copernicus Data "
+"Space 的文档说明 Sentinel-1 打包产品无法通过 S3 访问，因此那里是否支持范围请求需逐次请求测试，而不是想当然。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:225
 msgid "Local ZIP layout"
-msgstr ""
+msgstr "本地 ZIP 布局"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:227
 msgid ""
@@ -279,10 +326,14 @@ msgid ""
 "reconstructs a small, valid local ZIP that **preserves the original internal"
 " member paths**, as a drop-in replacement for the full SAFE zip."
 msgstr ""
+"将标注文件提取到扁平文件夹中，会与 `pygeofetch.insar.annotation.parse_slc_geometry` "
+"不兼容，后者通过简单的 `zipfile.ZipFile(path)` 打开其输入，并在 `zf.namelist()` 中搜索包含子串 "
+"`\"/annotation/\"` 的成员。因此，该模块会重建一个小型但有效的本地 ZIP，并**保留原始的内部成员路径**，作为完整 SAFE "
+"zip 的即插即用替代品。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:235
 msgid "Tests"
-msgstr ""
+msgstr "测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:237
 msgid ""
@@ -292,10 +343,13 @@ msgid ""
 "measurement data was never transferred, with bytes counted by the server. A "
 "mocked test covers the handoff into `select_burst_synchronized_dates`."
 msgstr ""
+"测试针对一个实现了范围请求的本地 HTTP 处理程序运行（Python 内置的 `http.server` 会忽略 `Range` "
+"头并返回带有完整内容的 `200 OK`）。在测试中，一个 5 MB 文件中 98.7% 的测量数据从未被传输，字节数由服务器统计。一个模拟测试覆盖了向"
+" `select_burst_synchronized_dates` 的交接。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:242
 msgid "5. Platform notes"
-msgstr ""
+msgstr "5. 平台说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:244
 msgid ""
@@ -303,15 +357,20 @@ msgid ""
 "`\"/\"` checks (`\"/annotation/\" in name`) are on ZIP member names, which "
 "always use forward slashes regardless of the host OS."
 msgstr ""
+"这些模块使用 `pathlib.Path` 处理文件系统路径。仅有的字面 `\"/\"` 检查（`\"/annotation/\" in "
+"name`）针对的是 ZIP 成员名称，无论主机操作系统是什么，它们始终使用正斜杠。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:247
 msgid ""
 "No Linux-only system calls (`os.fork`, Unix `signal` handling) and no "
 "hardcoded `/tmp` or `/usr` paths."
 msgstr ""
+"没有仅限 Linux 的系统调用（`os.fork`、Unix `signal` 处理），也没有硬编码的 `/tmp` 或 `/usr` 路径。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/advanced-modules.md:248
 msgid ""
 "The `snaphu` command-line fallback in `pygeofetch/insar/unwrap.py` locates "
 "the executable with `shutil.which(\"snaphu\")`."
 msgstr ""
+"`pygeofetch/insar/unwrap.py` 中的 `snaphu` 命令行回退使用 `shutil.which(\"snaphu\")` "
+"定位可执行文件。"

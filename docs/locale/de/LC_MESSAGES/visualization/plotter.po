@@ -1,0 +1,240 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:1
+msgid "Plotter"
+msgstr "Plotter"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:7
+msgid ""
+"Static plotting for almost any raster output: indices, SAR intensity, "
+"classifications, comparisons, and 3D terrain."
+msgstr ""
+"Statische Darstellung für nahezu jede Raster-Ausgabe: Indizes, SAR-"
+"Intensität, Klassifikationen, Vergleiche und 3D-Gelände."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:10
+msgid "Overview"
+msgstr "Überblick"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:12
+msgid ""
+"Plotting is how you check that an analysis did what you expected. The "
+"plotter produces static figures from the files pygeofetch writes, so that "
+"you can inspect an index, a classification, a radar image or a before-and-"
+"after comparison without leaving Python. `quicklook` is the fastest route: "
+"give it a raster and it chooses sensible colours and limits, and the "
+"purpose-built plots add the extras that particular outputs need, such as a "
+"legend with class names or a diverging colour scale centred on zero for "
+"change maps."
+msgstr ""
+"Mit Plots prüfen Sie, ob eine Analyse das gewünschte Ergebnis geliefert hat."
+" Der Plotter erzeugt statische Abbildungen aus den von pygeofetch "
+"geschriebenen Dateien, sodass Sie einen Index, eine Klassifikation, ein "
+"Radarbild oder einen Vorher-nachher-Vergleich prüfen können, ohne Python zu "
+"verlassen. `quicklook` ist der schnellste Weg: Sie übergeben ein Raster, und"
+" es wählt sinnvolle Farben und Wertebereiche; die speziell entwickelten "
+"Plots ergänzen, was bestimmte Ausgaben zusätzlich benötigen, etwa eine "
+"Legende mit Klassennamen oder eine divergierende, auf null zentrierte "
+"Farbskala für Veränderungskarten."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:14
+msgid ""
+"Figures can be saved at publication resolution and used directly in reports."
+" Choose the colour map to match the meaning of the data: a diverging scale "
+"for change, a sequential scale for quantities, and a categorical palette for"
+" classes, as in the vegetation trend maps in the [case "
+"studies](../workflows/case-studies.md)."
+msgstr ""
+"Abbildungen können in Publikationsauflösung gespeichert und direkt in "
+"Berichten verwendet werden. Wählen Sie die Farbskala passend zur Bedeutung "
+"der Daten: eine divergierende Skala für Veränderungen, eine sequenzielle "
+"Skala für Mengen und eine kategoriale Palette für Klassen, wie in den "
+"Vegetationstrendkarten der [Fallstudien](../workflows/case-studies.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:16
+msgid "quicklook — one call for almost anything"
+msgstr "quicklook – ein Aufruf für fast alles"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:28
+msgid ""
+"`quicklook()` uses value-range heuristics, not format detection: few "
+"distinct values → categorical; mostly-negative dB range → SAR grayscale; "
+"values within `[-1, 1]` → diverging index colormap; otherwise → continuous. "
+"All overridable via `mode=`."
+msgstr ""
+"`quicklook()` verwendet Heuristiken auf Basis des Wertebereichs, keine "
+"Formaterkennung: wenige verschiedene Werte → kategorial; überwiegend "
+"negativer dB-Bereich → SAR-Graustufen; Werte innerhalb von `[-1, 1]` → "
+"divergierende Index-Farbskala; sonst → kontinuierlich. Alles lässt sich über"
+" `mode=` überschreiben."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:33
+msgid "Purpose-built plots"
+msgstr "Speziell entwickelte Plots"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:49
+msgid ""
+"`plot_raster()` and `plot_rgb()` accept in-memory numpy arrays directly — no"
+" round-trip through disk needed."
+msgstr ""
+"`plot_raster()` und `plot_rgb()` akzeptieren numpy-Arrays im Arbeitsspeicher"
+" direkt – ein Umweg über die Festplatte ist nicht nötig."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:52
+msgid "Other plot types"
+msgstr "Weitere Plottypen"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Method"
+msgstr "Methode"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Use"
+msgstr "Verwenden"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_raster()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Single raster, any colormap"
+msgstr "Einzelnes Raster, beliebige Farbskala"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_rgb()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "3-band composite"
+msgstr "3-Band-Komposit"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_multi_panel_comparison()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "N-panel grid comparison"
+msgstr "Vergleich im N-Panel-Raster"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_timeseries()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid ""
+"Line plot over dates — pairs directly with "
+"`TimeSeriesAnalyzer.zone_series()`"
+msgstr ""
+"Liniendiagramm über Datumsangaben – passt direkt zu "
+"`TimeSeriesAnalyzer.zone_series()`"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_histogram()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Value distribution"
+msgstr "Werteverteilung"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_terrain_summary()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid ""
+"2x2 terrain analysis figure (hillshade, elevation, slope, difference maps) —"
+" see below"
+msgstr ""
+"2x2-Abbildung zur Geländeanalyse (Schummerung, Höhe, Hangneigung, "
+"Differenzkarten) – siehe unten"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_3d_terrain()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Fast, static hillshade-draped 3D surface, no extra dependency"
+msgstr ""
+"Schnelle, statische 3D-Oberfläche mit Schummerung, ohne zusätzliche "
+"Abhängigkeit"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_3d_terrain_interactive()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Real interactive mesh (PyVista), rotate/zoom/pan in-browser"
+msgstr ""
+"Echtes interaktives Mesh (PyVista), im Browser dreh-, zoom- und verschiebbar"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:65
+msgid "Terrain summary — a purpose-built 2x2 figure"
+msgstr "Geländeübersicht – eine speziell entwickelte 2x2-Abbildung"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:80
+msgid "Lays out a purpose-built figure:"
+msgstr "Erstellt eine speziell entwickelte Abbildung mit folgendem Layout:"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:87
+msgid ""
+"Pass `hillshade`/`slope` directly if you've already computed them via "
+"[Terrain Analysis (DEM / DSM / DTM)](../processing/optical/terrain.md)'s "
+"`terrain_derivatives()`; omit either and this method generates it from the "
+"DEM itself. `diffs` accepts one or more `{label: raster}` pairs — e.g. "
+"comparing two different DEM sources over the same AOI — rendered with a "
+"diverging colormap (`vmin_diff`/`vmax_diff`, default ±20). `summit_points` "
+"overlays labeled markers at `(lon, lat)` coordinates. `steep_threshold` "
+"(degrees) controls the \"% steep terrain\" statistic shown alongside the "
+"slope panel."
+msgstr ""
+"Übergeben Sie `hillshade`/`slope` direkt, wenn Sie sie bereits über "
+"`terrain_derivatives()` aus [Geländeanalyse (DEM / DSM / "
+"DTM)](../processing/optical/terrain.md) berechnet haben; fehlt eines von "
+"beiden, erzeugt diese Methode es selbst aus dem DEM. `diffs` akzeptiert ein "
+"oder mehrere `{label: raster}`-Paare – z. B. zum Vergleich zweier "
+"unterschiedlicher DEM-Quellen über demselben AOI – und stellt sie mit einer "
+"divergierenden Farbskala dar (`vmin_diff`/`vmax_diff`, Standard ±20). "
+"`summit_points` blendet beschriftete Markierungen an `(lon, "
+"lat)`-Koordinaten ein. `steep_threshold` (in Grad) steuert die Statistik „% "
+"steiles Gelände“, die neben dem Hangneigungs-Panel angezeigt wird."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:97
+msgid "3D terrain"
+msgstr "3D-Gelände"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:110
+msgid ""
+"`plot_3d_terrain_interactive()` needs `pip install \"pyvista[jupyter]\"` — "
+"the `[jupyter]` extra specifically for HTML export."
+msgstr ""
+"`plot_3d_terrain_interactive()` benötigt `pip install \"pyvista[jupyter]\"` "
+"– das Extra `[jupyter]` speziell für den HTML-Export."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:115
+msgid ""
+"Both are hardened against a failure mode: a near-uniform elevation field "
+"(e.g. an AOI that barely overlaps terrain) previously rendered as a flat, "
+"confusingly \"empty\" plot with no explanation. Now raises a clear warning "
+"identifying the actual cause."
+msgstr ""
+"Beide sind gegen einen Fehlerfall abgesichert: Ein nahezu einheitliches "
+"Höhenfeld (z. B. ein AOI, das kaum Gelände überlappt) wurde früher als "
+"flache, verwirrend „leere“ Darstellung ohne Erklärung gerendert. Jetzt wird "
+"eine klare Warnung ausgegeben, die die eigentliche Ursache benennt."

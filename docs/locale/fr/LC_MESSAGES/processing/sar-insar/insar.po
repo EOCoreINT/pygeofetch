@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,11 @@ msgid ""
 "mexico-city-tutorial.md) — a full search-to- validated-subsidence-map run, "
 "cross-referenced against a published result (Cigna & Tapete 2021)."
 msgstr ""
+"Vous cherchez un exemple détaillé complet, cellule par cellule, plutôt "
+"qu'une référence d'API ? Voir [Exemple complet détaillé : affaissement de "
+"Mexico](insar-mexico-city-tutorial.md) — une exécution complète, de la "
+"recherche à une carte d'affaissement validée, recoupée avec un résultat "
+"publié (Cigna & Tapete 2021)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:17
 msgid ""
@@ -36,6 +41,11 @@ msgid ""
 "formalized, reusable [InSAR + Optical Displacement Fusion "
 "pipeline](../multisensor.md#1-insar--optical-displacement-fusion)."
 msgstr ""
+"Besoin de combiner l'InSAR avec des données optiques en particulier ? Voir "
+"la section de fusion de [Suivi de décalage de pixels optique](optical-"
+"offset-tracking.md), ou le [pipeline de fusion de déplacements InSAR + "
+"optique](../multisensor.md#1-insar--optical-displacement-fusion) formalisé "
+"et réutilisable."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:24
 msgid ""
@@ -53,6 +63,21 @@ msgid ""
 "internal refactoring/implementation changes, not breaking changes to the "
 "public API documented here."
 msgstr ""
+"**Revérifié sur un nouveau téléversement des sources, après la rédaction "
+"initiale de cette page et du tutoriel** : le module InSAR a connu des "
+"changements internes substantiels depuis (plus de 900 lignes de diff dans "
+"`interferogram.py` seul ; de gros diffs dans presque chaque fichier de "
+"`pygeofetch/insar/`). Nous avons revérifié directement les signatures de "
+"chaque fonction/classe que documentent cette page et le tutoriel — "
+"`search_and_select_consistent_stack`, `PreflightGate`, "
+"`select_burst_synchronized_dates`, `SLCExtractor.extract_consistent_stack`, "
+"`InterferogramGenerator.process_pair`, `PhaseUnwrapper.unwrap_pair`, "
+"`build_sbas_network`, `select_reliable_reference_pixel`, "
+"`bridge_unwrap_regions`, `SBASTimeSeries.invert`, `RiskMapper.compute_risk` "
+"— par rapport aux nouvelles sources. Toutes correspondaient exactement ; les"
+" gros diffs relevaient de remaniements internes/de changements "
+"d'implémentation, et non de changements cassants de l'API publique "
+"documentée ici."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:39
 msgid ""
@@ -60,10 +85,13 @@ msgid ""
 "series inversion, in pure Python. No SNAP or ISCE required for the core "
 "pipeline."
 msgstr ""
+"Co-registration, formation d'interférogrammes, déroulement de phase et "
+"inversion de séries temporelles SBAS, en Python pur. Ni SNAP ni ISCE ne sont"
+" requis pour le pipeline de base."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:43
 msgid "Overview"
-msgstr ""
+msgstr "Vue d'ensemble"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:45
 msgid ""
@@ -75,6 +103,14 @@ msgid ""
 "which is why it is used for subsidence, landslides, volcanoes and "
 "infrastructure monitoring."
 msgstr ""
+"Le SAR interférométrique mesure de combien le sol s'est déplacé le long de "
+"la ligne de visée du satellite en comparant la phase de deux images radar du"
+" même lieu. Un changement d'une demi-longueur d'onde, soit environ 2.8 cm "
+"pour Sentinel-1, produit un cycle de couleur complet (une frange) dans "
+"l'interférogramme ; la méthode peut donc détecter des mouvements de quelques"
+" millimètres à quelques centimètres sur de vastes zones, ce qui explique son"
+" usage pour l'affaissement, les glissements de terrain, les volcans et la "
+"surveillance des infrastructures."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:47
 msgid ""
@@ -89,6 +125,18 @@ msgid ""
 "combinations that were never suitable, and it is far cheaper to find that "
 "out before downloading large SLC files."
 msgstr ""
+"La chaîne comporte plusieurs étapes et pygeofetch les implémente en Python. "
+"Les scènes de même orbite et de même géométrie de bursts sont sélectionnées "
+"et vérifiées lors d'une étape de contrôle préalable, les images complexes à "
+"vue unique (single-look) sont extraites et co-enregistrées, les "
+"interférogrammes et la cohérence sont formés, la phase est déroulée, et les "
+"effets atmosphériques et orbitaux sont réduits. Pour une série de dates, la "
+"méthode des petites lignes de base (SBAS) combine de nombreux "
+"interférogrammes à courte ligne de base en une série temporelle de "
+"déplacement et une carte de vitesse. Les contrôles préalables comptent en "
+"pratique, car la plupart des exécutions InSAR échouées proviennent de "
+"combinaisons de scènes qui n'ont jamais été adaptées, et il est bien moins "
+"coûteux de le découvrir avant de télécharger de gros fichiers SLC."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:49
 msgid ""
@@ -100,10 +148,20 @@ msgid ""
 "[optical offset tracking](optical-offset-tracking.md) tools where InSAR "
 "cannot work."
 msgstr ""
+"L'interférométrie ne fonctionne que là où la surface reste cohérente entre "
+"les acquisitions. Un sol végétalisé, humide ou qui change rapidement se "
+"décorrèle et aucun traitement ne peut en récupérer un signal, et les "
+"surfaces qui se déplacent de plus d'une fraction de longueur d'onde entre "
+"pixels voisins ne peuvent pas être déroulées. Regardez toujours d'abord la "
+"cohérence, comme dans l'exemple ci-dessous, et utilisez les outils de [suivi"
+" de décalage optique](optical-offset-tracking.md) là où l'InSAR ne peut pas "
+"fonctionner."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "Coherence image over Bu'ertai showing mostly low coherence"
 msgstr ""
+"Image de cohérence sur Bu'ertai montrant une cohérence majoritairement "
+"faible"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:54
 msgid ""
@@ -113,58 +171,66 @@ msgid ""
 "conventional InSAR covers very little of the area. See the [case "
 "studies](../../workflows/case-studies.md)."
 msgstr ""
+"<span class=\"gf-tag real\">Réel</span> Cohérence Sentinel-1 sur la zone de "
+"la mine de charbon de Bu'ertai du 2023-04-22 au 2023-06-21. La majeure "
+"partie de la scène se situe entre environ 0.2 et 0.4, trop bas pour une "
+"mesure de phase fiable ; l'InSAR conventionnel couvre donc très peu de la "
+"zone. Voir les [études de cas](../../workflows/case-studies.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:57
 msgid "The four-step chain"
-msgstr ""
+msgstr "La chaîne en quatre étapes"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "Step"
-msgstr ""
+msgstr "Étape"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "What it does"
-msgstr ""
+msgstr "Ce que ça fait"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "1. SLC Extraction"
-msgstr ""
+msgstr "1. Extraction SLC"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "Sub-swath extraction from `.SAFE` archives via embedded GCP matching"
 msgstr ""
+"Extraction de sous-fauchée à partir d'archives `.SAFE` par appariement de "
+"GCP intégrés"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "2. Interferogram"
-msgstr ""
+msgstr "2. Interférogramme"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "Coregistration with ESD, formation, topographic phase removal"
 msgstr ""
+"Co-registration avec ESD, formation, retrait de la phase topographique"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "3. Unwrapping"
-msgstr ""
+msgstr "3. Déroulement"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "SNAPHU-based phase unwrapping via `snaphu-py`"
-msgstr ""
+msgstr "Déroulement de phase fondé sur SNAPHU via `snaphu-py`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "4. Time Series"
-msgstr ""
+msgstr "4. Série temporelle"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:51
 msgid "SBAS inversion with reference-pixel normalization"
-msgstr ""
+msgstr "Inversion SBAS avec normalisation par pixel de référence"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:66
 msgid "End-to-end example"
-msgstr ""
+msgstr "Exemple de bout en bout"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:85
 msgid "SLC extraction"
-msgstr ""
+msgstr "Extraction SLC"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:87
 msgid ""
@@ -173,6 +239,10 @@ msgid ""
 " sub-swath's embedded GCPs via rasterio and picks the one that overlaps your"
 " AOI."
 msgstr ""
+"Un SLC IW de Sentinel-1 comprend 3 sous-fauchées par polarisation ; votre "
+"AOI n'en recoupe généralement qu'une, et laquelle varie selon la scène. "
+"`SLCExtractor` lit les GCP intégrés de chaque sous-fauchée via rasterio et "
+"choisit celle qui recouvre votre AOI."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:92
 msgid ""
@@ -180,10 +250,13 @@ msgid ""
 "`extract_pair()` reads `.output_path` directly, avoiding filename/subfolder "
 "mismatch bugs."
 msgstr ""
+"Passer un objet `DownloadResult` (plutôt qu'un chemin brut) est préférable —"
+" `extract_pair()` lit directement `.output_path`, ce qui évite les bogues de"
+" discordance de nom de fichier/sous-dossier."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:96
 msgid "Interferogram generation"
-msgstr ""
+msgstr "Génération d'interférogramme"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:98
 msgid ""
@@ -191,32 +264,42 @@ msgid ""
 " — the actual format Sentinel-1 SLC TIFFs use, not just "
 "`complex64`/`complex128`. Missing this silently discards phase data."
 msgstr ""
+"`InterferogramGenerator.process_pair()` gère le dtype `complex_int16` de "
+"GDAL — le format réel utilisé par les TIFF SLC de Sentinel-1, et pas "
+"seulement `complex64`/`complex128`. Passer à côté de cela écarte "
+"silencieusement les données de phase."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:102
 msgid ""
 "Topographic phase removal is R²-gated (> 0.5) so deformation signal isn't "
 "mistaken for terrain phase."
 msgstr ""
+"Le retrait de la phase topographique est conditionné par le R² (> 0.5) afin "
+"que le signal de déformation ne soit pas pris pour de la phase du terrain."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:105
 msgid "Phase unwrapping"
-msgstr ""
+msgstr "Déroulement de phase"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:107
 msgid ""
 "SNAPHU (Chen & Zebker 2001) via `snaphu-py` — the same algorithm ASF's On-"
 "Demand InSAR and ISCE2/3 use in production."
 msgstr ""
+"SNAPHU (Chen & Zebker 2001) via `snaphu-py` — le même algorithme "
+"qu'utilisent en production l'On-Demand InSAR d'ASF et ISCE2/3."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:110
 msgid "SBAS time series"
-msgstr ""
+msgstr "Série temporelle SBAS"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:112
 msgid ""
 "Berardino et al. (2002) SBAS inversion, with optional MintPy delegation for "
 "the full correction chain."
 msgstr ""
+"Inversion SBAS de Berardino et al. (2002), avec délégation facultative à "
+"MintPy pour la chaîne de correction complète."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:117
 msgid ""
@@ -228,11 +311,22 @@ msgid ""
 " 100 mm/yr true signal; a verified-stable reference gave 8.84 mm/yr RMSE. "
 "Always pass an explicit, independently-verified `reference_pixel`."
 msgstr ""
+"**Le pixel de référence compte plus que presque tout le reste ici.** Le "
+"déroulement de phase ne restitue la phase que par rapport à un décalage "
+"arbitraire propre à chaque interférogramme. Combiner des interférogrammes "
+"déroulés sans pixel de référence commun et stable corrompt l'ensemble du "
+"résultat. Lors d'une exécution de vérification, une référence prise à "
+"l'intérieur d'une cuvette d'affaissement synthétique a donné 103 mm/an de "
+"RMSE contre un signal réel de 100 mm/an ; une référence vérifiée comme "
+"stable a donné 8.84 mm/an de RMSE. Passez toujours un `reference_pixel` "
+"explicite et vérifié indépendamment."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:126
 msgid ""
 "Advanced safeguards: custom DEMs, layover/shadow, and topographic residuals"
 msgstr ""
+"Garde-fous avancés : MNT personnalisés, repliement/ombre et résidus "
+"topographiques"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:128
 msgid ""
@@ -243,16 +337,25 @@ msgid ""
 "even though this project's own validation work happens to use a mine as its "
 "stress test."
 msgstr ""
+"`pygeofetch.insar.advanced_safeguards` ajoute trois capacités d'usage "
+"général — d'usage général au sens strict : la physique en jeu s'applique à "
+"l'identique à un édifice volcanique, à un terrain montagneux sujet aux "
+"glissements, à une zone urbaine à fort relief ou à une mine à ciel ouvert. "
+"Rien n'y est propre aux mines, même si le travail de validation de ce projet"
+" se trouve utiliser une mine comme test de résistance."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:135
 msgid ""
 "These three functions belong to different stages of the real InSAR chain, "
 "stated explicitly because conflating them is an easy mistake:"
 msgstr ""
+"Ces trois fonctions appartiennent à des étapes différentes de la véritable "
+"chaîne InSAR, ce qui est dit explicitement car les confondre est une erreur "
+"facile :"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:139
 msgid "`prepare_custom_dem` — before interferogram generation"
-msgstr ""
+msgstr "`prepare_custom_dem` — avant la génération de l'interférogramme"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:141
 msgid ""
@@ -263,10 +366,17 @@ msgid ""
 "over an active volcanic crater, LiDAR over a landslide body, or a high-"
 "resolution urban DSM."
 msgstr ""
+"Aligne un MNT personnalisé à haute résolution (photogrammétrie par drone, "
+"LiDAR aéroporté) sur la grille exacte d'un raster SAR de référence via "
+"`rasterio.warp.reproject`, pour le retrait de la phase topographique lors de"
+" la formation de l'interférogramme. Utile lorsqu'un MNT global grossier "
+"(SRTM, Copernicus DEM) résout trop mal le terrain — un MNT par drone sur un "
+"cratère volcanique actif, du LiDAR sur un corps de glissement de terrain ou "
+"un MNS urbain à haute résolution."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:159
 msgid "`generate_insar_mask` — before interferogram generation"
-msgstr ""
+msgstr "`generate_insar_mask` — avant la génération de l'interférogramme"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:161
 msgid ""
@@ -275,6 +385,11 @@ msgid ""
 "structurally unusable for InSAR *before* any interferogram is even formed, "
 "independent of coherence."
 msgstr ""
+"masquage du repliement/de l'ombre fondé sur la géométrie, à partir d'un MNT "
+"et de la géométrie d'acquisition réelle (angle d'incidence, cap, côté de "
+"visée) — signale quels pixels sont structurellement inutilisables pour "
+"l'InSAR *avant* même qu'un interférogramme soit formé, indépendamment de la "
+"cohérence."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:177
 msgid ""
@@ -288,12 +403,25 @@ msgid ""
 "the radar-facing flank *and* shadow on the opposite flank simultaneously; a "
 "gentler cone (31° slope, below the incidence angle) correctly shows neither."
 msgstr ""
+"La physique : un pixel est en **repliement** (layover) lorsque la pente "
+"locale du terrain vers le radar est assez raide pour que l'angle d'incidence"
+" local tombe à zéro ou moins (la partie proche de la pente atteint le "
+"capteur avant la partie lointaine, repliant l'image sur elle-même), et en "
+"**ombre** lorsque la pente opposée au radar pousse l'angle d'incidence local"
+" à 90° ou plus (le faisceau radar ne peut physiquement pas l'atteindre). "
+"Vérifié sur un MNT synthétique en forme de cône : un cône raide (pente de "
+"76° contre une incidence de 35°) montre correctement un repliement sur le "
+"flanc face au radar *et* une ombre sur le flanc opposé simultanément ; un "
+"cône plus doux (pente de 31°, inférieure à l'angle d'incidence) n'en montre "
+"correctement aucun des deux."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:188
 msgid ""
 "`build_sbas_design_matrix_with_topo` — during SBAS inversion, after "
 "unwrapping"
 msgstr ""
+"`build_sbas_design_matrix_with_topo` — pendant l'inversion SBAS, après le "
+"déroulement"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:190
 msgid ""
@@ -303,6 +431,12 @@ msgid ""
 " DEM the interferogram stage used. This corrects for the *residual* error "
 "left over in that earlier DEM, a real, separate, later correction."
 msgstr ""
+"Il s'agit de la co-estimation standard de l'erreur résiduelle du MNT "
+"(Berardino et al. 2002 ; Fattahi & Amelung 2013), appliquée à l'empilement "
+"de phase *déjà déroulé* — et non du retrait de la phase topographique, qui a"
+" déjà eu lieu plus tôt avec le MNT utilisé à l'étape de l'interférogramme. "
+"Cela corrige l'erreur *résiduelle* restant dans ce MNT antérieur, une "
+"correction réelle, distincte et ultérieure."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:211
 msgid ""
@@ -313,30 +447,43 @@ msgid ""
 "residual column added here has been checked against this exact analytical "
 "formula to machine precision, not just \"does it run.\""
 msgstr ""
+"Physique réelle : une erreur résiduelle de MNT `epsilon` contribue une phase"
+" `(4π/λ) × (B_perp / (R·sin θ)) × epsilon`, linéaire en `epsilon` exactement"
+" comme le terme de vitesse familier est linéaire en fonction du temps — ce "
+"qui explique pourquoi les deux peuvent être résolus conjointement dans un "
+"seul système linéaire de moindres carrés par pixel. La colonne de résidu "
+"topographique ajoutée ici a été vérifiée par rapport à cette formule "
+"analytique exacte à la précision machine, et pas seulement par un simple « "
+"ça s'exécute »."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:219
 msgid "Atmospheric correction"
-msgstr ""
+msgstr "Correction atmosphérique"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:221
 msgid ""
 "Elevation-correlated (no extra deps, same R²-gating), or ERA5-based via "
 "PyAPS (`pygeofetch[insar-full]`, needs free CDS API credentials)."
 msgstr ""
+"Corrélée à l'altitude (aucune dépendance supplémentaire, même "
+"conditionnement par le R²), ou fondée sur ERA5 via PyAPS (`pygeofetch[insar-"
+"full]`, nécessite des identifiants API CDS gratuits)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:224
 msgid "Orbit files"
-msgstr ""
+msgstr "Fichiers d'orbite"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:233
 msgid ""
 "Served by ESA as `.EOF.zip`; extraction is automatic and always returns a "
 "directly-usable `.EOF` path."
 msgstr ""
+"Servis par l'ESA sous forme de `.EOF.zip` ; l'extraction est automatique et "
+"renvoie toujours un chemin `.EOF` directement utilisable."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:236
 msgid "Data validation"
-msgstr ""
+msgstr "Validation des données"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:238
 msgid ""
@@ -346,6 +493,12 @@ msgid ""
 "after estimation, and SBAS network connectivity checks before the expensive "
 "inversion runs."
 msgstr ""
+"`DataValidator` s'exécute automatiquement aux points d'entrée du pipeline, "
+"et n'est pas simplement disponible sans être utilisé : contrôles de "
+"cohérence de base des SLC en entrée (dtype complexe, NaN, plage dynamique) "
+"au début de chaque appel à `process_pair()`, contrôles de plage de la "
+"cohérence après estimation et contrôles de connectivité du réseau SBAS avant"
+" l'exécution de l'inversion coûteuse."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:251
 msgid ""
@@ -355,10 +508,16 @@ msgid ""
 "specifically checks for near-zero imaginary part everywhere, which SAR phase"
 " never has."
 msgstr ""
+"Détecte un mode de défaillance qu'un simple contrôle du dtype laisse passer "
+": des données d'amplitude seule converties en dtype complexe (`+ 0j`) "
+"réussissent à la fois le contrôle du dtype et celui de la variation "
+"d'amplitude — c'est du `complex64`, et l'amplitude varie bel et bien. Le "
+"validateur vérifie spécifiquement que la partie imaginaire est quasi nulle "
+"partout, ce qui n'arrive jamais avec la phase SAR."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:257
 msgid "Real orbit-based coregistration"
-msgstr ""
+msgstr "Corégistration réelle basée sur les orbites"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:259
 msgid ""
@@ -368,6 +527,13 @@ msgid ""
 "from a DEM's own geographic coordinates (closed-form, always converges) and "
 "located in both orbits via a zero-Doppler time solve."
 msgstr ""
+"Le mode TOPS exige une précision de corégistration d'environ 0,001 pixel "
+"(Yagüe-Martínez et al. 2016) — la corégistration géométrique basée sur les "
+"orbites est la méthode éprouvée pour l'atteindre, et non une estimation par "
+"correspondance de formes. Les points au sol sont échantillonnés directement "
+"à partir des coordonnées géographiques propres d'un MNT (forme fermée, "
+"convergence garantie) et localisés dans les deux orbites par la résolution "
+"d'un temps Doppler nul."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:279
 msgid ""
@@ -375,6 +541,10 @@ msgid ""
 "automatically. Omit any of the four and it falls back cleanly to shape-based"
 " resampling, with a clear log line stating which path ran."
 msgstr ""
+"Fournissez les quatre éléments (plus un MNT) et la corégistration basée sur "
+"les orbites est utilisée automatiquement. Omettez l'un des quatre et le "
+"traitement bascule proprement sur un rééchantillonnage basé sur la forme, "
+"avec une ligne de journal claire indiquant quel chemin a été exécuté."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:285
 msgid ""
@@ -383,10 +553,15 @@ msgid ""
 "deliberately not exported as a primary API. It fails safely, but is not "
 "recommended for unattended use."
 msgstr ""
+"**Limitation.** La fonction de plus bas niveau `solve_ground_point()` (une "
+"autre méthode de géolocalisation, pilotée par les pixels) présente une "
+"faille de fiabilité connue et n'est volontairement pas exportée comme API "
+"principale. Elle échoue de manière sûre, mais n'est pas recommandée pour un "
+"usage sans surveillance."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:289
 msgid "LOS-to-vertical conversion"
-msgstr ""
+msgstr "Conversion de la LOS vers la verticale"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:291
 msgid ""
@@ -396,6 +571,12 @@ msgid ""
 "applies the standard literature technique (Fialko et al. 2001; Hooper et al."
 " 2012): assume horizontal motion is negligible."
 msgstr ""
+"L'InSAR mesure la variation de distance selon la ligne de visée — le vrai "
+"vecteur de déplacement 3D projeté sur l'unique direction de visée du "
+"satellite. Avec une seule géométrie, cela donne une équation pour trois "
+"inconnues. `los_to_vertical_displacement()` applique la technique standard "
+"de la littérature (Fialko et al. 2001 ; Hooper et al. 2012) : on suppose que"
+" le mouvement horizontal est négligeable."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:306
 msgid ""
@@ -405,36 +586,49 @@ msgid ""
 "orbit is also nearly blind to north-south motion regardless of this "
 "conversion."
 msgstr ""
+"Il s'agit d'une hypothèse, non d'une mesure — défendable pour des sources à "
+"dominante verticale comme la subsidence due aux mines ou aux eaux "
+"souterraines, mais clairement fausse pour les glissements de terrain ou le "
+"fluage de failles avec une composante latérale. L'orbite quasi polaire de "
+"Sentinel-1 est en outre presque aveugle aux mouvements nord-sud, quelle que "
+"soit cette conversion."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:312
 msgid "Automatic visualization"
-msgstr ""
+msgstr "Visualisation automatique"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:319
 msgid ""
 "A visualization failure only logs a warning — it never blocks or loses the "
 "actual GeoTIFF output."
 msgstr ""
+"Un échec de visualisation ne génère qu'un avertissement dans le journal — il"
+" ne bloque ni ne fait jamais perdre la sortie GeoTIFF proprement dite."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:322
 msgid "GPU acceleration"
-msgstr ""
+msgstr "Accélération GPU"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:328
 msgid ""
 "Optional CuPy backend for coherence estimation and SBAS inversion's large "
 "matrix solve. `use_gpu` defaults to `False` — opt-in, not opt-out."
 msgstr ""
+"Backend CuPy facultatif pour l'estimation de la cohérence et la résolution "
+"de la grande matrice de l'inversion SBAS. `use_gpu` vaut `False` par défaut "
+"— activation volontaire, et non désactivation volontaire."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:332
 msgid "Risk mapping with uncertainty quantification"
-msgstr ""
+msgstr "Cartographie des risques avec quantification de l'incertitude"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:348
 msgid ""
 "Four distinct uncertainty-quantification methods, not one formula presented "
 "four ways:"
 msgstr ""
+"Quatre méthodes distinctes de quantification de l'incertitude, et non une "
+"seule formule présentée de quatre façons :"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "`method=`"
@@ -442,15 +636,16 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "Real basis"
-msgstr ""
+msgstr "Base réelle"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "`\"bayesian\"` (default)"
-msgstr ""
+msgstr "`\"bayesian\"` (par défaut)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "Conjugate Normal-Normal Bayesian update on the trend/slope"
 msgstr ""
+"Mise à jour bayésienne conjuguée Normale-Normale sur la tendance/pente"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "`\"monte_carlo\"`"
@@ -458,7 +653,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "Monte Carlo simulation, `n_simulations` draws"
-msgstr ""
+msgstr "Simulation de Monte Carlo, `n_simulations` tirages"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "`\"bootstrap\"`"
@@ -469,6 +664,9 @@ msgid ""
 "**Residual** bootstrap resampling — not naive time-index resampling, which "
 "would double-count temporal autocorrelation in the residuals"
 msgstr ""
+"Rééchantillonnage bootstrap des **résidus** — et non un rééchantillonnage "
+"naïf des indices temporels, qui compterait deux fois l'autocorrélation "
+"temporelle des résidus"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "`\"analytical\"`"
@@ -476,7 +674,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:283
 msgid "Closed-form analytical uncertainty propagation"
-msgstr ""
+msgstr "Propagation analytique de l'incertitude en forme fermée"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:358
 msgid ""
@@ -485,12 +683,19 @@ msgid ""
 "specific risk definition (e.g. weighting recent acceleration more heavily) "
 "can be substituted directly."
 msgstr ""
+"`risk_function` vaut par défaut un rapport entre l'amplitude de la tendance "
+"et la variabilité, mais accepte n'importe quelle fonction appelable "
+"`(data_array, time_years) -> risk_array`, de sorte qu'une définition du "
+"risque propre à un domaine (par exemple pondérer davantage l'accélération "
+"récente) peut être substituée directement."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:365
 msgid ""
 "`RiskMapper.__init__` does not modify the `ts_result` you pass in, so the "
 "same object can be reused safely afterwards."
 msgstr ""
+"`RiskMapper.__init__` ne modifie pas le `ts_result` que vous lui passez, de "
+"sorte que le même objet peut ensuite être réutilisé en toute sécurité."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:368
 msgid ""
@@ -501,6 +706,13 @@ msgid ""
 "time-step label under one of "
 "`times`/`dates`/`time`/`date`/`acquisition_dates`/`date_list`."
 msgstr ""
+"`RiskMapper` accepte directement un `TimeSeriesResult` issu de "
+"`SBASTimeSeries.invert()` (correspondant à ses attributs "
+"`.displacement`/`.dates`), ou tout objet/dict exposant un tableau 3D `(time,"
+" y, x)` sous l'une des clés "
+"`data`/`displacement`/`deformation`/`timeseries`/`stack` et une étiquette "
+"par pas de temps correspondante sous l'une des clés "
+"`times`/`dates`/`time`/`date`/`acquisition_dates`/`date_list`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:375
 msgid ""
@@ -510,16 +722,24 @@ msgid ""
 "actually contain the true value the stated fraction of the time, and how "
 "tight is it)."
 msgstr ""
+"`validate_risk_map()` compare une carte de risque calculée à des données de "
+"vérité terrain ou de référence réelles — `rmse`, `mae`, `r2` pour la "
+"précision, ainsi que `coverage` et `sharpness` pour la qualité de "
+"calibration (l'intervalle de confiance annoncé contient-il réellement la "
+"valeur vraie dans la proportion annoncée des cas, et quelle est sa finesse)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:381
 msgid "InSARProject — search to interferogram in a handful of calls"
-msgstr ""
+msgstr "InSARProject — de la recherche à l'interférogramme en quelques appels"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:383
 msgid ""
 "A high-level workflow wrapper for the full search → download → extract → "
 "interferogram chain, built on the verified lower-level pieces above."
 msgstr ""
+"Un wrapper de workflow de haut niveau pour toute la chaîne recherche → "
+"téléchargement → extraction → interférogramme, construit sur les briques de "
+"plus bas niveau vérifiées ci-dessus."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar.md:401
 msgid ""
@@ -527,3 +747,7 @@ msgid ""
 "explicit instead of wrapped inside this convenience layer, use "
 "`SLCExtractor` / `InterferogramGenerator` directly."
 msgstr ""
+"Si vous souhaitez que chaque étape ESD sensible aux bursts, de suppression "
+"de la terre plate (flat-earth) et de dépliement soit entièrement explicite "
+"plutôt qu'encapsulée dans cette couche de commodité, utilisez directement "
+"`SLCExtractor` / `InterferogramGenerator`."

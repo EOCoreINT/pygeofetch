@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,24 +26,28 @@ msgid ""
 "This page describes how pygeofetch reports failures and which parts of the "
 "download path retry automatically."
 msgstr ""
+"Esta página descreve como o pygeofetch relata falhas e quais partes do "
+"caminho de download repetem automaticamente."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:6
 msgid "Exceptions"
-msgstr ""
+msgstr "Exceções"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:8
 msgid ""
 "Provider code raises subclasses of `ProviderError`, defined in "
 "`pygeofetch.providers.base`:"
 msgstr ""
+"O código dos provedores gera subclasses de `ProviderError`, definida em "
+"`pygeofetch.providers.base`:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Exception"
-msgstr ""
+msgstr "Exceção"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Raised when"
-msgstr ""
+msgstr "Gerada quando"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`ProviderError`"
@@ -51,7 +55,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Base class for everything below."
-msgstr ""
+msgstr "Classe base de tudo o que vem a seguir."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`AuthenticationError`"
@@ -59,7 +63,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Credentials are missing, expired or rejected."
-msgstr ""
+msgstr "As credenciais estão ausentes, expiradas ou foram rejeitadas."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`SearchError`"
@@ -67,7 +71,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A search request fails."
-msgstr ""
+msgstr "Uma requisição de busca falha."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`DownloadError`"
@@ -75,7 +79,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A download request fails."
-msgstr ""
+msgstr "Uma requisição de download falha."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`QuotaExceededError`"
@@ -83,7 +87,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "The provider's quota or rate limit is exceeded."
-msgstr ""
+msgstr "A cota ou o limite de taxa do provedor é excedido."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`ProviderUnavailableError`"
@@ -91,19 +95,19 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "The provider is temporarily unavailable."
-msgstr ""
+msgstr "O provedor está temporariamente indisponível."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:19
 msgid "Other exceptions you may meet:"
-msgstr ""
+msgstr "Outras exceções que você pode encontrar:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Module"
-msgstr ""
+msgstr "Módulo"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Meaning"
-msgstr ""
+msgstr "Significado"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`CircuitBreakerOpenError`"
@@ -116,6 +120,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A provider failed repeatedly and its breaker is open (see below)."
 msgstr ""
+"Um provedor falhou repetidamente e seu breaker está aberto (veja abaixo)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`OpticalValidationError`"
@@ -127,7 +132,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A validation setting is invalid."
-msgstr ""
+msgstr "Uma configuração de validação é inválida."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`StreamingUnsupportedError`, `AOIOutsideRasterError`"
@@ -139,7 +144,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "The asset is an archive, or the AOI does not intersect the raster."
-msgstr ""
+msgstr "O asset é um arquivo compactado, ou a AOI não intersecta o raster."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`MissingDependencyError`"
@@ -153,10 +158,12 @@ msgstr ""
 msgid ""
 "An optional dependency (for example Zarr or GeoParquet support) is missing."
 msgstr ""
+"Uma dependência opcional (por exemplo, suporte a Zarr ou GeoParquet) está "
+"ausente."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:39
 msgid "Search does not raise for a failed provider"
-msgstr ""
+msgstr "A busca não gera exceção quando um provedor falha"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:41
 msgid ""
@@ -167,10 +174,17 @@ msgid ""
 "unexpectedly returns nothing. The `--on-provider-failure abort` and `retry` "
 "values are accepted but have no effect; see [Known issues](known-issues.md)."
 msgstr ""
+"`client.search()` executa os provedores em paralelo. Um provedor que atinge "
+"o tempo limite ou gera uma exceção é registrado no log e **excluído**, e os "
+"resultados dos demais provedores são retornados. Você recebe uma lista "
+"vazia, e não uma exceção, se todos os provedores falharem. Verifique o log, "
+"ou execute `pygeofetch auth test PROVIDER`, quando uma busca retornar nada "
+"inesperadamente. Os valores `--on-provider-failure abort` e `retry` são "
+"aceitos, mas não têm efeito; veja [Problemas conhecidos](known-issues.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:48
 msgid "Downloads return results, not exceptions"
-msgstr ""
+msgstr "Os downloads retornam resultados, não exceções"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:50
 msgid ""
@@ -180,40 +194,48 @@ msgid ""
 "`ProductOffline`). The list length and order always match the input. Inspect"
 " results rather than wrapping the call in `try`:"
 msgstr ""
+"`client.download()` retorna um `DownloadResult` por item de entrada. As "
+"falhas são relatadas como `status=\"failed\"` com `error` e `error_type` "
+"definidos (o nome da classe da exceção ou um valor específico do provedor, "
+"como `ProductOffline`). O tamanho e a ordem da lista sempre correspondem aos"
+" da entrada. Inspecione os resultados em vez de envolver a chamada em `try`:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:61
 msgid "Common problems"
-msgstr ""
+msgstr "Problemas comuns"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Symptom"
-msgstr ""
+msgstr "Sintoma"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Likely cause and fix"
-msgstr ""
+msgstr "Causa provável e correção"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Authentication fails"
-msgstr ""
+msgstr "A autenticação falha"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "Run `pygeofetch auth test PROVIDER`. Re-add credentials with `auth add`. "
 "Environment variables are **not** read for credentials."
 msgstr ""
+"Execute `pygeofetch auth test PROVIDER`. Adicione novamente as credenciais "
+"com `auth add`. As variáveis de ambiente **não** são lidas para credenciais."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A provider times out"
-msgstr ""
+msgstr "Um provedor atinge o tempo limite"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Raise `search run --timeout 120` (per-provider seconds, default 60)."
 msgstr ""
+"Aumente `search run --timeout 120` (segundos por provedor, padrão 60)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Zero results"
-msgstr ""
+msgstr "Zero resultados"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
@@ -222,48 +244,60 @@ msgid ""
 "range. For Copernicus Sentinel-2 L2A the processing level value is "
 "`S2MSI2A`, not `L2A`."
 msgstr ""
+"Amplie `--cloud-cover 0-30`, confirme que a bbox está no formato "
+"`min_lon,min_lat,max_lon,max_lat` (longitude primeiro) e verifique o "
+"intervalo de datas. Para o Copernicus Sentinel-2 L2A, o valor do nível de "
+"processamento é `S2MSI2A`, e não `L2A`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Keyring errors in Docker or over SSH"
-msgstr ""
+msgstr "Erros de keyring no Docker ou via SSH"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "There is no keyring daemon. Use `PyGeoFetch(auth_backend=\"file\")`, or set "
 "`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring`."
 msgstr ""
+"Não há daemon de keyring. Use `PyGeoFetch(auth_backend=\"file\")` ou defina "
+"`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Rate limiting"
-msgstr ""
+msgstr "Limitação de taxa"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "Use `download run --parallel 1 --bandwidth-limit 2MB`. Commercial providers "
 "are the strictest."
 msgstr ""
+"Use `download run --parallel 1 --bandwidth-limit 2MB`. Os provedores "
+"comerciais são os mais rígidos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Post-processing fails"
-msgstr ""
+msgstr "O pós-processamento falha"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Usually a missing `rasterio` or GDAL: `pip install \"pygeofetch[geo]\"`."
 msgstr ""
+"Geralmente falta o `rasterio` ou o GDAL: `pip install \"pygeofetch[geo]\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Downloaded data \"not found\" by your own code"
-msgstr ""
+msgstr "Dados baixados \"não encontrados\" pelo seu próprio código"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "Files are under `<destination>/<provider>/`, and archives are not extracted."
 " See [Downloading](../data-access/download.md#where-files-are-written)."
 msgstr ""
+"Os arquivos ficam em `<destination>/<provider>/`, e os arquivos compactados "
+"não são extraídos. Veja [Download](../data-access/download.md#where-files-"
+"are-written)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:73
 msgid "Download resilience"
-msgstr ""
+msgstr "Resiliência do download"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:75
 msgid ""
@@ -274,6 +308,13 @@ msgid ""
 "`retry_strategy` contains `\"jitter\"` (the default is `exponential_jitter`)"
 " the delay is multiplied by a random factor between 0.5 and 1.0."
 msgstr ""
+"**Novas tentativas.** Um download é tentado `retry_attempts + 1` vezes "
+"(padrão: 3 novas tentativas). Uma nova tentativa ocorre após uma falha do "
+"provedor, uma exceção ou um arquivo que não passa na validação após o "
+"download (por exemplo, um arquivo truncado). O atraso antes da nova "
+"tentativa *n* é `retry_delay_seconds x 2^n`, limitado a 60 segundos. Quando "
+"`retry_strategy` contém `\"jitter\"` (o padrão é `exponential_jitter`), o "
+"atraso é multiplicado por um fator aleatório entre 0,5 e 1,0."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:81
 msgid ""
@@ -283,6 +324,11 @@ msgid ""
 " with an HTTP `Range` request. See [Downloading](../data-"
 "access/download.md#resuming)."
 msgstr ""
+"**Retomada.** `resume=True` pula as cenas cujo arquivo já existe e passa na "
+"validação. Um arquivo ausente ou corrompido é baixado novamente desde o "
+"início. O provedor Copernicus, além disso, continua um arquivo parcial entre"
+" as tentativas com uma requisição HTTP `Range`. Veja [Download](../data-"
+"access/download.md#resuming)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:86
 msgid ""
@@ -294,16 +340,26 @@ msgid ""
 "supplied no checksum, nothing is compared. The `checksum_algorithm` option "
 "does not choose the algorithm."
 msgstr ""
+"**Integridade.** Após cada download, o arquivo é verificado quanto a "
+"truncamento ou corrupção. Com `verify_checksum=True`, o arquivo também é "
+"comparado com o checksum **fornecido pelo provedor** nos metadados do asset "
+"(MD5 se presente, caso contrário SHA256). Uma divergência é registrada no "
+"log e define `checksum_verified=False` no resultado. Ela não repete nem faz "
+"o download falhar. Se o provedor não forneceu checksum, nada é comparado. A "
+"opção `checksum_algorithm` não escolhe o algoritmo."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:93
 msgid ""
 "**Search cache.** Results are cached per query. `PyGeoFetch(cache_ttl=3600)`"
 " sets the lifetime, and `search run --no-cache` bypasses it."
 msgstr ""
+"**Cache de busca.** Os resultados são armazenados em cache por consulta. "
+"`PyGeoFetch(cache_ttl=3600)` define a duração, e `search run --no-cache` o "
+"ignora."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:96
 msgid "Circuit breaker"
-msgstr ""
+msgstr "Circuit breaker"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:98
 msgid ""
@@ -316,3 +372,12 @@ msgid ""
 "success resets the count. The breaker lives for the life of the `PyGeoFetch`"
 " instance, so a new process starts with all breakers closed."
 msgstr ""
+"`FederatedSearcher` mantém uma instância de provedor por ID de provedor "
+"durante todo o seu ciclo de vida e envolve cada busca de provedor no circuit"
+" breaker desse provedor. Após `failure_threshold` falhas consecutivas "
+"(padrão 5), o breaker abre e as chamadas seguintes falham imediatamente com "
+"`CircuitBreakerOpenError`, que aparece como um erro normal de busca por "
+"provedor. Após `recovery_timeout` (padrão 60 segundos), uma chamada é "
+"liberada, e um sucesso zera a contagem. O breaker vive pelo tempo de vida da"
+" instância de `PyGeoFetch`, de modo que um novo processo começa com todos os"
+" breakers fechados."

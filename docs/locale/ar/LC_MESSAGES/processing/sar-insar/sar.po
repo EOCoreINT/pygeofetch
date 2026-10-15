@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,9 @@ msgid ""
 "Pipelines](../multisensor.md) — flood mapping, vegetation disturbance, and "
 "InSAR+optical fusion all live there."
 msgstr ""
+"هل تريد دمج SAR مع نوع مستشعر *مختلف* (بصري، DEM) بدلًا من عدة تواريخ من SAR"
+" وحدها؟ راجع [خطوط المعالجة متعددة المستشعرات](../multisensor.md) — ففيها "
+"رسم خرائط الفيضانات واضطراب الغطاء النباتي ودمج InSAR والبصري."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:14
 msgid ""
@@ -36,10 +39,13 @@ msgid ""
 " them. These are from-scratch implementations, not wrappers around an "
 "external SAR toolkit."
 msgstr ""
+"ترشيح البقع (speckle)، والمعايرة الراديومترية، ورسم خرائط الفيضانات، "
+"والترابط التداخلي، وخمسة خطوط معالجة قياسية متكاملة مبنية عليها. وهي تطبيقات"
+" مكتوبة من الصفر، وليست أغلفة لأداة SAR خارجية."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:19
 msgid "Two `SARProcessor` classes exist"
-msgstr ""
+msgstr "يوجد صنفان باسم `SARProcessor`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:22
 msgid ""
@@ -50,10 +56,15 @@ msgid ""
 " for example, only the standalone class reads complex SLC input correctly "
 "for `coherence()`."
 msgstr ""
+"`client.sar` (من `PyGeoFetch()`) هو "
+"`pygeofetch.processing.sar.SARProcessor`. أما `from pygeofetch.sar import "
+"SARProcessor` فهو صنف منفصل (`pygeofetch.sar.processor.SARProcessor`) له "
+"الطرق نفسها وتنفيذه الخاص. وهما غير متزامنين: فعلى سبيل المثال، الصنف "
+"المستقل وحده يقرأ مدخلات SLC المركّبة قراءة صحيحة في `coherence()`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:28
 msgid "Overview"
-msgstr ""
+msgstr "نظرة عامة"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:30
 msgid ""
@@ -66,6 +77,13 @@ msgid ""
 "Sentinel-1 style data: speckle filtering, radiometric calibration, flood "
 "mapping from backscatter, and interferometric coherence."
 msgstr ""
+"تتصرف صور الرادار بشكل مختلف عن الصور البصرية. فهي تُقاس بإشارة القمر "
+"الصناعي نفسه، لذا تعمل ليلًا وعبر الغيوم، وتستجيب لخشونة السطح ورطوبته "
+"وبنيته لا للون. كما تحمل بقعًا (speckle)، وهي ضوضاء حبيبية ناتجة عن الطريقة "
+"التي تتجمع بها ارتدادات الرادار، ويجب تقليل هذه الضوضاء قبل تفسير الصورة. "
+"وتغطي أدوات SAR في pygeofetch الخطوات الأولى القياسية لبيانات Sentinel-1: "
+"ترشيح البقع، والمعايرة الراديومترية، ورسم خرائط الفيضانات من التشتت الخلفي، "
+"والترابط التداخلي."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:32
 msgid ""
@@ -78,12 +96,19 @@ msgid ""
 "pipelines further down chain these steps for common tasks, so you can run a "
 "whole analysis with one call and still inspect the intermediate files."
 msgstr ""
+"يوضح سير عمل نموذجي للفيضانات كيف تتكامل الأجزاء. أزل البقع من الصورة بمرشح "
+"مثل Lee، ثم حوّلها إلى ديسيبل، وطبّق عتبة بحيث يُفصل الماء المفتوح الهادئ، "
+"الذي يعكس الرادار بعيدًا عن المستشعر فيظهر داكنًا، عن اليابسة. وإذا توفرت "
+"لديك أيضًا صورة من قبل الحدث، فإن كشف التغيّر بين التاريخين أكثر موثوقية من "
+"عتبة واحدة لأنه يتجاهل الأسطح الداكنة الدائمة. وتربط خطوط المعالجة القياسية "
+"الخمسة الواردة أدناه هذه الخطوات للمهام الشائعة، فتستطيع تشغيل تحليل كامل "
+"باستدعاء واحد مع إمكانية فحص الملفات الوسيطة."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid ""
 "Synthetic SAR scene before and after Lee filtering, and the resulting flood "
 "mask"
-msgstr ""
+msgstr "مشهد SAR اصطناعي قبل ترشيح Lee وبعده، وقناع الفيضان الناتج"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:37
 msgid ""
@@ -93,10 +118,14 @@ msgid ""
 "scenes are noisier and less uniform, so choose the threshold by inspecting "
 "your own data."
 msgstr ""
+"<span class=\"gf-tag synthetic\">اصطناعي</span> مشهد رادار محاكى عولج "
+"باستخدام `client.sar`. يسارًا: التشتت الخلفي الخام مع البقع. في الوسط: بعد "
+"مرشح Lee. يمينًا: قناع الفيضان من عتبة -15 ديسيبل. المشاهد الحقيقية أكثر "
+"ضوضاءً وأقل انتظامًا، لذا اختر العتبة بفحص بياناتك الخاصة."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:40
 msgid "`client.sar`: the built-in processor"
-msgstr ""
+msgstr "`client.sar`: المعالج المدمج"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:53
 msgid ""
@@ -104,26 +133,29 @@ msgid ""
 "on tiled/COG/compressed GeoTIFFs without a full-scene decode crashing on "
 "large files."
 msgstr ""
+"تقرأ الطرق الأربع جميعها عبر آلية بديلة كتلةً بكتلة، لذا تعمل مباشرة على "
+"ملفات GeoTIFF المبلّطة/COG/المضغوطة دون أن يتعطل فك ترميز المشهد الكامل مع "
+"الملفات الكبيرة."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:57
 msgid "Despeckling"
-msgstr ""
+msgstr "إزالة البقع"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Filter"
-msgstr ""
+msgstr "المرشح"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Real algorithm"
-msgstr ""
+msgstr "الخوارزمية الفعلية"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"lee\"` (default)"
-msgstr ""
+msgstr "`\"lee\"` (الافتراضي)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Classic adaptive Lee filter — local mean/variance weighting"
-msgstr ""
+msgstr "مرشح Lee التكيفي الكلاسيكي — ترجيح المتوسط/التباين المحلي"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"enhanced_lee\"`"
@@ -131,7 +163,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Coefficient-of-variation-thresholded Lee, sharper edge preservation"
-msgstr ""
+msgstr "Lee بعتبة معامل التباين، مع حفظ أفضل للحواف"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"frost\"`"
@@ -139,7 +171,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Exponentially-weighted local averaging, adaptive to local CV"
-msgstr ""
+msgstr "متوسط محلي مرجَّح أسيًا، يتكيف مع معامل التباين المحلي"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"gamma\"`"
@@ -147,7 +179,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Gamma-MAP-style adaptive filter"
-msgstr ""
+msgstr "مرشح تكيفي على نمط Gamma-MAP"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"boxcar\"`"
@@ -155,7 +187,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Plain uniform-window averaging (fastest, least edge-preserving)"
-msgstr ""
+msgstr "متوسط بسيط بنافذة منتظمة (الأسرع، والأقل حفظًا للحواف)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:71
 msgid ""
@@ -163,16 +195,21 @@ msgid ""
 "variance threshold — set it to the real number of looks in your input if "
 "known; the default of 1 is conservative (least aggressive smoothing)."
 msgstr ""
+"يجب أن تكون `window` فردية (الافتراضي 5). تؤثر `num_looks` في عتبة تباين "
+"الضوضاء في Lee/Gamma — اضبطها على العدد الحقيقي للنظرات في مدخلاتك إن كان "
+"معروفًا؛ والقيمة الافتراضية 1 متحفظة (أقل تنعيم عدوانية)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:76
 msgid "Radiometric calibration"
-msgstr ""
+msgstr "المعايرة الراديومترية"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:82
 msgid ""
 "Converts SAR digital numbers (DN) to backscatter coefficients: `sigma0 = DN²"
 " / A²`."
 msgstr ""
+"تحوّل الأرقام الرقمية (DN) لـ SAR إلى معاملات التشتت الخلفي: `sigma0 = DN² /"
+" A²`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:87
 msgid ""
@@ -186,14 +223,22 @@ msgid ""
 "absolute, cross-scene radiometric work. That would need the Sentinel-1 "
 "calibration vectors and a terrain model."
 msgstr ""
+"**قيد.** ثابت المعايرة `A` مضبوط على `1.0` (الهوية). وهو ليس جدول معايرة لكل"
+" مشهد يُقرأ من ملف XML التوضيحي لـ Sentinel-1، وهو ما تتطلبه الدقة "
+"الراديومترية المطلقة. وتستخدم `gamma0` و`beta0` **زاوية سقوط اسمية ثابتة** "
+"(38°) بدلًا من زاوية السقوط المحلية لكل بكسل المستمدة من DEM. وهذا كافٍ "
+"للمقارنات *النسبية* داخل مشهد واحد (كشف الفيضانات وكشف التغيّر، وهو ما "
+"تستخدمه كل خطوط المعالجة أدناه من أجله). لكنه **غير كافٍ** للعمل الراديومتري"
+" المطلق عبر عدة مشاهد. فذلك يتطلب متجهات معايرة Sentinel-1 ونموذجًا "
+"للتضاريس."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:95
 msgid "Flood mapping"
-msgstr ""
+msgstr "رسم خرائط الفيضانات"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:104
 msgid "Two modes:"
-msgstr ""
+msgstr "وضعان:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:105
 msgid ""
@@ -201,42 +246,49 @@ msgid ""
 "flags water (open water is a near-specular reflector at typical incidence "
 "angles, so it returns very little energy to the sensor)."
 msgstr ""
+"**عتبة بسيطة** (دون `reference`): يشير التشتت الخلفي الأقل من `threshold` "
+"ديسيبل إلى الماء (فالماء المفتوح عاكس شبه مرآوي عند زوايا السقوط المعتادة، "
+"فيعيد طاقة ضئيلة جدًا إلى المستشعر)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:108
 msgid ""
 "**Change detection** (`reference` given): compares pre/post-event "
 "backscatter, sensitivity `abs(threshold * 0.5)`."
 msgstr ""
+"**كشف التغيّر** (مع إعطاء `reference`): يقارن التشتت الخلفي قبل الحدث وبعده،"
+" بحساسية `abs(threshold * 0.5)`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:111
 msgid "`detect_direction` matters more than it might look:"
-msgstr ""
+msgstr "`detect_direction` أهم مما قد يبدو:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Value"
-msgstr ""
+msgstr "القيمة"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Detects"
-msgstr ""
+msgstr "يكشف"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Why"
-msgstr ""
+msgstr "السبب"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "`\"decrease\"` (default)"
-msgstr ""
+msgstr "`\"decrease\"` (الافتراضي)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Backscatter dropping"
-msgstr ""
+msgstr "انخفاض التشتت الخلفي"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid ""
 "The correct signature for **open water** — a newly-flooded field becomes a "
 "smooth, near-specular surface"
 msgstr ""
+"البصمة الصحيحة لـ **الماء المفتوح** — فالحقل الذي غُمر حديثًا يصبح سطحًا "
+"أملس شبه مرآوي"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "`\"increase\"`"
@@ -244,7 +296,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Backscatter rising"
-msgstr ""
+msgstr "ارتفاع التشتت الخلفي"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid ""
@@ -252,6 +304,8 @@ msgid ""
 "building's base creates a double-bounce (ground-wall-sensor) reflection "
 "stronger than dry ground alone"
 msgstr ""
+"البصمة الصحيحة لـ **المناطق الحضرية/المبنية المغمورة** — فالماء عند قاعدة "
+"المبنى يُنتج انعكاسًا مزدوجًا (أرض-جدار-مستشعر) أقوى من الأرض الجافة وحدها"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "`\"both\"`"
@@ -259,7 +313,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Either direction"
-msgstr ""
+msgstr "أي من الاتجاهين"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid ""
@@ -267,10 +321,13 @@ msgid ""
 "one-directional threshold **structurally cannot** detect the other pattern "
 "at all, not just detect it poorly"
 msgstr ""
+"الخيار المتين عندما تجمع منطقة الاهتمام بين الماء المفتوح والفيضان الحضري "
+"الكثيف — فالعتبة أحادية الاتجاه **لا تستطيع هيكليًا** كشف النمط الآخر "
+"إطلاقًا، وليس فقط كشفه بشكل سيئ"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:119
 msgid "flood_map() alone is not a complete workflow"
-msgstr ""
+msgstr "flood_map() وحدها ليست سير عمل كاملًا"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:122
 msgid ""
@@ -279,10 +336,14 @@ msgid ""
 "[`flood_mapping_pipeline`](#flood_mapping_pipeline) below, which handles the"
 " prerequisite chain for you."
 msgstr ""
+"استدعاء `flood_map()` مباشرة على قيم DN الخام يعطي نتائج رديئة وغير موثوقة —"
+" فعتبتها بمقياس الديسيبل تفترض مدخلات معايرة. راجع "
+"[`flood_mapping_pipeline`](#flood_mapping_pipeline) أدناه، الذي يتولى سلسلة "
+"المتطلبات المسبقة نيابةً عنك."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:127
 msgid "Interferometric coherence"
-msgstr ""
+msgstr "الترابط التداخلي"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:133
 msgid ""
@@ -292,10 +353,15 @@ msgid ""
 "acquisition dates; low coherence indicates change or temporal decorrelation "
 "(vegetation growth, surface disturbance, etc.)."
 msgstr ""
+"الصيغة: `coherence = |<s1·conj(s2)>| / sqrt(<|s1|^2><|s2|^2>)`، والمدى `[0, "
+"1]`. يجب أن يكون كلا المدخلين راسترات **SLC مركّبة مسجَّلة معًا** (ملفات "
+"GeoTIFF من نوع `complex64`). يدل الترابط العالي على سطح مستقر بين تاريخي "
+"الاقتناص؛ ويدل الترابط المنخفض على تغيّر أو فقدان ترابط زمني (نمو النبات، "
+"اضطراب السطح، وغير ذلك)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:140
 msgid "`client.sar.coherence()` fails on complex SLC input"
-msgstr ""
+msgstr "تفشل `client.sar.coherence()` مع مدخلات SLC المركّبة"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:143
 msgid ""
@@ -307,6 +373,12 @@ msgid ""
 "`rasterio` and works. Until `client.sar` is fixed, use the standalone class "
 "for coherence:"
 msgstr ""
+"في الشيفرة الحالية، تقرأ `client.sar.coherence()` (وبالتالي `pygeofetch sar "
+"coherence`) النطاقات المركّبة عبر محمّل مشترك يحوّلها إلى `float32` حقيقي، "
+"فيُتجاهل الطور، ثم تفشل بالخطأ `ValueError: cannot reshape array of size ..."
+" into shape ...`. أما الطريقة نفسها في الصنف المستقل "
+"`pygeofetch.sar.SARProcessor` فتقرأ النطاقات المركّبة مباشرة بـ `rasterio` "
+"وتعمل. إلى أن يُصلَح `client.sar`، استخدم الصنف المستقل للترابط:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:155
 msgid ""
@@ -316,10 +388,15 @@ msgid ""
 "pipeline. See [Known issues](../../reference/known-issues.md#sar-coherence-"
 "fails-on-complex-input)."
 msgstr ""
+"تقع صيغة الترابط نفسها في "
+"`pygeofetch.utils.sar_math.estimate_interferometric_coherence` ويشترك فيها "
+"الصنف المستقل وخط معالجة اضطراب الغطاء النباتي متعدد المستشعرات. راجع "
+"[المشكلات المعروفة](../../reference/known-issues.md#sar-coherence-fails-on-"
+"complex-input)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:160
 msgid "Five standard SAR processing pipelines"
-msgstr ""
+msgstr "خمسة خطوط معالجة SAR قياسية"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:162
 msgid ""
@@ -329,12 +406,18 @@ msgid ""
 "wrong (e.g. flood mapping on raw, uncalibrated DN gives poor results, a "
 "common mistake)."
 msgstr ""
+"ينسّق `pygeofetch.sar.pipelines` العمليات الذرية أعلاه في خمسة سير عمل "
+"متكاملة واسعة الاستخدام — لأن تذكّر الخطوات المسبقة التي يتطلبها كل تحليل "
+"فعلًا وترتيبها الصحيح أمر يسهل الخطأ فيه (مثلًا رسم خرائط الفيضانات على DN "
+"خام غير معاير يعطي نتائج رديئة، وهذا خطأ شائع)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:168
 msgid ""
 "Every pipeline takes a `pygeofetch.sar.SARProcessor` instance (the "
 "standalone class, not `client.sar`)."
 msgstr ""
+"يأخذ كل خط معالجة نسخة من `pygeofetch.sar.SARProcessor` (الصنف المستقل، وليس"
+" `client.sar`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:184
 msgid ""
@@ -343,6 +426,10 @@ msgid ""
 "useful for inspecting exactly what each step produced), and `metadata` "
 "(pipeline-specific extras, like a change mask path or pixel counts)."
 msgstr ""
+"يعيد كل خط معالجة `PipelineResult`: ويضم `success` و`final_output` و`stages`"
+" (كل `ProcessingResult` وسيط، وليس النهائي فقط — وهو مفيد لفحص ما أنتجته كل "
+"خطوة بالضبط) و`metadata` (إضافات خاصة بخط المعالجة، مثل مسار قناع التغيّر أو"
+" أعداد البكسلات)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:190
 msgid "`standard_grd_preprocessing_pipeline`"
@@ -358,6 +445,12 @@ msgid ""
 "additive once log-converted, which Lee/boxcar-style filters (designed for "
 "additive noise) handle better."
 msgstr ""
+"سلسلة Sentinel-1 GRD القياسية التي يبدأ بها تقريبًا كل تحليل SAR: المعايرة "
+"(DN ← sigma0/gamma0/beta0)، ثم إزالة البقع — بهذا الترتيب وليس العكس. فإزالة"
+" البقع من DN خام غير معاير تخلط التشتت الخلفي بمقياس الأرقام الرقمية الخام "
+"للمستشعر، والترشيح في فضاء الديسيبل (الافتراضي في المعايرة) ممارسة قياسية "
+"لأن ضوضاء البقع تقترب من السلوك الجمعي بعد التحويل اللوغاريتمي، وهو ما "
+"تتعامل معه مرشحات Lee/boxcar (المصممة للضوضاء الجمعية) بشكل أفضل."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:208
 msgid "`flood_mapping_pipeline`"
@@ -369,6 +462,9 @@ msgid ""
 "if doing change-based detection) before running `flood_map()` — enforcing "
 "the prerequisite chain rather than leaving it to the caller."
 msgstr ""
+"يعاير ويزيل البقع من صورة حدث الفيضان (ومن مرجع ما قبل الحدث، إذا كان الكشف "
+"قائمًا على التغيّر) قبل تشغيل `flood_map()` — فارضًا سلسلة المتطلبات المسبقة"
+" بدلًا من تركها للمستدعي."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:223
 msgid "`change_detection_pipeline`"
@@ -382,6 +478,11 @@ msgid ""
 "log-ratio change metric reduces to a simple subtraction (`post_dB - pre_dB`)"
 " — standard math, not an approximation."
 msgstr ""
+"كشف تغيّر السعة الثنائي الزمن القياسي: يعاير ويزيل البقع من كلا التاريخين، "
+"ثم يشير إلى البكسلات التي تغيّر تشتتها الخلفي بأكثر من "
+"`change_threshold_db`. وبما أن الراسترين المعايرين كليهما بالديسيبل أصلًا، "
+"فإن مقياس التغيّر بنسبة اللوغاريتم يتحول إلى طرح بسيط (`post_dB - pre_dB`) —"
+" رياضيات قياسية، وليست تقريبًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:232
 msgid ""
@@ -389,6 +490,9 @@ msgid ""
 "clear-cut detection, construction/urban change, and disaster damage "
 "assessment (collapsed structures show a sharp backscatter change)."
 msgstr ""
+"متعدد الأغراض إلى ما يتجاوز رسم خرائط الفيضانات: رسم خرائط آثار الحرائق، "
+"وكشف إزالة الغابات والقطع الشامل، والتغيّر العمراني/الإنشائي، وتقييم أضرار "
+"الكوارث (تُظهر المنشآت المنهارة تغيّرًا حادًا في التشتت الخلفي)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:243
 msgid "`coherence_disturbance_pipeline`"
@@ -404,6 +508,12 @@ msgid ""
 "deforestation and selective logging (vegetation disturbance decorrelates "
 "radar phase almost immediately), and general surface disturbance monitoring."
 msgstr ""
+"يحسب الترابط التداخلي بين اقتناصين SLC مسجَّلين معًا، ثم يشير إلى البكسلات "
+"منخفضة الترابط كقناع اضطراب. ويكمّل `change_detection_pipeline` أعلاه: فذلك "
+"يحتاج إلى بيانات GRD (السعة) ويكشف تغيّر مقدار التشتت الخلفي؛ أما هذا فيحتاج"
+" إلى بيانات SLC (المحافظة على الطور) ويكشف فقدان استقرار الطور. الاستخدامات "
+"الشائعة: إزالة الغابات والقطع الانتقائي للأشجار (فاضطراب الغطاء النباتي "
+"يُفقد طور الرادار ترابطه تقريبًا فورًا)، ورصد اضطراب السطح عمومًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:260
 msgid "`bright_target_detection_pipeline`"
@@ -419,6 +529,12 @@ msgid ""
 "larger background window (excluding the guard region so a target's own "
 "bright halo doesn't inflate its own background estimate)."
 msgstr ""
+"كشف الأهداف الساطعة القياسي CA-CFAR (معدل الإنذار الكاذب الثابت بمتوسط "
+"الخلايا): يعاير — لكن **دون إزالة البقع** عمدًا، لأن ترشيح البقع سيمسح "
+"بالضبط الأهداف الصغيرة الساطعة التي يبحث عنها هذا الخط — ثم يشير إلى "
+"البكسلات الأكثر سطوعًا بشكل ملحوظ من خلفيتها المحلية، المقدَّرة من حلقة "
+"بكسلات بين نافذة الحماية ونافذة خلفية أكبر (باستثناء منطقة الحماية حتى لا "
+"يضخّم الهالة الساطعة للهدف نفسه تقدير خلفيته)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:271
 msgid ""
@@ -428,10 +544,14 @@ msgid ""
 "equipment) — a real, complementary technique to optical detection for "
 "conditions optical can't cover: cloud cover and night-time passes."
 msgstr ""
+"الاستخدامات الشائعة: كشف السفن والمراكب (المراقبة البحرية، ورصد الصيد غير "
+"القانوني)، وعمومًا أي جسم صغير شديد الانعكاس للرادار على خلفية متجانسة "
+"نسبيًا (منشآت معدنية، مركبات، معدات) — وهي تقنية حقيقية مكمّلة للكشف البصري "
+"في الظروف التي يعجز عنها البصري: الغطاء السحابي والمرور الليلي."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:287
 msgid "The standalone `pygeofetch.sar.SARProcessor`"
-msgstr ""
+msgstr "الصنف المستقل `pygeofetch.sar.SARProcessor`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:298
 msgid ""
@@ -439,10 +559,13 @@ msgid ""
 "`calibrate`, `flood_map`, `coherence`) and is what the five pipelines above "
 "expect."
 msgstr ""
+"لدى `SARProcessor` الطرق نفسها الموجودة في `client.sar` (`despeckle` "
+"و`calibrate` و`flood_map` و`coherence`) وهو ما تتوقعه خطوط المعالجة الخمسة "
+"أعلاه."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:301
 msgid "The `backend=` parameter is not implemented"
-msgstr ""
+msgstr "المعامل `backend=` غير منفَّذ"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:304
 msgid ""
@@ -456,3 +579,12 @@ msgid ""
 "workflow are therefore not reachable through the public API. See [Known "
 "issues](../../reference/known-issues.md#sar-backends-are-not-wired-in)."
 msgstr ""
+"تصف سلسلة التوثيق في الوحدة `pygeofetch.sar` والإضافتان `sar` و`ost` واجهة "
+"خلفية قابلة للتوصيل: `SARProcessor(backend=\"sarxarray\")` أو "
+"`SARProcessor(backend=\"ost\")`. وفي الشيفرة الحالية ليس لـ `SARProcessor` "
+"دالة `__init__`، لذا ترفع `SARProcessor(backend=\"sarxarray\")` الخطأ "
+"`TypeError: SARProcessor() takes no arguments`. أما وحدات المساعدة "
+"`pygeofetch/sar/_native.py` و`_sarxarray.py` و`_ost.py` فهي موجودة لكن لا "
+"شيء يستوردها. وبالتالي لا يمكن الوصول إلى تصحيح التضاريس (`terrain_correct`)"
+" وسير عمل `sarxarray` عبر الواجهة العامة. راجع [المشكلات "
+"المعروفة](../../reference/known-issues.md#sar-backends-are-not-wired-in)."

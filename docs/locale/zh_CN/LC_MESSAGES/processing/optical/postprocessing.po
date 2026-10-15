@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,11 +23,11 @@ msgstr "后处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:3
 msgid "Turn a raster analysis result into GIS-ready vectors and statistics."
-msgstr ""
+msgstr "将栅格分析结果转换为可用于 GIS 的矢量和统计数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:13
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:15
 msgid ""
@@ -39,6 +39,9 @@ msgid ""
 "statistics are computed for each zone you supply, and finished rasters are "
 "compressed or written as Cloud-Optimized GeoTIFFs."
 msgstr ""
+"栅格结果并不总是最终产物。规划人员和管理人员往往需要能在 GIS "
+"中打开的多边形、按地块或行政区汇总的统计数据，以及小到便于共享的文件。后处理工具会把分析结果转换为这些形式：阈值化的栅格变为多边形，多边形经过平滑和规整成为更整洁的形状，针对你提供的每个分区计算统计数据，完成的栅格则被压缩或写成"
+" Cloud-Optimized GeoTIFF。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:17
 msgid ""
@@ -48,10 +51,11 @@ msgid ""
 "vector tools, such as buffer, centroids, dissolve and overlay, then prepare "
 "the layers for the final map or report."
 msgstr ""
+"典型的流程从指数或类别图开始，将满足条件的像元矢量化，清理几何，然后把每个地块或行政边界下的栅格汇总成表格。随后，缓冲区、质心、融合（dissolve）和叠加（overlay）等矢量到矢量工具会为最终的地图或报告准备图层。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:19
 msgid "Raster → vector"
-msgstr ""
+msgstr "栅格 → 矢量"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:28
 msgid ""
@@ -62,18 +66,21 @@ msgid ""
 "`min_area` discards polygons smaller than that area in CRS units² — useful "
 "for dropping single-pixel noise from a noisy classification."
 msgstr ""
+"将栅格（例如分类结果或二值掩膜）转换为矢量多边形。`threshold` 会在矢量化之前应用二值截断（像素 ≥ threshold → 1，否则为 "
+"0）——省略它则直接对栅格已有的离散值进行矢量化。`format` 接受 `\"geojson\"`、`\"gpkg\"` 或 "
+"`\"shp\"`。`min_area` 会丢弃面积小于该值（以 CRS 单位²计）的多边形——可用于去除噪声较多的分类结果中的单像素噪点。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:36
 msgid "Vector cleanup"
-msgstr ""
+msgstr "矢量清理"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "What it does"
-msgstr ""
+msgstr "功能说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`smooth(input, tolerance=1.0, method=\"simplify\")`"
@@ -83,7 +90,7 @@ msgstr ""
 msgid ""
 "Simplify/smooth boundaries — `\"simplify\"` (Douglas-Peucker) or "
 "`\"buffer\"` (buffer then un-buffer, rounds sharp corners)"
-msgstr ""
+msgstr "简化/平滑边界 — `\"simplify\"`（Douglas-Peucker 算法）或 `\"buffer\"`（先缓冲再反向缓冲，使尖锐的拐角变圆）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`regularize(input, corner_threshold_deg=30.0)`"
@@ -94,6 +101,7 @@ msgid ""
 "Orthogonalize building footprints or irregular polygons — snaps edges to "
 "right angles where the corner angle is within `corner_threshold_deg` of 90°"
 msgstr ""
+"对建筑物轮廓或不规则多边形进行正交化 — 当拐角角度与 90° 的差值在 `corner_threshold_deg` 以内时，将边吸附为直角"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`buffer(input, distance=10.0, cap_style=\"round\", join_style=\"round\")`"
@@ -105,6 +113,8 @@ msgid ""
 "`\"round\"`/`\"flat\"`/`\"square\"`. `join_style`: "
 "`\"round\"`/`\"mitre\"`/`\"bevel\"`"
 msgstr ""
+"按 `distance`（CRS "
+"单位）对几何对象做缓冲。`cap_style`：`\"round\"`/`\"flat\"`/`\"square\"`。`join_style`：`\"round\"`/`\"mitre\"`/`\"bevel\"`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`centroids(input)`"
@@ -112,7 +122,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "Extract centroid points from polygon/line geometries"
-msgstr ""
+msgstr "从多边形/线几何对象中提取质心点"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`add_geometry_metrics(input)`"
@@ -123,10 +133,11 @@ msgid ""
 "Adds `area_m2`, `perimeter_m`, and `compactness` (Polsby-Popper — 1.0 = a "
 "perfect circle) columns"
 msgstr ""
+"添加 `area_m2`、`perimeter_m` 和 `compactness`（Polsby-Popper 紧致度 — 1.0 = 完美的圆）列"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:54
 msgid "Zonal statistics"
-msgstr ""
+msgstr "分区统计"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:63
 msgid ""
@@ -135,10 +146,13 @@ msgid ""
 "touching a zone's boundary, not just pixels whose center falls inside it — "
 "matters for small zones relative to pixel size."
 msgstr ""
+"默认对每个分区计算 `mean`、`median`、`min`、`max`、`std`、`count`；传入 `stats` "
+"可只计算其中一部分。`all_touched=True` 会包含所有接触分区边界的像元，而不仅是中心落在分区内的像元 — "
+"对于相对像元尺寸较小的分区，这一点很重要。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:68
 msgid "Compression & Cloud Optimized GeoTIFF"
-msgstr ""
+msgstr "压缩与云优化 GeoTIFF"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:77
 msgid ""
@@ -149,10 +163,14 @@ msgid ""
 "cloud-native raster tools (rasterio, GDAL VSI, STAC-based viewers) expect "
 "for efficient partial reads."
 msgstr ""
+"`compress()` 应用无损 GeoTIFF "
+"压缩（`\"lzw\"`、`\"deflate\"`、`\"zstd\"`、`\"packbits\"`），并在 `result.metadata` "
+"中报告实测的压缩比和文件大小 — 并非估算值。`cog()` 将文件转换为云优化 GeoTIFF（内部分块 + "
+"概视图），这是大多数云原生栅格工具（rasterio、GDAL VSI、基于 STAC 的查看器）为实现高效部分读取所期望的格式。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:85
 msgid "Vector ↔ vector overlay"
-msgstr ""
+msgstr "矢量 ↔ 矢量叠加"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:87
 msgid ""
@@ -161,6 +179,9 @@ msgid ""
 "three are thin wrappers around GeoPandas's own overlay engine, so behavior "
 "matches `geopandas.overlay`/`dissolve`/`sjoin` if you already know them."
 msgstr ""
+"根据几何关系对两个矢量图层进行合并、融合和关联 — 与上文的 `zonal_stats` 不同，后者是将*栅格*与矢量分区关联。这三个函数是对 "
+"GeoPandas 自身叠加引擎的轻量封装，因此如果你已熟悉 "
+"`geopandas.overlay`/`dissolve`/`sjoin`，其行为与之一致。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`overlay(left, right, output, how=\"intersection\")`"
@@ -172,6 +193,9 @@ msgid ""
 "`\"union\"`, `\"difference\"` (left minus right), "
 "`\"symmetric_difference\"`, or `\"identity\"`"
 msgstr ""
+"按几何关系组合两个图层 — "
+"`\"intersection\"`、`\"union\"`、`\"difference\"`（左减右）、`\"symmetric_difference\"`"
+" 或 `\"identity\"`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`dissolve(input, output, by=None, aggfunc=\"first\")`"
@@ -181,7 +205,7 @@ msgstr ""
 msgid ""
 "Merge polygons sharing the same value in the `by` column into single "
 "geometries; omit `by` to merge everything into one"
-msgstr ""
+msgstr "将 `by` 列中值相同的多边形合并为单个几何对象；省略 `by` 则将全部合并为一个"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`spatial_join(left, right, output, how=\"inner\", predicate=\"intersects\")`"
@@ -193,6 +217,8 @@ msgid ""
 "(`\"intersects\"`, `\"within\"`, `\"contains\"`, `\"touches\"`, "
 "`\"crosses\"`, `\"overlaps\"`) instead of a shared key column"
 msgstr ""
+"按空间关系（`\"intersects\"`、`\"within\"`、`\"contains\"`、`\"touches\"`、`\"crosses\"`、`\"overlaps\"`）而非共享键列，将"
+" `right` 的属性附加到 `left` 上"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:112
 msgid ""
@@ -203,6 +229,9 @@ msgid ""
 "the result, unlike raster outputs which have a sensible default naming "
 "convention."
 msgstr ""
+"当两者的 CRS 不同时，这三个函数都会自动将 `right` 重投影以匹配 `left` 的 CRS — "
+"经过检查并处理，而不是任由其悄悄产生错误或空的结果。这三个函数都需要显式的 `output` "
+"路径，因为合适的矢量格式（GeoJSON、Shapefile、GeoPackage）取决于你如何使用结果，这与具有合理默认命名约定的栅格输出不同。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:119
 msgid ""
@@ -211,3 +240,5 @@ msgid ""
 "an edge. If you need points *inside* a polygon, not on its boundary, use "
 "`predicate=\"within\"` instead."
 msgstr ""
+"**一个值得直接指出的常见错误**：`predicate=\"intersects\"`（`spatial_join` "
+"的默认值）也会匹配仅在边缘相接的要素。如果你需要的是多边形*内部*的点，而不是位于其边界上的点，请改用 `predicate=\"within\"`。"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,9 @@ msgid ""
 "original run (docstrings, inline comments, and printed diagnostics), not "
 "written after the fact to sound plausible."
 msgstr ""
+"一次完整的端到端 InSAR 运行——从搜索到经过验证的垂直速度图——在此根据一个实际执行过的 notebook "
+"逐阶段重现，而不是它的简化版本。下面每个代码块都是 pygeofetch "
+"的用法；每段说明都基于与原始运行一起记录的实际推理（文档字符串、行内注释和打印的诊断信息），而不是事后为了听上去合理而写的。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:13
 msgid ""
@@ -38,10 +41,12 @@ msgid ""
 "project, that context is kept, because it explains why a step is written the"
 " way it is."
 msgstr ""
+"本页引用的每个函数都存在于已安装的软件包中。如果原始 notebook "
+"记录了项目期间发现并修复的问题，这些背景信息会被保留，因为它解释了某一步为何那样写。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:17
 msgid "Results of the reference run"
-msgstr ""
+msgstr "参考运行的结果"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:19
 msgid ""
@@ -53,6 +58,10 @@ msgid ""
 "that repository. The figures are **real**: they are outputs of the notebook "
 "this page reproduces."
 msgstr ""
+"下面各阶段在墨西哥城 Iztapalapa 的 Sentinel-1 SLC 数据上端到端运行：轨道 147，降轨，2016 年 7 月至 2017 年"
+" 9 月，使用 30 m SRTM DEM 和精密轨道文件。该项目发布为 [EOCoreINT/mexico-subsidence-"
+"project](https://github.com/EOCoreINT/mexico-subsidence-"
+"project)，本节中的图件和数字均来自该仓库。这些图件是**真实的**：它们是本页所重现的 notebook 的输出。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:21
 msgid ""
@@ -65,12 +74,15 @@ msgid ""
 "before downloading so you can see how the radar swaths cover the area of "
 "interest."
 msgstr ""
+"**筛选场景。** 搜索找到 115 个候选场景，下载了 67 个，每个约 7.5 GB，总计约 500 "
+"GB。预检关卡已经剔除了将无法使用的场景，检查内容包括截断、AOI 覆盖、60 天时间连通性限制，以及根据小型标注文件判断的 burst "
+"时序，项目估计这避免了约 360 GB 的不必要下载。下载之前会先把场景绘制在地图上，这样你就能看到雷达条带如何覆盖感兴趣区域。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:23
 msgid ""
 "Map of Sentinel-1 scene footprints in cyan over Mexico with the yellow area "
 "of interest"
-msgstr ""
+msgstr "墨西哥上空以青色显示的 Sentinel-1 场景覆盖范围以及黄色的感兴趣区域地图"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:26
 msgid ""
@@ -79,6 +91,8 @@ msgid ""
 "basemap. The yellow square is the area of interest, and the pop-up shows the"
 " scene metadata. Click the image to enlarge."
 msgstr ""
+"<span class=\"gf-tag real\">Real</span> 来自 Copernicus 的 2017-06-19 "
+"Sentinel-1B 搜索覆盖范围，使用 `MapViewer` 绘制在卫星底图上。黄色方框为感兴趣区域，弹出窗口显示场景元数据。点击图片可放大。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:29
 msgid ""
@@ -89,11 +103,13 @@ msgid ""
 "deformation mode. The wrapped phase shows the fringes, and the unwrapped "
 "phase turns them into continuous values."
 msgstr ""
+"**从干涉图到解缠相位。** 配对时要求时间基线不超过 24 天、垂直基线不超过 150 m：共 78 幅干涉图，按 8×4 多视以获得约 20 m "
+"的地面分辨率，经 Goldstein 滤波，并使用 SNAPHU 在形变模式下解缠。缠绕相位显示条纹，而解缠相位则将条纹转化为连续数值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:31
 msgid ""
 "Wrapped interferometric phase with regular colour fringes across the scene"
-msgstr ""
+msgstr "整个场景中带有规则彩色条纹的缠绕干涉相位"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:34
 msgid ""
@@ -103,12 +119,15 @@ msgid ""
 "orbital-geometry ramp rather than ground motion, which is why flattening and"
 " later deramping are part of the chain. Noisy patches mark low coherence."
 msgstr ""
+"<span class=\"gf-tag real\">Real</span> 2017-01-02 至 2017-01-08 "
+"配对的缠绕干涉相位。颜色循环即为条纹，每条条纹代表 2 pi "
+"的相位变化。密集而规则的条纹很可能是平滑的轨道几何斜坡，而不是地面运动，这就是为什么处理链中包含去平地效应和后续去斜坡。有噪声的区域表示相干性较低。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:37
 msgid ""
 "Radar amplitude, coherence map and coherence histogram for an example "
 "interferogram"
-msgstr ""
+msgstr "某示例干涉图的雷达振幅、相干性图和相干性直方图"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:40
 msgid ""
@@ -118,12 +137,15 @@ msgid ""
 "phase better than the rest. The horizontal bands most likely follow the "
 "burst structure of Sentinel-1 TOPS data."
 msgstr ""
+"<span class=\"gf-tag real\">Real</span> 某示例干涉图的振幅、相干性以及相干性直方图。整景平均相干性为 "
+"0.51，城市代理区平均为 0.61，因此城市区域比其余区域更能保持相位。水平条带很可能沿袭了 Sentinel-1 TOPS 数据的 burst "
+"结构。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:43
 msgid ""
 "Unwrapped phase shown as a smooth ramp from left to right for the pair "
 "2017-01-02 to 2017-01-08"
-msgstr ""
+msgstr "2017-01-02 至 2017-01-08 配对的解缠相位，呈现为从左到右的平滑斜坡"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:46
 msgid ""
@@ -132,6 +154,8 @@ msgid ""
 "ramp is most likely an orbital contribution, not deformation. The project's "
 "SBAS step applies a robust deramping before estimating motion."
 msgstr ""
+"<span class=\"gf-tag real\">Real</span> 同一配对的解缠相位，该场景中 100% "
+"的像元可靠。从左到右的平滑斜坡很可能是轨道贡献，而不是形变。项目的 SBAS 步骤在估计运动之前应用了稳健的去斜坡处理。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:49
 msgid ""
@@ -146,12 +170,16 @@ msgid ""
 "magnitude are consistent, though this is a directional check and not a "
 "validation."
 msgstr ""
+"**时间序列及其揭示的内容。** 在排除未通过可靠性检查的配对之后，剩余的网络是碎片化的：58 个采集日期分裂为 17 "
+"个连通组，反演在最大的一组上运行，即由 11 幅干涉图连接的 10 个日期。保留下来的垂直速度（第 2 至第 98 百分位）约为 -35.5 至 "
+"-2.9 cm/年，负值表示沉降。作为对比，Cigna 和 Tapete (2021) 基于 2014 至 2020 年 300 多个场景，报告 "
+"Iztapalapa 的峰值约为 -39 cm/年，因此符号和大致量级是一致的，但这只是方向性检查，而不是验证。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:51
 msgid ""
 "Four panels: mean vertical velocity, uncertainty map, reliable pixel mask "
 "and displacement time series"
-msgstr ""
+msgstr "四个面板：平均垂直速度、不确定性图、可靠像元掩膜和位移时间序列"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:54
 msgid ""
@@ -161,6 +189,9 @@ msgid ""
 "reliable-pixel mask, with white pixels valid. Bottom right: vertical "
 "displacement of the high-subsidence cluster over the 10 dates of this group."
 msgstr ""
+"<span class=\"gf-tag real\">Real</span> 最大连通日期组的 SBAS "
+"输出。左上：仅在可靠像元处的平均垂直速度，单位为 mm/年。右上：不确定性图。左下：可靠像元掩膜，白色像元为有效。右下：该组 10 "
+"个日期内高沉降簇的垂直位移。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:58
 msgid ""
@@ -176,10 +207,15 @@ msgid ""
 "runs and returns a plausible sign and magnitude, not as a subsidence map to "
 "act on."
 msgstr ""
+"**先看覆盖范围，再看数字。** 只有约 0.2% 的像元（最终反演中 10,686 个中的 22 个）拥有足够多高于 0.40 "
+"阈值的相干配对，因此这些速度描述的是少量稳定散射体，而不是整个城市。反演基于 10 个日期和 11 个配对，且 2,211 个可能的配对中有 96.5%"
+" 被排除。结果尚未与 GNSS、水准测量或外部 InSAR 产品进行验证，并且项目自己的 README "
+"列出了各阶段之间一些无法解释的数量差异（例如下载了 67 个场景，而网络中只有 58 "
+"个日期）。请将这些数字视为对该处理链能够运行并返回合理符号和量级的演示，而不是可据以采取行动的沉降图。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:61
 msgid "Why this AOI"
-msgstr ""
+msgstr "为什么选择这个 AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:63
 msgid ""
@@ -193,6 +229,11 @@ msgid ""
 "magnitude* of subsidence are directionally consistent with that published "
 "result — a positive control, not a synthetic benchmark."
 msgstr ""
+"墨西哥城的 Iztapalapa 区是 ESA 官方的两个 SNAP–StaMPS 验证场地之一（Foumelis "
+"等，2018）：城市、稳定散射体、平坦的湖床盆地——并且有已发表的沉降信号可用来核对结果。Cigna 和 Tapete（2021，*Remote "
+"Sensing of Environment*）报告 Iztapalapa 的峰值为 **−39.1 cm/年**，来源于 2014–2020 年间 "
+"300 多个 Sentinel-1 场景。本次运行使用的数据要少得多（约 14 "
+"个月的时间窗口），专门用于检验沉降的*符号和大致量级*是否与该已发表结果在方向上一致——这是一个阳性对照，而不是合成基准。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:119
 msgid ""
@@ -201,10 +242,12 @@ msgid ""
 "*physically justified* reference point (rather than an arbitrary corner "
 "pixel) matters — see Stage 10."
 msgstr ""
+"`CERRO_LAT`/`CERRO_LON` 是 Cerro de la Estrella——AOI 内一处已知稳定的岩石露头，后续用作 SBAS "
+"参考像元。选择*有物理依据*的参考点（而不是任意的角落像元）很重要——参见阶段 10。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:124
 msgid "Stage 1 — Search, then track filtering"
-msgstr ""
+msgstr "阶段 1——搜索，然后过滤轨道"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:143
 msgid ""
@@ -212,6 +255,8 @@ msgid ""
 "sequence that was independently hand-written for two real projects — and had"
 " confirmed bugs both times:"
 msgstr ""
+"`search_and_select_consistent_stack()` "
+"是一次经过测试的单一调用，取代了为两个真实项目分别独立手写的一系列步骤——而且两次都出现了已确认的 bug："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:147
 msgid ""
@@ -219,12 +264,14 @@ msgid ""
 "archive to its most recent ~6 months and hiding the 2019 mine-reopening "
 "period the whole study was about."
 msgstr ""
+"**Obuasi**：`max_results` 的默认值过低（500），在无提示的情况下将存档截断为最近约 6 个月，隐藏了整个研究所针对的 2019"
+" 年矿山重新开采时期。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:150
 msgid ""
 "**Mexico City**: a naive \"keep whichever result arrives first\" per-date "
 "dedup picked the *wrong* adjacent orbit slice outright for several dates."
-msgstr ""
+msgstr "**墨西哥城**：朴素的“保留最先到达的结果”的逐日期去重，在若干日期上直接选中了*错误的*相邻轨道切片。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:153
 msgid ""
@@ -232,18 +279,20 @@ msgid ""
 " selected dates (38%) with a scene showing exactly **0.0%** AOI coverage — "
 "not a soft edge effect, a wrong result picked outright."
 msgstr ""
+"**Obuasi 再次出现，且是独立发生的**：同样的朴素去重模式导致 240 个选定日期中有 91 个（38%）的场景 AOI 覆盖率恰好为 "
+"**0.0%**——不是轻微的边缘效应，而是直接选错了结果。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:158
 msgid ""
 "Every one of those was only found by manually inspecting output after the "
 "fact. The consolidated function now:"
-msgstr ""
+msgstr "这些问题每一个都是事后通过人工检查输出才发现的。整合后的函数现在会："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:161
 msgid ""
 "Searches with `max_results` raised well above any plausible archive size for"
 " one site/period."
-msgstr ""
+msgstr "以远高于单个地点/时段任何合理存档规模的 `max_results` 进行搜索。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:163
 msgid ""
@@ -252,6 +301,8 @@ msgid ""
 "computed from the true, rotated footprint polygon, not an axis-aligned bbox "
 "check or arrival order."
 msgstr ""
+"按日历日期对结果分组；对于有多个候选的日期（相邻轨道切片），保留 **AOI 覆盖率最高**的那个——根据真实的、旋转后的覆盖多边形计算，而不是轴对齐的"
+" bbox 检查或到达顺序。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:167
 msgid ""
@@ -260,6 +311,8 @@ msgid ""
 "AOI from more than one relative orbit; mixing tracks in one InSAR stack "
 "corrupts geometry-dependent steps downstream)."
 msgstr ""
+"对去重后的集合运行 `select_consistent_geometry()`，它按轨道分组，仅保留最大的同轨道组（Sentinel-1 "
+"会从多个相对轨道重访同一 AOI；在一个 InSAR 堆栈中混用轨道会破坏下游依赖几何的步骤）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:172
 msgid ""
@@ -267,14 +320,16 @@ msgid ""
 " any straggler that still doesn't reach `min_coverage_fraction` (default "
 "`0.99`)."
 msgstr ""
+"运行最后一次覆盖检查——如果第 2 步生效，结果应当是干净的；剔除仍未达到 `min_coverage_fraction`（默认 "
+"`0.99`）的任何漏网场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:176
 msgid "Preview the search results on a map before committing to anything:"
-msgstr ""
+msgstr "在做出任何决定之前，先在地图上预览搜索结果："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:184
 msgid "Stage 2 — Preflight: the burst-synchronization gate"
-msgstr ""
+msgstr "阶段 2——预检：burst 同步关卡"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:204
 msgid ""
@@ -285,6 +340,9 @@ msgid ""
 "connectivity, all *before* spending bandwidth on a download that would only "
 "reveal the same problems hours later, mid-pipeline."
 msgstr ""
+"`PreflightGate` 统筹所有下载前检查，并自动修复能修复的问题——burst 时序族分类（关于为什么 TOPS 模式下 burst "
+"同步很重要，参见 [InSAR 处理](insar.md) 中的“基于轨道的真实配准”一节）、AOI "
+"覆盖和网络连通性，所有这些都在花费带宽下载之*前*完成，否则下载只会在数小时后的流程中途暴露出同样的问题。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:213
 msgid ""
@@ -294,14 +352,16 @@ msgid ""
 "family); continuing with the stale pre-preflight list silently un-does that "
 "filtering."
 msgstr ""
+"**这里真正重要的修复**：使用 `report.selected`，而不是阶段 1 中的 `selected` "
+"变量。预检可以合理地进一步缩减堆栈（剔除 burst 时序与多数族不匹配的日期）；如果继续使用预检之前的过时列表，会在无提示的情况下撤销这一过滤。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:219
 msgid "Stage 3 — Download the filtered scenes"
-msgstr ""
+msgstr "阶段 3——下载过滤后的场景"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:233
 msgid "Stage 4 — Fetch precise orbit files"
-msgstr ""
+msgstr "阶段 4——获取精密轨道文件"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:253
 msgid ""
@@ -312,21 +372,24 @@ msgid ""
 "doesn't crash the whole run; it just proceeds with fewer orbit-enabled dates"
 " until precise orbits catch up."
 msgstr ""
+"精密轨道（POEORB）由 ESA 发布，延迟约 21 天。最近三周内的场景可能只有*重构*轨道（延迟约 3 "
+"小时，精度较低）——当两者都尚不存在时，`fetch_orbit_file` 返回 `None` "
+"而不是抛出异常，因此部分就绪的堆栈不会使整个运行崩溃；它只是以更少的启用轨道的日期继续进行，直到精密轨道可用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:260
 msgid "Stage 5 — Real DEM (OpenTopography)"
-msgstr ""
+msgstr "阶段 5——真实 DEM（OpenTopography）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:281
 msgid ""
 "The DEM does double duty: topographic phase removal in interferogram "
 "formation (Stage 7), and elevation-correlated atmospheric correction (Stage "
 "8)."
-msgstr ""
+msgstr "DEM 一物两用：在干涉图形成中去除地形相位（阶段 7），以及与高程相关的大气校正（阶段 8）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:285
 msgid "Stage 6 — Data-driven burst-family classification"
-msgstr ""
+msgstr "阶段 6——数据驱动的 burst 族分类"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:312
 msgid ""
@@ -338,6 +401,10 @@ msgid ""
 " function fixed on this same project (a crash on non-object `sync_results`, "
 "and an off-by-one at the exact minimum-workable-date boundary)."
 msgstr ""
+"`select_burst_synchronized_dates()` 是一次经过测试的单一调用，取代了手动决策序列：筛查每对日期之间的 burst "
+"同步偏移，将其分类为多数（同步良好）族与少数族，并在多数族足够大时仅使用多数族——关于此函数在同一项目中修复的两个 bug（对非对象 "
+"`sync_results` 的崩溃，以及在恰好达到最少可用日期数的边界处的差一错误），参见 [InSAR 处理](insar.md) "
+"中的堆栈选择说明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:321
 msgid ""
@@ -346,15 +413,17 @@ msgid ""
 "classification runs against — an easy, silent mismatch if left to a default "
 "guess."
 msgstr ""
+"`swath_hints` 具体很重要：传入*实际的*子条带（此处为 `\"iw3\"`），而不是留空，会改变分类所针对的 burst "
+"数据——如果交给默认猜测，这是一个容易发生且无提示的不匹配。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:326
 msgid ""
 "Stage 7 — Extraction, with a physics pre-filter before the expensive step"
-msgstr ""
+msgstr "阶段 7——提取，并在昂贵的步骤之前做物理预过滤"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:328
 msgid "7a. Sub-swath-consistent extraction"
-msgstr ""
+msgstr "7a. 子条带一致的提取"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:347
 msgid ""
@@ -366,11 +435,14 @@ msgid ""
 "work with — trimming too tightly here silently starves ESD of the data it "
 "needs."
 msgstr ""
+"`extract_full_swath=False` 并不是微小的优化——提取整个 Sentinel-1 IW 条带而不是 AOI "
+"大小的裁剪，已被证实会在实际硬件上导致内存不足崩溃。提取器会在 AOI 裁剪区域周围添加方位向边距（默认数百个像元），专门让阶段 8 中的 ESD "
+"步骤仍有足够的 burst *重叠*可用——此处裁剪得太紧会在无提示的情况下使 ESD 缺乏所需的数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:355
 msgid ""
 "7b. Strict physics pre-filter, before generating a single interferogram"
-msgstr ""
+msgstr "7b. 严格的物理预过滤，在生成任何一幅干涉图之前"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:404
 msgid ""
@@ -381,10 +453,13 @@ msgid ""
 "after an interferogram exists, which is why it's applied later (Stage 9's "
 "network selection), not here."
 msgstr ""
+"此关卡纯粹是为了节省计算时间：干涉图形成（阶段 8）是代价高昂的步骤，而四个真实剔除标准中的三个（burst "
+"同步、时间基线、垂直基线）在运行它*之前*就能知道。第四个——真实相干性——要在干涉图存在之后才能知道，这就是为什么它在稍后（阶段 9 "
+"的网络选择）而不是这里应用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:412
 msgid "Stage 8 — Interferogram formation"
-msgstr ""
+msgstr "阶段 8——干涉图形成"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:452
 msgid ""
@@ -397,6 +472,12 @@ msgid ""
 "log line stating which path ran — see [InSAR Processing](insar.md) for the "
 "full technical basis."
 msgstr ""
+"同时提供 "
+"`reference_safe_zip`/`secondary_safe_zip`/`reference_orbit_file`/`secondary_orbit_file`"
+" 四者（以及 DEM）会激活基于轨道的配准——根据轨道状态矢量得到逐像元偏移，再经粗略互相关和 Powell "
+"相干性最大化精化，并在其上叠加对离群值稳健的多项式拟合（平均 RMS GCP "
+"剔除）。省略这四者中的任何一个都会干净地回退到基于形状的重采样，并有一行清晰的日志说明运行的是哪条路径——完整的技术依据参见 [InSAR "
+"处理](insar.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:461
 msgid ""
@@ -405,10 +486,13 @@ msgid ""
 "visualization failure only logs a warning, it never blocks or loses the "
 "actual data."
 msgstr ""
+"`result.save(..., auto_visualize=True)` 会在 GeoTIFF 旁边写出 "
+"`wrapped_phase.png`、`coherence.png` 和 "
+"`amplitude.png`——可视化失败只会记录一条警告，绝不会阻塞或丢失实际数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:466
 msgid "Inspecting results before moving on"
-msgstr ""
+msgstr "在继续之前检查结果"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:488
 msgid ""
@@ -416,6 +500,7 @@ msgid ""
 "actually is over the built-up urban core, where InSAR performs best. Using "
 "bright, stable amplitude pixels as an urban proxy:"
 msgstr ""
+"一个有用的诊断：整景相干性会低估一个配对在建成的城市核心区的实际可用程度，而 InSAR 在那里表现最好。以明亮、稳定的振幅像元作为城市代理："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:499
 msgid ""
@@ -424,10 +509,11 @@ msgid ""
 "decorrelation urban scatterers versus vegetated or bare-soil areas elsewhere"
 " in the scene."
 msgstr ""
+"城市代理区的相干性通常明显高于整景相干性——这恰恰是 InSAR 在持久、低去相干的城市散射体上，相对于场景中其他地方的植被或裸土区域所预期的表现。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:504
 msgid "Stage 9 — Atmospheric correction"
-msgstr ""
+msgstr "阶段 9——大气校正"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:521
 msgid ""
@@ -437,10 +523,12 @@ msgid ""
 "correction section for the gating threshold and the ERA5/PyAPS alternative "
 "when credentials are available)."
 msgstr ""
+"与高程相关的校正不需要外部凭据——这是一个由 R² 控制的相位对高程的线性回归，仅在拟合足够强、值得信任时才应用（关于控制阈值，以及有凭据时可用的 "
+"ERA5/PyAPS 替代方案，参见 [InSAR 处理](insar.md) 的大气校正部分）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:528
 msgid "Stage 10 — Phase unwrapping, every pair"
-msgstr ""
+msgstr "阶段 10——相位解缠，每一对"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:564
 msgid ""
@@ -449,10 +537,12 @@ msgid ""
 "again) — SNAPHU's confidence estimate needs the full look count to be "
 "meaningful, not just this stage's own factor."
 msgstr ""
+"`nlooks` 即 `TOTAL_LOOKS`——干涉图形成时的多视（8×4）与此解缠阶段自身额外的多视（同样 8×4）的*合计*——SNAPHU "
+"的置信度估计需要完整的视数才有意义，而不仅仅是此阶段自身的因子。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:570
 msgid "Stage 11 — georeferenced reference pixel"
-msgstr ""
+msgstr "阶段 11——地理配准的参考像元"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:603
 msgid ""
@@ -467,10 +557,15 @@ msgid ""
 "and only searches nearby if that exact point isn't reliably connected in "
 "enough pairs, rather than picking an arbitrary corner pixel."
 msgstr ""
+"**在 InSAR 时间序列中，参考像元几乎比任何其他因素都更重要。** "
+"相位解缠只能恢复相对于每幅干涉图任意偏移量的相位——如果在没有共同的、*稳定的*参考像元的情况下组合解缠后的干涉图，会破坏整个结果。在对这个代码库本身的一次验证运行中，在合成沉降盆地内部做参考，对于"
+" 100 mm/年的真实信号给出了 103 mm/年的 RMSE；而经验证稳定的参考则给出 8.84 mm/年的 "
+"RMSE。`select_reliable_reference_pixel()` 从一个*有物理依据*的候选点（Cerro de la "
+"Estrella——已知稳定的岩石）出发，仅当该点在足够多的配对中没有可靠连通时才在附近搜索，而不是随意选取角落像元。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:616
 msgid "Stage 12 — Baseline- and coherence-optimized network"
-msgstr ""
+msgstr "阶段 12——基线与相干性优化的网络"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:650
 msgid ""
@@ -481,10 +576,14 @@ msgid ""
 "selected pairs was usable after bridging, and the network was disconnected. "
 "Coherence-weighted selection with redundancy avoids that failure."
 msgstr ""
+"`build_sbas_network()` "
+"权衡的是*实测相干性*，而不仅仅是几何垂直基线。在这次墨西哥城运行中，仅基于基线的生成树从一个配准很差的子集中选中了 5 对中的 4 对（平均相干性 "
+"0.25），而忽略了相干性为 0.4 至 0.56 的同堆栈配对。桥接之后，选中的 5 对中只有 1 "
+"对可用，网络也是不连通的。带冗余的相干性加权选择避免了这种失败。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:656
 msgid "Stage 13 — Bridging: exclude unreliable pairs, never corrupt the rest"
-msgstr ""
+msgstr "阶段 13——桥接：排除不可靠的配对，绝不破坏其余部分"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:692
 msgid ""
@@ -496,10 +595,13 @@ msgid ""
 "of these is dropped — it never gets a chance to introduce a wrong reference-"
 "relative offset into the rest of the network."
 msgstr ""
+"三项相互独立的失败检查，每一项都是排除而不是在无提示的情况下破坏：参考像元自身所在的连通分量完全不可靠（`conncomp == "
+"0`）；参考像元位于一个小的孤立岛中，而不是一个较大的连通区域（`< 100` 个像元）；或者 `bridge_unwrap_regions()` "
+"自身的桥接计算失败。未通过其中任何一项的配对都会被丢弃——它绝没有机会向网络的其余部分引入错误的、相对于参考的偏移。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:701
 msgid "Stage 14 — SBAS inversion, LOS-to-vertical conversion, despiking"
-msgstr ""
+msgstr "阶段 14——SBAS 反演、LOS 到垂直的转换、去尖峰"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:741
 msgid ""
@@ -513,10 +615,15 @@ msgid ""
 "single-pixel outliers while preserving spatial structure like the subsidence"
 " bowl itself."
 msgstr ""
+"`los_to_vertical_displacement()` 应用了标准的文献技术（Fialko 等，2001；Hooper "
+"等，2012）：在假设水平运动可以忽略的前提下，将单一视线方向的 LOS "
+"测量投影到垂直方向——这在此处是站得住脚的（沉降是以垂直方向为主导的过程），但对有横向分量的滑坡或断层蠕变则是错误的；完整的注意事项参见 [InSAR "
+"处理](insar.md)。`despike_velocity()` "
+"是一个中值滤波清理步骤，而不是平滑/模糊步骤——它针对孤立的单像元离群值，同时保留沉降盆地本身这样的空间结构。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:752
 msgid "Summary and reproducibility"
-msgstr ""
+msgstr "总结与可复现性"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:754
 msgid ""
@@ -524,6 +631,9 @@ msgid ""
 "Environment* — peak −39.1 cm/year in Iztapalapa, from 300+ Sentinel-1 "
 "scenes, 2014–2020, a full 6-year SBAS network."
 msgstr ""
+"**已发表的参考文献**：Cigna & Tapete (2021)，*Remote Sensing of "
+"Environment*——Iztapalapa 峰值 −39.1 cm/年，来自 300 多个 Sentinel-1 场景，2014–2020 "
+"年，完整的 6 年 SBAS 网络。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:758
 msgid ""
@@ -534,6 +644,7 @@ msgid ""
 "records every processing parameter, correction and quality metric next to "
 "the output, so the run stays reproducible and auditable."
 msgstr ""
+"本次运行从头到尾重新搜索、下载并处理了数据。它不是对已发表研究的复现。它检验的是沉降的*符号和大致量级*是否与之一致，所用数据少得多，时间窗口也短得多。来源清单（`write_provenance_manifest()`）会在输出旁记录每一个处理参数、校正和质量指标，使这次运行保持可复现和可审计。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:791
 msgid ""
@@ -543,10 +654,12 @@ msgid ""
 " and velocities. The provenance manifest makes any specific run checkable "
 "afterwards."
 msgstr ""
+"[参考运行的结果](#results-of-the-reference-run) "
+"中的数字属于针对当时存档的一次执行。它们取决于你运行当天有哪些场景可用，因此预期会得到不同的数量和速度。来源清单使得事后可以核对任何特定的运行。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:793
 msgid "What this demonstrates end to end"
-msgstr ""
+msgstr "这端到端地演示了什么"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/insar-mexico-city-tutorial.md:795
 msgid ""
@@ -559,3 +672,7 @@ msgid ""
 "provenance manifest ties every parameter back to the run. Each stage is "
 "documented in the sections above and on the [InSAR](insar.md) page."
 msgstr ""
+"这些阶段在单个 AOI 上串联成一个可复现的工作流：几何一致的搜索（阶段 1）、burst 同步预检关卡（阶段 "
+"2）、带有防内存不足的方位向边距的子条带一致提取（阶段 6）、基于轨道的配准（阶段 8）、相干性加权网络（阶段 "
+"12）、带有孤岛排除的、有物理依据的参考像元（阶段 11-13），以及带去尖峰的 LOS 到垂直转换（阶段 "
+"14）。来源清单将每个参数与这次运行关联起来。每个阶段都在上面的各节以及 [InSAR](insar.md) 页面中有说明。"

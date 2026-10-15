@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,14 +26,16 @@ msgid ""
 "pygeofetch requires **Python 3.9 or newer**. The package metadata lists "
 "Python 3.9 to 3.12 as tested; newer versions may work but are not declared."
 msgstr ""
+"pygeofetch 需要 **Python 3.9 或更高版本**。软件包元数据中列出经过测试的版本为 Python 3.9 至 "
+"3.12；更新的版本可能可以使用，但并未声明支持。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "Notes"
-msgstr ""
+msgstr "备注"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "3.9"
@@ -43,7 +45,7 @@ msgstr ""
 msgid ""
 "Supported. `eval_type_backport` is installed automatically so Pydantic can "
 "evaluate `str"
-msgstr ""
+msgstr "受支持。会自动安装 `eval_type_backport`，以便 Pydantic 能够解析 `str"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "3.10 to 3.12"
@@ -51,21 +53,21 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "Supported and declared."
-msgstr ""
+msgstr "受支持且已声明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid "3.13 and later"
-msgstr ""
+msgstr "3.13 及更高版本"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:0
 msgid ""
 "Not declared. Some optional dependencies (for example `keplergl`) do not "
 "build there."
-msgstr ""
+msgstr "未声明。某些可选依赖项（例如 `keplergl`）在这些版本上无法构建。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:12
 msgid "Basic install"
-msgstr ""
+msgstr "基本安装"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:18
 msgid ""
@@ -76,6 +78,10 @@ msgid ""
 "optional extras, so a basic install stays light. A virtual environment is "
 "recommended:"
 msgstr ""
+"核心安装会添加 `httpx`、`click`、`pydantic`、`pydantic-"
+"settings`、`PyYAML`、`cryptography`、`keyring`、`tenacity`、`python-"
+"dateutil`、`requests`、`anyio`、`numpy` 和 `tqdm`。它提供搜索、需认证的下载、缓存和命令行界面。处理功能属于可选"
+" extra，因此基本安装保持轻量。建议使用虚拟环境："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:31
 msgid ""
@@ -87,22 +93,27 @@ msgid ""
 " shapely`, or use the `geo` extra, which includes `shapely`. See [Known "
 "issues](../reference/known-issues.md#undeclared-dependencies)."
 msgstr ""
+"命令行界面会导入 `rich`，光学验证会导入 `shapely`。两者都未在 `pyproject.toml` "
+"的核心依赖项中声明（`meta.yaml` 中的 conda 配方确实列出了 `rich`，因此 conda 安装不受影响）。如果 "
+"`pygeofetch --help` 失败并报 `ModuleNotFoundError: No module named 'rich'`，或者导入 "
+"`shapely` 失败，请运行 `pip install rich shapely`，或使用包含 `shapely` 的 `geo` "
+"extra。参见[已知问题](../reference/known-issues.md#undeclared-dependencies)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:38
 msgid "Optional extras"
-msgstr ""
+msgstr "可选 extra"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Extra"
-msgstr ""
+msgstr "Extra"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Installs"
-msgstr ""
+msgstr "安装内容"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Needed for"
-msgstr ""
+msgstr "用途"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[geo]`"
@@ -110,13 +121,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "rasterio, geopandas, pyarrow, shapely, pyproj"
-msgstr ""
+msgstr "rasterio, geopandas, pyarrow, shapely, pyproj"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "Raster post-processing (reproject, COG, clip, compress), optical validation,"
 " and [streaming](../data-access/streaming.md)"
-msgstr ""
+msgstr "栅格后处理（重投影、COG、裁剪、压缩）、光学验证和[流式读取](../data-access/streaming.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[processor]`"
@@ -127,12 +138,16 @@ msgid ""
 "rasterio, rioxarray, xarray, eoreader, spyndex, scipy, scikit-image, "
 "geopandas"
 msgstr ""
+"rasterio, rioxarray, xarray, eoreader, spyndex, scipy, scikit-image, "
+"geopandas"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "[Spectral indices](../processing/optical/spectral-indices.md) (including the"
 " 6 geology indices), Landsat extraction, time series"
 msgstr ""
+"[光谱指数](../processing/optical/spectral-indices.md)（包括 6 个地质指数）、Landsat "
+"提取、时间序列"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[sar]`"
@@ -140,7 +155,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "sarxarray"
-msgstr ""
+msgstr "sarxarray"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
@@ -148,6 +163,8 @@ msgid ""
 "currently reachable; see [Known issues](../reference/known-issues.md#sar-"
 "backends-are-not-wired-in)."
 msgstr ""
+"用于 `SARProcessor` 的 `sarxarray` 后端。该后端目前无法访问；参见[已知问题](../reference/known-"
+"issues.md#sar-backends-are-not-wired-in)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[insar]`"
@@ -155,13 +172,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "scipy, shapely, xarray"
-msgstr ""
+msgstr "scipy, shapely, xarray"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "The [InSAR](../processing/sar-insar/insar.md) pipeline (SLC extraction to "
 "SBAS) and its advanced safeguards"
-msgstr ""
+msgstr "[InSAR](../processing/sar-insar/insar.md) 流水线（从 SLC 提取到 SBAS）及其高级保障机制"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[insar-full]`"
@@ -169,12 +186,12 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "snaphu, scipy (add `insar` as well)"
-msgstr ""
+msgstr "snaphu, scipy（同时添加 `insar`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "SNAPHU phase unwrapping (falls back to a `snaphu` executable on your `PATH`)"
-msgstr ""
+msgstr "SNAPHU 相位解缠（会回退到你 `PATH` 中的 `snaphu` 可执行文件）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[ost]`"
@@ -182,7 +199,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "opensartoolkit"
-msgstr ""
+msgstr "opensartoolkit"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
@@ -190,6 +207,8 @@ msgid ""
 "SNAP). Not currently reachable; see [Known issues](../reference/known-"
 "issues.md#sar-backends-are-not-wired-in)."
 msgstr ""
+"用于 `\"ost\"` 后端（距离-多普勒地形校正，需要 SNAP）。目前无法访问；参见[已知问题](../reference/known-"
+"issues.md#sar-backends-are-not-wired-in)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[cloud]`"
@@ -197,11 +216,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "boto3, pystac, planetary-computer"
-msgstr ""
+msgstr "boto3, pystac, planetary-computer"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "S3 and GCS export, and the test suite"
-msgstr ""
+msgstr "S3 和 GCS 导出，以及测试套件"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[viz]`"
@@ -209,11 +228,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "matplotlib, leafmap, folium, plotly and others"
-msgstr ""
+msgstr "matplotlib、leafmap、folium、plotly 等"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`Plotter` and `MapViewer`"
-msgstr ""
+msgstr "`Plotter` 和 `MapViewer`"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[viz-3d]`"
@@ -221,13 +240,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "keplergl"
-msgstr ""
+msgstr "keplergl"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "3D Kepler.gl maps. Separate because `keplergl` does not build on every "
 "platform."
-msgstr ""
+msgstr "3D Kepler.gl 地图。单独列出是因为 `keplergl` 并非在所有平台上都能构建。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[notebook]`"
@@ -235,11 +254,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "ipython, ipywidgets, jupyter"
-msgstr ""
+msgstr "ipython, ipywidgets, jupyter"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Notebook workflows"
-msgstr ""
+msgstr "Notebook 工作流程"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[schedule]`"
@@ -247,11 +266,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "croniter"
-msgstr ""
+msgstr "croniter"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Cron scheduling of pipelines"
-msgstr ""
+msgstr "流水线的 Cron 调度"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[dev]`"
@@ -259,11 +278,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "pytest, pytest-cov, pytest-mock, ruff, black, mypy, build, twine"
-msgstr ""
+msgstr "pytest, pytest-cov, pytest-mock, ruff, black, mypy, build, twine"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Linting, formatting, type checking, building"
-msgstr ""
+msgstr "代码检查、格式化、类型检查、构建"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[test]`"
@@ -275,11 +294,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Everything needed to run `pytest tests/`"
-msgstr ""
+msgstr "运行 `pytest tests/` 所需的全部内容"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pygeofetch[full]` (alias `[all]`)"
-msgstr ""
+msgstr "`pygeofetch[full]`（别名 `[all]`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
@@ -291,34 +310,35 @@ msgid ""
 "Everything that installs reliably across platforms. `viz-3d` and `sar` are "
 "excluded: `sarxarray` has no release that supports Python 3.9."
 msgstr ""
+"所有能在各平台上可靠安装的内容。`viz-3d` 和 `sar` 被排除在外：`sarxarray` 没有支持 Python 3.9 的发布版本。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:57
 msgid "Combine extras as needed:"
-msgstr ""
+msgstr "可按需组合多个 extra："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:64
 msgid "Which extra do I need?"
-msgstr ""
+msgstr "我需要哪个 extra？"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "I want to..."
-msgstr ""
+msgstr "我想要……"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Install"
-msgstr ""
+msgstr "安装"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Search and download only"
-msgstr ""
+msgstr "仅搜索和下载"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "*(none)*"
-msgstr ""
+msgstr "*（无）*"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Clip, reproject or convert downloads"
-msgstr ""
+msgstr "裁剪、重投影或转换下载的数据"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`geo`"
@@ -326,11 +346,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Stream an area of interest"
-msgstr ""
+msgstr "流式读取感兴趣区域"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Use the full spectral index catalogue"
-msgstr ""
+msgstr "使用完整的光谱指数目录"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`processor`"
@@ -338,15 +358,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Process Sentinel-1 SLC with InSAR"
-msgstr ""
+msgstr "使用 InSAR 处理 Sentinel-1 SLC"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`insar,insar-full` (the second adds unwrapping)"
-msgstr ""
+msgstr "`insar,insar-full`（后者增加解缠功能）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Schedule pipelines with cron"
-msgstr ""
+msgstr "使用 cron 调度流水线"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`schedule`"
@@ -354,7 +374,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Use the notebook examples"
-msgstr ""
+msgstr "使用 notebook 示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`notebook`, `viz`"
@@ -362,7 +382,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Contribute or run the tests"
-msgstr ""
+msgstr "参与贡献或运行测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`test`"
@@ -370,7 +390,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Draw maps and plots"
-msgstr ""
+msgstr "绘制地图和图表"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`viz`"
@@ -378,7 +398,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:78
 msgid "Other install routes"
-msgstr ""
+msgstr "其他安装途径"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:80
 msgid ""
@@ -387,18 +407,20 @@ msgid ""
 "`conda-forge` before the extras: they are much easier to obtain as binaries "
 "there than to build with pip."
 msgstr ""
+"**conda。** 仓库为核心包提供了 conda 配方（`meta.yaml`）。请在安装 extra 之前先从 `conda-forge` 安装 "
+"`rasterio` 和 `gdal` 等地理空间库：在那里获取二进制包比用 pip 构建要容易得多。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:90
 msgid "**Docker.** See [Docker](../reference/docker.md)."
-msgstr ""
+msgstr "**Docker。** 参见 [Docker](../reference/docker.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:92
 msgid "**Upgrade.**"
-msgstr ""
+msgstr "**升级。**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:98
 msgid "Development install"
-msgstr ""
+msgstr "开发安装"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:107
 msgid ""
@@ -407,18 +429,21 @@ msgid ""
 "export or the `noaa_big_data` provider fail with `ModuleNotFoundError`. For "
 "linting and type checking only, `pip install -e \".[dev]\"` is lighter."
 msgstr ""
+"测试套件位于扁平的 `tests/` 目录中。请使用 `[test]`，而不是 `[dev,all]`：`[dev,all]` 不包含 "
+"`boto3`，因此涉及 S3 导出或 `noaa_big_data` 提供商的测试会因 `ModuleNotFoundError` "
+"而失败。若仅用于代码检查和类型检查，`pip install -e \".[dev]\"` 更轻量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:111
 msgid "Install problems"
-msgstr ""
+msgstr "安装问题"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Symptom"
-msgstr ""
+msgstr "症状"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Fix"
-msgstr ""
+msgstr "解决方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`ModuleNotFoundError: rich` on `pygeofetch --help`"
@@ -426,65 +451,66 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pip install rich`. See the note above."
-msgstr ""
+msgstr "`pip install rich`。参见上面的说明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`ModuleNotFoundError: boto3` in tests"
-msgstr ""
+msgstr "测试中出现 `ModuleNotFoundError: boto3`"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Install `[test]`, which includes `cloud`."
-msgstr ""
+msgstr "安装 `[test]`，它包含 `cloud`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`rasterio` fails to build"
-msgstr ""
+msgstr "`rasterio` 构建失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "Use a wheel (`pip install --upgrade pip` first) or install from `conda-"
 "forge`."
-msgstr ""
+msgstr "使用 wheel（先运行 `pip install --upgrade pip`），或从 `conda-forge` 安装。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`pip install \"pygeofetch[viz]\"` is slow or fails on one package"
-msgstr ""
+msgstr "`pip install \"pygeofetch[viz]\"` 很慢，或在某个软件包上失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "`viz` pulls about two dozen packages. Install only `matplotlib` for basic "
 "plots."
-msgstr ""
+msgstr "`viz` 会引入大约二十几个软件包。若只需基本绘图，只安装 `matplotlib` 即可。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "`keplergl` fails to build"
-msgstr ""
+msgstr "`keplergl` 构建失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "It is isolated in `viz-3d`; skip it unless you need Kepler.gl maps."
-msgstr ""
+msgstr "它被隔离在 `viz-3d` 中；除非需要 Kepler.gl 地图，否则请跳过。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Keyring errors over SSH or in Docker"
-msgstr ""
+msgstr "通过 SSH 或在 Docker 中出现 keyring 错误"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid ""
 "There is no keyring daemon. See [Error handling](../reference/error-"
 "handling.md#common-problems)."
 msgstr ""
+"没有 keyring 守护进程。参见[错误处理](../reference/error-handling.md#common-problems)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "SNAPHU not found when unwrapping"
-msgstr ""
+msgstr "解缠时找不到 SNAPHU"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:30
 msgid "Install `insar-full`, or put a `snaphu` executable on `PATH`."
-msgstr ""
+msgstr "安装 `insar-full`，或将 `snaphu` 可执行文件放到 `PATH` 中。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:123
 msgid "Verify the install"
-msgstr ""
+msgstr "验证安装"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/installation.md:130
 msgid ""
@@ -492,3 +518,5 @@ msgid ""
 "dependency groups are importable, the keyring backend, and connectivity to "
 "three open providers. See [Diagnostics](diagnostics.md)."
 msgstr ""
+"`doctor` 会检查 Python 版本、必需的软件包、哪些可选依赖组可以导入、keyring "
+"后端，以及到三个开放提供商的连通性。参见[诊断](diagnostics.md)。"

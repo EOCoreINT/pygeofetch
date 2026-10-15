@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,17 +24,17 @@ msgstr "Python API 参考"
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:3
 msgid ""
 "Use pygeofetch as a library in your own scripts, notebooks, or applications."
-msgstr ""
+msgstr "在你自己的脚本、笔记本或应用程序中将 pygeofetch 作为库来使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:6
 msgid ""
 "The main entry point is the `PyGeoFetch` class. Data models live in "
 "`pygeofetch.models`."
-msgstr ""
+msgstr "主要入口是 `PyGeoFetch` 类。数据模型位于 `pygeofetch.models`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:13
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:15
 msgid ""
@@ -48,6 +48,12 @@ msgid ""
 "`client.preprocess`, `client.sar` and `client.post`, so that one import is "
 "enough for most workflows."
 msgstr ""
+"Python API 围绕一个对象，即 `PyGeoFetch` 客户端，以及一小组模型来组织。你用 `SearchQuery` 描述请求，调用 "
+"`client.search()` 得到一个 `SatelliteData` 影像列表，再把这些影像传给 `client.download()` 或 "
+"`client.stream()`。下载行为由 `DownloadOptions` 控制，每次下载都会返回一个记录结果的 "
+"`DownloadResult`。处理能力以命名空间的形式暴露在同一个客户端上，例如 "
+"`client.indices`、`client.preprocess`、`client.sar` 和 "
+"`client.post`，因此对大多数工作流来说，一次导入就足够了。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:17
 msgid ""
@@ -57,10 +63,12 @@ msgid ""
 "below list the fields of each model, the methods of the client and the "
 "namespaces it carries."
 msgstr ""
+"由于这些模型是 Pydantic 类，它们会验证输入，并且可以与字典和 JSON "
+"相互转换，这使得存储查询、记录结果或根据配置构建请求都很容易。下面各节列出了每个模型的字段、客户端的方法以及它所携带的命名空间。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:19
 msgid "Full workflow example"
-msgstr ""
+msgstr "完整工作流示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:65
 msgid "`SearchQuery`"
@@ -73,18 +81,20 @@ msgid ""
 "restricted, which most providers reject or answer with very large result "
 "sets."
 msgstr ""
+"描述要搜索什么。每个字段都是可选的。如果没有区域（`bbox`、`geometry` 或 "
+"`geometry_geojson`），搜索就不受空间限制，大多数提供方会拒绝这样的请求，或返回非常庞大的结果集。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Field"
-msgstr ""
+msgstr "字段"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Type"
-msgstr ""
+msgstr "类型"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Description"
-msgstr ""
+msgstr "说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bbox`"
@@ -100,6 +110,9 @@ msgid ""
 "`\"minlon,minlat,maxlon,maxlat\"` string, or a dict — all coerced to "
 "`BoundingBox`."
 msgstr ""
+"接受 `(minlon, minlat, maxlon, maxlat)` "
+"元组、`BoundingBox`、`\"minlon,minlat,maxlon,maxlat\"` 字符串或字典 — 均会被转换为 "
+"`BoundingBox`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`geometry`"
@@ -111,7 +124,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "GeoJSON geometry dict. Alternative to `bbox`."
-msgstr ""
+msgstr "GeoJSON 几何字典。可替代 `bbox`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`start_date` / `end_date`"
@@ -123,7 +136,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Temporal filter."
-msgstr ""
+msgstr "时间过滤条件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`cloud_cover_min` / `cloud_cover_max`"
@@ -135,7 +148,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "0–100. Default `0` / `100`."
-msgstr ""
+msgstr "0–100。默认 `0` / `100`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`satellites`"
@@ -155,7 +168,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Sensor/instrument names."
-msgstr ""
+msgstr "传感器/仪器名称。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`collections`"
@@ -163,7 +176,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Data collection identifiers."
-msgstr ""
+msgstr "数据集合标识符。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`processing_levels`"
@@ -184,7 +197,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid ""
 "Spatial resolution in metres. **Not** `resolution_min`/`resolution_max`."
-msgstr ""
+msgstr "空间分辨率，单位为米。**不是** `resolution_min`/`resolution_max`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`product_type`"
@@ -216,7 +229,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "1–10000. Default 100."
-msgstr ""
+msgstr "1–10000。默认 100。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`sort_by`"
@@ -240,7 +253,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `False`. **Not** a `sort_order: \"asc\"/\"desc\"` string."
-msgstr ""
+msgstr "默认 `False`。**不是** `sort_order: \"asc\"/\"desc\"` 字符串。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`providers`"
@@ -248,7 +261,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Restrict search to specific providers."
-msgstr ""
+msgstr "将搜索限制在特定提供商。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`cql2_filter`"
@@ -256,7 +269,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "CQL2 expression, STAC-capable providers only."
-msgstr ""
+msgstr "CQL2 表达式，仅适用于支持 STAC 的提供商。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`on_provider_failure`"
@@ -272,7 +285,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Per-provider timeout in seconds. Default 60."
-msgstr ""
+msgstr "每个提供方的超时时间，单位为秒。默认为 60。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`ids`"
@@ -280,7 +293,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Retrieve specific item IDs."
-msgstr ""
+msgstr "检索指定的条目 ID。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`geometry_geojson`"
@@ -288,7 +301,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "GeoJSON geometry dict (alternative to `bbox`)."
-msgstr ""
+msgstr "GeoJSON 几何字典（可替代 `bbox`）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`pass_direction`"
@@ -296,7 +309,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "SAR orbit pass, `\"ASCENDING\"` or `\"DESCENDING\"`."
-msgstr ""
+msgstr "SAR 轨道方向，`\"ASCENDING\"` 或 `\"DESCENDING\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`page` / `page_size`"
@@ -304,7 +317,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Pagination, default `1` / `100` (`page_size` 1-1000)."
-msgstr ""
+msgstr "分页，默认 `1` / `100`（`page_size` 为 1-1000）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`provider_filters`"
@@ -316,7 +329,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Extra filters per provider, keyed by provider ID."
-msgstr ""
+msgstr "每个提供商的额外过滤条件，以提供商 ID 为键。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:95
 msgid "`DownloadOptions`"
@@ -328,7 +341,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "1–32. Default 4."
-msgstr ""
+msgstr "1–32。默认 4。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retry_attempts`"
@@ -336,7 +349,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "0–10. Default 3. **Not** `retry`."
-msgstr ""
+msgstr "0–10。默认 3。**不是** `retry`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retry_delay_seconds`"
@@ -344,11 +357,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default 1.0, doubles each attempt."
-msgstr ""
+msgstr "默认 1.0，每次尝试后翻倍。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Per-download timeout. Default 300."
-msgstr ""
+msgstr "单次下载超时。默认 300。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`resume`"
@@ -356,7 +369,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `True`."
-msgstr ""
+msgstr "默认 `True`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`verify_checksum`"
@@ -364,7 +377,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `False`."
-msgstr ""
+msgstr "默认 `False`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`checksum_algorithm`"
@@ -376,7 +389,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `SHA256`."
-msgstr ""
+msgstr "默认 `SHA256`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`on_failure`"
@@ -390,7 +403,7 @@ msgstr ""
 msgid ""
 "Speed cap in **Mbps** (a float), not a `\"10MB\"` string. `None` = "
 "unlimited."
-msgstr ""
+msgstr "速度上限，单位为 **Mbps**（浮点数），而不是 `\"10MB\"` 字符串。`None` = 不限速。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`priority`"
@@ -398,7 +411,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Higher = higher priority."
-msgstr ""
+msgstr "值越大，优先级越高。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bands`"
@@ -410,7 +423,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default: all data assets."
-msgstr ""
+msgstr "默认：所有数据资产。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`post_process`"
@@ -424,7 +437,7 @@ msgstr ""
 msgid ""
 "**Must** be `PostProcessAction` objects — a plain string list raises a "
 "`ValidationError`. See below."
-msgstr ""
+msgstr "**必须**是 `PostProcessAction` 对象 — 普通字符串列表会引发 `ValidationError`。见下文。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`overwrite`"
@@ -432,7 +445,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `False` (skip existing)."
-msgstr ""
+msgstr "默认 `False`（跳过已存在的文件）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`extract_archives`"
@@ -443,6 +456,7 @@ msgid ""
 "Not used by any code. Extract archives with the `unzip` [post-processing "
 "action](../data-access/download.md#archives)."
 msgstr ""
+"未被任何代码使用。请使用 `unzip` [后处理操作](../data-access/download.md#archives)解压归档文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retry_strategy`"
@@ -450,7 +464,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `\"exponential_jitter\"`."
-msgstr ""
+msgstr "默认 `\"exponential_jitter\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`chunk_size_mb`"
@@ -458,7 +472,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `16.0`."
-msgstr ""
+msgstr "默认 `16.0`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`max_file_size_gb`"
@@ -466,7 +480,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Optional size cap."
-msgstr ""
+msgstr "可选的大小上限。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`flatten_directory`"
@@ -478,7 +492,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `\"original\"`."
-msgstr ""
+msgstr "默认 `\"original\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`notify_webhook` / `notify_email`"
@@ -486,11 +500,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Notification targets."
-msgstr ""
+msgstr "通知目标。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:120
 msgid "Constructing `post_process` correctly"
-msgstr ""
+msgstr "正确构造 `post_process`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:133
 msgid ""
@@ -498,6 +512,8 @@ msgid ""
 " into exactly this shape internally — it's only when constructing "
 "`DownloadOptions` directly in Python that raw strings don't work."
 msgstr ""
+"CLI 的 `--post-process \"reproject:EPSG:4326,cog\"` 字符串形式在内部会被解析为完全相同的结构 — "
+"只有在 Python 中直接构造 `DownloadOptions` 时，原始字符串才无法使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:138
 msgid "`DownloadResult`"
@@ -508,6 +524,7 @@ msgid ""
 "Returned by `download()`, `download_from_file()` and `stream()`, one per "
 "input item and in input order."
 msgstr ""
+"由 `download()`、`download_from_file()` 和 `stream()` 返回，每个输入条目对应一个结果，且顺序与输入一致。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`status`"
@@ -528,7 +545,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "The `SatelliteData.id` this result is for."
-msgstr ""
+msgstr "此结果所对应的 `SatelliteData.id`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`provider`"
@@ -536,7 +553,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Provider ID."
-msgstr ""
+msgstr "提供商 ID。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`output_path`"
@@ -548,7 +565,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "First output file."
-msgstr ""
+msgstr "第一个输出文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`output_paths`"
@@ -561,7 +578,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid ""
 "Every output file. After the `unzip` action these are the extracted files."
-msgstr ""
+msgstr "所有输出文件。执行 `unzip` 操作后，这些是解压出的文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bytes_downloaded`"
@@ -571,7 +588,7 @@ msgstr ""
 msgid ""
 "Size of the files written. For streamed results this is the size on disk, "
 "not network traffic."
-msgstr ""
+msgstr "写入文件的大小。对于流式读取的结果，这是磁盘上的大小，而非网络流量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`duration_seconds`"
@@ -579,7 +596,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Wall-clock time."
-msgstr ""
+msgstr "实际耗时（墙钟时间）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`error` / `error_type`"
@@ -588,7 +605,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid ""
 "Failure message and the exception class name or provider-specific code."
-msgstr ""
+msgstr "失败消息，以及异常类名或提供商特定的代码。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retries_used` / `attempt_number`"
@@ -596,7 +613,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Retry bookkeeping."
-msgstr ""
+msgstr "重试记录。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`checksum_verified`"
@@ -606,7 +623,7 @@ msgstr ""
 msgid ""
 "See [Error handling](error-handling.md#download-resilience) for what this "
 "does and does not guarantee."
-msgstr ""
+msgstr "有关其能保证和不能保证的内容，请参阅[错误处理](error-handling.md#download-resilience)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`post_process_completed`"
@@ -614,7 +631,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Post-processing steps that ran."
-msgstr ""
+msgstr "已执行的后处理步骤。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`from_cache`"
@@ -622,7 +639,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "The file already existed and was reused."
-msgstr ""
+msgstr "文件已存在并被复用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`aoi_coverage`"
@@ -632,7 +649,7 @@ msgstr ""
 msgid ""
 "Streamed results only: fraction (0-1) of the AOI covered by the streamed "
 "raster."
-msgstr ""
+msgstr "仅限流式结果：流式读取的栅格所覆盖的 AOI 比例（0-1）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:158
 msgid "`SatelliteData`"
@@ -640,7 +657,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:160
 msgid "One scene returned by a search."
-msgstr ""
+msgstr "搜索返回的一个场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`id`, `provider`"
@@ -648,7 +665,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Scene ID and the provider that returned it."
-msgstr ""
+msgstr "场景 ID 及返回该场景的提供商。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`satellite`, `sensor`, `collection`"
@@ -656,7 +673,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Platform, instrument and collection."
-msgstr ""
+msgstr "平台、仪器和数据集合。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`datetime`, `start_datetime`, `end_datetime`"
@@ -668,7 +685,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Acquisition time or interval."
-msgstr ""
+msgstr "采集时间或时间区间。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bbox`, `geometry`"
@@ -680,7 +697,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Footprint as a bounding box and as GeoJSON."
-msgstr ""
+msgstr "以边界框和 GeoJSON 表示的覆盖范围。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`cloud_cover`"
@@ -688,7 +705,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Percent."
-msgstr ""
+msgstr "百分比。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`processing_level`, `data_format`"
@@ -696,11 +713,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "enums"
-msgstr ""
+msgstr "枚举"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`UNKNOWN` when the provider does not say."
-msgstr ""
+msgstr "提供商未说明时为 `UNKNOWN`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`assets`"
@@ -715,6 +732,9 @@ msgid ""
 "Downloadable files, keyed by asset name. Each asset has `href`, `title`, "
 "`media_type`, `roles`, `size_bytes`, `checksum_md5` and `checksum_sha256`."
 msgstr ""
+"可下载的文件，以资产名称为键。每个资产包含 "
+"`href`、`title`、`media_type`、`roles`、`size_bytes`、`checksum_md5` 和 "
+"`checksum_sha256`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid ""
@@ -724,11 +744,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "various"
-msgstr ""
+msgstr "多种"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "SAR metadata."
-msgstr ""
+msgstr "SAR 元数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`resolution_m`, `gsd_m`, `off_nadir_angle`"
@@ -736,7 +756,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Resolution and viewing geometry."
-msgstr ""
+msgstr "分辨率和观测几何。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`score`"
@@ -746,7 +766,7 @@ msgstr ""
 msgid ""
 "Relevance score assigned by the searcher. See [Searching](../data-"
 "access/search.md)."
-msgstr ""
+msgstr "由搜索器分配的相关性得分。参见[搜索](../data-access/search.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`properties`, `links`, `stac_extensions`"
@@ -754,17 +774,17 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Raw provider metadata."
-msgstr ""
+msgstr "提供商原始元数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:176
 msgid ""
 "`SatelliteData.from_stac_item()` and `to_stac_item()` convert to and from "
 "STAC items."
-msgstr ""
+msgstr "`SatelliteData.from_stac_item()` 和 `to_stac_item()` 用于与 STAC 条目相互转换。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:178
 msgid "`PyGeoFetch` methods"
-msgstr ""
+msgstr "`PyGeoFetch` 方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:180
 msgid ""
@@ -781,6 +801,15 @@ msgid ""
 " given. Neither parameter requires `shapely` to be installed unless "
 "validation is actually turned on — the import is lazy."
 msgstr ""
+"**`__init__(config_path=None, log_level=\"INFO\", log_json=False, "
+"cache_ttl=3600, max_search_workers=8, progress_callback=None, "
+"auth_backend=\"file\", validate_optical=False, "
+"optical_validation_config=None)`** `validate_optical` "
+"设置光学数据预检验证的实例级默认值（参见[光学数据验证与预检](../data-access/optical-"
+"validation.md)），除非在单次调用中覆盖，否则 `search()` 和 `download()` 都会自动应用。默认为 `False` —"
+" 完全可选启用，除非明确开启，否则现有行为不变。`optical_validation_config` 是启用时使用的 "
+"`OpticalValidationConfig`；未提供时默认使用 `OpticalValidationConfig()` "
+"自身的默认值。除非实际开启验证，否则这两个参数都不要求安装 `shapely` — 该导入是惰性的。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:191
 msgid ""
@@ -793,6 +822,12 @@ msgid ""
 "`OpticalPreflightValidator.run_preflight()` before being returned — the AOI "
 "is derived automatically from `query.bbox`/`query.geometry`."
 msgstr ""
+"**`search(query: SearchQuery, providers: list[str] | None = None, use_cache:"
+" bool = True, validate_optical: bool | None = None) -> "
+"list[SatelliteData]`** 联合搜索。返回经过去重和打分的结果。`validate_optical=None`（默认）会回退到 "
+"`__init__` 中的实例级设置；传入 `True`/`False` 可仅对本次调用进行覆盖。启用时，结果在返回之前会通过 "
+"`OpticalPreflightValidator.run_preflight()` 进行过滤 — AOI 会自动从 "
+"`query.bbox`/`query.geometry` 推导。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:199
 msgid ""
@@ -800,6 +835,8 @@ msgid ""
 "list[SatelliteData]`** Search and write results to a GeoJSON file in one "
 "call."
 msgstr ""
+"**`search_and_save(query, output: Path, providers=None) -> "
+"list[SatelliteData]`** 一次调用即可搜索并将结果写入 GeoJSON 文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:202
 msgid ""
@@ -816,6 +853,14 @@ msgid ""
 "without it, AOI-dependent checks are skipped while every other check still "
 "runs."
 msgstr ""
+"**`download(data, destination: Path, options: DownloadOptions | None = None,"
+" item_done_callback=None, validate_optical: bool | None = None, aoi: Polygon"
+" | None = None) -> list[DownloadResult]`** 接受单个 `SatelliteData` "
+"或列表。`validate_optical` 的作用方式与 `search()` 上相同 — 是一道独立的关卡，适用于从未经过 `search()` "
+"的条目（例如通过 `download_from_file()` 加载的条目）。被拒绝的条目**绝不会被尝试下载** — "
+"会在该条目的原始位置放入一个合成的 `DownloadResult(status=FAILED, "
+"error=...)`，因此无论有多少条目被拒绝，返回列表的长度和顺序始终与 `data` 一致。此处 `aoi` "
+"为可选项（没有可用于推导它的查询）；不提供时，依赖 AOI 的检查会被跳过，而其他所有检查仍会运行。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:214
 msgid ""
@@ -823,6 +868,9 @@ msgid ""
 "options=None) -> list[DownloadResult]`** Load a GeoJSON results file (from "
 "`search_and_save`) and download it directly."
 msgstr ""
+"**`download_from_file(search_results_path: Path, destination: Path, "
+"options=None) -> list[DownloadResult]`** 加载 GeoJSON 结果文件（来自 "
+"`search_and_save`）并直接下载。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:217
 msgid ""
@@ -832,16 +880,20 @@ msgid ""
 "keyring (or Fernet-encrypted file fallback — see [Security "
 "Model](security.md)). Overrides matching env vars for the process."
 msgstr ""
+"**`add_credentials(provider: str, *, username=None, password=None, "
+"api_key=None, client_id=None, client_secret=None, token=None, "
+"access_key=None, secret_key=None, **kwargs) -> None`** 存储在系统密钥环中（或回退到 Fernet"
+" 加密文件 — 参见[安全模型](security.md)）。会在当前进程中覆盖同名的环境变量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:221
 msgid "**`status() -> dict`** Registered providers, auth status, cache stats."
-msgstr ""
+msgstr "**`status() -> dict`** 已注册的提供商、认证状态、缓存统计。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:224
 msgid ""
 "**`clear_cache() -> int`** Clears the in-memory search result cache; returns"
 " entries cleared."
-msgstr ""
+msgstr "**`clear_cache() -> int`** 清除内存中的搜索结果缓存；返回被清除的条目数。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:227
 msgid ""
@@ -852,6 +904,11 @@ msgid ""
 "providers that serve per-band COGs (`planetary_computer`, `element84`). See "
 "[Streaming](../data-access/streaming.md)."
 msgstr ""
+"**`stream(data, bbox, destination, bands=None, parallel=4, overwrite=False, "
+"bbox_crs=\"EPSG:4326\", block_size=1024) -> list[DownloadResult]`** 仅从云优化 "
+"GeoTIFF 中读取每个波段的 AOI 窗口，并写出小型本地 GeoTIFF，而不是下载整个场景。支持提供逐波段 COG "
+"的提供商（`planetary_computer`、`element84`）。参见[流式读取](../data-"
+"access/streaming.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:232
 msgid ""
@@ -859,6 +916,9 @@ msgid ""
 "orbit_type: str = \"precise\") -> str | None`** Downloads a Sentinel-1 "
 "precise/restituted orbit file, extracts the `.EOF` automatically."
 msgstr ""
+"**`fetch_orbit_file(product_name: str, output_dir: str = \"./orbits/\", "
+"orbit_type: str = \"precise\") -> str | None`** 下载 Sentinel-1 "
+"精密/重处理轨道文件，并自动提取 `.EOF`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:235
 msgid ""
@@ -868,6 +928,9 @@ msgid ""
 "section for the full guide. Not related to the YAML acquisition-pipeline "
 "mechanism (`pygeofetch pipeline run`) despite the shared name."
 msgstr ""
+"**`pipeline(name: str) -> ProcessingPipeline`** 针对单个文件创建可链式调用的处理流水线 — "
+"完整指南请参阅[流水线与批处理](../workflows/pipelines.md)中的“Python Processing "
+"Pipeline”一节。尽管名称相同，但它与 YAML 采集流水线机制（`pygeofetch pipeline run`）无关。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:241
 msgid ""
@@ -876,26 +939,29 @@ msgid ""
 "parallel — shorthand for `client.batch.process(...)`. See [Pipelines & Batch"
 " Processing](../workflows/pipelines.md)'s \"Batch Processing\" section."
 msgstr ""
+"**`batch_process(inputs, chain, output_dir=\".\", parallel=2) -> "
+"list[ProcessingResult]`** 对多个文件并行运行相同的处理链 — 是 `client.batch.process(...)` "
+"的简写。参见[流水线与批处理](../workflows/pipelines.md)中的“Batch Processing”一节。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:246
 msgid "Client namespaces"
-msgstr ""
+msgstr "客户端命名空间"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:248
 msgid "`PyGeoFetch` instances expose processing engines as attributes:"
-msgstr ""
+msgstr "`PyGeoFetch` 实例以属性形式提供处理引擎："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Attribute"
-msgstr ""
+msgstr "属性"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Class"
-msgstr ""
+msgstr "类别"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Documented in"
-msgstr ""
+msgstr "文档位置"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.auth`"
@@ -907,7 +973,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Authentication](../data-access/authentication.md)"
-msgstr ""
+msgstr "[身份验证](../data-access/authentication.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.preprocess`"
@@ -922,6 +988,7 @@ msgid ""
 "[Preprocessing](../processing/optical/preprocessing.md), "
 "[Terrain](../processing/optical/terrain.md)"
 msgstr ""
+"[预处理](../processing/optical/preprocessing.md)、[地形](../processing/optical/terrain.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.indices`"
@@ -933,7 +1000,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Spectral indices](../processing/optical/spectral-indices.md)"
-msgstr ""
+msgstr "[光谱指数](../processing/optical/spectral-indices.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.post`"
@@ -945,7 +1012,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Post-processing](../processing/optical/postprocessing.md)"
-msgstr ""
+msgstr "[后处理](../processing/optical/postprocessing.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.sar`"
@@ -957,7 +1024,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[SAR](../processing/sar-insar/sar.md)"
-msgstr ""
+msgstr "[SAR](../processing/sar-insar/sar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.classify`"
@@ -969,7 +1036,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Classification](../processing/optical/classification.md)"
-msgstr ""
+msgstr "[分类](../processing/optical/classification.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.batch`"
@@ -981,7 +1048,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Pipelines](../workflows/pipelines.md)"
-msgstr ""
+msgstr "[流水线](../workflows/pipelines.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:260
 msgid ""
@@ -990,6 +1057,9 @@ msgid ""
 "pipelines and the InSAR modules are standalone imports, not attributes of "
 "the client."
 msgstr ""
+"Landsat "
+"提取（`pygeofetch.processor.LandsatExtractor`）、时间序列（`TimeSeriesAnalyzer`）、独立的 "
+"`SpectralIndex`、多传感器流水线以及 InSAR 模块都是独立导入的，不是客户端的属性。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:266
 msgid ""
@@ -997,13 +1067,16 @@ msgid ""
 "`pygeofetch.providers.list_providers()` / `list_provider_info()` — see "
 "[Providers](../data-access/providers.md)."
 msgstr ""
+"`PyGeoFetch` **没有** `.providers()` 方法。请通过 "
+"`pygeofetch.providers.list_providers()` / `list_provider_info()` 列出提供商 — "
+"参见[提供商](../data-access/providers.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:270
 msgid "Optical validation quick reference"
-msgstr ""
+msgstr "光学验证快速参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:272
 msgid ""
 "See [Optical Data Validation & Preflight](../data-access/optical-"
 "validation.md) for the full guide."
-msgstr ""
+msgstr "完整指南请参阅[光学数据验证与预检](../data-access/optical-validation.md)。"

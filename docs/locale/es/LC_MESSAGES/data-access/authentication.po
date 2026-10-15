@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,6 +32,15 @@ msgid ""
 " see [Providers](providers.md) for which auth type each of the 22 providers "
 "uses."
 msgstr ""
+"Las credenciales se almacenan mediante un `AuthManager`, respaldado por un "
+"archivo local cifrado con Fernet (el valor por defecto) o por el llavero del"
+" sistema operativo (disponible con `auth_backend=\"keyring\"`); consulta "
+"[Modelo de seguridad](../reference/security.md) para saber cómo funciona "
+"realmente el cifrado del backend de archivo, incluida la migración de base64"
+" a Fernet para los usuarios existentes. Admite usuario/contraseña, claves de"
+" API y credenciales de cliente OAuth2, según lo que necesite cada proveedor;"
+" consulta [Proveedores](providers.md) para saber qué tipo de autenticación "
+"usa cada uno de los 22 proveedores."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:15
 msgid ""
@@ -42,10 +51,16 @@ msgid ""
 "`auth_backend=\"file\"` there isn't opting into anything unusual, it's just "
 "being explicit about the same default behavior."
 msgstr ""
+"**Valor por defecto verificado, conviene saberlo explícitamente**: "
+"`PyGeoFetch()` sin argumentos usa `auth_backend=\"file\"`; el backend de "
+"archivo cifrado es el que casi todo el mundo usa realmente, salvo que haya "
+"pasado explícitamente `auth_backend=\"keyring\"`. Esto importa para la "
+"sección de CI/CD más abajo: `auth_backend=\"file\"` allí no activa nada "
+"inusual, simplemente explicita el mismo comportamiento por defecto."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:22
 msgid "Overview"
-msgstr ""
+msgstr "Descripción general"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:24
 msgid ""
@@ -57,6 +72,13 @@ msgid ""
 "provider. You never pass a password to `search()` or `download()`; you only "
 "name the provider."
 msgstr ""
+"Algunos proveedores son abiertos y no te piden nada, mientras que otros, "
+"entre ellos Copernicus Data Space Ecosystem, USGS, NASA Earthdata y los "
+"proveedores comerciales, requieren una cuenta. pygeofetch pide cada "
+"credencial una sola vez, la almacena en un archivo cifrado o en el llavero "
+"de tu sistema operativo, y después la suministra automáticamente siempre que"
+" una búsqueda o descarga involucra a ese proveedor. Nunca pasas una "
+"contraseña a `search()` o `download()`; solo indicas el proveedor."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:26
 msgid ""
@@ -69,6 +91,15 @@ msgid ""
 "credential later expires or is rotated, add the new one under the same "
 "provider name."
 msgstr ""
+"La rutina habitual es breve. Consulta la página de "
+"[Proveedores](providers.md) para ver qué tipo de autenticación usa un "
+"proveedor, regístrate para obtener la cuenta en el sitio web del proveedor, "
+"añade la credencial con `pygeofetch auth add` (o `client.add_credentials()` "
+"en Python) y confírmala con `pygeofetch auth test`. La prueba comprueba la "
+"credencial almacenada frente al proveedor, por lo que es la forma más rápida"
+" de encontrar un token mal escrito antes de una descarga larga. Si una "
+"credencial caduca o se rota más adelante, añade la nueva con el mismo nombre"
+" de proveedor."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:28
 msgid ""
@@ -82,18 +113,28 @@ msgid ""
 "read your own secrets and register them in code at the start of the job, as "
 "shown in the headless section below."
 msgstr ""
+"La forma en que se guardan las credenciales importa en entornos compartidos "
+"y automatizados. El archivo cifrado por defecto reside en tu directorio "
+"personal y está protegido por una clave almacenada junto a él, lo cual es "
+"cómodo en un equipo personal pero solo es tan seguro como ese directorio. En"
+" una estación de trabajo con llavero, `auth_backend=\"keyring\"` delega el "
+"almacenamiento en el sistema operativo. En contenedores y trabajos de "
+"integración continua normalmente no hay llavero y las variables de entorno "
+"no se leen para las credenciales, por lo que el patrón consiste en leer tus "
+"propios secretos y registrarlos en código al inicio del trabajo, como se "
+"muestra en la sección sin interfaz más abajo."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:30
 msgid "Adding credentials"
-msgstr ""
+msgstr "Añadir credenciales"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:55
 msgid "Managing credentials"
-msgstr ""
+msgstr "Gestionar credenciales"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:66
 msgid "CI/CD, Docker, and headless environments"
-msgstr ""
+msgstr "CI/CD, Docker y entornos sin interfaz (headless)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:70
 msgid ""
@@ -104,6 +145,11 @@ msgid ""
 "and authentication then fails without any hint that the variable was "
 "ignored."
 msgstr ""
+"**Las credenciales no se leen de variables de entorno.** No existe una carga"
+" automática de `PYGEOFETCH_{PROVIDER}_{FIELD}`. `Credentials` es un simple "
+"modelo de datos, y ni `AuthManager` ni ningún proveedor leen `os.environ`. "
+"Definir `PYGEOFETCH_USGS_USERNAME` (o una variable similar) no tiene efecto,"
+" y la autenticación falla sin ninguna pista de que la variable fue ignorada."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:76
 msgid ""
@@ -113,6 +159,12 @@ msgid ""
 "doesn't need to know your CI system's specific secret-injection mechanism, "
 "since your own code already has the values:"
 msgstr ""
+"La forma que funciona para autenticarse en CI/CD, Docker o cualquier entorno"
+" sin interfaz es leer tus propios secretos y pasarlos explícitamente a "
+"`add_credentials()`, en tu propio código Python o en un pequeño script de "
+"configuración; pygeofetch no necesita conocer el mecanismo específico de "
+"inyección de secretos de tu sistema de CI, ya que tu propio código ya tiene "
+"los valores:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:96
 msgid ""
@@ -122,6 +174,12 @@ msgid ""
 "Variables, a Docker `--env-file`, etc.), then run this setup step once "
 "before your search/download code."
 msgstr ""
+"Almacena `USGS_USERNAME`/`USGS_M2M_TOKEN` (con los nombres que quieras; son "
+"solo tus propias variables de entorno, no una convención de pygeofetch) "
+"usando el mecanismo de secretos de tu propio sistema de CI (GitHub Actions "
+"Secrets, GitLab CI/CD Variables, un `--env-file` de Docker, etc.), y luego "
+"ejecuta este paso de configuración una vez antes de tu código de "
+"búsqueda/descarga."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:104
 msgid ""
@@ -134,22 +192,31 @@ msgid ""
 "`auth_backend=\"keyring\"` at all, since the default "
 "(`auth_backend=\"file\"`) never touches a keyring daemon in the first place."
 msgstr ""
+"**Linux sin interfaz (Docker, SSH) si has optado explícitamente por "
+"`auth_backend=\"keyring\"`:** si no hay un demonio D-Bus/keyring en "
+"ejecución, `keyring` en sí puede lanzar un error antes de que llegues al "
+"propio código de pygeofetch. Define "
+"`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring` como una variable de "
+"entorno real y aparte (una convención de la biblioteca `keyring`, no de "
+"pygeofetch) para evitarlo, o simplemente no pases "
+"`auth_backend=\"keyring\"`, ya que el valor por defecto "
+"(`auth_backend=\"file\"`) nunca toca un demonio de llavero."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:115
 msgid "Provider auth types"
-msgstr ""
+msgstr "Tipos de autenticación por proveedor"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Provider"
-msgstr ""
+msgstr "Proveedor"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Auth type"
-msgstr ""
+msgstr "Tipo de autenticación"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free?"
-msgstr ""
+msgstr "¿Gratis?"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`usgs`"
@@ -160,10 +227,12 @@ msgid ""
 "Username + M2M Application Token (not a password — see "
 "[Providers](providers.md))"
 msgstr ""
+"Usuario + token de aplicación M2M (no es una contraseña; consulta "
+"[Proveedores](providers.md))"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free (registration)"
-msgstr ""
+msgstr "Gratis (con registro)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`copernicus`"
@@ -171,7 +240,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Username / password (OAuth2)"
-msgstr ""
+msgstr "Usuario / contraseña (OAuth2)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`nasa_earthdata`"
@@ -179,7 +248,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Search: none (public). Download: Earthdata Login"
-msgstr ""
+msgstr "Búsqueda: ninguna (pública). Descarga: Earthdata Login"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`nasa_earthdata_cloud`"
@@ -190,6 +259,8 @@ msgid ""
 "Search: none (public). Download: Earthdata Login + per-DAAC S3 credentials "
 "(auto-refreshed, no single unified endpoint)"
 msgstr ""
+"Búsqueda: ninguna (pública). Descarga: Earthdata Login + credenciales S3 por"
+" DAAC (se renuevan automáticamente, sin un único punto de acceso unificado)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`planet`"
@@ -197,11 +268,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "API key (HTTP Basic Auth)"
-msgstr ""
+msgstr "Clave de API (autenticación HTTP Basic)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Subscription"
-msgstr ""
+msgstr "Suscripción"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`sentinel_hub`"
@@ -209,11 +280,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "OAuth2 client credentials"
-msgstr ""
+msgstr "Credenciales de cliente OAuth2"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Freemium"
-msgstr ""
+msgstr "Freemium"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`opentopography`"
@@ -221,11 +292,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "API key"
-msgstr ""
+msgstr "Clave de API"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free tier"
-msgstr ""
+msgstr "Nivel gratuito"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`maxar_gbdx`"
@@ -233,7 +304,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Bearer token (Discovery API — GBDX itself shut down 2022)"
-msgstr ""
+msgstr "Token bearer (Discovery API; el propio GBDX cerró en 2022)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`airbus_oneatlas`"
@@ -248,10 +319,12 @@ msgid ""
 "Search: none (public). Download: Earthdata Login (same as NASA), or a bearer"
 " token"
 msgstr ""
+"Búsqueda: ninguna (pública). Descarga: Earthdata Login (igual que NASA), o "
+"un token bearer"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free"
-msgstr ""
+msgstr "Gratis"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`google_earth_engine`"
@@ -259,11 +332,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Service account JSON"
-msgstr ""
+msgstr "JSON de cuenta de servicio"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "See note below"
-msgstr ""
+msgstr "Consulta la nota más abajo"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:133
 msgid ""
@@ -274,10 +347,17 @@ msgid ""
 "message rather than crashing, but `auth add google_earth_engine` will not "
 "make search/download work. See [Providers](providers.md)."
 msgstr ""
+"**`google_earth_engine` no es realmente funcional** independientemente de "
+"las credenciales que proporciones: su API necesita un flujo de autenticación"
+" JWT de cuenta de servicio de Google fundamentalmente distinto y la propia "
+"API de activos/cálculo de Earth Engine, y ninguno de los dos está "
+"implementado. Ahora falla de inmediato con un mensaje claro en lugar de "
+"bloquearse, pero `auth add google_earth_engine` no hará que la "
+"búsqueda/descarga funcione. Consulta [Proveedores](providers.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:141
 msgid "In Python"
-msgstr ""
+msgstr "En Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:151
 msgid ""
@@ -287,3 +367,8 @@ msgid ""
 "environment variables on its own; you pass the values in directly, from "
 "wherever your own code sourced them."
 msgstr ""
+"`add_credentials()` escribe en el llavero del sistema (o en el archivo "
+"cifrado con Fernet como alternativa) y sobrescribe cualquier credencial "
+"coincidente ya almacenada durante el resto del proceso; pero, según la "
+"sección anterior, **no** lee de variables de entorno por sí solo; pasas los "
+"valores directamente, procedan de donde los haya obtenido tu propio código."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,13 @@ msgid ""
 "on its own, and **Random Forest/SVM** when you have labeled training samples"
 " and want a model that generalizes to the rest of the scene."
 msgstr ""
+"Transforme um raster multibanda em um mapa de classes discretas — cobertura "
+"do solo, água vs. terra, tipo de cultura, qualquer coisa que uma assinatura "
+"espectral consiga distinguir. Duas abordagens diferentes, para duas "
+"situações reais diferentes: **K-means** quando você não tem exemplos "
+"rotulados e quer que o pygeofetch encontre agrupamentos naturais por conta "
+"própria, e **Random Forest/SVM** quando você tem amostras de treinamento "
+"rotuladas e quer um modelo que generalize para o resto da cena."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:11
 msgid ""
@@ -41,10 +48,17 @@ msgid ""
 "`client.post.zonal_stats()`, which already expected \"a classification "
 "raster\" as input."
 msgstr ""
+"Isto preenche uma lacuna que existia em todo o resto do pygeofetch: cada "
+"índice espectral e ferramenta de processamento presumia que você traria seu "
+"próprio classificador de uma biblioteca separada. `client.classify` é esse "
+"classificador, construído diretamente sobre as mesmas convenções de E/S "
+"raster de `client.indices` e `client.preprocess` — sua saída é imediatamente"
+" utilizável com `client.post.vectorize()` e `client.post.zonal_stats()`, que"
+" já esperavam \"um raster de classificação\" como entrada."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:19
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:21
 msgid ""
@@ -56,6 +70,14 @@ msgid ""
 "areas, Random Forest or a support vector machine learns the spectral "
 "signature of each class and applies it to the whole scene."
 msgstr ""
+"A classificação transforma uma imagem multibanda em um mapa de categorias, "
+"como água, floresta, solo exposto e áreas construídas. O pygeofetch oferece "
+"dois caminhos que se adequam a pontos de partida diferentes. Se você não tem"
+" exemplos rotulados, o agrupamento K-means encontra grupos naturais nos "
+"dados espectrais, e você decide depois o que cada grupo representa. Se você "
+"tem áreas de treinamento rotuladas, o Random Forest ou uma máquina de "
+"vetores de suporte aprende a assinatura espectral de cada classe e a aplica "
+"a toda a cena."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:23
 msgid ""
@@ -68,14 +90,23 @@ msgid ""
 "GeoTIFF files, so the class map can be clipped, vectorised and analysed with"
 " the other tools in the package."
 msgstr ""
+"Para uma primeira passada, execute o K-means com um pequeno número de "
+"clusters e observe o resultado ao lado da imagem original; isso mostra "
+"rapidamente se as classes que lhe interessam são sequer separáveis "
+"espectralmente. Quando precisar de um mapa que possa ser reportado, use o "
+"caminho supervisionado: colete amostras de treinamento que cubram a "
+"variedade dentro de cada classe, reserve algumas para teste e leia as "
+"métricas de acurácia antes de confiar na saída. Ambos os caminhos leem e "
+"gravam arquivos GeoTIFF comuns, de modo que o mapa de classes pode ser "
+"recortado, vetorizado e analisado com as outras ferramentas do pacote."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:25
 msgid "Quick start"
-msgstr ""
+msgstr "Início rápido"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:47
 msgid "Unsupervised: K-means"
-msgstr ""
+msgstr "Não supervisionada: K-means"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:58
 msgid ""
@@ -84,6 +115,10 @@ msgid ""
 " and K-means groups them into `n_clusters` clusters by spectral similarity "
 "alone."
 msgstr ""
+"Cada banda de entrada é lida por completo e empilhada em um único array; "
+"cada pixel se torna um ponto em um espaço espectral N-dimensional (N = "
+"número de bandas de entrada), e o K-means os agrupa em `n_clusters` clusters"
+" apenas pela similaridade espectral."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:63
 msgid ""
@@ -93,6 +128,12 @@ msgid ""
 "it on a true-color composite) to figure out which cluster corresponds to "
 "which class, before using the result for anything downstream."
 msgstr ""
+"**Os IDs dos clusters são arbitrários.** O cluster `0` não tem significado "
+"inerente — ele não é \"água\" só por ser o primeiro cluster. Após executar o"
+" K-means, inspecione a assinatura espectral de cada cluster (por exemplo, "
+"seu NDVI médio, ou sobreponha-o a uma composição em cor verdadeira) para "
+"descobrir qual cluster corresponde a qual classe, antes de usar o resultado "
+"em qualquer etapa posterior."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:70
 msgid ""
@@ -101,14 +142,19 @@ msgid ""
 "that never form a coherent, spatially sensible region usually mean you've "
 "asked for more clusters than the data actually supports."
 msgstr ""
+"**Escolha de `n_clusters`**: comece com sua melhor estimativa do número de "
+"tipos distintos de cobertura da terra na cena e, em seguida, examine o "
+"resultado — clusters que nunca formam uma região coerente e espacialmente "
+"sensata geralmente indicam que você pediu mais clusters do que os dados "
+"realmente suportam."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:76
 msgid "Supervised: Random Forest / SVM"
-msgstr ""
+msgstr "Supervisionada: Random Forest / SVM"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:78
 msgid "Real training data format"
-msgstr ""
+msgstr "Formato real dos dados de treinamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:80
 msgid ""
@@ -117,12 +163,19 @@ msgid ""
 "and polygon geometries work, and mean different things for how many pixels "
 "each label actually contributes:"
 msgstr ""
+"`training_data` é qualquer arquivo vetorial que o GeoPandas consiga ler "
+"(GeoJSON, Shapefile, GeoPackage) com uma coluna de atributo contendo o "
+"rótulo da classe. Geometrias de ponto e de polígono funcionam, e significam "
+"coisas diferentes quanto ao número de pixels que cada rótulo realmente "
+"contribui:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:85
 msgid ""
 "**Points**: exactly one pixel sampled per point — the pixel the point falls "
 "inside."
 msgstr ""
+"**Pontos**: exatamente um pixel amostrado por ponto — o pixel em que o ponto"
+" cai."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:87
 msgid ""
@@ -130,6 +183,9 @@ msgid ""
 "single polygon over a large, homogeneous field can contribute thousands of "
 "training pixels from one drawn shape."
 msgstr ""
+"**Polígonos**: todo pixel coberto pela área do polígono recebe o rótulo — um"
+" único polígono sobre um campo grande e homogêneo pode contribuir com "
+"milhares de pixels de treinamento a partir de uma única forma desenhada."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:105
 msgid ""
@@ -139,6 +195,12 @@ msgid ""
 "you can check whether the model struggles on one class rather than trusting "
 "a single overall number."
 msgstr ""
+"**A acurácia é sempre calculada em uma divisão de teste separada** que nunca"
+" é usada no treinamento. Isso não é uma opção configurável. "
+"`result.metadata` também traz o `classification_report` completo (precisão, "
+"recall e F1 por classe), para que você possa verificar se o modelo tem "
+"dificuldade com uma classe específica, em vez de confiar em um único número "
+"geral."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:110
 msgid ""
@@ -147,10 +209,14 @@ msgid ""
 "geometries don't actually overlap the raster's extent or CRS, not a subtle "
 "statistical warning to ignore."
 msgstr ""
+"**Uma restrição deliberada**: o treinamento gera um erro claro se menos de "
+"10 pixels de treinamento válidos forem de fato extraídos — geralmente um "
+"sinal de que as geometrias de treinamento não se sobrepõem à extensão ou ao "
+"CRS do raster, e não um aviso estatístico sutil que se possa ignorar."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:115
 msgid "Applying the trained model"
-msgstr ""
+msgstr "Aplicação do modelo treinado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:124
 msgid ""
@@ -159,10 +225,14 @@ msgid ""
 "fails with a clear message naming the mismatch, rather than letting scikit-"
 "learn's own less specific shape error surface instead."
 msgstr ""
+"`inputs` deve conter as mesmas bandas, na mesma ordem, usadas no treinamento"
+" — `predict()` confere o número de bandas com o que o modelo salvo espera e "
+"falha com uma mensagem clara indicando a divergência, em vez de deixar "
+"surgir o erro de formato menos específico do próprio scikit-learn."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:130
 msgid "Clipping the result to an AOI"
-msgstr ""
+msgstr "Recortando o resultado para uma AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:132
 msgid ""
@@ -170,6 +240,10 @@ msgid ""
 "same handling as every method in [Spectral Indices](spectral-"
 "indices.md#clipping-the-result-to-an-aoi) and `Preprocessor.clip()`:"
 msgstr ""
+"Tanto `kmeans` quanto `predict` aceitam `bbox`, `geometry` e `geometry_crs` "
+"— com o mesmo tratamento de todos os métodos em [Índices "
+"Espectrais](spectral-indices.md#clipping-the-result-to-an-aoi) e em "
+"`Preprocessor.clip()`:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:144
 msgid ""
@@ -177,20 +251,25 @@ msgid ""
 "before extracting samples if you need to restrict it, since clipping *after*"
 " training a model doesn't do anything meaningful."
 msgstr ""
+"`train()` não aceita opção de recorte — recorte a extensão dos seus dados de"
+" treinamento antes de extrair as amostras, se precisar restringi-la, pois "
+"recortar *depois* de treinar um modelo não tem efeito significativo."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:148
 msgid "CLI reference"
-msgstr ""
+msgstr "Referência da CLI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:168
 msgid ""
 "Run `pygeofetch classify COMMAND --help` for the full option list of any "
 "individual command."
 msgstr ""
+"Execute `pygeofetch classify COMMAND --help` para ver a lista completa de "
+"opções de cada comando individual."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:171
 msgid "Common pitfalls"
-msgstr ""
+msgstr "Armadilhas comuns"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:173
 msgid ""
@@ -199,6 +278,10 @@ msgid ""
 "bands first (see [Preprocessing](preprocessing.md)) rather than pass them "
 "directly."
 msgstr ""
+"**Resoluções ou extensões de banda incompatíveis.** Todas as `inputs` devem "
+"já compartilhar a mesma grade — mesmo formato, mesma transformação. "
+"Reprojete/reamostre as bandas incompatíveis primeiro (veja [Pré-"
+"processamento](preprocessing.md)) em vez de passá-las diretamente."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:177
 msgid ""
@@ -207,6 +290,10 @@ msgid ""
 "everywhere else — spread training samples across the actual range of "
 "conditions you expect the model to see."
 msgstr ""
+"**Amostras de treinamento poucas ou agrupadas espacialmente.** Um modelo "
+"treinado com 15 pontos, todos tirados de um canto da cena, errará com "
+"confiança em todo o resto — distribua as amostras de treinamento por toda a "
+"gama de condições que você espera que o modelo encontre."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:182
 msgid ""
@@ -214,6 +301,9 @@ msgid ""
 "checking.** Always inspect what each cluster actually represents before "
 "reporting results from it."
 msgstr ""
+"**Tratar os IDs de cluster do K-means como rótulos de classe significativos "
+"sem verificar.** Sempre inspecione o que cada cluster realmente representa "
+"antes de relatar resultados a partir dele."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:185
 msgid ""
@@ -222,22 +312,27 @@ msgid ""
 "rare classes — check the per-class breakdown in `classification_report`, not"
 " just `test_accuracy`, before trusting a model on a imbalanced problem."
 msgstr ""
+"**Desbalanceamento de classes nos dados de treinamento.** Se 90% dos seus "
+"pixels de treinamento pertencem a uma única classe, o modelo pode atingir "
+"alta acurácia geral ignorando em grande parte as classes raras — verifique o"
+" detalhamento por classe em `classification_report`, e não apenas "
+"`test_accuracy`, antes de confiar em um modelo em um problema desbalanceado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:191
 msgid "Full method reference"
-msgstr ""
+msgstr "Referência completa dos métodos"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Real purpose"
-msgstr ""
+msgstr "Finalidade real"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Needs training data?"
-msgstr ""
+msgstr "Precisa de dados de treinamento?"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "`kmeans(inputs, n_clusters=5, ...)`"
@@ -245,7 +340,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Unsupervised clustering"
-msgstr ""
+msgstr "Agrupamento não supervisionado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "No"
@@ -257,11 +352,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Fit a supervised model"
-msgstr ""
+msgstr "Ajustar um modelo supervisionado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Yes"
-msgstr ""
+msgstr "Sim"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "`predict(inputs, model, ...)`"
@@ -269,11 +364,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Apply a trained model"
-msgstr ""
+msgstr "Aplicar um modelo treinado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "No (uses a saved model)"
-msgstr ""
+msgstr "Não (usa um modelo salvo)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:199
 msgid ""
@@ -284,3 +379,10 @@ msgid ""
 "limited to what fits in memory regardless, since scikit-learn's fit step "
 "needs the full training array at once."
 msgstr ""
+"**Ainda não suportado**: processamento em blocos/seguro para memória de "
+"rasters maiores que a RAM disponível — ao contrário dos métodos em [Índices "
+"Espectrais](spectral-indices.md), `kmeans` e `predict` atualmente leem todas"
+" as bandas de entrada por completo na memória. A extração de amostras de "
+"treinamento de `train()` é, de qualquer forma, inerentemente limitada ao que"
+" cabe na memória, já que a etapa de ajuste do scikit-learn precisa de todo o"
+" array de treinamento de uma só vez."

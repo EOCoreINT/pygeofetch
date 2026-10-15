@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,11 @@ msgid ""
 "shadow, masking clouds, clipping/reprojecting to your AOI, and combining "
 "multiple scenes into one."
 msgstr ""
+"O conjunto de ferramentas fundamental para dados ópticos por trás dos "
+"módulos InSAR/SAR/Landsat/TimeSeries — as etapas que você quase sempre "
+"executa *antes* de calcular um índice ou fazer análises: corrigir a "
+"atmosfera e a sombra do terreno, mascarar nuvens, recortar/reprojetar para a"
+" sua AOI e combinar várias cenas em uma só."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:19
 msgid ""
@@ -38,10 +43,15 @@ msgid ""
 "decode), and return a `ProcessingResult` whose `.output_path` is the new "
 "raster on disk."
 msgstr ""
+"Todos os métodos ficam em `client.preprocess` "
+"(`pygeofetch.processing.preprocessor.Preprocessor`), leem por meio de um "
+"fallback bloco a bloco (funciona em entradas em tiles/COG/comprimidas sem "
+"decodificar a cena inteira) e retornam um `ProcessingResult` cujo "
+"`.output_path` é o novo raster em disco."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:24
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:26
 msgid ""
@@ -53,6 +63,13 @@ msgid ""
 "comparable, cleaned data. It is available as `client.preprocess` and as the "
 "`pygeofetch preprocess` commands."
 msgstr ""
+"Cenas ópticas brutas raramente estão prontas para análise. O sinal que chega"
+" ao sensor inclui a atmosfera entre o solo e o satélite, as sombras "
+"projetadas pelo terreno, as nuvens e a grade e a projeção arbitrárias da "
+"própria cena. O motor de pré-processamento agrupa as etapas que tratam "
+"desses problemas para que um índice ou uma classificação seja calculado a "
+"partir de dados comparáveis e limpos. Está disponível como "
+"`client.preprocess` e como os comandos `pygeofetch preprocess`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:28
 msgid ""
@@ -67,22 +84,33 @@ msgid ""
 "inspect the intermediate result after every step and stop at the point where"
 " the data is good enough for your question."
 msgstr ""
+"Uma ordem sensata é corrigir primeiro, depois mascarar e então recortar e "
+"combinar. A correção atmosférica aproxima os valores da reflectância de "
+"superfície, a correção topográfica reduz a diferença de brilho entre "
+"encostas iluminadas e sombreadas, e a máscara de nuvens marca os pixels que "
+"não devem ser considerados confiáveis. Em seguida, você recorta a cena para "
+"a sua área, a reprojeta para o sistema de coordenadas desejado e, se uma "
+"única data não bastar, faz o mosaico de cenas vizinhas ou constrói um "
+"composto a partir de várias datas, preenchendo lacunas de nuvem com outras "
+"aquisições. Cada método recebe um arquivo e retorna um novo arquivo, de modo"
+" que você pode inspecionar o resultado intermediário após cada etapa e parar"
+" no ponto em que os dados forem bons o bastante para a sua pergunta."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:30
 msgid "Quick reference"
-msgstr ""
+msgstr "Referência rápida"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Options"
-msgstr ""
+msgstr "Opções"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "What it's for"
-msgstr ""
+msgstr "Para que serve"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`atmos()`"
@@ -90,12 +118,14 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "dos1, dos2, sen2cor, flaash, 6s, icor"
-msgstr ""
+msgstr "dos1, dos2, sen2cor, flaash, 6s, icor"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Remove atmospheric haze/scattering before comparing reflectance across dates"
 msgstr ""
+"Remove a névoa/espalhamento atmosférico antes de comparar a reflectância "
+"entre datas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`topo_correct()`"
@@ -103,13 +133,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "cosine, minnaert, c-correction"
-msgstr ""
+msgstr "cosine, minnaert, c-correction"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Remove terrain-shadow brightness differences (steep sunlit vs. shaded "
 "slopes)"
 msgstr ""
+"Remove diferenças de brilho causadas pela sombra do terreno (encostas "
+"íngremes iluminadas vs. sombreadas)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`cloud_mask()`"
@@ -117,11 +149,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "scl, fmask, threshold, ndsi"
-msgstr ""
+msgstr "scl, fmask, threshold, ndsi"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Set cloud (and optionally shadow/snow) pixels to NoData"
-msgstr ""
+msgstr "Define pixels de nuvem (e, opcionalmente, sombra/neve) como NoData"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`cloud_fill()`"
@@ -133,7 +165,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Fill cloud gaps using a multi-date time series"
-msgstr ""
+msgstr "Preenche lacunas de nuvem usando uma série temporal de várias datas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`clip()`"
@@ -141,11 +173,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "bbox or GeoJSON polygon"
-msgstr ""
+msgstr "bbox ou polígono GeoJSON"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Crop to your AOI"
-msgstr ""
+msgstr "Recorta para a sua AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`reproject()`"
@@ -153,11 +185,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "any target CRS"
-msgstr ""
+msgstr "qualquer CRS de destino"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Change coordinate reference system"
-msgstr ""
+msgstr "Altera o sistema de referência de coordenadas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`resample()`"
@@ -165,11 +197,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "nearest, bilinear, cubic, lanczos"
-msgstr ""
+msgstr "nearest, bilinear, cubic, lanczos"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Change spatial resolution"
-msgstr ""
+msgstr "Altera a resolução espacial"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`tile()`"
@@ -177,7 +209,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Split a large raster into overlapping tiles"
-msgstr ""
+msgstr "Divide um raster grande em tiles com sobreposição"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`pansharpen()`"
@@ -185,12 +217,14 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "brovey, ihs, gram-schmidt"
-msgstr ""
+msgstr "brovey, ihs, gram-schmidt"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Sharpen multispectral bands using a higher-resolution panchromatic band"
 msgstr ""
+"Aumenta a nitidez das bandas multiespectrais usando uma banda pancromática "
+"de resolução mais alta"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`mosaic()`"
@@ -198,12 +232,14 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "first, last, min, max, sum"
-msgstr ""
+msgstr "first, last, min, max, sum"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Merge scenes covering **different, adjacent areas** into one seamless image"
 msgstr ""
+"Une cenas que cobrem **áreas diferentes e adjacentes** em uma única imagem "
+"contínua"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`composite()`"
@@ -211,13 +247,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "median, mean, max, min, best_pixel"
-msgstr ""
+msgstr "median, mean, max, min, best_pixel"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Merge scenes covering the **same area on different dates** into one cloud-"
 "free image"
 msgstr ""
+"Une cenas que cobrem a **mesma área em datas diferentes** em uma única "
+"imagem sem nuvens"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:48
 msgid ""
@@ -230,10 +268,18 @@ msgid ""
 " different dates). If your inputs are \"same place, different time,\" you "
 "want `composite()`, not `mosaic()`."
 msgstr ""
+"**`mosaic()` vs. `composite()` — a distinção que confunde as pessoas**: "
+"`mosaic()` costura tiles *adjacentes e sem sobreposição* em uma imagem maior"
+" (por exemplo, dois tiles Sentinel-2 cobrindo as metades leste e oeste da "
+"sua AOI). `composite()` empilha a *mesma* área em *várias datas* para "
+"construir uma imagem sem nuvens (por exemplo, 12 cenas mensais de um tile, "
+"tomando a mediana por pixel para apagar nuvens que por acaso estavam sobre "
+"partes diferentes em datas diferentes). Se as suas entradas são \"mesmo "
+"lugar, tempos diferentes\", você quer `composite()`, não `mosaic()`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:58
 msgid "Atmospheric correction — `atmos()`"
-msgstr ""
+msgstr "Correção atmosférica — `atmos()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:64
 msgid ""
@@ -245,6 +291,14 @@ msgid ""
 " between the two acquisitions can masquerade as surface change unless "
 "corrected for first."
 msgstr ""
+"**Por que isso importa**: a luz solar que atravessa a atmosfera duas vezes "
+"(descendo até a superfície e subindo de volta ao sensor) é espalhada e "
+"absorvida — os números digitais brutos registrados por um satélite não são "
+"reflectância de superfície pura, incluem essa contribuição atmosférica. Se "
+"você compara os valores de índice de uma data com os de outra (detecção de "
+"mudanças, séries temporais), as diferenças atmosféricas entre as duas "
+"aquisições podem se passar por mudança na superfície, a menos que sejam "
+"corrigidas antes."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:75
 msgid ""
@@ -257,6 +311,14 @@ msgid ""
 "external executable this package does not bundle. If you need one of those "
 "algorithms, run the external tool."
 msgstr ""
+"**Limitação.** Apenas `\"dos1\"` e `\"dos2\"` são implementações completas. "
+"`\"sen2cor\"` é uma conversão L1C para L2A **simplificada** (divisão por "
+"10000, o valor de quantificação do Sentinel-2), não o algoritmo Sen2Cor "
+"publicado, que modela a transferência radiativa atmosférica com recuperação "
+"de aerossóis e vapor d'água. `\"flaash\"`, `\"6s\"` e `\"icor\"` são "
+"**placeholders**: chamar um deles registra um aviso e recorre ao DOS1, "
+"porque eles precisam de um executável externo que este pacote não inclui. Se"
+" você precisar de um desses algoritmos, execute a ferramenta externa."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:83
 msgid ""
@@ -267,6 +329,14 @@ msgid ""
 "small path-radiance correction on top. This is a standard, useful technique "
 "— just a simpler one than full radiative-transfer atmospheric correction."
 msgstr ""
+"**O que DOS1/DOS2 realmente fazem** (as duas implementações): encontram o "
+"valor de pixel do 1º percentil mais escuro em cada banda (o \"objeto "
+"escuro\" — presumido como uma superfície que deveria refletir quase zero, "
+"como água limpa e profunda ou sombra) e o subtraem de todos os pixels dessa "
+"banda. O DOS2 aplica adicionalmente uma pequena correção de radiância de "
+"caminho (path radiance) por cima. Esta é uma técnica padrão e útil — apenas "
+"mais simples do que a correção atmosférica completa por transferência "
+"radiativa."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:91
 msgid ""
@@ -275,10 +345,15 @@ msgid ""
 "reflectance accuracy doesn't matter (e.g. just running NDVI on one date to "
 "look at relative vegetation patterns within that one scene)."
 msgstr ""
+"**Use-a**: antes de qualquer comparação multidata (detecção de mudanças, "
+"índices de séries temporais); dispense-a em análises de uma única data e uma"
+" única cena em que a precisão absoluta da reflectância não importa (por "
+"exemplo, apenas executar o NDVI em uma data para observar padrões relativos "
+"de vegetação dentro dessa cena)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:97
 msgid "Topographic correction — `topo_correct()`"
-msgstr ""
+msgstr "Correção topográfica — `topo_correct()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:103
 msgid ""
@@ -290,6 +365,14 @@ msgid ""
 "[Terrain Analysis (DEM / DSM / DTM)](terrain.md) for how to get one via "
 "`client.search(..., providers=[\"opentopography\"])`)."
 msgstr ""
+"**Por que isso importa**: em terreno montanhoso, uma encosta voltada para o "
+"sol parece artificialmente clara e uma encosta sombreada parece "
+"artificialmente escura — puramente por causa da geometria de iluminação, e "
+"não porque a cobertura do solo seja realmente diferente. Isso pode distorcer"
+" gravemente índices de vegetação e classificações em terreno acidentado se "
+"não for corrigido. Requer um DEM cobrindo a mesma AOI (veja [Análise de "
+"Terreno (DEM / DSM / DTM)](terrain.md) para saber como obter um via "
+"`client.search(..., providers=[\"opentopography\"])`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:111
 msgid ""
@@ -299,6 +382,12 @@ msgid ""
 "correction term, generally the most accurate of the three but needs enough "
 "valid pixels to fit that term reliably)."
 msgstr ""
+"Três métodos: `\"cosine\"` (o mais simples, baseado puramente no ângulo de "
+"iluminação), `\"minnaert\"` (acrescenta uma correção empírica para o quanto "
+"a superfície é \"brilhante vs. fosca\"), `\"c-correction\"` (acrescenta um "
+"termo de correção empírico por banda, geralmente o mais preciso dos três, "
+"mas precisa de pixels válidos suficientes para ajustar esse termo de forma "
+"confiável)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:117
 msgid ""
@@ -306,10 +395,13 @@ msgid ""
 "computing vegetation indices or doing classification. Skip it for flat "
 "terrain (the correction would have negligible effect anyway)."
 msgstr ""
+"**Use-a**: em qualquer AOI com relevo topográfico significativo onde você "
+"esteja calculando índices de vegetação ou fazendo classificação. Dispense-a "
+"em terreno plano (a correção teria efeito desprezível de qualquer forma)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:121
 msgid "Cloud masking — `cloud_mask()`"
-msgstr ""
+msgstr "Máscara de nuvens — `cloud_mask()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`method=`"
@@ -317,11 +409,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "How it works"
-msgstr ""
+msgstr "Como funciona"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "When to use it"
-msgstr ""
+msgstr "Quando usar"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"scl\"`"
@@ -332,12 +424,16 @@ msgid ""
 "Reads a Sentinel-2 Scene Classification Layer band and masks the classified "
 "cloud/shadow classes (default: `[3,8,9,10,11]`)"
 msgstr ""
+"Lê uma banda Sentinel-2 Scene Classification Layer e mascara as classes "
+"classificadas como nuvem/sombra (padrão: `[3,8,9,10,11]`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid ""
 "**Best choice whenever you have an SCL band** — it's an official, per-pixel "
 "ESA classification, not a heuristic"
 msgstr ""
+"**Melhor escolha sempre que você tiver uma banda SCL** — é uma classificação"
+" oficial da ESA, por pixel, e não uma heurística"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"fmask\"`"
@@ -349,10 +445,13 @@ msgid ""
 "which does multi-temporal + physical TOA tests) — needs at least 4 bands in "
 "blue/green/red/nir order"
 msgstr ""
+"Uma heurística simplificada de brilho + brancura (não o algoritmo FMask "
+"completo, que faz testes multitemporais + TOA físicos) — precisa de pelo "
+"menos 4 bandas na ordem blue/green/red/nir"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "Reasonable fallback when no SCL band exists"
-msgstr ""
+msgstr "Fallback razoável quando não existe banda SCL"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"threshold\"`"
@@ -360,13 +459,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "Flags band-1 pixels above a brightness cutoff as cloud"
-msgstr ""
+msgstr "Marca como nuvem os pixels da banda 1 acima de um corte de brilho"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid ""
 "Crude, single-band fallback — only reliable for obviously bright, thick "
 "cloud"
 msgstr ""
+"Fallback rudimentar de banda única — só confiável para nuvens obviamente "
+"brilhantes e espessas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"ndsi\"`"
@@ -378,11 +479,15 @@ msgid ""
 "exactly `[blue, green, red, swir1]` order** (uses index 1 for green, index 3"
 " for SWIR1)"
 msgstr ""
+"Calcula o NDSI internamente e mascara pixels com muita neve — **exige bandas"
+" exatamente na ordem `[blue, green, red, swir1]`** (usa o índice 1 para o "
+"verde, o índice 3 para o SWIR1)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid ""
 "Snow/ice removal, not actually cloud removal despite living on this method"
 msgstr ""
+"Remoção de neve/gelo, na verdade não de nuvens, apesar de estar neste método"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:140
 msgid ""
@@ -393,6 +498,12 @@ msgid ""
 "[Postprocessing](postprocessing.md), double-check the order you passed "
 "matches what these methods expect (blue, green, red, nir, ...)."
 msgstr ""
+"`\"ndsi\"` e `\"fmask\"` assumem ambos uma **ordem de bandas específica** no"
+" seu raster de entrada, e não apenas um número mínimo de bandas — passar as "
+"mesmas 4 bandas na ordem errada produz silenciosamente uma máscara errada em"
+" vez de um erro. Se o seu raster foi empilhado via `client.indices.stack()` "
+"ou [Pós-processamento](postprocessing.md), confira se a ordem que você "
+"passou corresponde à que esses métodos esperam (blue, green, red, nir, ...)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:147
 msgid ""
@@ -404,10 +515,18 @@ msgid ""
 "shadow + all cloud classes + cirrus + snow; pass your own list if, e.g., you"
 " want to keep thin cirrus pixels rather than discard them."
 msgstr ""
+"`cloud_classes` (para `method=\"scl\"`) permite substituir quais valores de "
+"classe do SCL contam como \"nuvem\" — a legenda do SCL do Sentinel-2 é: "
+"0=nodata, 1=saturado, 2=área escura, 3=sombra de nuvem, 4=vegetação, 5=solo "
+"exposto, 6=água, 7=não classificado, 8=nuvem de média probabilidade, 9=nuvem"
+" de alta probabilidade, 10=cirro fino, 11=neve/gelo. O padrão "
+"`[3,8,9,10,11]` mascara sombra + todas as classes de nuvem + cirro + neve; "
+"passe a sua própria lista se, por exemplo, quiser manter os pixels de cirro "
+"fino em vez de descartá-los."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:156
 msgid "`cloud_fill()` — filling gaps with other dates"
-msgstr ""
+msgstr "`cloud_fill()` — preenchendo lacunas com outras datas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:166
 msgid ""
@@ -420,10 +539,18 @@ msgid ""
 "values wherever they're valid — unlike `composite()`, which blends every "
 "date together rather than treating one as primary."
 msgstr ""
+"Preenche lacunas de nuvem/nodata em `input` (uma única cena-alvo) usando "
+"pixels válidos de `time_series` (outras datas cobrindo a mesma AOI). "
+"`method=\"interpolate\"` (padrão) interpola linearmente entre as datas "
+"válidas mais próximas de cada lado de uma lacuna; `method=\"nearest\"` "
+"apenas copia o valor da data fornecida temporalmente mais próxima. Útil "
+"quando você quer o raster de uma data específica preenchido, ancorado nos "
+"valores reais dessa data onde forem válidos — ao contrário de `composite()`,"
+" que mistura todas as datas em vez de tratar uma como principal."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:176
 msgid "Geometry operations"
-msgstr ""
+msgstr "Operações de geometria"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:185
 msgid ""
@@ -434,6 +561,12 @@ msgid ""
 " raster's grid *exactly* — same shape, transform, *and* CRS, not just the "
 "same resolution number)."
 msgstr ""
+"`resample()` tem três formas mutuamente exclusivas de especificar o alvo: "
+"`resolution=` (um valor absoluto nas unidades do próprio CRS do raster — "
+"graus para CRS geográfico, metros para projetado), `scale_factor=` (relativo"
+" — `0.5` = metade da resolução atual, `2.0` = o dobro) ou `reference=` "
+"(corresponde *exatamente* à grade de outro raster — mesmo formato, "
+"transformação *e* CRS, não apenas o mesmo número de resolução)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:194
 msgid ""
@@ -443,6 +576,12 @@ msgid ""
 " to \"the same resolution\" can still end up with different origins/extents "
 "and fail to overlay correctly — `reference=` guarantees an exact match."
 msgstr ""
+"**Use `reference=`, e não duas chamadas separadas de `resolution=`, quando "
+"precisar que dois rasters se alinhem pixel a pixel** (por exemplo, antes de "
+"`client.indices.ndvi()`, que precisa de suas bandas na mesma grade). Dois "
+"rasters reamostrados independentemente para \"a mesma resolução\" ainda "
+"podem acabar com origens/extensões diferentes e não se sobrepor corretamente"
+" — `reference=` garante uma correspondência exata."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:203
 msgid ""
@@ -450,6 +589,10 @@ msgid ""
 "clipped against a raster in its native UTM projection is reprojected to "
 "match before masking, so the intersection is computed in a common CRS."
 msgstr ""
+"**Tratamento de CRS em `clip()`.** Um polígono de limite em WGS84 (o GeoJSON"
+" de AOI usual) recortado contra um raster em sua projeção UTM nativa é "
+"reprojetado para corresponder antes da máscara, de modo que a interseção "
+"seja calculada em um CRS comum."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:207
 msgid ""
@@ -461,10 +604,18 @@ msgid ""
 " hard edges — generally reserve it for final visual output, not analysis "
 "inputs."
 msgstr ""
+"**A escolha do método de reamostragem importa**: `\"nearest\"` preserva os "
+"valores originais exatos (use para dados categóricos/classificados — "
+"reamostrar um mapa de classes de cobertura do solo com `\"bilinear\"` "
+"criaria valores de classe fracionários sem sentido); "
+"`\"bilinear\"`/`\"cubic\"` suavizam dados contínuos como reflectância ou "
+"elevação; `\"lanczos\"` é mais nítido, mas pode introduzir artefatos de "
+"ringing perto de bordas abruptas — em geral, reserve-o para a saída visual "
+"final, não para entradas de análise."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:215
 msgid "`tile()` — splitting a large raster for chunked processing"
-msgstr ""
+msgstr "`tile()` — dividindo um raster grande para processamento em partes"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:222
 msgid ""
@@ -475,10 +626,18 @@ msgid ""
 "fraction of the tile is valid (non-nodata) data, so edge tiles that are "
 "almost entirely nodata aren't written out."
 msgstr ""
+"Divide um raster em tiles quadrados com sobreposição (`tile_size` pixels, "
+"`overlap` pixels compartilhados entre tiles adjacentes) — útil para "
+"alimentar etapas de processamento com limite de memória ou um modelo que "
+"espera partes de entrada de tamanho fixo. `min_coverage` (padrão `0.1`) "
+"ignora tiles em que menos dessa fração do tile contém dados válidos (não "
+"nodata), de modo que tiles de borda quase inteiramente nodata não sejam "
+"gravados."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:229
 msgid "`pansharpen()` — multispectral + panchromatic → sharper multispectral"
 msgstr ""
+"`pansharpen()` — multiespectral + pancromática → multiespectral mais nítido"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:235
 msgid ""
@@ -490,10 +649,18 @@ msgid ""
 "color preservation), `\"gram-schmidt\"` (usually the best spectral fidelity "
 "of the three, at more compute cost)."
 msgstr ""
+"Muitos satélites entregam uma imagem colorida de resolução mais baixa junto "
+"com uma banda em tons de cinza (\"pancromática\") de resolução mais alta — o"
+" pansharpening combina as duas para aproximar uma imagem colorida de "
+"resolução mais alta. Três métodos: `\"brovey\"` (rápido, simples, baseado em"
+" razão, pode deslocar levemente as cores em alvos muito brilhantes), "
+"`\"ihs\"` (transformação Intensidade-Matiz-Saturação, geralmente com melhor "
+"preservação de cor), `\"gram-schmidt\"` (normalmente a melhor fidelidade "
+"espectral dos três, com maior custo computacional)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:244
 msgid "Mosaic vs. composite — full detail"
-msgstr ""
+msgstr "Mosaico vs. composto — detalhes completos"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:257
 msgid ""
@@ -503,6 +670,11 @@ msgid ""
 "input with valid data wins — fast, default), `\"last\"`, `\"min\"`, "
 "`\"max\"`, `\"sum\"`."
 msgstr ""
+"`mosaic()` é um wrapper direto de `rasterio.merge` — uma função de "
+"biblioteca bem testada, não uma reimplementação caseira. `method` controla "
+"como os pixels sobrepostos entre tiles adjacentes são resolvidos: "
+"`\"first\"` (a primeira entrada com dados válidos vence — rápido, padrão), "
+"`\"last\"`, `\"min\"`, `\"max\"`, `\"sum\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:263
 msgid ""
@@ -515,6 +687,14 @@ msgid ""
 " `cloud_masks` if you supply them, rather than a blind statistical "
 "reduction)."
 msgstr ""
+"`composite()` empilha todas as datas de entrada e depois reduz por pixel ao "
+"longo da dimensão temporal: `\"median\"` (a escolha padrão — robusta contra "
+"nuvens transitórias/valores atípicos sem precisar de uma máscara de nuvens "
+"explícita), `\"mean\"`, `\"max\"` (comumente usado em compostos de NDVI "
+"máximo — passe rasters de NDVI como `inputs` para obter o pixel mais verde "
+"por local em todo o período), `\"min\"`, `\"best_pixel\"` (escolhe o pixel "
+"menos nublado por local usando `cloud_masks`, se você os fornecer, em vez de"
+" uma redução estatística cega)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:274
 msgid ""
@@ -524,6 +704,11 @@ msgid ""
 "cloud-free multi-month view without needing every single input date to "
 "itself be cloud-free."
 msgstr ""
+"**Fluxo de trabalho comum**: mascare as nuvens de cada data individualmente "
+"primeiro (`cloud_mask()`), *depois* faça o composto com `method=\"median\"` "
+"— a mediana ignora naturalmente as lacunas NaN/NoData deixadas pela máscara,"
+" resultando em uma visão limpa e sem nuvens de vários meses, sem exigir que "
+"cada data de entrada seja, ela própria, livre de nuvens."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:282
 msgid ""
@@ -536,3 +721,11 @@ msgid ""
 "topic of their own (DEM/DSM/DTM analysis) rather than general-purpose "
 "optical preprocessing."
 msgstr ""
+"As operações específicas de terreno (`terrain_derivatives()`, "
+"`topographic_wetness_index()`, `curvature()`, `terrain_ruggedness_index()`, "
+"`identify_depressions()`, `extract_drainage_network()`) também ficam nesta "
+"mesma classe `Preprocessor`, acessíveis da mesma forma "
+"(`client.preprocess.terrain_derivatives(...)`) — documentadas separadamente "
+"em [Análise de Terreno (DEM / DSM / DTM)](terrain.md) porque formam um tema "
+"coerente por si só (análise de DEM/DSM/DTM) em vez de pré-processamento "
+"óptico de uso geral."

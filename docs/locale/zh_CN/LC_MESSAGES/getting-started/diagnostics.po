@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,11 +23,11 @@ msgstr "Doctor / 诊断"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:7
 msgid "This is exactly what `doctor` checks, in order."
-msgstr ""
+msgstr "这正是 `doctor` 按顺序执行的检查。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:9
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:11
 msgid ""
@@ -39,6 +39,9 @@ msgid ""
 "whether it passed, so most installation problems can be located without "
 "reading a traceback."
 msgstr ""
+"`pygeofetch doctor` 是安装后首先要运行的命令，也是出现问题时首先要运行的命令。它会检查 Python "
+"版本、必需的软件包能否导入、哪些可选功能组可用、keyring "
+"后端是否可用，以及能否访问三个开放的提供商。输出的每一行都会说明检查了什么以及是否通过，因此无需阅读回溯信息即可定位大多数安装问题。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:13
 msgid ""
@@ -47,14 +50,16 @@ msgid ""
 "settings, and run the command again. Include the output of `doctor` when you"
 " report a problem, since it records the environment the failure happened in."
 msgstr ""
+"如果某项检查失败，消息通常会指明缺少的 extra 或网络问题。请安装它所指向的 "
+"extra，或检查你的代理和防火墙设置，然后再次运行该命令。报告问题时请附上 `doctor` 的输出，因为它记录了故障发生时的环境。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:15
 msgid "What it actually checks, in order"
-msgstr ""
+msgstr "它实际检查的内容（按顺序）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:17
 msgid "**1. Python version** — must be 3.9+ (pygeofetch's minimum)."
-msgstr ""
+msgstr "**1. Python 版本** —— 必须为 3.9+（pygeofetch 的最低要求）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:19
 msgid ""
@@ -64,19 +69,23 @@ msgid ""
 "[Installation](installation.md)) — a ✗ here means your install is broken, "
 "not just missing an optional extra."
 msgstr ""
+"**2. 必需的软件包** —— 直接导入 "
+"`httpx`、`pydantic`、`click`、`rich`、`yaml`、`cryptography`、`keyring`，并逐个报告 "
+"✓/✗。这些是 pygeofetch 始终安装的核心依赖项（参见[安装](installation.md)）——此处出现 ✗ "
+"表示你的安装已损坏，而不只是缺少某个可选 extra。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:25
 msgid ""
 "**3. Optional packages**, each reported with what it unlocks if missing:"
-msgstr ""
+msgstr "**3. 可选软件包**，缺失时会分别报告其所能提供的功能："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Package"
-msgstr ""
+msgstr "软件包"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Unlocks"
-msgstr ""
+msgstr "提供的功能"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`boto3`"
@@ -84,7 +93,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "AWS S3 direct access"
-msgstr ""
+msgstr "AWS S3 直接访问"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`rasterio`"
@@ -92,7 +101,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Raster post-processing"
-msgstr ""
+msgstr "栅格后处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`geopandas`"
@@ -100,7 +109,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "GeoParquet output"
-msgstr ""
+msgstr "GeoParquet 输出"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`croniter`"
@@ -108,7 +117,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Cron scheduling"
-msgstr ""
+msgstr "Cron 调度"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:35
 msgid ""
@@ -120,12 +129,15 @@ msgid ""
 "they gate entire features (S3 export, any raster post-processing at all, "
 "GeoParquet, scheduling) rather than one specific provider or index."
 msgstr ""
+"如果你尚未安装相应的 extra，此处出现 ⚠（而非 ✗）是预期的，也没有问题——各软件包由哪个 `pygeofetch[...]` extra "
+"提供，参见[安装](installation.md)。此列表刻意保持简短；它**不会**逐一检查每个可选依赖组（`insar`、`sar`、`viz` "
+"等）——只检查这四项，是因为它们控制着整个功能（S3 导出、任何栅格后处理、GeoParquet、调度），而不是某个特定的提供商或指数。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:44
 msgid ""
 "**4. Config directory** — confirms `pygeofetch`'s config directory exists "
 "(or notes it'll be created on first use)."
-msgstr ""
+msgstr "**4. 配置目录** —— 确认 `pygeofetch` 的配置目录存在（或说明它将在首次使用时创建）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:47
 msgid ""
@@ -136,24 +148,28 @@ msgid ""
 "credential storage needs the environment-variable fallback — see "
 "[Authentication](../data-access/authentication.md) for that fallback."
 msgstr ""
+"**5. Keyring 后端** —— 报告实际使用的 keyring 后端类（例如 Linux 桌面上的 `SecretService "
+"Keyring`、macOS 上的 `macOS Keyring`）。此处出现 ⚠（并非严重失败）是你处于无头环境（Docker、CI、没有桌面会话的 "
+"SSH）的真实、实用的信号，此时凭据存储需要使用环境变量作为后备方案——该后备方案参见[身份验证](../data-"
+"access/authentication.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:55
 msgid ""
 "**6. Live connectivity** — HTTP GET requests (8-second timeout, no auth) "
 "against three currently-open provider endpoints:"
-msgstr ""
+msgstr "**6. 实时连通性** —— 对三个当前开放的提供商端点发起 HTTP GET 请求（8 秒超时，无身份验证）："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Check"
-msgstr ""
+msgstr "检查项"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Real URL"
-msgstr ""
+msgstr "实际 URL"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "AWS Earth Search"
-msgstr ""
+msgstr "AWS Earth Search"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`https://earth-search.aws.element84.com/v1/collections`"
@@ -161,7 +177,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Planetary Computer"
-msgstr ""
+msgstr "Planetary Computer"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`https://planetarycomputer.microsoft.com/api/stac/v1/`"
@@ -169,7 +185,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Element 84"
-msgstr ""
+msgstr "Element 84"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`https://earth-search.aws.element84.com/v1`"
@@ -183,6 +199,9 @@ msgid ""
 " duplicate check; a network/firewall issue that blocks one path but not the "
 "other is useful information."
 msgstr ""
+"“AWS Earth Search”和“Element 84”检查的是同一主机（`earth-"
+"search.aws.element84.com`）上的两个不同路径——分别是集合列表端点和根 API "
+"端点——这是有意为之，并非重复检查；网络或防火墙问题若只阻断其中一个路径而不阻断另一个，这本身就是有用的信息。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:72
 msgid ""
@@ -191,10 +210,12 @@ msgid ""
 "that specific service is down or blocked specifically, not your whole "
 "connection."
 msgstr ""
+"三项全部出现 ✗ 通常意味着彻底的网络问题（没有互联网，或企业代理阻断了出站 HTTPS）；只有一项出现 ✗ "
+"通常意味着该特定服务已宕机或被单独阻断，而不是你的整个网络连接有问题。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:77
 msgid "Status dashboard"
-msgstr ""
+msgstr "状态仪表板"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:84
 msgid ""
@@ -204,10 +225,13 @@ msgid ""
 "capability flags (SAR support, sub-metre resolution, STAC compliance) "
 "alongside cache statistics."
 msgstr ""
+"显示当前 `PyGeoFetch` 实例的版本、Python/平台信息、每个已注册的提供商及其身份验证状态（`✓ "
+"authenticated`、无需身份验证的提供商显示 `🌐 open`，或 `✗ not configured`），以及各提供商的能力标志（SAR "
+"支持、亚米级分辨率、STAC 合规性），并附有缓存统计信息。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:91
 msgid "The `--json` output schema:"
-msgstr ""
+msgstr "`--json` 输出的模式："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:107
 msgid ""
@@ -217,6 +241,9 @@ msgid ""
 "use `pygeofetch.providers.list_provider_info()` directly in Python rather "
 "than parsing `status --json`."
 msgstr ""
+"JSON 输出有意设计为人类可读表格所显示内容的较小子集——它不包含表格视图中各提供商的 SAR/`<1m`/STAC "
+"能力列。如果你需要以编程方式获取这些信息，请在 Python 中直接使用 "
+"`pygeofetch.providers.list_provider_info()`，而不要解析 `status --json`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:115
 msgid ""
@@ -225,3 +252,5 @@ msgid ""
 "actually loaded — rather than discovering a missing `auth add` step partway "
 "through a long-running batch job."
 msgstr ""
+"这对于在启动流水线运行之前确认某个环境究竟能够访问哪些提供商、实际加载了哪些凭据很有用——而不是在长时间运行的批处理作业进行到一半时才发现遗漏了 "
+"`auth add` 步骤。"

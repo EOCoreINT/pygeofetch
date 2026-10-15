@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,75 +27,95 @@ msgid ""
 "tests and documentation. The repository's `CONTRIBUTING.md` holds the "
 "authoritative guidelines; this page is a short orientation."
 msgstr ""
+"Se agradecen contribuciones de todo tipo: informes de errores, correcciones,"
+" nuevos proveedores, pruebas y documentación. El archivo `CONTRIBUTING.md` "
+"del repositorio contiene las directrices de referencia; esta página es una "
+"breve orientación."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:7
 msgid "Development setup"
-msgstr ""
+msgstr "Configuración del entorno de desarrollo"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:16
 msgid ""
 "See [Testing](../reference/testing.md) for how the suite is organised and "
 "why the `test` extra is the right one."
 msgstr ""
+"Véase [Pruebas](../reference/testing.md) para saber cómo está organizada la "
+"suite y por qué el extra `test` es el adecuado."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:19
 msgid "Where to start"
-msgstr ""
+msgstr "Por dónde empezar"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:21
 msgid ""
 "Each item below links to the page that describes the current behaviour."
 msgstr ""
+"Cada elemento siguiente enlaza con la página que describe el comportamiento "
+"actual."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:23
 msgid ""
 "**Close a documented gap** (all listed in [Known issues](../reference/known-"
 "issues.md))"
 msgstr ""
+"**Cerrar una brecha documentada** (todas figuran en [Problemas "
+"conocidos](../reference/known-issues.md))"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:25
 msgid ""
 "Make `FederatedSearcher` honour `--on-provider-failure abort` and `retry`."
 msgstr ""
+"Hacer que `FederatedSearcher` respete `--on-provider-failure abort` y "
+"`retry`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:26
 msgid "Register the `monitor` command group in `cli/main.py`."
-msgstr ""
+msgstr "Registrar el grupo de comandos `monitor` en `cli/main.py`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:27
 msgid ""
 "Connect the [Settings layer](../reference/configuration.md) to search, "
 "download and the engine."
 msgstr ""
+"Conectar la [capa Settings](../reference/configuration.md) con la búsqueda, "
+"la descarga y el motor."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:28
 msgid ""
 "Fix `client.sar.coherence` for complex input by reusing the approach in "
 "`pygeofetch.sar.processor`."
 msgstr ""
+"Corregir `client.sar.coherence` para entrada compleja reutilizando el "
+"enfoque de `pygeofetch.sar.processor`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:29
 msgid "Declare `rich` and `shapely` as dependencies."
-msgstr ""
+msgstr "Declarar `rich` y `shapely` como dependencias."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:30
 msgid "Delete the stale `multisensor/_init.py`."
-msgstr ""
+msgstr "Eliminar el `multisensor/_init.py` obsoleto."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:32
 msgid "**Improve quality**"
-msgstr ""
+msgstr "**Mejorar la calidad**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:34
 msgid ""
 "Add a GCS export test with a mocked bucket, to match the S3 coverage in "
 "`tests/test_pipeline_process_export.py`."
 msgstr ""
+"Añadir una prueba de exportación a GCS con un bucket simulado (mock), para "
+"igualar la cobertura de S3 en `tests/test_pipeline_process_export.py`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:35
 msgid ""
 "Add post-processing actions (see [Pipelines](../workflows/pipelines.md))."
 msgstr ""
+"Añadir acciones de posprocesamiento (véase "
+"[Pipelines](../workflows/pipelines.md))."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:36
 msgid ""
@@ -103,41 +123,53 @@ msgid ""
 "C-correction, Minnaert or SCS+C for steep terrain ([Multi-sensor "
 "pipelines](../processing/multisensor.md))."
 msgstr ""
+"Ampliar la detección de cambios con corrección de terreno más allá de la "
+"corrección del coseno, hacia la corrección C, Minnaert o SCS+C para terreno "
+"empinado ([Pipelines multisensor](../processing/multisensor.md))."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:37
 msgid ""
 "Re-verify providers whose upstream APIs may have changed. A failing provider"
 " is a live bug report, not a stub to reimplement."
 msgstr ""
+"Volver a verificar los proveedores cuyas API de origen pueden haber "
+"cambiado. Un proveedor que falla es un informe de error en vivo, no un "
+"esqueleto que haya que reimplementar."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:39
 msgid "Conventions"
-msgstr ""
+msgstr "Convenciones"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:41
 msgid ""
 "Add a test for every fix, and derive expected values independently of the "
 "code under test."
 msgstr ""
+"Añada una prueba por cada corrección y obtenga los valores esperados de "
+"forma independiente del código bajo prueba."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:42
 msgid "Do not make tests depend on network access."
-msgstr ""
+msgstr "No haga que las pruebas dependan del acceso a la red."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:43
 msgid ""
 "When you change a CLI command, regenerate its reference page: `python "
 "tools/gen_cli_reference.py`."
 msgstr ""
+"Cuando cambie un comando de la CLI, regenere su página de referencia: "
+"`python tools/gen_cli_reference.py`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:44
 msgid ""
 "Keep documentation claims verifiable: run the example before you publish it."
 msgstr ""
+"Mantenga verificables las afirmaciones de la documentación: ejecute el "
+"ejemplo antes de publicarlo."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:46
 msgid "Licence"
-msgstr ""
+msgstr "Licencia"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:48
 msgid ""
@@ -145,3 +177,7 @@ msgid ""
 "platform: pygeofetch handles data acquisition and processing, and "
 "PyGeoVision builds the Earth observation machine-learning layer on top."
 msgstr ""
+"MIT. Copyright Samuel Appiah Kubi. pygeofetch forma parte de la plataforma "
+"PyGeoVision: pygeofetch se encarga de la adquisición y el procesamiento de "
+"datos, y PyGeoVision construye encima la capa de aprendizaje automático para"
+" observación de la Tierra."

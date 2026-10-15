@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,11 +23,11 @@ msgstr "Doctor / Diagnostic"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:7
 msgid "This is exactly what `doctor` checks, in order."
-msgstr ""
+msgstr "Voici exactement ce que vérifie `doctor`, dans l'ordre."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:9
 msgid "Overview"
-msgstr ""
+msgstr "Vue d'ensemble"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:11
 msgid ""
@@ -39,6 +39,14 @@ msgid ""
 "whether it passed, so most installation problems can be located without "
 "reading a traceback."
 msgstr ""
+"`pygeofetch doctor` est la première commande à exécuter après l'installation"
+" et la première à lancer quand quelque chose ne fonctionne pas. Elle vérifie"
+" la version de Python, que les paquets requis s'importent, quels groupes de "
+"fonctionnalités optionnelles sont disponibles, si un backend de trousseau "
+"(keyring) est utilisable, et si trois fournisseurs ouverts sont joignables. "
+"Chaque ligne de la sortie indique ce qui a été vérifié et si le test a "
+"réussi, ce qui permet de localiser la plupart des problèmes d'installation "
+"sans lire de traceback."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:13
 msgid ""
@@ -47,14 +55,19 @@ msgid ""
 "settings, and run the command again. Include the output of `doctor` when you"
 " report a problem, since it records the environment the failure happened in."
 msgstr ""
+"Si une vérification échoue, le message nomme généralement l'extra manquant "
+"ou le problème réseau. Installez l'extra indiqué, ou vérifiez les paramètres"
+" de votre proxy et de votre pare-feu, puis relancez la commande. Joignez la "
+"sortie de `doctor` lorsque vous signalez un problème, car elle consigne "
+"l'environnement dans lequel l'échec s'est produit."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:15
 msgid "What it actually checks, in order"
-msgstr ""
+msgstr "Ce qu'elle vérifie réellement, dans l'ordre"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:17
 msgid "**1. Python version** — must be 3.9+ (pygeofetch's minimum)."
-msgstr ""
+msgstr "**1. Version de Python** — doit être 3.9+ (le minimum de pygeofetch)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:19
 msgid ""
@@ -64,19 +77,27 @@ msgid ""
 "[Installation](installation.md)) — a ✗ here means your install is broken, "
 "not just missing an optional extra."
 msgstr ""
+"**2. Paquets requis** — importe directement chacun de `httpx`, `pydantic`, "
+"`click`, `rich`, `yaml`, `cryptography`, `keyring` et signale ✓/✗ par "
+"paquet. Ce sont les dépendances principales toujours installées de "
+"pygeofetch (voir [Installation](installation.md)) — un ✗ ici signifie que "
+"votre installation est défectueuse, pas simplement qu'il manque un extra "
+"optionnel."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:25
 msgid ""
 "**3. Optional packages**, each reported with what it unlocks if missing:"
 msgstr ""
+"**3. Paquets optionnels**, chacun signalé avec ce qu'il débloque s'il manque"
+" :"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Package"
-msgstr ""
+msgstr "Paquet"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Unlocks"
-msgstr ""
+msgstr "Débloque"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`boto3`"
@@ -84,7 +105,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "AWS S3 direct access"
-msgstr ""
+msgstr "Accès direct à AWS S3"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`rasterio`"
@@ -92,7 +113,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Raster post-processing"
-msgstr ""
+msgstr "Post-traitement raster"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`geopandas`"
@@ -100,7 +121,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "GeoParquet output"
-msgstr ""
+msgstr "Sortie GeoParquet"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`croniter`"
@@ -108,7 +129,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Cron scheduling"
-msgstr ""
+msgstr "Planification cron"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:35
 msgid ""
@@ -120,12 +141,24 @@ msgid ""
 "they gate entire features (S3 export, any raster post-processing at all, "
 "GeoParquet, scheduling) rather than one specific provider or index."
 msgstr ""
+"Un ⚠ (et non un ✗) ici est attendu et sans gravité si vous n'avez pas encore"
+" installé l'extra concerné — voir [Installation](installation.md) pour "
+"savoir quel extra `pygeofetch[...]` fournit chacun. Cette liste est "
+"volontairement courte ; elle ne vérifie **pas** individuellement chaque "
+"groupe de dépendances optionnelles (`insar`, `sar`, `viz`, etc.) — seulement"
+" ces quatre-là, choisis spécifiquement parce qu'ils conditionnent des "
+"fonctionnalités entières (export S3, tout post-traitement raster, "
+"GeoParquet, planification) plutôt qu'un fournisseur ou un indice en "
+"particulier."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:44
 msgid ""
 "**4. Config directory** — confirms `pygeofetch`'s config directory exists "
 "(or notes it'll be created on first use)."
 msgstr ""
+"**4. Répertoire de configuration** — confirme que le répertoire de "
+"configuration de `pygeofetch` existe (ou indique qu'il sera créé à la "
+"première utilisation)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:47
 msgid ""
@@ -136,24 +169,35 @@ msgid ""
 "credential storage needs the environment-variable fallback — see "
 "[Authentication](../data-access/authentication.md) for that fallback."
 msgstr ""
+"**5. Backend de trousseau (keyring)** — indique la classe de backend de "
+"trousseau réellement utilisée (par exemple `SecretService Keyring` sur un "
+"bureau Linux, `macOS Keyring` sur macOS). Un ⚠ ici (et non un échec "
+"bloquant) est le signal concret que vous êtes dans un environnement sans "
+"interface graphique (Docker, CI, SSH sans session de bureau) où le stockage "
+"des identifiants nécessite le recours aux variables d'environnement — voir "
+"[Authentification](../data-access/authentication.md) pour ce mécanisme de "
+"repli."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:55
 msgid ""
 "**6. Live connectivity** — HTTP GET requests (8-second timeout, no auth) "
 "against three currently-open provider endpoints:"
 msgstr ""
+"**6. Connectivité en direct** — requêtes HTTP GET (délai de 8 secondes, sans"
+" authentification) vers trois points d'accès de fournisseurs actuellement "
+"ouverts :"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Check"
-msgstr ""
+msgstr "Vérification"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Real URL"
-msgstr ""
+msgstr "URL réelle"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "AWS Earth Search"
-msgstr ""
+msgstr "AWS Earth Search"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`https://earth-search.aws.element84.com/v1/collections`"
@@ -161,7 +205,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Planetary Computer"
-msgstr ""
+msgstr "Planetary Computer"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`https://planetarycomputer.microsoft.com/api/stac/v1/`"
@@ -169,7 +213,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "Element 84"
-msgstr ""
+msgstr "Element 84"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:0
 msgid "`https://earth-search.aws.element84.com/v1`"
@@ -183,6 +227,12 @@ msgid ""
 " duplicate check; a network/firewall issue that blocks one path but not the "
 "other is useful information."
 msgstr ""
+"« AWS Earth Search » et « Element 84 » vérifient le même hôte (`earth-"
+"search.aws.element84.com`) sur deux chemins différents — respectivement le "
+"point d'accès de liste des collections et le point d'accès racine de l'API —"
+" c'est voulu et ce n'est pas une vérification en double ; un problème réseau"
+" ou de pare-feu qui bloque un chemin mais pas l'autre est une information "
+"utile."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:72
 msgid ""
@@ -191,10 +241,14 @@ msgid ""
 "that specific service is down or blocked specifically, not your whole "
 "connection."
 msgstr ""
+"Un ✗ sur les trois indique généralement un problème réseau global (pas "
+"d'internet, ou un proxy d'entreprise bloquant le HTTPS sortant) ; un ✗ sur "
+"un seul indique généralement que ce service précis est en panne ou bloqué, "
+"et non l'ensemble de votre connexion."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:77
 msgid "Status dashboard"
-msgstr ""
+msgstr "Tableau de bord d'état"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:84
 msgid ""
@@ -204,10 +258,16 @@ msgid ""
 "capability flags (SAR support, sub-metre resolution, STAC compliance) "
 "alongside cache statistics."
 msgstr ""
+"Affiche la version de l'instance `PyGeoFetch` courante, les informations "
+"Python/plateforme, chaque fournisseur enregistré avec son état "
+"d'authentification (`✓ authenticated`, `🌐 open` pour les fournisseurs sans "
+"authentification, ou `✗ not configured`), et les indicateurs de capacités "
+"par fournisseur (prise en charge SAR, résolution sub-métrique, conformité "
+"STAC) ainsi que les statistiques du cache."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:91
 msgid "The `--json` output schema:"
-msgstr ""
+msgstr "Le schéma de sortie `--json` :"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:107
 msgid ""
@@ -217,6 +277,11 @@ msgid ""
 "use `pygeofetch.providers.list_provider_info()` directly in Python rather "
 "than parsing `status --json`."
 msgstr ""
+"La sortie JSON est volontairement un sous-ensemble plus réduit de ce que "
+"montre le tableau lisible — elle n'inclut pas les colonnes de capacités par "
+"fournisseur SAR/`<1m`/STAC de la vue tableau. Si vous en avez besoin par "
+"programme, utilisez directement `pygeofetch.providers.list_provider_info()` "
+"en Python plutôt que d'analyser `status --json`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/diagnostics.md:115
 msgid ""
@@ -225,3 +290,7 @@ msgid ""
 "actually loaded — rather than discovering a missing `auth add` step partway "
 "through a long-running batch job."
 msgstr ""
+"Utile pour confirmer, avant de lancer un pipeline, quels fournisseurs un "
+"environnement donné peut réellement atteindre et quels identifiants sont "
+"réellement chargés — plutôt que de découvrir une étape `auth add` manquante "
+"au milieu d'un long traitement par lots."

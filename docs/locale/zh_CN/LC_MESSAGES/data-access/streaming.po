@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,9 @@ msgid ""
 "the whole raster into memory. If your study area is a few kilometres across "
 "inside a 110 km tile, almost all of that transfer and memory is wasted."
 msgstr ""
+"`client.download()` 会把每个选定的资产作为完整文件获取。对于 Sentinel-2 的一个波段，这意味着 100-300 MB，而用"
+" `rasterio` 读取时会把整个栅格解码到内存中。如果你的研究区只有几公里宽，而它位于 110 km "
+"的瓦片内，那么几乎所有的传输量和内存都被浪费了。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:8
 msgid ""
@@ -36,10 +39,12 @@ msgid ""
 "GeoTIFF](https://cogeo.org/) (COG) over HTTP, converts your bounding box to "
 "a pixel window, and requests just the byte ranges for that window."
 msgstr ""
+"**流式读取**只读取感兴趣区域（AOI）下的像素。pygeofetch 通过 HTTP 将每个波段作为 [Cloud-Optimized "
+"GeoTIFF](https://cogeo.org/)（COG）打开，把你的边界框转换为像素窗口，并仅请求该窗口对应的字节范围。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Verification status"
-msgstr ""
+msgstr "验证状态"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:15
 msgid ""
@@ -49,28 +54,30 @@ msgid ""
 "Element84 services. Run one real scene and check the output before relying "
 "on it in production."
 msgstr ""
+"流式读取模块已针对一个实现了范围请求并统计其所提供字节数的本地 HTTP 服务器，以及模拟的提供商响应进行了测试。它**尚未**在实际的 "
+"Planetary Computer 或 Element84 服务上运行过。在生产环境中使用之前，请先运行一个真实场景并检查输出。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:21
 msgid "When streaming works"
-msgstr ""
+msgstr "流式读取何时可用"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:23
 msgid ""
 "Streaming needs each band to be a separately addressable, range-readable "
 "raster. That depends on how a provider packages its data."
-msgstr ""
+msgstr "流式读取要求每个波段都是可单独寻址、支持范围读取的栅格。这取决于提供商如何打包其数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Provider"
-msgstr ""
+msgstr "提供方"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Packaging"
-msgstr ""
+msgstr "打包方式"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Streaming"
-msgstr ""
+msgstr "流式读取"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`planetary_computer`"
@@ -78,11 +85,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "One COG per band"
-msgstr ""
+msgstr "每个波段一个 COG"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Supported (SAS tokens are signed automatically)"
-msgstr ""
+msgstr "支持（SAS 令牌自动签名）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`element84`"
@@ -90,7 +97,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Supported"
-msgstr ""
+msgstr "支持"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`aws_earth`"
@@ -98,11 +105,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "COGs on S3"
-msgstr ""
+msgstr "S3 上的 COG"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Expected to work; not tested"
-msgstr ""
+msgstr "预计可用；未经测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`copernicus`"
@@ -110,11 +117,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "One `.SAFE.zip` per scene"
-msgstr ""
+msgstr "每个场景一个 `.SAFE.zip`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "**Not possible**: a zip is not randomly accessible raster"
-msgstr ""
+msgstr "**不可行**：zip 不是可随机访问的栅格"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`usgs`"
@@ -122,11 +129,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "One `.tar` per scene"
-msgstr ""
+msgstr "每个场景一个 `.tar`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "**Not possible**"
-msgstr ""
+msgstr "**不可行**"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`opentopography`"
@@ -134,11 +141,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "DEM clipped to your bounding box server-side"
-msgstr ""
+msgstr "DEM 已在服务端按你的边界框裁剪"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Not needed: the download is already AOI-only"
-msgstr ""
+msgstr "无需：下载内容本身就只包含 AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:35
 msgid ""
@@ -146,10 +153,12 @@ msgid ""
 "`error_type=\"streaming_unsupported\"` instead of silently downloading the "
 "whole file."
 msgstr ""
+"当资产是归档文件时，流式读取会返回一个带有 `error_type=\"streaming_unsupported\"` "
+"的失败结果，而不是悄悄地下载整个文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:38
 msgid "Stream a scene"
-msgstr ""
+msgstr "流式读取一个场景"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:75
 msgid ""
@@ -160,10 +169,14 @@ msgid ""
 "1024 pixels by default) regardless of scene size. Files are written "
 "atomically, and existing files are skipped unless `overwrite=True`."
 msgstr ""
+"每个波段会写入 `<destination>/<provider>/<scene-id>_<band>.tif`，与 `download()` "
+"使用的提供商子文件夹约定相同（参见[下载目录结构](download.md#where-files-are-written)）。输出文件很小：只包含 "
+"AOI 窗口，按块逐块复制，因此无论场景大小，峰值内存都是一个块（默认 1024 x 1024 "
+"像素）。文件以原子方式写入，已存在的文件会被跳过，除非设置 `overwrite=True`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:82
 msgid "Check AOI coverage"
-msgstr ""
+msgstr "检查 AOI 覆盖率"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:84
 msgid ""
@@ -172,22 +185,24 @@ msgid ""
 "streamed result carries `aoi_coverage`, the fraction (0-1) of your AOI the "
 "streamed raster covers. Reject scenes below your threshold:"
 msgstr ""
+"Sentinel-2 的瓦片边界可能穿过你的 AOI。此时读取窗口会成功，但返回的是大部分为空的**部分**栅格。每个流式读取结果都带有 "
+"`aoi_coverage`，即流式读取的栅格所覆盖 AOI 的比例（0-1）。请剔除低于你所设阈值的场景："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:93
 msgid "Parameters of `client.stream()`"
-msgstr ""
+msgstr "`client.stream()` 的参数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Parameter"
-msgstr ""
+msgstr "参数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Default"
-msgstr ""
+msgstr "默认值"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Description"
-msgstr ""
+msgstr "说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`data`"
@@ -195,7 +210,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "A `SatelliteData` or a list of them."
-msgstr ""
+msgstr "一个 `SatelliteData` 或其列表。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`bbox`"
@@ -204,7 +219,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid ""
 "AOI as `(minx, miny, maxx, maxy)`, a `BoundingBox`, or a shapely geometry."
-msgstr ""
+msgstr "AOI，可以是 `(minx, miny, maxx, maxy)`、`BoundingBox` 或 shapely 几何对象。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`destination`"
@@ -212,7 +227,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Output directory."
-msgstr ""
+msgstr "输出目录。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`bands`"
@@ -226,7 +241,7 @@ msgstr ""
 msgid ""
 "Band names or asset keys. `None` streams every raster asset. A name that "
 "matches no asset is an error, not a fallback."
-msgstr ""
+msgstr "波段名称或资产键。`None` 表示流式读取所有栅格资产。与任何资产都不匹配的名称会报错，而不是回退。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`parallel`"
@@ -238,7 +253,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Scenes streamed concurrently."
-msgstr ""
+msgstr "并发流式读取的场景数。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`overwrite`"
@@ -250,7 +265,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Re-stream files that already exist."
-msgstr ""
+msgstr "重新流式读取已存在的文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`bbox_crs`"
@@ -262,7 +277,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "CRS of `bbox`."
-msgstr ""
+msgstr "`bbox` 的 CRS。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`block_size`"
@@ -274,41 +289,41 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Block edge in pixels for the copy loop."
-msgstr ""
+msgstr "复制循环的块边长（像素）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:106
 msgid ""
 "`DownloadResult.bytes_downloaded` is the **size of the files written to "
 "disk**, not network traffic."
-msgstr ""
+msgstr "`DownloadResult.bytes_downloaded` 是**写入磁盘的文件大小**，而不是网络流量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:109
 msgid "Read into memory without writing files"
-msgstr ""
+msgstr "读入内存而不写入文件"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:111
 msgid ""
 "For interactive analysis, `read_scene_bands()` returns the AOI window of "
 "each band as a NumPy array:"
-msgstr ""
+msgstr "对于交互式分析，`read_scene_bands()` 会将每个波段的 AOI 窗口作为 NumPy 数组返回："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:128
 msgid ""
 "`read_scene_bands()` is the one to use when you only need the numbers. "
 "`client.stream()` is the one to use when later steps need files on disk."
-msgstr ""
+msgstr "只需要数值时，请使用 `read_scene_bands()`。后续步骤需要磁盘上的文件时，请使用 `client.stream()`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:131
 msgid "Lower-level functions"
-msgstr ""
+msgstr "底层函数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Function"
-msgstr ""
+msgstr "函数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Use"
-msgstr ""
+msgstr "使用"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`read_window(href, bbox, ...)`"
@@ -316,7 +331,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Read the AOI window of one raster URL or path into memory."
-msgstr ""
+msgstr "将一个栅格 URL 或路径的 AOI 窗口读入内存。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`stream_window_to_geotiff(href, bbox, out_path, ...)`"
@@ -324,7 +339,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Copy one AOI window to a local GeoTIFF, block by block."
-msgstr ""
+msgstr "将一个 AOI 窗口逐块复制为本地 GeoTIFF。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`stream_scene(data, bbox, destination, ...)`"
@@ -332,7 +347,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Stream one `SatelliteData` record."
-msgstr ""
+msgstr "流式读取一条 `SatelliteData` 记录。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`stream_many(items, bbox, destination, ...)`"
@@ -340,7 +355,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Stream several in parallel; result order matches input order."
-msgstr ""
+msgstr "并行流式读取多条；结果顺序与输入顺序一致。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`select_streamable_assets(data, bands)`"
@@ -348,41 +363,41 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "See which assets would be streamed, without reading anything."
-msgstr ""
+msgstr "查看将会流式读取哪些资产，而不实际读取任何内容。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:141
 msgid "These live in `pygeofetch.streaming`."
-msgstr ""
+msgstr "这些函数位于 `pygeofetch.streaming` 中。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:143
 msgid "How much does it save?"
-msgstr ""
+msgstr "能节省多少？"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:145
 msgid ""
 "Measured against a local range-request server with a 36.6 MB single-band COG"
 " and a 2.5 km AOI:"
-msgstr ""
+msgstr "针对本地范围请求服务器，使用 36.6 MB 的单波段 COG 和 2.5 km 的 AOI 进行测量："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Operation"
-msgstr ""
+msgstr "操作"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Bytes served"
-msgstr ""
+msgstr "提供的字节数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "Share of file"
-msgstr ""
+msgstr "占文件比例"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "`read_window`, full resolution"
-msgstr ""
+msgstr "`read_window`，全分辨率"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "455 KB, 3 range requests"
-msgstr ""
+msgstr "455 KB，3 次范围请求"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "1.24%"
@@ -406,7 +421,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "422 KB served, 103 KB written"
-msgstr ""
+msgstr "提供 422 KB，写入 103 KB"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:12
 msgid "1.15%"
@@ -418,26 +433,27 @@ msgid ""
 "Real savings depend on AOI size, tile layout and the provider's COG block "
 "structure. Small AOIs in large tiles gain the most."
 msgstr ""
+"已断言像素值与对同一窗口的本地读取结果一致。实际节省量取决于 AOI 大小、瓦片布局和提供商的 COG 块结构。大瓦片中的小 AOI 收益最大。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:158
 msgid "Behaviour to be aware of"
-msgstr ""
+msgstr "需要注意的行为"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:160
 msgid ""
 "**Rectangular window.** The window is your AOI's bounding box rounded "
 "outward to whole pixels. It is not masked to a polygon."
-msgstr ""
+msgstr "**矩形窗口。** 该窗口是你的 AOI 边界框向外取整到整像素后的范围。它不会按多边形进行掩膜。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:161
 msgid "**Rotated or sheared rasters** raise `NotImplementedError`."
-msgstr ""
+msgstr "**旋转或剪切的栅格**会引发 `NotImplementedError`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:162
 msgid ""
 "**JP2 assets** are accepted but untested. Windowed JPEG 2000 reads are "
 "slower and less predictable than COG."
-msgstr ""
+msgstr "**JP2 资产**可被接受，但未经测试。窗口化的 JPEG 2000 读取比 COG 更慢，也更难预测。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:163
 msgid ""
@@ -446,6 +462,9 @@ msgid ""
 "provider passes collection names through verbatim. Use "
 "`satellites=[\"sentinel-2\"]`, which maps to `sentinel-2-l2a`."
 msgstr ""
+"**Planetary Computer 的集合。** `SearchQuery(collections=[\"SENTINEL-2\"])` "
+"不会匹配任何内容，因为该提供商会原样传递集合名称。请使用 `satellites=[\"sentinel-2\"]`，它会映射到 "
+"`sentinel-2-l2a`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:164
 msgid ""
@@ -453,6 +472,8 @@ msgid ""
 "assets when a band name matches nothing. Streaming treats an unmatched band "
 "as an error, because the fallback would be expensive."
 msgstr ""
+"**严格的波段匹配。** 当波段名称不匹配任何资产时，常规的 `download()` "
+"会回退到*所有*资产。流式读取则把未匹配的波段视为错误，因为这种回退代价高昂。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:165
 msgid ""
@@ -462,34 +483,44 @@ msgid ""
 "sensor pipelines](../processing/multisensor.md) accept `optical_offset` and "
 "`optical_scale` for this."
 msgstr ""
+"**Sentinel-2 L2A 偏移。** 采用基线 04.00 或更高版本处理的场景存储的是 `DN = reflectance x 10000 +"
+" 1000`。NDVI "
+"等指数并非偏移不变，因此在计算之前请先减去偏移。[多传感器流程](../processing/multisensor.md)为此接受 "
+"`optical_offset` 和 `optical_scale`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:167
 msgid "Other streaming tools"
-msgstr ""
+msgstr "其他流式读取工具"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:169
 msgid ""
 "`pygeofetch.stac_compute` and the `pygeofetch stream` commands predate this "
 "module and work on a **single URL** rather than on search results:"
 msgstr ""
+"`pygeofetch.stac_compute` 和 `pygeofetch stream` 命令早于此模块，针对的是**单个 "
+"URL**，而不是搜索结果："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:172
 msgid ""
 "`pygeofetch stream cog-window URL --bbox ... --output out.tif` reads one "
 "window from one COG."
 msgstr ""
+"`pygeofetch stream cog-window URL --bbox ... --output out.tif` 从一个 COG "
+"读取一个窗口。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:173
 msgid ""
 "`pygeofetch stream to-zarr`, `to-geoparquet` and `zarr-to-tif` convert local"
 " data to cloud-native formats."
 msgstr ""
+"`pygeofetch stream to-zarr`、`to-geoparquet` 和 `zarr-to-tif` 将本地数据转换为云原生格式。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:174
 msgid ""
 "`pygeofetch.stac_compute.burst_streaming` reads Sentinel-1 SLC bursts "
 "remotely for InSAR."
 msgstr ""
+"`pygeofetch.stac_compute.burst_streaming` 为 InSAR 远程读取 Sentinel-1 SLC burst。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/streaming.md:176
 msgid ""
@@ -497,3 +528,5 @@ msgid ""
 "authentication, coverage reporting and resume. Use the `stream` commands for"
 " a URL you already have."
 msgstr ""
+"对于来自搜索的场景，需要提供商认证、覆盖率报告和断点续传时，请使用 `client.stream()`。对于你已有的 URL，请使用 `stream` "
+"命令。"

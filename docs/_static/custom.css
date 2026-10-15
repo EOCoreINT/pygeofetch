@@ -230,4 +230,5 @@ article { animation: gf-fade .35s ease both; }
 .gf-lang-menu a:hover{background:var(--color-background-hover)}
 .gf-lang-menu a.current{font-weight:700;color:var(--color-brand-primary)}
 .gf-partial{display:inline-block;margin-left:.6rem;font-size:.78rem;opacity:.75}
-html[lang^="ar"] article h1,html[lang^="ar"] article h2,html[lang^="ar"] article h3{direction:rtl;text-align:right}
+html[lang^="ar"] article{direction:rtl;text-align:right}
+html[lang^="ar"] article pre,html[lang^="ar"] article code,html[lang^="ar"] article table,html[lang^="ar"] article .highlight{direction:ltr;text-align:left}

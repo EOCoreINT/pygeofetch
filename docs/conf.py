@@ -165,5 +165,21 @@ def setup(app):
             if r.returncode:
                 print("WARNING: language build failed:", code)
     app.connect("build-finished", _all_langs)
-html_context["gf_partial"] = language not in ("en",)
+html_context["gf_partial"] = False
 html_context["gf_rtl"] = language in ("ar",)
+
+# --- i18n fix: MyST overwrites a document's heading-slug table every time Sphinx re-parses a
+# translated fragment, which breaks cross-page anchors in translated builds. Merge instead.
+try:
+    from myst_parser.mdit_to_docutils.base import DocutilsRenderer as _DR
+    _orig_finalise = _DR._render_finalise
+    def _render_finalise(self):
+        env = getattr(self, "sphinx_env", None)
+        old = dict(env.metadata[env.docname].get("myst_slugs", {})) if env else {}
+        _orig_finalise(self)
+        if env and old:
+            new = env.metadata[env.docname].get("myst_slugs", {})
+            env.metadata[env.docname]["myst_slugs"] = {**new, **old}
+    _DR._render_finalise = _render_finalise
+except Exception:
+    pass

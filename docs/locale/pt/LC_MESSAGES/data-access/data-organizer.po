@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,10 +29,15 @@ msgid ""
 "hierarchy, plus a manifest mapping the structure back to the underlying "
 "scene metadata."
 msgstr ""
+"Um diretório plano com dezenas de cenas baixadas de várias datas, órbitas e "
+"sensores é inutilizável para trabalhos posteriores de InSAR ou ópticos "
+"multidata. `pygeofetch.core.data_organizer.DataOrganizer` transforma isso em"
+" uma hierarquia estruturada, além de um manifesto que mapeia a estrutura de "
+"volta aos metadados das cenas originais."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:9
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:11
 msgid ""
@@ -45,6 +50,14 @@ msgid ""
 " files into a folder hierarchy that you choose, for example by satellite and"
 " then by date."
 msgstr ""
+"Uma pasta de downloads enche rapidamente: cenas de vários satélites, datas e"
+" órbitas ficam lado a lado, nomeadas segundo a convenção de cada provedor. "
+"Isso é incômodo para qualquer fluxo de trabalho que precise de cenas "
+"agrupadas por data ou por órbita, e é um obstáculo real para a "
+"interferometria, em que só podem ser pareadas cenas que compartilham a mesma"
+" trilha e estão sincronizadas no tempo. `DataOrganizer` recebe as cenas e "
+"seus resultados de download e organiza os arquivos em uma hierarquia de "
+"pastas de sua escolha, por exemplo por satélite e depois por data."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:13
 msgid ""
@@ -57,14 +70,23 @@ msgid ""
 "`prepare_insar_stack()` goes one step further and groups burst-synchronised "
 "SLC scenes into stacks that are ready for the interferometry modules."
 msgstr ""
+"Você o usa depois do download. Informe a lista de cenas junto com seus "
+"resultados, diga como agrupá-las e onde colocar a saída, e ele copia os "
+"arquivos para a hierarquia (ou cria links ou os move, se você escolher) e "
+"grava um manifesto. O manifesto é um registro JSON que mapeia cada arquivo "
+"de volta aos metadados da cena de que veio, de modo que as etapas seguintes "
+"encontrem o footprint, a data ou a órbita de uma cena sem refazer a busca. "
+"Para trabalhos com radar, `prepare_insar_stack()` vai um passo além e agrupa"
+" cenas SLC sincronizadas por burst em pilhas prontas para os módulos de "
+"interferometria."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:15
 msgid "Basic usage"
-msgstr ""
+msgstr "Uso básico"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:31
 msgid "With `group_by=[\"satellite\", \"date\"]`, this produces:"
-msgstr ""
+msgstr "Com `group_by=[\"satellite\", \"date\"]`, isso produz:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:44
 msgid "Configuration"
@@ -75,18 +97,20 @@ msgid ""
 "`OrganizerConfig` controls the grouping hierarchy and how files are placed "
 "into it:"
 msgstr ""
+"`OrganizerConfig` controla a hierarquia de agrupamento e como os arquivos "
+"são colocados nela:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Field"
-msgstr ""
+msgstr "Campo"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Default"
-msgstr ""
+msgstr "Padrão"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Meaning"
-msgstr ""
+msgstr "Significado"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "`group_by`"
@@ -102,6 +126,9 @@ msgid ""
 "`\"processing_level\"` — applied in order, so `[\"satellite\", \"date\"]` "
 "nests date folders inside satellite folders."
 msgstr ""
+"Lista ordenada de `\"date\"`, `\"orbit\"`, `\"satellite\"`, "
+"`\"processing_level\"` — aplicada em ordem, de modo que `[\"satellite\", "
+"\"date\"]` aninha pastas de data dentro de pastas de satélite."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "`file_operation`"
@@ -125,11 +152,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Written to the root of `output_dir` after organizing."
-msgstr ""
+msgstr "Gravado na raiz de `output_dir` após a organização."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:55
 msgid "Copy is the default for a reason"
-msgstr ""
+msgstr "Há uma razão para copiar ser o padrão"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:58
 msgid ""
@@ -141,20 +168,30 @@ msgid ""
 "duplicating large scenes on disk while keeping the original flat layout "
 "intact too."
 msgstr ""
+"`file_operation` tem como padrão `\"copy\"`, não `\"move\"` — verificado "
+"diretamente que o arquivo baixado original sobrevive a uma chamada de "
+"`organize()`. Um bug de agrupamento que também apagasse sua única cópia de "
+"uma cena já baixada seria um modo de falha grave e irrecuperável. Opte "
+"explicitamente por `\"move\"` quando confiar na sua própria configuração de "
+"agrupamento, ou use `\"symlink\"` para evitar duplicar cenas grandes em "
+"disco, mantendo também intacta a organização plana original."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:66
 msgid ""
 "`organize()` is also idempotent — running it twice on the same input doesn't"
 " re-copy, error, or double-count."
 msgstr ""
+"`organize()` também é idempotente — executá-lo duas vezes sobre a mesma "
+"entrada não recopia, não gera erro nem conta em duplicidade."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:69
 msgid "The manifest"
-msgstr ""
+msgstr "O manifesto"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:71
 msgid "`manifest.json` maps every organized scene back to its metadata:"
 msgstr ""
+"`manifest.json` mapeia cada cena organizada de volta aos seus metadados:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:94
 msgid ""
@@ -164,10 +201,16 @@ msgid ""
 "`skipped_failed_download` (the download itself failed) are both real, "
 "separate counts — inspect them if `report.grouped` is lower than you expect."
 msgstr ""
+"`OrganizeReport` (retornado por `organize()`) também informa o que *não "
+"pôde* ser organizado, em vez de descartá-lo silenciosamente: "
+"`skipped_no_output` (um download bem-sucedido sem caminho de arquivo "
+"associado) e `skipped_failed_download` (o próprio download falhou) são "
+"contagens reais e separadas — inspecione-as se `report.grouped` for menor do"
+" que você espera."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:101
 msgid "Preparing an InSAR stack"
-msgstr ""
+msgstr "Preparando uma pilha InSAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:115
 msgid ""
@@ -175,6 +218,9 @@ msgid ""
 "flags orphaned scenes (no `relative_orbit` metadata at all, so they can't be"
 " placed in any track)."
 msgstr ""
+"`prepare_insar_stack()` agrupa os SLCs baixados por trilha/órbita relativa e"
+" sinaliza cenas órfãs (sem nenhum metadado `relative_orbit`, de modo que não"
+" podem ser colocadas em nenhuma trilha)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:119
 msgid ""
@@ -185,10 +231,18 @@ msgid ""
 "implementation of that check. `report.ready_paths` then only includes the "
 "dates that actually pass burst-sync classification."
 msgstr ""
+"Quando você fornece arquivos de órbita e um ponto no terreno, ele vai além: "
+"reutiliza "
+"[`pygeofetch.insar.stack_selection.select_burst_synchronized_dates`](../processing/sar-"
+"insar/insar.md) — a mesma classificação de temporização de bursts já "
+"verificada que o próprio pipeline InSAR usa — em vez de uma segunda "
+"implementação independente dessa verificação. `report.ready_paths` então "
+"inclui apenas as datas que realmente passam na classificação de "
+"sincronização de bursts."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:126
 msgid "Behaviour without orbit files"
-msgstr ""
+msgstr "Comportamento sem arquivos de órbita"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:129
 msgid ""
@@ -199,3 +253,10 @@ msgid ""
 "sync-compatible ones. Check `burst_sync_checked` before treating the stack "
 "as ready for coregistration."
 msgstr ""
+"Sem arquivos de órbita, a compatibilidade de sincronização de bursts não "
+"pode ser verificada, pois os arquivos de órbita são uma etapa de download "
+"separada. `prepare_insar_stack()` ainda retorna o agrupamento por trilha e "
+"data, mas `report.burst_sync_checked` é `False` e `report.ready_paths` "
+"inclui todas as datas, e não apenas as compatíveis com a sincronização de "
+"bursts. Verifique `burst_sync_checked` antes de tratar a pilha como pronta "
+"para o corregistro."

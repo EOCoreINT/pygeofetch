@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,6 +32,10 @@ msgid ""
 " see [Providers](providers.md) for which auth type each of the 22 providers "
 "uses."
 msgstr ""
+"凭据通过 `AuthManager` 存储，后端可以是 Fernet 加密的本地文件（默认），也可以是操作系统密钥环（通过 "
+"`auth_backend=\"keyring\"` 启用）。文件后端的加密实际如何工作，包括面向现有用户的 base64→Fernet "
+"迁移，请参阅[安全模型](../reference/security.md)。根据各提供方的需要，支持用户名/密码、API 密钥和 OAuth2 "
+"客户端凭据；22 个提供方各自使用哪种认证类型，请参阅[提供方](providers.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:15
 msgid ""
@@ -42,10 +46,13 @@ msgid ""
 "`auth_backend=\"file\"` there isn't opting into anything unusual, it's just "
 "being explicit about the same default behavior."
 msgstr ""
+"**已验证的默认值，值得明确了解：**不带参数的 `PyGeoFetch()` 使用 `auth_backend=\"file\"`，除非明确传入 "
+"`auth_backend=\"keyring\"`，否则几乎所有人实际使用的都是加密文件后端。这与下文的 CI/CD 部分有关：那里的 "
+"`auth_backend=\"file\"` 并不是选择什么特殊配置，只是明确写出相同的默认行为。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:22
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:24
 msgid ""
@@ -57,6 +64,10 @@ msgid ""
 "provider. You never pass a password to `search()` or `download()`; you only "
 "name the provider."
 msgstr ""
+"有些提供方是开放的，无需您提供任何内容，而另一些，包括 Copernicus Data Space Ecosystem、USGS、NASA "
+"Earthdata 和各商业供应商，则需要账号。pygeofetch "
+"会对每个凭据只询问一次，将其存储在加密文件或操作系统的密钥环中，之后只要检索或下载涉及该提供方就会自动提供。您永远不需要向 `search()` 或 "
+"`download()` 传递密码，只需指明提供方名称。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:26
 msgid ""
@@ -69,6 +80,10 @@ msgid ""
 "credential later expires or is rotated, add the new one under the same "
 "provider name."
 msgstr ""
+"通常的流程很简短。查看[提供方](providers.md)页面了解某个提供方使用的认证类型，在提供方的网站上注册账号，使用 `pygeofetch "
+"auth add`（或 Python 中的 `client.add_credentials()`）添加凭据，并用 `pygeofetch auth "
+"test` "
+"确认。该测试会向提供方校验已存储的凭据，因此是在长时间下载之前发现输错令牌的最快方式。如果凭据之后过期或被轮换，请在相同的提供方名称下添加新的凭据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:28
 msgid ""
@@ -82,18 +97,21 @@ msgid ""
 "read your own secrets and register them in code at the start of the job, as "
 "shown in the headless section below."
 msgstr ""
+"在共享和自动化环境中，凭据的保管方式很重要。默认的加密文件位于您的主目录中，并由存放在其旁边的密钥保护，这在个人机器上很方便，但安全程度仅取决于该目录。在带有密钥环的工作站上，`auth_backend=\"keyring\"`"
+" "
+"会将存储交给操作系统。在容器和持续集成作业中，通常没有密钥环，而且不会从环境变量中读取凭据，因此应采用的模式是读取您自己的机密信息，并在作业开始时通过代码注册，如下面的无头环境部分所示。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:30
 msgid "Adding credentials"
-msgstr ""
+msgstr "添加凭据"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:55
 msgid "Managing credentials"
-msgstr ""
+msgstr "管理凭据"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:66
 msgid "CI/CD, Docker, and headless environments"
-msgstr ""
+msgstr "CI/CD、Docker 与无头环境"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:70
 msgid ""
@@ -104,6 +122,9 @@ msgid ""
 "and authentication then fails without any hint that the variable was "
 "ignored."
 msgstr ""
+"**不会从环境变量中读取凭据。**不存在 `PYGEOFETCH_{PROVIDER}_{FIELD}` 这样的自动加载。`Credentials` "
+"只是一个普通的数据模型，`AuthManager` 和任何提供方都不会读取 `os.environ`。设置 "
+"`PYGEOFETCH_USGS_USERNAME`（或类似变量）不会有任何效果，随后认证会失败，并且不会有任何提示说明该变量被忽略了。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:76
 msgid ""
@@ -113,6 +134,8 @@ msgid ""
 "doesn't need to know your CI system's specific secret-injection mechanism, "
 "since your own code already has the values:"
 msgstr ""
+"在 CI/CD、Docker 或任何无头环境中，可行的认证方式是读取您自己的机密信息，并在您自己的 Python 代码或一个小型设置脚本中将其显式传给 "
+"`add_credentials()`。pygeofetch 无需了解您的 CI 系统特定的机密注入机制，因为您自己的代码已经拥有这些值："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:96
 msgid ""
@@ -122,6 +145,9 @@ msgid ""
 "Variables, a Docker `--env-file`, etc.), then run this setup step once "
 "before your search/download code."
 msgstr ""
+"使用您的 CI 系统自带的机密机制（GitHub Actions Secrets、GitLab CI/CD Variables、Docker 的 "
+"`--env-file` 等）存储 `USGS_USERNAME`/`USGS_M2M_TOKEN`（名称随意，它们只是您自己的环境变量，并非 "
+"pygeofetch 的约定），然后在检索/下载代码之前运行一次此设置步骤。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:104
 msgid ""
@@ -134,22 +160,27 @@ msgid ""
 "`auth_backend=\"keyring\"` at all, since the default "
 "(`auth_backend=\"file\"`) never touches a keyring daemon in the first place."
 msgstr ""
+"**无头 Linux（Docker、SSH），前提是您已明确选择 `auth_backend=\"keyring\"`：**如果没有运行 "
+"D-Bus/密钥环守护进程，`keyring` 本身可能在执行到 pygeofetch 自己的代码之前就抛出错误。请将 "
+"`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring` 设置为一个真正独立的环境变量（这是 "
+"`keyring` 库的约定，而非 pygeofetch 的约定）以避免该问题；或者干脆不传入 "
+"`auth_backend=\"keyring\"`，因为默认值（`auth_backend=\"file\"`）根本不会接触密钥环守护进程。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:115
 msgid "Provider auth types"
-msgstr ""
+msgstr "各提供方的认证类型"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Provider"
-msgstr ""
+msgstr "提供方"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Auth type"
-msgstr ""
+msgstr "认证类型"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free?"
-msgstr ""
+msgstr "是否免费？"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`usgs`"
@@ -159,11 +190,11 @@ msgstr ""
 msgid ""
 "Username + M2M Application Token (not a password — see "
 "[Providers](providers.md))"
-msgstr ""
+msgstr "用户名 + M2M 应用令牌（不是密码，请参阅[提供方](providers.md)）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free (registration)"
-msgstr ""
+msgstr "免费（需注册）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`copernicus`"
@@ -171,7 +202,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Username / password (OAuth2)"
-msgstr ""
+msgstr "用户名/密码（OAuth2）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`nasa_earthdata`"
@@ -179,7 +210,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Search: none (public). Download: Earthdata Login"
-msgstr ""
+msgstr "检索：无需认证（公开）。下载：Earthdata Login"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`nasa_earthdata_cloud`"
@@ -189,7 +220,7 @@ msgstr ""
 msgid ""
 "Search: none (public). Download: Earthdata Login + per-DAAC S3 credentials "
 "(auto-refreshed, no single unified endpoint)"
-msgstr ""
+msgstr "检索：无需认证（公开）。下载：Earthdata Login + 各 DAAC 的 S3 凭据（自动刷新，没有统一的单一端点）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`planet`"
@@ -197,11 +228,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "API key (HTTP Basic Auth)"
-msgstr ""
+msgstr "API 密钥（HTTP Basic Auth）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Subscription"
-msgstr ""
+msgstr "订阅"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`sentinel_hub`"
@@ -209,11 +240,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "OAuth2 client credentials"
-msgstr ""
+msgstr "OAuth2 客户端凭据"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Freemium"
-msgstr ""
+msgstr "免费增值"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`opentopography`"
@@ -221,11 +252,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "API key"
-msgstr ""
+msgstr "API 密钥"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free tier"
-msgstr ""
+msgstr "免费额度"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`maxar_gbdx`"
@@ -233,7 +264,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Bearer token (Discovery API — GBDX itself shut down 2022)"
-msgstr ""
+msgstr "Bearer 令牌（Discovery API，GBDX 本身已于 2022 年关闭）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`airbus_oneatlas`"
@@ -247,11 +278,11 @@ msgstr ""
 msgid ""
 "Search: none (public). Download: Earthdata Login (same as NASA), or a bearer"
 " token"
-msgstr ""
+msgstr "检索：无需认证（公开）。下载：Earthdata Login（与 NASA 相同），或 Bearer 令牌"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Free"
-msgstr ""
+msgstr "免费"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "`google_earth_engine`"
@@ -259,11 +290,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "Service account JSON"
-msgstr ""
+msgstr "服务账号 JSON"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:102
 msgid "See note below"
-msgstr ""
+msgstr "见下方说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:133
 msgid ""
@@ -274,10 +305,13 @@ msgid ""
 "message rather than crashing, but `auth add google_earth_engine` will not "
 "make search/download work. See [Providers](providers.md)."
 msgstr ""
+"**无论您提供什么凭据，`google_earth_engine` 实际上都无法使用**：其 API 需要完全不同的 Google 服务账号 JWT "
+"认证流程以及 Earth Engine 自己的资产/计算 API，而这两者都未实现。它现在会立即以明确的消息失败，而不是崩溃，但 `auth add "
+"google_earth_engine` 并不会让检索/下载正常工作。请参阅[提供方](providers.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:141
 msgid "In Python"
-msgstr ""
+msgstr "在 Python 中"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/authentication.md:151
 msgid ""
@@ -287,3 +321,5 @@ msgid ""
 "environment variables on its own; you pass the values in directly, from "
 "wherever your own code sourced them."
 msgstr ""
+"`add_credentials()` 会写入系统密钥环（或作为后备的 Fernet "
+"加密文件），并在进程的其余时间内覆盖已存储的任何匹配凭据；但正如上一节所述，它**不会**自行从环境变量中读取，您需要直接传入这些值，无论您的代码是从哪里获得它们的。"

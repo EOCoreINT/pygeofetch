@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,11 @@ msgid ""
 "in pygeofetch assumes you already have numeric coordinates; this is the one "
 "piece that gets you there from a name."
 msgstr ""
+"Convierte un nombre de lugar en coordenadas, o unas coordenadas en un nombre"
+" de lugar, sin necesitar un cuadro delimitador ni latitud/longitud a mano "
+"antes de empezar. Todo lo demás en pygeofetch asume que ya tienes "
+"coordenadas numéricas; esta es la pieza que te lleva hasta ellas a partir de"
+" un nombre."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:9
 msgid ""
@@ -38,10 +43,17 @@ msgid ""
 "responses and server-side quirks are untested. Test it in your own "
 "environment before depending on it in production."
 msgstr ""
+"**Aún no verificado con el servicio real.** La lógica de análisis (los "
+"nombres de campo y el orden de `boundingbox`) se comprobó con la "
+"[documentación de la API de Nominatim](https://nominatim.org/release-"
+"docs/latest/api/Output/). No se ha realizado ninguna ronda HTTP real, por lo"
+" que el comportamiento de red, las respuestas de límite de uso y las "
+"peculiaridades del servidor no se han probado. Pruébalo en tu propio entorno"
+" antes de depender de él en producción."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:17
 msgid "Overview"
-msgstr ""
+msgstr "Descripción general"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:19
 msgid ""
@@ -52,6 +64,12 @@ msgid ""
 "point, a ready-to-use bounding box and the full display name of the place "
 "that was found."
 msgstr ""
+"Casi todas las llamadas de pygeofetch esperan números: un cuadro delimitador"
+" en longitud y latitud, o una geometría GeoJSON. La geocodificación es el "
+"puente para el caso habitual en que solo tienes un nombre. Pasas un lugar "
+"como una ciudad, un distrito o un punto de referencia, y devuelve una o más "
+"coincidencias, cada una con su punto central, un cuadro delimitador listo "
+"para usar y el nombre completo del lugar encontrado."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:21
 msgid ""
@@ -63,10 +81,18 @@ msgid ""
 " usage limits, geocode once and keep the bounding box instead of calling it "
 "repeatedly inside a loop."
 msgstr ""
+"El uso típico es la primera línea de un análisis. Geocodifica el área de "
+"estudio, lee el nombre completo para confirmar que el servicio entendió el "
+"lugar que querías, toma el cuadro delimitador del resultado y pásalo "
+"directamente a un `SearchQuery`. La geocodificación inversa funciona en "
+"sentido contrario y es útil para etiquetar una coordenada en un informe. "
+"Como el servicio es público y tiene límites de uso, geocodifica una vez y "
+"conserva el cuadro delimitador en lugar de llamarlo repetidamente dentro de "
+"un bucle."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:23
 msgid "Why Nominatim specifically"
-msgstr ""
+msgstr "Por qué Nominatim en concreto"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:25
 msgid ""
@@ -76,14 +102,19 @@ msgid ""
 "free requests to 1/second; this is enforced automatically, not left for you "
 "to violate accidentally."
 msgstr ""
+"Usa [Nominatim](https://nominatim.openstreetmap.org) (el servicio gratuito "
+"de geocodificación de OpenStreetMap) porque no requiere clave de API, en "
+"consonancia con los demás proveedores de pygeofetch que no necesitan cuenta."
+" La política de uso real limita las solicitudes gratuitas a 1 por segundo; "
+"esto se aplica automáticamente, no se deja para que lo incumplas sin querer."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:31
 msgid "Quick start"
-msgstr ""
+msgstr "Guía rápida"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:46
 msgid "Forward geocoding — name to coordinates"
-msgstr ""
+msgstr "Geocodificación directa: de nombre a coordenadas"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:52
 msgid ""
@@ -91,14 +122,18 @@ msgid ""
 "ambiguous query like a common place name) — empty list if nothing matched, "
 "never an exception for \"not found.\" Each result has:"
 msgstr ""
+"Devuelve una lista de diccionarios, uno por coincidencia (Nominatim puede "
+"devolver varias para una consulta ambigua, como el nombre de un lugar "
+"común); una lista vacía si nada coincidió, nunca una excepción por «no "
+"encontrado». Cada resultado tiene:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Key"
-msgstr ""
+msgstr "Clave"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Real content"
-msgstr ""
+msgstr "Contenido real"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`lat`, `lon`"
@@ -106,7 +141,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Real WGS84 coordinates of the match's center point"
-msgstr ""
+msgstr "Coordenadas WGS84 reales del punto central de la coincidencia"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`bbox`"
@@ -117,6 +152,8 @@ msgid ""
 "`(min_lon, min_lat, max_lon, max_lat)` — ready to pass directly to "
 "`SearchQuery`"
 msgstr ""
+"`(min_lon, min_lat, max_lon, max_lat)`: listo para pasarlo directamente a "
+"`SearchQuery`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`display_name`"
@@ -127,6 +164,8 @@ msgid ""
 "The full matched place name — check this to confirm the geocoder understood "
 "your query correctly, especially for ambiguous names"
 msgstr ""
+"El nombre completo del lugar encontrado: compruébalo para confirmar que el "
+"geocodificador entendió bien tu consulta, especialmente con nombres ambiguos"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`place_type`"
@@ -135,6 +174,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Nominatim's own classification (`city`, `building`, `natural`, etc.)"
 msgstr ""
+"La propia clasificación de Nominatim (`city`, `building`, `natural`, etc.)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:64
 msgid ""
@@ -142,10 +182,13 @@ msgid ""
 "query — \"Springfield\" alone will match *a* Springfield, not necessarily "
 "the one you meant."
 msgstr ""
+"**Comprueba siempre `display_name`** antes de fiarte de un resultado para "
+"una consulta ambigua: «Springfield» a secas coincidirá con *un* Springfield,"
+" no necesariamente el que querías."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:68
 msgid "Reverse geocoding — coordinates to name"
-msgstr ""
+msgstr "Geocodificación inversa: de coordenadas a nombre"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:77
 msgid ""
@@ -153,14 +196,17 @@ msgid ""
 "— check for this before accessing the result, rather than assume every "
 "coordinate resolves to a place."
 msgstr ""
+"Devuelve `None` si no se encuentra nada en ese punto (el océano abierto, por"
+" ejemplo); comprueba esto antes de acceder al resultado, en lugar de asumir "
+"que toda coordenada se resuelve en un lugar."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:81
 msgid "CLI reference"
-msgstr ""
+msgstr "Referencia de la CLI"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:90
 msgid "Common pitfalls"
-msgstr ""
+msgstr "Errores comunes"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:92
 msgid ""
@@ -168,6 +214,9 @@ msgid ""
 "`display_name`.** Common city/street names exist in many countries — always "
 "look at what actually matched, not just its coordinates."
 msgstr ""
+"**Fiarse del primer resultado para un nombre ambiguo sin comprobar "
+"`display_name`.** Los nombres comunes de ciudades y calles existen en muchos"
+" países: mira siempre qué coincidió realmente, no solo sus coordenadas."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:95
 msgid ""
@@ -177,6 +226,11 @@ msgid ""
 "violate the shared usage policy — Nominatim can and does rate-limit or block"
 " abusive traffic."
 msgstr ""
+"**Geocodificar en un bucle cerrado sin espaciar las solicitudes.** La "
+"limitación integrada de 1 segundo lo gestiona automáticamente dentro de un "
+"solo proceso, pero ejecutar muchos procesos en paralelo contra Nominatim a "
+"la vez aún puede incumplir la política de uso compartida: Nominatim puede "
+"limitar o bloquear, y de hecho lo hace, el tráfico abusivo."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:100
 msgid ""
@@ -184,6 +238,9 @@ msgid ""
 "polar regions, or other areas with no OSM data return `None` — a valid "
 "outcome, not a bug."
 msgstr ""
+"**Asumir que `reverse_geocode` siempre devuelve algo.** Los puntos sobre el "
+"agua, las regiones polares u otras áreas sin datos de OSM devuelven `None`: "
+"es un resultado válido, no un error."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:103
 msgid ""
@@ -192,18 +249,23 @@ msgid ""
 " this project's own testing — wrap calls in your own error handling until "
 "you've confirmed actual runtime behavior in your environment."
 msgstr ""
+"**No gestionar los fallos de red.** La lógica de análisis está verificada "
+"con la documentación oficial de Nominatim, pero no se ha hecho ninguna "
+"solicitud real en las pruebas propias de este proyecto: envuelve las "
+"llamadas en tu propia gestión de errores hasta que hayas confirmado el "
+"comportamiento real en tu entorno."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:109
 msgid "Full function reference"
-msgstr ""
+msgstr "Referencia completa de funciones"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Function"
-msgstr ""
+msgstr "Función"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Real purpose"
-msgstr ""
+msgstr "Finalidad real"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`geocode(query, limit=1, timeout=10.0)`"
@@ -211,7 +273,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Place name → coordinates + bbox"
-msgstr ""
+msgstr "Nombre de lugar → coordenadas + cuadro delimitador"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`reverse_geocode(lat, lon, timeout=10.0)`"
@@ -219,7 +281,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Coordinates → place name"
-msgstr ""
+msgstr "Coordenadas → nombre de lugar"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:116
 msgid ""
@@ -227,3 +289,6 @@ msgid ""
 "the main `PyGeoFetch` client object (e.g. there is no `client.geocode(...)`)"
 " — import them directly as shown above."
 msgstr ""
+"Ambas residen en `pygeofetch.utils.geocoding` y actualmente no están "
+"asociadas al objeto cliente principal `PyGeoFetch` (por ejemplo, no existe "
+"`client.geocode(...)`); impórtalas directamente como se muestra arriba."

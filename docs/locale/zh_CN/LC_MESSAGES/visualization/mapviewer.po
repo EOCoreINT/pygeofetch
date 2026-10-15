@@ -1,0 +1,100 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:1
+msgid "MapViewer"
+msgstr "MapViewer"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:3
+msgid ""
+"Interactive maps built on `leafmap` — search footprints, rasters, vectors, "
+"and split comparisons."
+msgstr "基于 `leafmap` 构建的交互式地图——搜索覆盖范围、栅格、矢量以及分屏对比。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:16
+msgid ""
+"`add_raster()` needs `rioxarray` and `localtileserver` alongside `leafmap` —"
+" all three are declared in the `[viz]` extra."
+msgstr ""
+"`add_raster()` 除 `leafmap` 外还需要 `rioxarray` 和 `localtileserver`——这三者都已在 "
+"`[viz]` 额外依赖中声明。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:19
+msgid "Overview"
+msgstr "概览"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:21
+msgid ""
+"The map viewer is for exploration. Before downloading anything, you can draw"
+" the footprints of your search results on a map to see how well they cover "
+"your area, and after processing you can overlay rasters and vectors on a "
+"basemap to judge them in context. Maps are interactive, so you can pan, zoom"
+" and toggle layers, and a split-panel view places two layers side by side "
+"with a slider, which is the quickest way to compare before and after."
+msgstr ""
+"地图查看器用于探索。在下载任何数据之前，你可以把搜索结果的覆盖范围绘制在地图上，查看它们对你的研究区的覆盖情况；处理完成后，也可以把栅格和矢量叠加在底图上，结合上下文进行判断。地图是交互式的，你可以平移、缩放和切换图层；分屏视图则通过滑块把两个图层并排放置，这是比较前后变化的最快方式。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:23
+msgid ""
+"Maps are built in a notebook or script and can be saved as a self-contained "
+"HTML file that opens in any browser, so a result can be shared with someone "
+"who has no Python installed."
+msgstr ""
+"地图可在笔记本或脚本中构建，并可保存为自包含的 HTML 文件，在任何浏览器中打开，因此即使对方没有安装 Python，也可以与其分享结果。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:25
+msgid "Search result footprints — see before you download"
+msgstr "搜索结果覆盖范围——下载前先看一看"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:36
+msgid ""
+"Uses each result's provider-supplied geometry when available, and falls back"
+" automatically to a bounding-box rectangle when it isn't — safe to call "
+"against any provider's results. See [Providers](../data-access/providers.md)"
+" for which providers return precise footprint geometry today."
+msgstr ""
+"在可用时使用各结果由提供方给出的几何形状，不可用时自动回退为外接矩形——对任何提供方的结果调用都是安全的。目前哪些提供方会返回精确的覆盖范围几何形状，请参阅[提供方](../data-"
+"access/providers.md)。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:42
+msgid "Split-panel comparison"
+msgstr "分屏对比"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:44
+msgid ""
+"Draggable side-by-side comparison of two rasters — e.g. a DSM against a DTM,"
+" or two independent DEM sources — backed by leafmap's own `split_map()`."
+msgstr ""
+"两个栅格的可拖动并排对比——例如 DSM 与 DTM，或两个独立的 DEM 来源——由 leafmap 自带的 `split_map()` 提供支持。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:57
+msgid ""
+"The interactive split view depends on `localtileserver` spinning up a local "
+"background HTTP server, which is known to fail in some restricted/sandboxed "
+"network environments (firewalls, some corporate VPNs) with a "
+"`ServerDownError`. When that happens, `add_split_comparison()` automatically"
+" falls back to a static side-by-side comparison that needs no server at all."
+msgstr ""
+"交互式分屏视图依赖 `localtileserver` 启动一个本地后台 HTTP 服务器，而这在某些受限/沙箱网络环境（防火墙、部分企业 "
+"VPN）中已知会失败，并抛出 `ServerDownError`。出现这种情况时，`add_split_comparison()` "
+"会自动回退为完全不需要服务器的静态并排对比。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:64
+msgid "Inspecting and saving"
+msgstr "查看与保存"

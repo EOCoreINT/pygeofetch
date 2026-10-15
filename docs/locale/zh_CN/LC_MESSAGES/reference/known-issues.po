@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,39 +28,40 @@ msgid ""
 "Entries describe the current code; when one is fixed, remove it here and "
 "note it in the [changelog](../project/changelog.md)."
 msgstr ""
+"与你预期不同的行为及其解决办法。每一条都已对照源代码核实，或通过运行代码复现。条目描述的是当前代码；一旦某条被修复，请将其从此处移除，并记录在[变更日志](../project/changelog.md)中。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Area"
-msgstr ""
+msgstr "领域"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Issue"
-msgstr ""
+msgstr "问题"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Impact"
-msgstr ""
+msgstr "影响"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "SAR"
-msgstr ""
+msgstr "SAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid ""
 "[Coherence fails on complex input](#sar-coherence-fails-on-complex-input)"
-msgstr ""
+msgstr "[复杂输入下相干性失败](#sar-coherence-fails-on-complex-input)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`client.sar.coherence()` and `pygeofetch sar coherence` do not work"
-msgstr ""
+msgstr "`client.sar.coherence()` 和 `pygeofetch sar coherence` 无法工作"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Backends are not wired in](#sar-backends-are-not-wired-in)"
-msgstr ""
+msgstr "[后端未接入](#sar-backends-are-not-wired-in)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`SARProcessor(backend=...)` raises `TypeError`"
-msgstr ""
+msgstr "`SARProcessor(backend=...)` 会抛出 `TypeError`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Configuration"
@@ -69,57 +70,58 @@ msgstr "配置"
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid ""
 "[Settings layer is not applied](#settings-layer-is-not-applied-at-runtime)"
-msgstr ""
+msgstr "[设置层未生效](#settings-layer-is-not-applied-at-runtime)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Config files and `PYGEOFETCH_*` variables do not change behaviour"
-msgstr ""
+msgstr "配置文件和 `PYGEOFETCH_*` 变量不会改变行为"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Search"
-msgstr ""
+msgstr "搜索"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[`--on-provider-failure`](#on-provider-failure-has-no-effect)"
-msgstr ""
+msgstr "[`--on-provider-failure`](#on-provider-failure-has-no-effect)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`abort` and `retry` do nothing"
-msgstr ""
+msgstr "`abort` 和 `retry` 不起作用"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Download"
-msgstr ""
+msgstr "下载"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid ""
 "[`extract_archives` and archives](#archives-are-not-extracted-by-extract-"
 "archives)"
 msgstr ""
+"[`extract_archives` 与归档文件](#archives-are-not-extracted-by-extract-archives)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Option has no effect"
-msgstr ""
+msgstr "该选项无效"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Checksum verification](#checksum-verification-is-advisory)"
-msgstr ""
+msgstr "[校验和验证](#checksum-verification-is-advisory)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Mismatch is logged, not retried"
-msgstr ""
+msgstr "不匹配只会记录日志，不会重试"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Install"
-msgstr ""
+msgstr "安装"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Undeclared dependencies](#undeclared-dependencies)"
-msgstr ""
+msgstr "[未声明的依赖](#undeclared-dependencies)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`pygeofetch --help` can fail on a clean install"
-msgstr ""
+msgstr "`pygeofetch --help` 在全新安装时可能失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Providers"
@@ -127,28 +129,28 @@ msgstr "数据提供方"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Registered but unusable](#registered-but-unusable-providers)"
-msgstr ""
+msgstr "[已注册但无法使用](#registered-but-unusable-providers)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Two providers cannot return data"
-msgstr ""
+msgstr "有两个提供商无法返回数据"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "CLI"
-msgstr ""
+msgstr "CLI"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid ""
 "[`monitor` is not registered](#monitor-command-group-is-not-registered)"
-msgstr ""
+msgstr "[`monitor` 未注册](#monitor-command-group-is-not-registered)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`pygeofetch monitor` does not exist"
-msgstr ""
+msgstr "`pygeofetch monitor` 不存在"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:19
 msgid "SAR coherence fails on complex input"
-msgstr ""
+msgstr "复杂输入下 SAR 相干性失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:21
 msgid ""
@@ -156,6 +158,9 @@ msgid ""
 "a.tif b.tif` raise `ValueError: cannot reshape array of size 2048 into shape"
 " (64,64)` for `complex64` SLC rasters."
 msgstr ""
+"**症状。** 对 `complex64` SLC 栅格，`client.sar.coherence(a, b)` 和 `pygeofetch sar "
+"coherence a.tif b.tif` 会抛出 `ValueError: cannot reshape array of size 2048 "
+"into shape (64,64)`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:24
 msgid ""
@@ -165,10 +170,13 @@ msgid ""
 "`pygeofetch.sar.SARProcessor` reads complex bands directly with `rasterio` "
 "and does not have this problem."
 msgstr ""
+"**原因。** `pygeofetch.processing.sar.SARProcessor.coherence` 通过 "
+"`_safe_read_band` 读取复数波段，该函数会将其转换为实数 `float32`，随后又把这块内存重新解释为复数。独立的 "
+"`pygeofetch.sar.SARProcessor` 直接使用 `rasterio` 读取复数波段，不存在此问题。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:29
 msgid "**Workaround.**"
-msgstr ""
+msgstr "**解决办法。**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:36
 msgid ""
@@ -176,16 +184,20 @@ msgid ""
 "the standalone call returns a mean coherence of 1.0 for two identical-up-to-"
 "phase images."
 msgstr ""
+"使用一对 64 x 64 的 `complex64` 数据复现：`client.sar` "
+"调用失败，而独立调用对两幅仅相位不同的相同影像返回的平均相干性为 1.0。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:39
 msgid "SAR backends are not wired in"
-msgstr ""
+msgstr "SAR 后端未接入"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:41
 msgid ""
 "**Symptom.** `SARProcessor(backend=\"sarxarray\")` raises `TypeError: "
 "SARProcessor() takes no arguments`."
 msgstr ""
+"**症状。** `SARProcessor(backend=\"sarxarray\")` 抛出 `TypeError: SARProcessor() "
+"takes no arguments`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:44
 msgid ""
@@ -195,16 +207,20 @@ msgid ""
 "backends, and `terrain_correct()`, are unreachable. The `pygeofetch[sar]` "
 "and `pygeofetch[ost]` extras install packages that are not currently used."
 msgstr ""
+"**原因。** `pygeofetch.sar.processor.SARProcessor` 没有 "
+"`__init__`。`pygeofetch/sar/` 中存在 `_native.py`、`_sarxarray.py` 和 `_ost.py` "
+"模块，但没有任何代码导入它们，因此 `sarxarray` 和 `ost` 后端以及 `terrain_correct()` "
+"均无法访问。`pygeofetch[sar]` 和 `pygeofetch[ost]` 这两个 extra 所安装的软件包目前并未被使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:49
 msgid ""
 "**Workaround.** Use `SARProcessor()` with no arguments for despeckle, "
 "calibrate, flood mapping and coherence."
-msgstr ""
+msgstr "**变通方法。** 进行去斑、定标、洪水制图和相干性计算时，请不带参数地使用 `SARProcessor()`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:52
 msgid "Settings layer is not applied at runtime"
-msgstr ""
+msgstr "设置层在运行时未生效"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:54
 msgid ""
@@ -212,6 +228,9 @@ msgid ""
 "with `pygeofetch config set`, or through `PYGEOFETCH_DOWNLOAD__PARALLEL` "
 "changes what `pygeofetch config get` prints but not how downloads run."
 msgstr ""
+"**症状。** 在 `~/.pygeofetch/config.yaml` 中、通过 `pygeofetch config set` 或通过 "
+"`PYGEOFETCH_DOWNLOAD__PARALLEL` 设置 `download.parallel`，只会改变 `pygeofetch "
+"config get` 的输出，而不会改变下载的实际运行方式。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:58
 msgid ""
@@ -225,22 +244,29 @@ msgid ""
 "`notifications.*` and `download.checksum_algorithm`. The engine's "
 "`config_path` argument loads a dictionary that nothing reads."
 msgstr ""
+"**原因。** `pygeofetch.config.settings.Settings` 仅被 `config` 命令和 `cache ttl` "
+"读取。搜索、下载和引擎的取值来自 CLI 标志，以及 `SearchQuery`、`DownloadOptions` 和 `PyGeoFetch()` "
+"构造函数。已验证：当 `PYGEOFETCH_DOWNLOAD__PARALLEL=7` "
+"时，`Settings().download.parallel` 为 `7`，而 `DownloadOptions().parallel` 为 "
+"`4`。`security.credential_storage`、`security.verify_ssl`、`proxy.*`、`notifications.*`"
+" 和 `download.checksum_algorithm` 同样如此。引擎的 `config_path` 参数加载的字典没有任何代码读取。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:66
 msgid ""
 "**Related.** `pygeofetch cache ttl show` reads an attribute that does not "
 "exist on `Settings` and always prints `3600`."
 msgstr ""
+"**相关。** `pygeofetch cache ttl show` 读取的是 `Settings` 上并不存在的属性，并且始终输出 `3600`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:69
 msgid ""
 "**Workaround.** Pass values explicitly. See "
 "[Configuration](configuration.md#what-controls-behaviour)."
-msgstr ""
+msgstr "**变通方法。** 显式传入各项取值。参见[配置](configuration.md#what-controls-behaviour)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:72
 msgid "`--on-provider-failure` has no effect"
-msgstr ""
+msgstr "`--on-provider-failure` 不起作用"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:74
 msgid ""
@@ -249,10 +275,12 @@ msgid ""
 " that fails is logged and skipped regardless of the value. Implement abort "
 "or retry in your own code."
 msgstr ""
+"`search run --on-provider-failure abort` 和 `retry` 可以被接受并保存在 `SearchQuery` "
+"上，但 `FederatedSearcher` 从不读取该字段。无论取值如何，失败的提供商都只会被记录日志并跳过。请在你自己的代码中实现中止或重试。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:79
 msgid "Archives are not extracted by `extract_archives`"
-msgstr ""
+msgstr "`extract_archives` 不会解压归档文件"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:81
 msgid ""
@@ -261,10 +289,13 @@ msgid ""
 "is extracted unless you add the `unzip` post-processing action. See "
 "[Downloading](../data-access/download.md#archives)."
 msgstr ""
+"`DownloadOptions.extract_archives` 已声明（默认为 `True`），但没有任何代码读取它。Copernicus 提供 "
+"`.SAFE.zip`，USGS 提供 `.tar`；除非你添加 `unzip` 后处理操作，否则两者都不会被解压。参见[下载](../data-"
+"access/download.md#archives)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:85
 msgid "Checksum verification is advisory"
-msgstr ""
+msgstr "校验和验证仅作参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:87
 msgid ""
@@ -275,10 +306,14 @@ msgid ""
 "compared. `checksum_algorithm` does not select the algorithm. Check "
 "`result.checksum_verified` and the logs yourself if integrity matters."
 msgstr ""
+"当 `verify_checksum=True` 时，会将文件与提供商在资产元数据中给出的校验和进行比较（若存在则用 MD5，否则用 "
+"SHA256）。不匹配时会记录日志并将 `checksum_verified` 设为 "
+"`False`；下载不会重试，也不会判定为失败。如果提供商未提供校验和，则不进行任何比较。`checksum_algorithm` "
+"并不能选择算法。如果完整性很重要，请自行检查 `result.checksum_verified` 和日志。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:93
 msgid "Undeclared dependencies"
-msgstr ""
+msgstr "未声明的依赖项"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:95
 msgid ""
@@ -288,16 +323,20 @@ msgid ""
 " a clean install, `pygeofetch --help` can fail with `ModuleNotFoundError: No"
 " module named 'rich'`."
 msgstr ""
+"命令行界面会导入 `rich`，光学验证会导入 `shapely`。在 `pyproject.toml` 中，两者都不是核心依赖项（`shapely` "
+"仅出现在 `geo` 和 `insar` extra 中；conda 配方中确实列出了 `rich`）。在全新安装的环境中，`pygeofetch "
+"--help` 可能会失败并报 `ModuleNotFoundError: No module named 'rich'`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:99
 msgid ""
 "**Workaround.** `pip install rich shapely`, or install the `geo` extra for "
 "`shapely`."
 msgstr ""
+"**变通方法。** 运行 `pip install rich shapely`，或安装 `geo` extra 以获得 `shapely`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:101
 msgid "Registered but unusable providers"
-msgstr ""
+msgstr "已注册但无法使用的提供商"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:103
 msgid ""
@@ -309,10 +348,15 @@ msgid ""
 "`providers/terrabotics.py` remain in the package but are not registered. See"
 " [Providers](../data-access/providers.md)."
 msgstr ""
+"`esa_scihub` 针对的是 ESA 已于 2023 年 11 月 2 日停用的服务，而 `google_earth_engine` "
+"尚未实现。两者都已注册，因此会出现在 `providers list` 中并计入“22 个提供商”，但每次调用都会失败并给出说明性信息。请使用 "
+"`copernicus` 代替 `esa_scihub`。源文件 `providers/eodag_provider.py` 和 "
+"`providers/terrabotics.py` 仍保留在包中，但并未注册。参见[提供商](../data-"
+"access/providers.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:109
 msgid "`monitor` command group is not registered"
-msgstr ""
+msgstr "`monitor` 命令组未注册"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:111
 msgid ""
@@ -320,40 +364,45 @@ msgid ""
 "history`, but `cli/main.py` never calls `cli.add_command(monitor)`. "
 "`pygeofetch monitor` reports \"No such command\"."
 msgstr ""
+"`pygeofetch/cli/monitor_commands.py` 定义了 `monitor run` 和 `monitor history`，但"
+" `cli/main.py` 从未调用 `cli.add_command(monitor)`。`pygeofetch monitor` 会提示“No "
+"such command”。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:115
 msgid "Smaller items"
-msgstr ""
+msgstr "其他小问题"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:117
 msgid "**Search and scoring**"
-msgstr ""
+msgstr "**搜索与评分**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:119
 msgid ""
 "Deduplication uses provider and ID only. The same scene returned by two "
 "providers appears twice. De-duplicate on your own key."
-msgstr ""
+msgstr "去重仅依据提供商和 ID。两个提供商返回的同一场景会出现两次。请使用你自己的键进行去重。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:120
 msgid ""
 "The relevance score uses cloud cover, recency and processing level. The "
 "docstring's fourth factor (spatial coverage) is not applied."
-msgstr ""
+msgstr "相关性评分使用云量、时效性和处理级别。文档字符串中的第四个因子（空间覆盖度）并未应用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:121
 msgid ""
 "STAC providers ignore `sort_by`. Sort results yourself, for example "
 "`sorted(results, key=lambda s: s.cloud_cover or 100)`."
 msgstr ""
+"STAC 提供商会忽略 `sort_by`。请自行对结果排序，例如 `sorted(results, key=lambda s: "
+"s.cloud_cover or 100)`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:122
 msgid "Credentials are not read from environment variables."
-msgstr ""
+msgstr "凭据不会从环境变量中读取。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:124
 msgid "**Download behaviour**"
-msgstr ""
+msgstr "**下载行为**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:126
 msgid ""
@@ -361,22 +410,26 @@ msgid ""
 "nothing (`resolve_band_keys()`), and logs a warning. [Streaming](../data-"
 "access/streaming.md) treats it as an error."
 msgstr ""
+"当请求的波段没有匹配项时，`download()` "
+"会回退为下载**所有**资产（`resolve_band_keys()`），并记录一条警告。[流式读取](../data-"
+"access/streaming.md)则将其视为错误。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:127
 msgid ""
 "Files are written under `<destination>/<provider>/`, which surprises code "
 "that expects a flat folder."
-msgstr ""
+msgstr "文件会写入 `<destination>/<provider>/` 下，这会让期望扁平目录的代码感到意外。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:129
 msgid "**Packaging and code**"
-msgstr ""
+msgstr "**打包与代码**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:131
 msgid ""
 "`pygeofetch/multisensor/_init.py` is a stale copy of `__init__.py` left "
 "beside it. It is unused and can be deleted."
 msgstr ""
+"`pygeofetch/multisensor/_init.py` 是遗留在 `__init__.py` 旁边的过时副本。它未被使用，可以删除。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:132
 msgid ""
@@ -385,6 +438,9 @@ msgid ""
 "CLI banner refer to `v2.4.0`. The documentation and conda metadata also "
 "point to different documentation URLs (GitHub Pages versus Read the Docs)."
 msgstr ""
+"版本字符串不一致：`pygeofetch.__version__` 和 conda 配方为 `2.6.3.0.4`，`pyproject.toml` 为"
+" `2.6.3.0`，而包的文档字符串和 CLI 横幅则提到 `v2.4.0`。文档和 conda 元数据所指向的文档 URL 也不同（GitHub "
+"Pages 与 Read the Docs）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:133
 msgid ""
@@ -392,6 +448,9 @@ msgid ""
 "`insar/flatearth.py`, `insar/coregister.py`, `insar/extraction.py` and "
 "`processing/classification.py`. The multi-sensor modules no longer use it."
 msgstr ""
+"`insar/flatearth.py`、`insar/coregister.py`、`insar/extraction.py` 和 "
+"`processing/classification.py` 中仍保留着 `Affine * tuple` 运算（在 `affine` "
+"库中已弃用）。多传感器模块已不再使用它。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:134
 msgid ""
@@ -400,16 +459,20 @@ msgid ""
 "`pygeofetch.streaming` (scene-level). See [Streaming](../data-"
 "access/streaming.md#other-streaming-tools)."
 msgstr ""
+"存在两套功能重叠的流式读取实现：`pygeofetch.stac_compute`（单 URL 窗口读取和 Sentinel-1 burst 读取）与 "
+"`pygeofetch.streaming`（场景级）。参见[流式读取](../data-access/streaming.md#other-"
+"streaming-tools)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:135
 msgid ""
 "Importing `pygeofetch.insar` prints a \"snaphu not found\" message when "
 "`snaphu` is not installed, even if you do not unwrap."
 msgstr ""
+"当未安装 `snaphu` 时，导入 `pygeofetch.insar` 会打印“snaphu not found”消息，即使你并不进行解缠也是如此。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:137
 msgid "**Processing limitations**"
-msgstr ""
+msgstr "**处理限制**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:139
 msgid ""
@@ -417,15 +480,19 @@ msgid ""
 "angle: suitable for relative comparison within a scene, not for absolute "
 "accuracy. See [SAR](../processing/sar-insar/sar.md#radiometric-calibration)."
 msgstr ""
+"SAR 辐射定标使用固定常数和标称入射角：适用于场景内的相对比较，不适用于绝对精度。参见 [SAR](../processing/sar-"
+"insar/sar.md#radiometric-calibration)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:140
 msgid ""
 "Atmospheric correction: only `dos1` and `dos2` are full implementations. See"
 " [Preprocessing](../processing/optical/preprocessing.md)."
 msgstr ""
+"大气校正：只有 `dos1` 和 `dos2` "
+"是完整实现。参见[预处理](../processing/optical/preprocessing.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:141
 msgid ""
 "Sentinel-2 L2A at baseline 04.00 or later carries a +1000 DN offset that "
 "spectral indices do not remove automatically."
-msgstr ""
+msgstr "基线 04.00 或更高版本的 Sentinel-2 L2A 带有 +1000 DN 的偏移，光谱指数不会自动消除该偏移。"

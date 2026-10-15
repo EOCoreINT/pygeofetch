@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,75 +27,79 @@ msgid ""
 "tests and documentation. The repository's `CONTRIBUTING.md` holds the "
 "authoritative guidelines; this page is a short orientation."
 msgstr ""
+"欢迎各种形式的贡献：错误报告、修复、新的提供方、测试和文档。仓库中的 `CONTRIBUTING.md` 包含权威的指南；本页只是一份简短的入门介绍。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:7
 msgid "Development setup"
-msgstr ""
+msgstr "开发环境搭建"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:16
 msgid ""
 "See [Testing](../reference/testing.md) for how the suite is organised and "
 "why the `test` extra is the right one."
-msgstr ""
+msgstr "关于测试套件的组织方式，以及为什么 `test` 额外依赖是正确的选择，请参阅[测试](../reference/testing.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:19
 msgid "Where to start"
-msgstr ""
+msgstr "从哪里入手"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:21
 msgid ""
 "Each item below links to the page that describes the current behaviour."
-msgstr ""
+msgstr "下面每一项都链接到描述当前行为的页面。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:23
 msgid ""
 "**Close a documented gap** (all listed in [Known issues](../reference/known-"
 "issues.md))"
-msgstr ""
+msgstr "**弥补已记录的缺口**（均列于[已知问题](../reference/known-issues.md)）"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:25
 msgid ""
 "Make `FederatedSearcher` honour `--on-provider-failure abort` and `retry`."
-msgstr ""
+msgstr "让 `FederatedSearcher` 遵从 `--on-provider-failure abort` 和 `retry`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:26
 msgid "Register the `monitor` command group in `cli/main.py`."
-msgstr ""
+msgstr "在 `cli/main.py` 中注册 `monitor` 命令组。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:27
 msgid ""
 "Connect the [Settings layer](../reference/configuration.md) to search, "
 "download and the engine."
-msgstr ""
+msgstr "将 [Settings 层](../reference/configuration.md)与搜索、下载和引擎连接起来。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:28
 msgid ""
 "Fix `client.sar.coherence` for complex input by reusing the approach in "
 "`pygeofetch.sar.processor`."
 msgstr ""
+"通过复用 `pygeofetch.sar.processor` 中的做法，修复 `client.sar.coherence` 对复数输入的支持。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:29
 msgid "Declare `rich` and `shapely` as dependencies."
-msgstr ""
+msgstr "将 `rich` 和 `shapely` 声明为依赖。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:30
 msgid "Delete the stale `multisensor/_init.py`."
-msgstr ""
+msgstr "删除过时的 `multisensor/_init.py`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:32
 msgid "**Improve quality**"
-msgstr ""
+msgstr "**提升质量**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:34
 msgid ""
 "Add a GCS export test with a mocked bucket, to match the S3 coverage in "
 "`tests/test_pipeline_process_export.py`."
 msgstr ""
+"添加一个使用模拟存储桶的 GCS 导出测试，与 `tests/test_pipeline_process_export.py` 中对 S3 "
+"的覆盖相对应。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:35
 msgid ""
 "Add post-processing actions (see [Pipelines](../workflows/pipelines.md))."
-msgstr ""
+msgstr "添加后处理动作（参见[流水线](../workflows/pipelines.md)）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:36
 msgid ""
@@ -103,41 +107,43 @@ msgid ""
 "C-correction, Minnaert or SCS+C for steep terrain ([Multi-sensor "
 "pipelines](../processing/multisensor.md))."
 msgstr ""
+"针对陡峭地形，将经地形校正的变化检测从余弦校正扩展到 C 校正、Minnaert 或 "
+"SCS+C（[多传感器流水线](../processing/multisensor.md)）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:37
 msgid ""
 "Re-verify providers whose upstream APIs may have changed. A failing provider"
 " is a live bug report, not a stub to reimplement."
-msgstr ""
+msgstr "重新验证上游 API 可能已发生变化的提供方。提供方失效是一份实时的错误报告，而不是需要重新实现的桩代码。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:39
 msgid "Conventions"
-msgstr ""
+msgstr "约定"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:41
 msgid ""
 "Add a test for every fix, and derive expected values independently of the "
 "code under test."
-msgstr ""
+msgstr "为每一次修复添加测试，并且独立于被测代码来推导期望值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:42
 msgid "Do not make tests depend on network access."
-msgstr ""
+msgstr "不要让测试依赖网络访问。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:43
 msgid ""
 "When you change a CLI command, regenerate its reference page: `python "
 "tools/gen_cli_reference.py`."
-msgstr ""
+msgstr "当你修改某个 CLI 命令时，请重新生成其参考页面：`python tools/gen_cli_reference.py`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:44
 msgid ""
 "Keep documentation claims verifiable: run the example before you publish it."
-msgstr ""
+msgstr "保持文档中的说法可验证：发布示例之前先运行它。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:46
 msgid "Licence"
-msgstr ""
+msgstr "许可证"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/contributing.md:48
 msgid ""
@@ -145,3 +151,5 @@ msgid ""
 "platform: pygeofetch handles data acquisition and processing, and "
 "PyGeoVision builds the Earth observation machine-learning layer on top."
 msgstr ""
+"MIT。版权所有 Samuel Appiah Kubi。pygeofetch 是 PyGeoVision 平台的一部分：pygeofetch "
+"负责数据获取和处理，PyGeoVision 则在其之上构建对地观测机器学习层。"

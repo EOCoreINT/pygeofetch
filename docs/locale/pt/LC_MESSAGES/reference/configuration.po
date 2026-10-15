@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,12 @@ msgid ""
 "`download.parallel` in `config.yaml` or through "
 "`PYGEOFETCH_DOWNLOAD__PARALLEL` does not change how many downloads run."
 msgstr ""
+"**Escopo.** O pygeofetch tem um modelo de configurações em camadas "
+"(`pygeofetch.config.settings.Settings`), mas, na versão atual, somente os "
+"comandos `pygeofetch config` e `pygeofetch cache ttl` o leem. O código de "
+"busca, download e processamento **não** o consulta. Alterar "
+"`download.parallel` em `config.yaml` ou por meio de "
+"`PYGEOFETCH_DOWNLOAD__PARALLEL` não muda quantos downloads são executados."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:10
 msgid ""
@@ -37,42 +43,51 @@ msgid ""
 "controls-behaviour) below. See [Known issues](known-issues.md#settings-"
 "layer-is-not-applied-at-runtime)."
 msgstr ""
+"O comportamento é controlado pelas [opções que de fato têm efeito](#what-"
+"controls-behaviour) abaixo. Veja [Problemas conhecidos](known-"
+"issues.md#settings-layer-is-not-applied-at-runtime)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:14
 msgid "What controls behaviour"
-msgstr ""
+msgstr "O que controla o comportamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "You want to change"
-msgstr ""
+msgstr "Você quer alterar"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Set it with"
-msgstr ""
+msgstr "Defina com"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Parallelism, retries, checksum, bandwidth, bands, post-processing"
 msgstr ""
+"Paralelismo, novas tentativas, checksum, largura de banda, bandas, pós-"
+"processamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "CLI flags on `download run`, or [`DownloadOptions`](python-"
 "api.md#downloadoptions) in Python"
 msgstr ""
+"Flags da CLI em `download run`, ou [`DownloadOptions`](python-"
+"api.md#downloadoptions) em Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Search limits, sorting, cloud cover"
-msgstr ""
+msgstr "Limites de busca, ordenação, cobertura de nuvens"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "CLI flags on `search run`, or [`SearchQuery`](python-api.md#searchquery) in "
 "Python"
 msgstr ""
+"Flags da CLI em `search run`, ou [`SearchQuery`](python-api.md#searchquery) "
+"em Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Search-cache lifetime"
-msgstr ""
+msgstr "Tempo de vida do cache de busca"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "`PyGeoFetch(cache_ttl=...)`, or `CacheManager(ttl_seconds=...)`"
@@ -80,7 +95,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Search workers, credential backend, optical validation"
-msgstr ""
+msgstr "Workers de busca, backend de credenciais, validação óptica"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
@@ -89,49 +104,55 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Log level, file and format"
-msgstr ""
+msgstr "Nível, arquivo e formato do log"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "Global CLI options `--log-level`, `--log-file`, `--log-format`; or "
 "`PyGeoFetch(log_level=..., log_json=...)`"
 msgstr ""
+"Opções globais da CLI `--log-level`, `--log-file`, `--log-format`; ou "
+"`PyGeoFetch(log_level=..., log_json=...)`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Where `snaphu` is found"
-msgstr ""
+msgstr "Onde o `snaphu` é encontrado"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Environment variable `PYGEOFETCH_SNAPHU_DIR`"
-msgstr ""
+msgstr "Variável de ambiente `PYGEOFETCH_SNAPHU_DIR`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Path of an external atmospheric-correction binary"
-msgstr ""
+msgstr "Caminho de um binário externo de correção atmosférica"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "Environment variable `PYGEOFETCH_<METHOD>_BIN` (for example "
 "`PYGEOFETCH_FLAASH_BIN`)"
 msgstr ""
+"Variável de ambiente `PYGEOFETCH_<METHOD>_BIN` (por exemplo, "
+"`PYGEOFETCH_FLAASH_BIN`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Log level for the CLI"
-msgstr ""
+msgstr "Nível de log da CLI"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Environment variable `PYGEOFETCH_LOG_LEVEL`"
-msgstr ""
+msgstr "Variável de ambiente `PYGEOFETCH_LOG_LEVEL`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:27
 msgid ""
 "`PyGeoFetch(config_path=\"my.yaml\")` loads the file into `client.config`, a"
 " plain dictionary. Nothing in the engine currently reads it."
 msgstr ""
+"`PyGeoFetch(config_path=\"my.yaml\")` carrega o arquivo em `client.config`, "
+"um dicionário simples. Atualmente, nada no mecanismo o lê."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:30
 msgid "Credentials"
-msgstr ""
+msgstr "Credenciais"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:32
 msgid ""
@@ -140,10 +161,13 @@ msgid ""
 "[Authentication](../data-access/authentication.md) and "
 "[Security](security.md)."
 msgstr ""
+"As credenciais **não** são lidas de variáveis de ambiente. Passe-as "
+"explicitamente com `add_credentials()` ou `pygeofetch auth add`. Veja "
+"[Autenticação](../data-access/authentication.md) e [Segurança](security.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:36
 msgid "The settings model"
-msgstr ""
+msgstr "O modelo de configurações"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:38
 msgid ""
@@ -151,6 +175,9 @@ msgid ""
 "place to store preferences. The schema and bundled defaults "
 "(`pygeofetch/config/defaults.yaml`) are:"
 msgstr ""
+"O modelo `Settings` e os comandos `pygeofetch config` oferecem um local "
+"estruturado para armazenar preferências. O esquema e os padrões incluídos "
+"(`pygeofetch/config/defaults.yaml`) são:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:105
 msgid ""
@@ -158,18 +185,23 @@ msgid ""
 "`DownloadOptions()` defaults to `parallel=4`, `verify_checksum=False` and "
 "`SHA256`, not the values above."
 msgstr ""
+"Observe as diferenças em relação aos valores aplicados em tempo de execução."
+" `DownloadOptions()` tem como padrão `parallel=4`, `verify_checksum=False` e"
+" `SHA256`, e não os valores acima."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:108
 msgid "Precedence"
-msgstr ""
+msgstr "Precedência"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:110
 msgid "When `Settings` is loaded, later sources override earlier ones:"
 msgstr ""
+"Quando `Settings` é carregado, as fontes posteriores substituem as "
+"anteriores:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:112
 msgid "Bundled defaults (`pygeofetch/config/defaults.yaml`)"
-msgstr ""
+msgstr "Padrões incluídos (`pygeofetch/config/defaults.yaml`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:113
 msgid "`~/.pygeofetch/config.yaml`"
@@ -180,10 +212,12 @@ msgid ""
 "Environment variables `PYGEOFETCH_<SECTION>__<FIELD>` (case-insensitive, "
 "double underscore for nesting)"
 msgstr ""
+"Variáveis de ambiente `PYGEOFETCH_<SECTION>__<FIELD>` (sem distinção entre "
+"maiúsculas e minúsculas, sublinhado duplo para aninhamento)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:122
 msgid "Configuration commands"
-msgstr ""
+msgstr "Comandos de configuração"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:132
 msgid ""
@@ -191,6 +225,9 @@ msgid ""
 "value is stored and shown by `config show`, but search and download do not "
 "read it."
 msgstr ""
+"`config set` grava em `~/.pygeofetch/config.yaml`. Como descrito acima, o "
+"valor é armazenado e exibido por `config show`, mas a busca e o download não"
+" o leem."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:136
 msgid ""
@@ -198,7 +235,10 @@ msgid ""
 "and always prints `3600`. `pygeofetch cache ttl set N` does store "
 "`cache.ttl_seconds`. See [Known issues](known-issues.md)."
 msgstr ""
+"`pygeofetch cache ttl show` lê um campo que não existe em `Settings` e "
+"sempre exibe `3600`. `pygeofetch cache ttl set N` de fato armazena "
+"`cache.ttl_seconds`. Veja [Problemas conhecidos](known-issues.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:141
 msgid "In Python"
-msgstr ""
+msgstr "Em Python"

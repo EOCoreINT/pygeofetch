@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,8 @@ msgid ""
 "shadow, masking clouds, clipping/reprojecting to your AOI, and combining "
 "multiple scenes into one."
 msgstr ""
+"位于 InSAR/SAR/Landsat/TimeSeries 模块之下的基础光学数据工具包 — "
+"即在计算指数或进行分析*之前*几乎总是要运行的步骤：校正大气和地形阴影、掩膜云、按你的 AOI 裁剪/重投影，以及将多个场景合并为一个。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:19
 msgid ""
@@ -38,10 +40,13 @@ msgid ""
 "decode), and return a `ProcessingResult` whose `.output_path` is the new "
 "raster on disk."
 msgstr ""
+"所有方法都位于 "
+"`client.preprocess`（`pygeofetch.processing.preprocessor.Preprocessor`）上，通过逐块回退方式读取（无需完整解码整个场景，即可处理分块/COG/压缩输入），并返回"
+" `ProcessingResult`，其 `.output_path` 即磁盘上的新栅格。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:24
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:26
 msgid ""
@@ -53,6 +58,8 @@ msgid ""
 "comparable, cleaned data. It is available as `client.preprocess` and as the "
 "`pygeofetch preprocess` commands."
 msgstr ""
+"原始光学场景很少可以直接用于分析。到达传感器的信号包含地面与卫星之间的大气、地形投下的阴影、云，以及场景本身任意的网格和投影。预处理引擎将处理这些问题的步骤归为一组，使指数或分类基于可比较的、已清理的数据计算。它以"
+" `client.preprocess` 的形式提供，也以 `pygeofetch preprocess` 命令的形式提供。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:28
 msgid ""
@@ -67,22 +74,23 @@ msgid ""
 "inspect the intermediate result after every step and stop at the point where"
 " the data is good enough for your question."
 msgstr ""
+"合理的顺序是先校正，再掩膜，最后裁剪并合并。大气校正使数值更接近地表反射率，地形校正减小向阳坡与背阴坡之间的亮度差异，云掩膜则标出不应被信任的像元。之后，你将场景裁剪到你的区域，重投影到所需的坐标系，如果单个日期不够，再对相邻场景做镶嵌，或由多个日期构建合成影像，用其他采集的数据填补云造成的空缺。每种方法都接收一个文件并返回一个新文件，因此你可以在每一步之后检查中间结果，并在数据足以回答你的问题时停下来。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:30
 msgid "Quick reference"
-msgstr ""
+msgstr "快速参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Options"
-msgstr ""
+msgstr "选项"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "What it's for"
-msgstr ""
+msgstr "用途"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`atmos()`"
@@ -90,12 +98,12 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "dos1, dos2, sen2cor, flaash, 6s, icor"
-msgstr ""
+msgstr "dos1, dos2, sen2cor, flaash, 6s, icor"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Remove atmospheric haze/scattering before comparing reflectance across dates"
-msgstr ""
+msgstr "在比较不同日期的反射率之前，去除大气雾霾/散射"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`topo_correct()`"
@@ -103,13 +111,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "cosine, minnaert, c-correction"
-msgstr ""
+msgstr "cosine, minnaert, c-correction"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Remove terrain-shadow brightness differences (steep sunlit vs. shaded "
 "slopes)"
-msgstr ""
+msgstr "消除地形阴影造成的亮度差异（陡峭的向阳坡与背阴坡）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`cloud_mask()`"
@@ -117,11 +125,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "scl, fmask, threshold, ndsi"
-msgstr ""
+msgstr "scl, fmask, threshold, ndsi"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Set cloud (and optionally shadow/snow) pixels to NoData"
-msgstr ""
+msgstr "将云（以及可选的阴影/雪）像元设为 NoData"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`cloud_fill()`"
@@ -133,7 +141,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Fill cloud gaps using a multi-date time series"
-msgstr ""
+msgstr "利用多日期时间序列填补云造成的空缺"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`clip()`"
@@ -141,11 +149,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "bbox or GeoJSON polygon"
-msgstr ""
+msgstr "bbox 或 GeoJSON 多边形"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Crop to your AOI"
-msgstr ""
+msgstr "裁剪到你的 AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`reproject()`"
@@ -153,11 +161,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "any target CRS"
-msgstr ""
+msgstr "任意目标 CRS"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Change coordinate reference system"
-msgstr ""
+msgstr "更改坐标参考系统"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`resample()`"
@@ -165,11 +173,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "nearest, bilinear, cubic, lanczos"
-msgstr ""
+msgstr "nearest, bilinear, cubic, lanczos"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Change spatial resolution"
-msgstr ""
+msgstr "更改空间分辨率"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`tile()`"
@@ -177,7 +185,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "Split a large raster into overlapping tiles"
-msgstr ""
+msgstr "将大型栅格切分为有重叠的瓦片"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`pansharpen()`"
@@ -185,12 +193,12 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "brovey, ihs, gram-schmidt"
-msgstr ""
+msgstr "brovey, ihs, gram-schmidt"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Sharpen multispectral bands using a higher-resolution panchromatic band"
-msgstr ""
+msgstr "利用更高分辨率的全色波段锐化多光谱波段"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`mosaic()`"
@@ -198,12 +206,12 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "first, last, min, max, sum"
-msgstr ""
+msgstr "first, last, min, max, sum"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Merge scenes covering **different, adjacent areas** into one seamless image"
-msgstr ""
+msgstr "将覆盖**不同的相邻区域**的场景合并为一幅无缝影像"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "`composite()`"
@@ -211,13 +219,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid "median, mean, max, min, best_pixel"
-msgstr ""
+msgstr "median, mean, max, min, best_pixel"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:0
 msgid ""
 "Merge scenes covering the **same area on different dates** into one cloud-"
 "free image"
-msgstr ""
+msgstr "将覆盖**同一区域、不同日期**的场景合并为一幅无云影像"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:48
 msgid ""
@@ -230,10 +238,15 @@ msgid ""
 " different dates). If your inputs are \"same place, different time,\" you "
 "want `composite()`, not `mosaic()`."
 msgstr ""
+"**`mosaic()` 与 `composite()` — 最容易让人混淆的区别**：`mosaic()` "
+"将空间上*相邻、互不重叠*的瓦片拼接成一幅更大的影像（例如两幅 Sentinel-2 瓦片分别覆盖你的 AOI "
+"的东半部和西半部）。`composite()` 将*同一*区域在*多个日期*的数据堆叠起来，构建一幅无云影像（例如同一瓦片的 12 "
+"幅月度场景，取逐像元中位数，以消除在不同日期恰好出现在不同位置的云）。如果你的输入是“同一地点、不同时间”，应使用 `composite()`，而不是 "
+"`mosaic()`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:58
 msgid "Atmospheric correction — `atmos()`"
-msgstr ""
+msgstr "大气校正 — `atmos()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:64
 msgid ""
@@ -245,6 +258,8 @@ msgid ""
 " between the two acquisitions can masquerade as surface change unless "
 "corrected for first."
 msgstr ""
+"**为什么这很重要**：阳光穿过大气两次（向下到达地表，再向上到达传感器）会被散射和吸收 — "
+"卫星记录的原始数字量化值并不是纯粹的地表反射率，而是包含了这部分大气贡献。如果你要比较不同日期的指数值（变化检测、时间序列），除非先做校正，否则两次采集之间的大气差异可能被误当作地表变化。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:75
 msgid ""
@@ -257,6 +272,10 @@ msgid ""
 "external executable this package does not bundle. If you need one of those "
 "algorithms, run the external tool."
 msgstr ""
+"**局限性。** 只有 `\"dos1\"` 和 `\"dos2\"` 是完整实现。`\"sen2cor\"` 是**简化的** L1C 到 L2A "
+"转换（除以 10000，即 Sentinel-2 的量化值），并不是已发布的 Sen2Cor 算法 — "
+"后者通过气溶胶和水汽反演来模拟大气辐射传输。`\"flaash\"`、`\"6s\"` 和 `\"icor\"` "
+"是**占位符**：调用它们时会记录一条警告并回退到 DOS1，因为它们需要本软件包未内置的外部可执行文件。如果你需要这些算法，请运行外部工具。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:83
 msgid ""
@@ -267,6 +286,9 @@ msgid ""
 "small path-radiance correction on top. This is a standard, useful technique "
 "— just a simpler one than full radiative-transfer atmospheric correction."
 msgstr ""
+"**DOS1/DOS2 实际做了什么**（两种已实现的方法）：找出每个波段中最暗的第 1 百分位像元值（即“暗目标”— "
+"假定为应当反射接近零的表面，如深而清澈的水体或阴影），并从该波段的每个像元中减去它。DOS2 "
+"在此基础上还额外应用一个小的路径辐射校正。这是一种标准且有用的技术 — 只是比完整的辐射传输大气校正更简单。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:91
 msgid ""
@@ -275,10 +297,12 @@ msgid ""
 "reflectance accuracy doesn't matter (e.g. just running NDVI on one date to "
 "look at relative vegetation patterns within that one scene)."
 msgstr ""
+"**何时使用**：在任何多日期比较之前（变化检测、时间序列指数）；对于绝对反射率精度无关紧要的单日期、单场景分析可以跳过（例如仅对某一日期运行 "
+"NDVI，以观察该场景内的相对植被格局）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:97
 msgid "Topographic correction — `topo_correct()`"
-msgstr ""
+msgstr "地形校正 — `topo_correct()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:103
 msgid ""
@@ -290,6 +314,10 @@ msgid ""
 "[Terrain Analysis (DEM / DSM / DTM)](terrain.md) for how to get one via "
 "`client.search(..., providers=[\"opentopography\"])`)."
 msgstr ""
+"**为什么这很重要**：在山区，朝向太阳的坡面看起来被人为地提亮，背阴坡面则被人为地变暗 — "
+"这纯粹是光照几何造成的，而不是实际地表覆盖不同。如果不加校正，这会严重扭曲丘陵地形中的植被指数和分类结果。需要一个覆盖同一 AOI 的 DEM（如何通过"
+" `client.search(..., providers=[\"opentopography\"])` 获取，请参阅[地形分析（DEM / DSM "
+"/ DTM）](terrain.md)）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:111
 msgid ""
@@ -299,17 +327,18 @@ msgid ""
 "correction term, generally the most accurate of the three but needs enough "
 "valid pixels to fit that term reliably)."
 msgstr ""
+"三种方法：`\"cosine\"`（最简单，仅基于光照角）、`\"minnaert\"`（增加了针对表面“光滑还是粗糙（哑光）”程度的经验校正）、`\"c-correction\"`（增加了逐波段的经验校正项，通常是三者中最准确的，但需要足够多的有效像元才能可靠地拟合该项）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:117
 msgid ""
 "**Use it**: any AOI with meaningful topographic relief where you're "
 "computing vegetation indices or doing classification. Skip it for flat "
 "terrain (the correction would have negligible effect anyway)."
-msgstr ""
+msgstr "**何时使用**：任何具有明显地形起伏、且你要计算植被指数或进行分类的 AOI。平坦地形可以跳过（校正的影响本来就可以忽略不计）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:121
 msgid "Cloud masking — `cloud_mask()`"
-msgstr ""
+msgstr "云掩膜 — `cloud_mask()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`method=`"
@@ -317,11 +346,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "How it works"
-msgstr ""
+msgstr "工作原理"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "When to use it"
-msgstr ""
+msgstr "何时使用"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"scl\"`"
@@ -332,12 +361,14 @@ msgid ""
 "Reads a Sentinel-2 Scene Classification Layer band and masks the classified "
 "cloud/shadow classes (default: `[3,8,9,10,11]`)"
 msgstr ""
+"读取 Sentinel-2 场景分类层（Scene Classification "
+"Layer）波段，并掩膜被分类为云/阴影的类别（默认：`[3,8,9,10,11]`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid ""
 "**Best choice whenever you have an SCL band** — it's an official, per-pixel "
 "ESA classification, not a heuristic"
-msgstr ""
+msgstr "**只要有 SCL 波段，就是最佳选择** — 它是 ESA 官方的逐像元分类，而不是启发式方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"fmask\"`"
@@ -349,10 +380,12 @@ msgid ""
 "which does multi-temporal + physical TOA tests) — needs at least 4 bands in "
 "blue/green/red/nir order"
 msgstr ""
+"一种简化的亮度+白度启发式方法（不是完整的 FMask 算法，后者包含多时相 + 物理 TOA 测试）— 至少需要按 "
+"blue/green/red/nir 顺序排列的 4 个波段"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "Reasonable fallback when no SCL band exists"
-msgstr ""
+msgstr "在没有 SCL 波段时的合理备选方案"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"threshold\"`"
@@ -360,13 +393,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "Flags band-1 pixels above a brightness cutoff as cloud"
-msgstr ""
+msgstr "将亮度高于某个截断值的第 1 波段像元标记为云"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid ""
 "Crude, single-band fallback — only reliable for obviously bright, thick "
 "cloud"
-msgstr ""
+msgstr "粗糙的单波段备选方案 — 仅对明显明亮、厚重的云可靠"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid "`\"ndsi\"`"
@@ -378,11 +411,13 @@ msgid ""
 "exactly `[blue, green, red, swir1]` order** (uses index 1 for green, index 3"
 " for SWIR1)"
 msgstr ""
+"在内部计算 NDSI 并掩膜高雪像元 — **要求波段严格按 `[blue, green, red, swir1]` 顺序排列**（绿光使用索引 "
+"1，SWIR1 使用索引 3）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:73
 msgid ""
 "Snow/ice removal, not actually cloud removal despite living on this method"
-msgstr ""
+msgstr "是去除雪/冰，而不是真正的去云，尽管它位于这个方法之下"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:140
 msgid ""
@@ -393,6 +428,10 @@ msgid ""
 "[Postprocessing](postprocessing.md), double-check the order you passed "
 "matches what these methods expect (blue, green, red, nir, ...)."
 msgstr ""
+"`\"ndsi\"` 和 `\"fmask\"` 都假定输入栅格具有**特定的波段顺序**，而不仅仅是最少的波段数 — 以错误的顺序传入同样的 4 "
+"个波段，会悄悄产生错误的掩膜，而不会报错。如果你的栅格是通过 `client.indices.stack()` "
+"或[后处理](postprocessing.md)堆叠而成的，请仔细核对你传入的顺序是否与这些方法所期望的一致（blue, green, red, "
+"nir, ...）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:147
 msgid ""
@@ -404,10 +443,13 @@ msgid ""
 "shadow + all cloud classes + cirrus + snow; pass your own list if, e.g., you"
 " want to keep thin cirrus pixels rather than discard them."
 msgstr ""
+"`cloud_classes`（用于 `method=\"scl\"`）可让你覆盖哪些 SCL 类别值算作“云”— Sentinel-2 SCL "
+"图例为：0=无数据，1=饱和，2=暗区，3=云阴影，4=植被，5=裸土，6=水体，7=未分类，8=中等概率云，9=高概率云，10=薄卷云，11=雪/冰。默认的"
+" `[3,8,9,10,11]` 会掩膜阴影 + 所有云类别 + 卷云 + 雪；如果你想保留薄卷云像元而不是丢弃，可以传入你自己的列表。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:156
 msgid "`cloud_fill()` — filling gaps with other dates"
-msgstr ""
+msgstr "`cloud_fill()` — 用其他日期填补空缺"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:166
 msgid ""
@@ -420,10 +462,14 @@ msgid ""
 "values wherever they're valid — unlike `composite()`, which blends every "
 "date together rather than treating one as primary."
 msgstr ""
+"使用 `time_series`（覆盖同一 AOI 的其他日期）中的有效像元，填补 "
+"`input`（单个目标场景）中的云/无数据空缺。`method=\"interpolate\"`（默认）在空缺两侧最近的有效日期之间进行线性插值；`method=\"nearest\"`"
+" 则直接复制在时间上最接近的那个日期的值。当你希望填补某个特定日期的栅格，并在其有效处保持该日期的实际值时很有用 — 这不同于 "
+"`composite()`，后者会将所有日期混合在一起，而不是以某一个为主。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:176
 msgid "Geometry operations"
-msgstr ""
+msgstr "几何操作"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:185
 msgid ""
@@ -434,6 +480,9 @@ msgid ""
 " raster's grid *exactly* — same shape, transform, *and* CRS, not just the "
 "same resolution number)."
 msgstr ""
+"`resample()` 有三种互斥的方式来指定目标：`resolution=`（以栅格自身 CRS 单位表示的绝对值 — 地理 CRS 为度，投影 "
+"CRS 为米）、`scale_factor=`（相对值 — `0.5` = 当前分辨率的一半，`2.0` = 两倍），或 "
+"`reference=`（*精确*匹配另一幅栅格的网格 — 形状、变换*以及* CRS 都相同，而不仅仅是分辨率数值相同）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:194
 msgid ""
@@ -443,6 +492,10 @@ msgid ""
 " to \"the same resolution\" can still end up with different origins/extents "
 "and fail to overlay correctly — `reference=` guarantees an exact match."
 msgstr ""
+"**当你需要两幅栅格逐像元对齐时，请使用 `reference=`，而不是两次单独的 `resolution=` 调用**（例如在 "
+"`client.indices.ndvi()` "
+"之前，它要求各波段位于同一网格上）。两幅分别重采样到“相同分辨率”的栅格，仍可能具有不同的原点/范围，从而无法正确叠合 — `reference=` "
+"能保证精确匹配。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:203
 msgid ""
@@ -450,6 +503,8 @@ msgid ""
 "clipped against a raster in its native UTM projection is reprojected to "
 "match before masking, so the intersection is computed in a common CRS."
 msgstr ""
+"**`clip()` 的 CRS 处理。** 对于一个 WGS84 边界多边形（常见的 AOI GeoJSON），当其与原生 UTM "
+"投影的栅格进行裁剪时，会先重投影以匹配，再进行掩膜，因此交集是在统一的 CRS 中计算的。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:207
 msgid ""
@@ -461,10 +516,13 @@ msgid ""
 " hard edges — generally reserve it for final visual output, not analysis "
 "inputs."
 msgstr ""
+"**重采样方法的选择很重要**：`\"nearest\"` 保留精确的原始值（用于类别/分类数据 — 用 `\"bilinear\"` "
+"重采样土地覆盖类别图会产生无意义的小数类别值）；`\"bilinear\"`/`\"cubic\"` "
+"用于平滑反射率或高程等连续数据；`\"lanczos\"` 更锐利，但可能在强边缘附近引入振铃伪影 — 通常仅用于最终的视觉输出，而不用于分析输入。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:215
 msgid "`tile()` — splitting a large raster for chunked processing"
-msgstr ""
+msgstr "`tile()` — 切分大型栅格以便分块处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:222
 msgid ""
@@ -475,10 +533,13 @@ msgid ""
 "fraction of the tile is valid (non-nodata) data, so edge tiles that are "
 "almost entirely nodata aren't written out."
 msgstr ""
+"将栅格切分为有重叠的方形瓦片（`tile_size` 个像素，相邻瓦片共享 `overlap` 个像素）— "
+"适用于为内存受限的处理步骤或期望固定大小输入块的模型提供数据。`min_coverage`（默认 `0.1`）会跳过有效（非 "
+"nodata）数据占比低于该比例的瓦片，因此几乎全是 nodata 的边缘瓦片不会被写出。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:229
 msgid "`pansharpen()` — multispectral + panchromatic → sharper multispectral"
-msgstr ""
+msgstr "`pansharpen()` — 多光谱 + 全色 → 更清晰的多光谱"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:235
 msgid ""
@@ -490,10 +551,13 @@ msgid ""
 "color preservation), `\"gram-schmidt\"` (usually the best spectral fidelity "
 "of the three, at more compute cost)."
 msgstr ""
+"许多卫星会同时提供较低分辨率的彩色影像和较高分辨率的灰度（“全色”）波段 — "
+"全色锐化将二者结合，以近似得到更高分辨率的彩色影像。三种方法：`\"brovey\"`（快速、简单，基于比值，在非常明亮的目标上可能使颜色略有偏移）、`\"ihs\"`（强度-"
+"色调-饱和度变换，通常颜色保持更好）、`\"gram-schmidt\"`（通常是三者中光谱保真度最好的，但计算成本更高）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:244
 msgid "Mosaic vs. composite — full detail"
-msgstr ""
+msgstr "镶嵌与合成 — 详细说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:257
 msgid ""
@@ -503,6 +567,9 @@ msgid ""
 "input with valid data wins — fast, default), `\"last\"`, `\"min\"`, "
 "`\"max\"`, `\"sum\"`."
 msgstr ""
+"`mosaic()` 是对 `rasterio.merge` 的直接封装 — 一个经过充分测试的库函数，而不是自行重新实现。`method` "
+"控制相邻瓦片之间重叠像元如何取值：`\"first\"`（第一个具有有效数据的输入胜出 — "
+"快速，默认）、`\"last\"`、`\"min\"`、`\"max\"`、`\"sum\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:263
 msgid ""
@@ -515,6 +582,10 @@ msgid ""
 " `cloud_masks` if you supply them, rather than a blind statistical "
 "reduction)."
 msgstr ""
+"`composite()` 堆叠所有输入日期，然后沿时间维度逐像元归约：`\"median\"`（标准选择 — "
+"对瞬时出现的云/异常值稳健，无需显式的云掩膜）、`\"mean\"`、`\"max\"`（常用于最大 NDVI 合成 — 将 NDVI 栅格作为 "
+"`inputs` 传入，即可得到整个时段内每个位置最绿的像元）、`\"min\"`、`\"best_pixel\"`（如果你提供了 "
+"`cloud_masks`，则据此为每个位置选取云最少的像元，而不是盲目的统计归约）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:274
 msgid ""
@@ -524,6 +595,8 @@ msgid ""
 "cloud-free multi-month view without needing every single input date to "
 "itself be cloud-free."
 msgstr ""
+"**常见工作流**：先对每个日期分别做云掩膜（`cloud_mask()`），*然后*使用 `method=\"median\"` 合成 — "
+"中位数会自然忽略掩膜留下的 NaN/NoData 空缺，从而得到干净、无云的多月视图，而无需每一个输入日期本身都是无云的。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/preprocessing.md:282
 msgid ""
@@ -536,3 +609,7 @@ msgid ""
 "topic of their own (DEM/DSM/DTM analysis) rather than general-purpose "
 "optical preprocessing."
 msgstr ""
+"地形专用操作（`terrain_derivatives()`、`topographic_wetness_index()`、`curvature()`、`terrain_ruggedness_index()`、`identify_depressions()`、`extract_drainage_network()`）同样位于这个"
+" `Preprocessor` 类上，调用方式相同（`client.preprocess.terrain_derivatives(...)`）— "
+"由于它们自成一个完整主题（DEM/DSM/DTM 分析），而不是通用的光学预处理，因此单独记录在[地形分析（DEM / DSM / "
+"DTM）](terrain.md)中。"

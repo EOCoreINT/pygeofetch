@@ -1,0 +1,322 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:1
+msgid "Terrain Analysis (DEM / DSM / DTM)"
+msgstr "تحليل التضاريس (DEM / DSM / DTM)"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:3
+msgid ""
+"Hydrological and terrain-shape analysis on any DEM — each method "
+"individually verified against a known analytical or physically realistic "
+"case, not just run once and eyeballed. All six methods live on "
+"`client.preprocess` (the same `Preprocessor` class as [Preprocessing "
+"Engine](preprocessing.md), just documented separately since terrain analysis"
+" is a coherent topic of its own)."
+msgstr ""
+"تحليل هيدرولوجي وتحليل لشكل التضاريس على أي DEM — جرى التحقق من كل طريقة على"
+" حدة مقابل حالة تحليلية معروفة أو حالة واقعية فيزيائيًا، وليس مجرد تشغيلها "
+"مرة واحدة ومراجعتها بالعين. تقع الطرائق الست جميعها على `client.preprocess` "
+"(فئة `Preprocessor` نفسها الواردة في [محرك المعالجة "
+"المسبقة](preprocessing.md)، لكنها موثّقة هنا منفصلة لأن تحليل التضاريس موضوع"
+" متكامل بذاته)."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:20
+msgid "Overview"
+msgstr "نظرة عامة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:22
+msgid ""
+"A digital elevation model contains more information than height. Terrain "
+"analysis extracts the shape of the land from it: how steep each cell is, "
+"which way it faces, whether it curves inward or outward, where water would "
+"collect and where streams would form. These derived layers are the basis of "
+"flood-susceptibility screening, landslide and erosion studies, site "
+"selection and the illumination corrections used in optical processing."
+msgstr ""
+"يحتوي نموذج الارتفاع الرقمي على معلومات أكثر من الارتفاع. فتحليل التضاريس "
+"يستخرج منه شكل سطح الأرض: مدى انحدار كل خلية، والاتجاه الذي تواجهه، وهل "
+"تنحني إلى الداخل أم إلى الخارج، وأين يتجمع الماء وأين تتشكل المجاري. وتشكّل "
+"هذه الطبقات المشتقة أساس فحص قابلية التعرض للفيضانات، ودراسات الانهيارات "
+"الأرضية والتعرية، واختيار المواقع، وتصحيحات الإضاءة المستخدمة في المعالجة "
+"البصرية."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:24
+msgid ""
+"The methods share a pattern. Provide a DEM, optionally clip it to your area,"
+" and each function returns a raster of the derived quantity that you can "
+"view, threshold or combine with other layers. Slope, aspect and hillshade "
+"describe the surface, the wetness index and curvature describe how water is "
+"likely to behave on it, and depression and drainage extraction identify "
+"enclosed basins and channels."
+msgstr ""
+"تشترك الطرائق في نمط واحد. تقدّم DEM، وتقصّه اختياريًا على منطقتك، وتعيد كل "
+"دالة رسترًا للكمية المشتقة يمكنك عرضه أو تطبيق عتبة عليه أو دمجه مع طبقات "
+"أخرى. فالانحدار والاتجاه والتظليل التضاريسي تصف السطح، ومؤشر الرطوبة "
+"والانحناء يصفان السلوك المرجَّح للماء عليه، أما استخراج المنخفضات والتصريف "
+"فيحدد الأحواض المغلقة والقنوات."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:26
+msgid "`terrain_derivatives()` — slope, aspect, hillshade"
+msgstr "`terrain_derivatives()` — الانحدار والاتجاه والتظليل التضاريسي"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:32
+msgid ""
+"Standard Horn-method gradient-based terrain analysis, computing all three "
+"outputs from one DEM read. Correctly handles **geographic (lat/lon) DEMs** "
+"by converting pixel size from degrees to metres at the raster's actual "
+"latitude before computing slope — a common, easy-to-miss source of wrong "
+"slope values when a DEM's pixel size in degrees is used directly instead. "
+"`azimuth`/`altitude` control the simulated sun position for hillshade "
+"(defaults: 315° = NW, 45° altitude — the standard cartographic convention)."
+msgstr ""
+"تحليل قياسي للتضاريس قائم على التدرج بطريقة Horn، يحسب المخرجات الثلاثة "
+"جميعها من قراءة واحدة للـ DEM. ويعالج بشكل صحيح **نماذج DEM الجغرافية (خطوط "
+"الطول/العرض)** بتحويل حجم البكسل من درجات إلى أمتار عند خط العرض الفعلي "
+"للرستر قبل حساب الانحدار — وهو مصدر شائع يسهل إغفاله لقيم انحدار خاطئة عند "
+"استخدام حجم بكسل الـ DEM بالدرجات مباشرة. يتحكم `azimuth`/`altitude` في موضع"
+" الشمس المحاكى للتظليل التضاريسي (الافتراضي: 315° = الشمال الغربي، وارتفاع "
+"45° — وهو الاصطلاح الكارتوغرافي القياسي)."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:41
+msgid "`topographic_wetness_index()` — flood susceptibility"
+msgstr "`topographic_wetness_index()` — قابلية التعرض للفيضانات"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:47
+msgid ""
+"`TWI = ln(specific catchment area / tan(slope))` — a standard, real "
+"hydrological index (Beven & Kirkby, 1979) used in flood susceptibility and "
+"soil moisture mapping, not an approximate substitute. High TWI marks flat, "
+"low-lying areas with a large upslope contributing area — exactly where "
+"surface water accumulates and standing floodwater is most likely to persist."
+" Low TWI marks steep or ridge terrain where water drains away quickly."
+msgstr ""
+"`TWI = ln(specific catchment area / tan(slope))` — مؤشر هيدرولوجي قياسي "
+"حقيقي (Beven & Kirkby, 1979) يُستخدم في رسم خرائط قابلية الفيضان ورطوبة "
+"التربة، وليس بديلًا تقريبيًا. تدل قيمة TWI المرتفعة على مناطق مسطحة منخفضة "
+"ذات مساحة تغذية كبيرة في أعلى المنحدر — وهي بالضبط حيث يتجمع الماء السطحي "
+"ويرجّح أن يستمر ماء الفيضان الراكد. أما قيمة TWI المنخفضة فتدل على تضاريس "
+"شديدة الانحدار أو حافات يتصرف منها الماء سريعًا."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:55
+msgid ""
+"Uses a D8 flow-direction and flow-accumulation algorithm (O'Callaghan & "
+"Mark, 1984) — the same method GRASS GIS's `r.watershed`, ArcGIS's Flow "
+"Accumulation, and TauDEM use — computed directly rather than depending on an"
+" external hydrology library."
+msgstr ""
+"يستخدم خوارزمية D8 لاتجاه التدفق وتراكمه (O'Callaghan & Mark, 1984) — وهي "
+"الطريقة نفسها التي يستخدمها `r.watershed` في GRASS GIS وFlow Accumulation في"
+" ArcGIS وTauDEM — وتُحسب مباشرة دون الاعتماد على مكتبة هيدرولوجيا خارجية."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:60
+msgid "`curvature()` — convergence vs. divergence"
+msgstr "`curvature()` — التقارب مقابل التباعد"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:66
+msgid ""
+"General (Laplacian) surface curvature: `∇²z = d²z/dx² + d²z/dy²`. Positive "
+"values mark concave (bowl-shaped) terrain, where water converges and tends "
+"to collect; negative values mark convex (dome/ridge-shaped) terrain, where "
+"water diverges and drains away."
+msgstr ""
+"الانحناء العام (اللابلاسي) للسطح: `∇²z = d²z/dx² + d²z/dy²`. تدل القيم "
+"الموجبة على تضاريس مقعّرة (على شكل وعاء) يتقارب فيها الماء ويميل إلى التجمع؛"
+" وتدل القيم السالبة على تضاريس محدبة (على شكل قبة/حافة) يتباعد فيها الماء "
+"ويتصرف."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:73
+msgid ""
+"This is the simplified general/mean curvature, not the full profile/plan "
+"curvature decomposition (Zevenbergen & Thorne, 1987) — sufficient to "
+"identify convergence/divergence zones, but not a substitute for that finer "
+"decomposition if your analysis specifically needs profile vs. plan curvature"
+" separated."
+msgstr ""
+"هذا هو الانحناء العام/المتوسط المبسّط، وليس التحليل الكامل إلى انحناء المقطع"
+" الطولي والانحناء الأفقي (Zevenbergen & Thorne, 1987) — وهو كافٍ لتحديد "
+"مناطق التقارب/التباعد، لكنه ليس بديلًا عن ذلك التحليل الأدق إن كان تحليلك "
+"يتطلب الفصل بين الانحناء الطولي والأفقي."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:79
+msgid "`terrain_ruggedness_index()` — micro-topographic complexity"
+msgstr "`terrain_ruggedness_index()` — التعقيد الطبوغرافي الدقيق"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:85
+msgid ""
+"Riley et al. (1999)'s TRI: the root-sum-of-squares elevation difference "
+"between each cell and its 8 neighbours. High TRI marks complex, "
+"heterogeneous micro-topography; low TRI marks smooth, uniform terrain."
+msgstr ""
+"مؤشر TRI لـ Riley وآخرين (1999): الجذر التربيعي لمجموع مربعات فروق الارتفاع "
+"بين كل خلية وجاراتها الثماني. تدل قيمة TRI المرتفعة على طبوغرافيا دقيقة "
+"معقدة وغير متجانسة؛ وتدل القيمة المنخفضة على تضاريس ملساء متجانسة."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:90
+msgid "`identify_depressions()` — physically enclosed basins"
+msgstr "`identify_depressions()` — الأحواض المغلقة فيزيائيًا"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:96
+msgid ""
+"Identifies enclosed depressions (local basins with no downhill outlet) via "
+"morphological reconstruction (fill-then-diff) — locations where standing "
+"water physically has nowhere to drain to, distinct from TWI's flow-"
+"convergence zones (which still have an outlet, just a large contributing "
+"area). `min_depth_m` filters out sub-metre noise/artifacts rather than "
+"flagging every tiny numerical dip; output is depression depth in metres, `0`"
+" where there's no depression."
+msgstr ""
+"يحدد المنخفضات المغلقة (أحواض محلية لا مخرج لها نحو الأسفل) عبر إعادة البناء"
+" المورفولوجي (الملء ثم الفرق) — وهي مواقع لا يجد فيها الماء الراكد فعليًا "
+"مكانًا يتصرف إليه، وتختلف عن مناطق تقارب التدفق في TWI (التي لها مخرج، لكن "
+"مساحة تغذيتها كبيرة). يستبعد `min_depth_m` الضجيج/الشوائب دون المتر بدلًا من"
+" تعليم كل انخفاض عددي صغير؛ والمخرج هو عمق المنخفض بالأمتار، و`0` حيث لا "
+"يوجد منخفض."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:104
+msgid "`extract_drainage_network()` — stream channels"
+msgstr "`extract_drainage_network()` — قنوات المجاري"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:110
+msgid ""
+"Extracts a drainage/stream network by thresholding D8 flow accumulation (the"
+" same algorithm `topographic_wetness_index()` uses) — cells where enough "
+"upslope area drains through them to represent a channel, not diffuse "
+"overland flow. `accumulation_threshold` is the minimum number of upslope "
+"cells required to be classified as a channel; when left as `None` (default),"
+" it uses the 99th percentile of flow accumulation across the AOI — an "
+"automatic threshold that adapts to the DEM's actual resolution and catchment"
+" size rather than a fixed, arbitrary cutoff."
+msgstr ""
+"يستخرج شبكة تصريف/مجاري بتطبيق عتبة على تراكم التدفق D8 (الخوارزمية نفسها "
+"التي يستخدمها `topographic_wetness_index()`) — أي الخلايا التي يمر عبرها ما "
+"يكفي من مساحة أعلى المنحدر لتمثّل قناة، لا جريانًا سطحيًا منتشرًا. "
+"`accumulation_threshold` هو الحد الأدنى لعدد الخلايا الواقعة أعلى المنحدر "
+"اللازم لتصنيف الخلية قناة؛ وعند تركه `None` (الافتراضي) يستخدم المئين 99 "
+"لتراكم التدفق عبر منطقة الاهتمام AOI — وهي عتبة تلقائية تتكيف مع الدقة "
+"الفعلية للـ DEM وحجم مستجمع المياه بدلًا من حد ثابت اعتباطي."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:120
+msgid "Verification basis"
+msgstr "أساس التحقق"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Method"
+msgstr "الأسلوب"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Basis"
+msgstr "الأساس"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Verified against"
+msgstr "جرى التحقق مقابل"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "`terrain_derivatives()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Horn-method gradient"
+msgstr "تدرج بطريقة Horn"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Known cone geometry — recovered slope exact"
+msgstr "هندسة مخروط معروفة — استُعيد الانحدار بدقة تامة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "`topographic_wetness_index()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Beven & Kirkby 1979, D8 flow accumulation"
+msgstr "Beven & Kirkby 1979، وتراكم التدفق D8"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid ""
+"Sloped-plane flow accumulation exact; V-valley floor correctly ranked wetter"
+" than steep sides"
+msgstr ""
+"تراكم التدفق على سطح مائل دقيق تمامًا؛ وقاع الوادي على شكل V رُتّب بشكل صحيح"
+" أكثر رطوبة من جوانبه الحادة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "`curvature()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Laplacian (∇²z)"
+msgstr "اللابلاسي (∇²z)"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Known paraboloid bowl — constant analytical curvature recovered"
+msgstr "وعاء مكافئي معروف — استُعيد الانحناء التحليلي الثابت"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "`terrain_ruggedness_index()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Riley et al. 1999"
+msgstr "Riley et al. 1999"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Flat surface → exact 0; checkerboard → large, correct value"
+msgstr "سطح مستوٍ ← 0 بدقة تامة؛ رقعة الشطرنج ← قيمة كبيرة وصحيحة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "`identify_depressions()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Morphological reconstruction (fill-then-diff)"
+msgstr "إعادة البناء المورفولوجي (الملء ثم الفرق)"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "Known synthetic 20m basin — exact depth recovered"
+msgstr "حوض اصطناعي معروف بعمق 20m — استُعيد العمق بدقة تامة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "`extract_drainage_network()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid "D8 flow accumulation, thresholded"
+msgstr "تراكم التدفق D8 مع تطبيق عتبة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
+msgid ""
+"V-valley test — channel correctly concentrated at the true valley floor"
+msgstr "اختبار الوادي V — تركّزت القناة بشكل صحيح عند قاع الوادي الحقيقي"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:133
+msgid ""
+"Open elevation products (SRTM, Copernicus DEM) are surface models, not clean"
+" bare-earth DTMs — over forested or vegetated terrain, some canopy height is"
+" baked into the \"ground\" elevation. A Canopy Height Model needs a bare-"
+"earth DTM, typically from LiDAR, which isn't available through pygeofetch's "
+"current open-data providers. This isn't worked around by fabricating a DTM "
+"that doesn't exist — it's an stated limitation."
+msgstr ""
+"منتجات الارتفاع المفتوحة (SRTM وCopernicus DEM) هي نماذج سطحية، وليست نماذج "
+"DTM نظيفة للأرض العارية — فعلى التضاريس المشجرة أو المغطاة بالنباتات، يكون "
+"جزء من ارتفاع المظلة مدمجًا في ارتفاع \"الأرض\". ويحتاج نموذج ارتفاع المظلة "
+"Canopy Height Model إلى DTM للأرض العارية، يأتي عادةً من LiDAR، وهو غير متاح"
+" عبر مزوّدي البيانات المفتوحة الحاليين في pygeofetch. ولا يُلتف على ذلك "
+"باختلاق DTM غير موجود — إنه قيد مُعلَن."

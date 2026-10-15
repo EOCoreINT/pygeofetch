@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,10 +27,11 @@ msgid ""
 "selection and an optional post-processing chain. To avoid downloading whole "
 "scenes at all, see [Streaming](streaming.md)."
 msgstr ""
+"并行、可续传的下载，支持重试、校验和验证、波段选择以及可选的后处理链。如需完全避免下载整个场景，请参阅[流式读取](streaming.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:7
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:9
 msgid ""
@@ -41,6 +42,8 @@ msgid ""
 "succeeded. Because the result list matches the input list, you can always "
 "tell which scenes arrived and which need another attempt."
 msgstr ""
+"下载是将检索结果变为文件的环节。您传入所选的场景、目标文件夹以及（可选的）一组选项，pygeofetch "
+"会并行获取这些场景、重试失败项、恢复被中断的工作，并为每个场景报告结果，无论成功与否。由于结果列表与输入列表一一对应，您始终可以知道哪些场景已到达、哪些需要再次尝试。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:11
 msgid ""
@@ -53,26 +56,27 @@ msgid ""
 "under the destination in a folder per provider, and archives are not "
 "unpacked unless you ask."
 msgstr ""
+"只请求所需内容，通常可以大幅减小下载量。对于每个波段提供一个文件的提供方，选择波段可避免传输场景的其余部分，后处理链还可以在文件到达时对其解压、重投影或压缩。如果只需要一小块区域，[流式读取](streaming.md)只读取该区域，完全省去下载整个文件的步骤。请规划好磁盘上的布局：文件会写入目标路径下按提供方划分的文件夹中，除非您要求，否则压缩包不会被解压。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:13
 msgid "Quick examples"
-msgstr ""
+msgstr "快速示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:33
 msgid ""
 "The full list of options is in the [command reference](../reference/cli-"
 "commands.md#download-run)."
-msgstr ""
+msgstr "完整的选项列表见[命令参考](../reference/cli-commands.md#download-run)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:35
 msgid "Where files are written"
-msgstr ""
+msgstr "文件的写入位置"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:37
 msgid ""
 "`download()` writes each scene into a **sub-folder named after its "
 "provider**, below the destination you give it:"
-msgstr ""
+msgstr "`download()` 会将每个场景写入您所指定目标路径下的**以提供方命名的子文件夹**中："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:49
 msgid ""
@@ -80,30 +84,35 @@ msgid ""
 "`data/raw/sentinel2/<provider>/...`, never files directly in `sentinel2/`. "
 "Code that looks for downloads should search recursively:"
 msgstr ""
+"因此 `client.download(results, destination=\"data/raw/sentinel2\")` 会生成 "
+"`data/raw/sentinel2/<provider>/...`，绝不会把文件直接放在 `sentinel2/` "
+"下。查找下载文件的代码应递归搜索："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:60
 msgid ""
 "The result objects carry the exact paths: `DownloadResult.output_path` and "
 "`DownloadResult.output_paths`. Use those when you have them."
 msgstr ""
+"结果对象带有确切的路径：`DownloadResult.output_path` 和 "
+"`DownloadResult.output_paths`。如有这些信息，请直接使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:63
 msgid "Archives"
-msgstr ""
+msgstr "压缩包"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:65
 msgid ""
 "Providers package data differently, and pygeofetch downloads what the "
 "provider serves:"
-msgstr ""
+msgstr "各提供方的数据打包方式不同，pygeofetch 下载的是提供方提供的内容："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "Provider"
-msgstr ""
+msgstr "提供方"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "Delivered as"
-msgstr ""
+msgstr "交付形式"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`copernicus`"
@@ -111,7 +120,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One `.SAFE.zip` per Sentinel scene"
-msgstr ""
+msgstr "每个 Sentinel 场景一个 `.SAFE.zip`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`usgs`"
@@ -119,7 +128,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One `.tar` per Landsat scene"
-msgstr ""
+msgstr "每个 Landsat 场景一个 `.tar`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`planetary_computer`, `element84`"
@@ -127,7 +136,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One file per band"
-msgstr ""
+msgstr "每个波段一个文件"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`opentopography`"
@@ -135,7 +144,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One GeoTIFF clipped to your bounding box"
-msgstr ""
+msgstr "一个按您的边界框裁剪的 GeoTIFF"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:74
 msgid ""
@@ -144,71 +153,75 @@ msgid ""
 "archive file and replaces the entries in `output_paths` with the extracted "
 "files:"
 msgstr ""
+"压缩包**不会自动解压**。请添加 `unzip` 后处理操作，它会将 `.zip` 和 `.tar` 压缩包解压到压缩包文件所在位置，并将 "
+"`output_paths` 中的条目替换为解压后的文件："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:90
 msgid ""
 "`DownloadOptions.extract_archives` exists as a field but is not read by any "
 "code, so setting it has no effect. Use the `unzip` action."
 msgstr ""
+"`DownloadOptions.extract_archives` 虽然作为字段存在，但没有任何代码读取它，因此设置它不会产生任何效果。请使用 "
+"`unzip` 操作。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:94
 msgid "Resuming"
-msgstr ""
+msgstr "断点续传"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:96
 msgid ""
 "`--resume` is on by default. It means **skip scenes that are already "
 "complete**, not \"continue a partial file\":"
-msgstr ""
+msgstr "`--resume` 默认开启。它的含义是**跳过已经完成的场景**，而不是“继续下载未完成的文件”："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:99
 msgid ""
 "Before downloading an item, pygeofetch checks whether a file already exists "
 "at the destination, and validates it."
-msgstr ""
+msgstr "下载某个条目之前，pygeofetch 会检查目标位置是否已存在该文件，并对其进行验证。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:101
 msgid "A valid file is skipped and reported as complete."
-msgstr ""
+msgstr "有效的文件会被跳过，并报告为已完成。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:102
 msgid ""
 "A missing, truncated or corrupt file is downloaded again **from the first "
 "byte**. HTTP range requests are not used."
-msgstr ""
+msgstr "缺失、被截断或已损坏的文件会**从第一个字节起**重新下载。不使用 HTTP 范围请求。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:105
 msgid ""
 "This makes it safe to re-run the same command after an interruption without "
 "re-fetching finished scenes. It does not save progress on a single large "
 "file that was cut off."
-msgstr ""
+msgstr "这样一来，中断后可以放心地重新运行相同命令，而不会重复获取已完成的场景。但它不会保存单个被中断的大文件的下载进度。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:108
 msgid "Failure handling"
-msgstr ""
+msgstr "失败处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:110
 msgid ""
 "Every item in the batch is always attempted. `--on-failure` controls what "
 "happens after:"
-msgstr ""
+msgstr "批次中的每个条目始终都会被尝试。`--on-failure` 控制之后的行为："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Value"
-msgstr ""
+msgstr "取值"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Behaviour"
-msgstr ""
+msgstr "行为"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`skip` (default)"
-msgstr ""
+msgstr "`skip`（默认）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Continue and report failures in the summary."
-msgstr ""
+msgstr "继续执行，并在摘要中报告失败项。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`abort`"
@@ -218,7 +231,7 @@ msgstr ""
 msgid ""
 "After all items are attempted, exit with status 1 if any failed. Use it to "
 "fail a script or CI job."
-msgstr ""
+msgstr "所有条目尝试完毕后，如有任何失败则以状态 1 退出。可用它使脚本或 CI 作业失败。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`retry`"
@@ -228,33 +241,33 @@ msgstr ""
 msgid ""
 "Same as `skip`. Per-item retries with exponential backoff already happen "
 "through `--retry N`."
-msgstr ""
+msgstr "与 `skip` 相同。按指数退避的单项重试已通过 `--retry N` 实现。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:118
 msgid "Band selection"
-msgstr ""
+msgstr "波段选择"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:120
 msgid ""
 "Choosing bands before download is the largest saving for providers that "
 "serve one file per band. Sentinel-2 examples:"
-msgstr ""
+msgstr "对于每个波段提供一个文件的提供方，下载前选择波段能带来最大的节省。Sentinel-2 示例："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Bands"
-msgstr ""
+msgstr "波段"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Purpose"
-msgstr ""
+msgstr "用途"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Resolution"
-msgstr ""
+msgstr "分辨率"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Approx. size per scene"
-msgstr ""
+msgstr "每个场景的大致大小"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`B02,B03,B04`"
@@ -262,7 +275,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "RGB"
-msgstr ""
+msgstr "RGB"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "10 m"
@@ -278,7 +291,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "True-colour composite"
-msgstr ""
+msgstr "真彩色合成"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "200 MB"
@@ -290,7 +303,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "NDVI inputs"
-msgstr ""
+msgstr "NDVI 输入"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "100 MB"
@@ -302,7 +315,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "RGB + NIR"
-msgstr ""
+msgstr "RGB + NIR"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`B11,B12`"
@@ -310,7 +323,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "SWIR (burn scars, soil moisture, mineral indices)"
-msgstr ""
+msgstr "SWIR（火烧迹地、土壤湿度、矿物指数）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "20 m"
@@ -326,7 +339,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Scene classification (cloud mask)"
-msgstr ""
+msgstr "场景分类（云掩膜）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "20 MB"
@@ -338,7 +351,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "All data bands"
-msgstr ""
+msgstr "所有数据波段"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "10/20/60 m"
@@ -355,28 +368,30 @@ msgid ""
 "warning and downloads **all** assets. [Streaming](streaming.md) treats the "
 "same situation as an error."
 msgstr ""
+"Copernicus 提供的是 zip 文件，因此波段选择无法减少那里的传输量。如果波段名称没有匹配项，`download()` "
+"会记录警告并下载**所有**资产。对于相同的情况，[流式读取](streaming.md)则视为错误。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:137
 msgid "Post-processing actions"
-msgstr ""
+msgstr "后处理操作"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:139
 msgid ""
 "Actions run in order after each file is downloaded. Syntax is `name` or "
 "`name:argument`."
-msgstr ""
+msgstr "操作会在每个文件下载完成后按顺序运行。语法为 `name` 或 `name:argument`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Action"
-msgstr ""
+msgstr "操作"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Syntax"
-msgstr ""
+msgstr "语法"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Description"
-msgstr ""
+msgstr "说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`unzip`"
@@ -384,7 +399,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Extract ZIP and TAR archives."
-msgstr ""
+msgstr "解压 ZIP 和 TAR 压缩包。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`reproject`"
@@ -396,7 +411,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Reproject to a target CRS."
-msgstr ""
+msgstr "重投影到目标 CRS。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`compress`"
@@ -408,7 +423,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "GeoTIFF compression (`lzw`, `deflate`, `zstd`)."
-msgstr ""
+msgstr "GeoTIFF 压缩（`lzw`、`deflate`、`zstd`）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`cog`"
@@ -416,7 +431,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Convert to Cloud-Optimized GeoTIFF."
-msgstr ""
+msgstr "转换为 Cloud-Optimized GeoTIFF。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`clip`"
@@ -428,7 +443,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Clip to a polygon."
-msgstr ""
+msgstr "按多边形裁剪。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`resample`"
@@ -440,7 +455,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Resample to a resolution in metres."
-msgstr ""
+msgstr "重采样到以米为单位的分辨率。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`merge`"
@@ -448,7 +463,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Mosaic overlapping scenes."
-msgstr ""
+msgstr "镶嵌重叠的场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`ndvi`, `ndwi`, ..."
@@ -460,7 +475,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Compute a single-date index from the downloaded bands."
-msgstr ""
+msgstr "根据已下载的波段计算单日期指数。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`cloud_mask`"
@@ -469,7 +484,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid ""
 "Mask clouds using the downloaded `SCL` band. Include `SCL` in `--bands`."
-msgstr ""
+msgstr "使用已下载的 `SCL` 波段掩膜云。请在 `--bands` 中包含 `SCL`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:153
 msgid ""
@@ -477,10 +492,12 @@ msgid ""
 "raises an error listing the supported ones. `dNBR` needs a before and an "
 "after scene, so it cannot run as a single-scene action."
 msgstr ""
+"大多数操作需要 `geo` 扩展（`rasterio`）。未知的操作名称会引发错误，并列出受支持的操作。`dNBR` "
+"需要前后两个场景，因此不能作为单场景操作运行。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:157
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:192
 msgid ""
@@ -490,6 +507,10 @@ msgid ""
 "`retry_attempts`, `bandwidth_limit_mbps` as a float in Mbps, and "
 "`PostProcessAction` objects."
 msgstr ""
+"CLI 会将其字符串语法（`--retry`、`--bandwidth-limit 10MB`、`--post-process "
+"\"reproject:EPSG:4326\"`）转换为这些带类型的字段。直接构造 `DownloadOptions` "
+"时需要使用带类型的形式：`retry_attempts`、以 Mbps 为单位的浮点数 `bandwidth_limit_mbps`，以及 "
+"`PostProcessAction` 对象。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:197
 msgid ""
@@ -498,10 +519,12 @@ msgid ""
 "results. See [`DownloadResult`](../reference/python-api.md#downloadresult) "
 "for every field."
 msgstr ""
+"返回的列表长度和顺序始终与输入一致，包括被光学验证拒绝的条目，它们会以失败结果的形式返回。所有字段请参阅 "
+"[`DownloadResult`](../reference/python-api.md#downloadresult)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:201
 msgid "Optical validation as a gate"
-msgstr ""
+msgstr "将光学验证作为关卡"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:203
 msgid ""
@@ -509,3 +532,5 @@ msgid ""
 "required bands, processing level) before any bytes are transferred. Rejected"
 " items are not attempted. See [Optical validation](optical-validation.md)."
 msgstr ""
+"`--validate-optical` 会在传输任何字节之前运行预检（云量、AOI "
+"覆盖、所需波段、处理级别）。被拒绝的条目不会被尝试下载。请参阅[光学验证](optical-validation.md)。"

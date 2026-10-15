@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,10 +27,12 @@ msgid ""
 "Test counts change with every commit, so this page does not quote one. Run "
 "the suite against your own checkout for the current result."
 msgstr ""
+"测试套件位于扁平的 `tests/` 目录中，使用 `pytest` "
+"运行。测试数量随每次提交而变化，因此本页不给出具体数字。请在你自己的检出副本上运行测试套件以获取当前结果。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:7
 msgid "Run the tests"
-msgstr ""
+msgstr "运行测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:20
 msgid ""
@@ -39,22 +41,25 @@ msgid ""
 " Without it they fail with `ModuleNotFoundError`, not with a real test "
 "failure. See [Installation](../getting-started/installation.md)."
 msgstr ""
+"请安装 `test` 额外依赖，而不是 `dev,all`。部分测试（S3 导出、`noaa_big_data` 提供商）会直接导入 "
+"`boto3`，它属于 `cloud`。没有它们时，测试会因 `ModuleNotFoundError` "
+"而失败，而不是出现真正的测试失败。参见[安装](../getting-started/installation.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:26
 msgid "What is covered"
-msgstr ""
+msgstr "覆盖范围"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "Area"
-msgstr ""
+msgstr "领域"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "Representative test files"
-msgstr ""
+msgstr "代表性测试文件"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Models and utilities**"
-msgstr ""
+msgstr "**模型与工具**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_models.py`, `test_utils.py`, `test_state.py`"
@@ -62,7 +67,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Providers**"
-msgstr ""
+msgstr "**提供商**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -73,10 +78,11 @@ msgid ""
 "`test_inpe_cbers.py`, `test_jaxa_earth.py`, `test_isro_bhuvan.py`, "
 "`test_noaa_big_data.py`, `test_opentopography_pointcloud_usgs.py`"
 msgstr ""
+"`test_providers.py`、`test_provider_geometry_audit.py`、`test_provider_scene_disambiguation.py`，以及每个重写的提供商各一个文件：`test_airbus_oneatlas.py`、`test_digitalglobe.py`、`test_maxar_gbdx.py`、`test_alaska_satellite_facility.py`、`test_inpe_cbers.py`、`test_jaxa_earth.py`、`test_isro_bhuvan.py`、`test_noaa_big_data.py`、`test_opentopography_pointcloud_usgs.py`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Provider regressions**"
-msgstr ""
+msgstr "**提供商回归测试**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -87,7 +93,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Authentication and security**"
-msgstr ""
+msgstr "**认证与安全**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_credential_encryption.py`"
@@ -95,7 +101,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Resilience**"
-msgstr ""
+msgstr "**韧性**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_circuit_breaker_wiring.py`, `test_pipeline_process_export.py`"
@@ -103,7 +109,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Optical validation**"
-msgstr ""
+msgstr "**光学验证**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -114,7 +120,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Spectral indices**"
-msgstr ""
+msgstr "**光谱指数**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_geology_indices_and_rvi_fix.py`"
@@ -122,7 +128,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**InSAR**"
-msgstr ""
+msgstr "**InSAR**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -135,7 +141,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Atmospheric correction**"
-msgstr ""
+msgstr "**大气校正**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -145,7 +151,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**SAR pipelines**"
-msgstr ""
+msgstr "**SAR 流水线**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_sar_pipelines.py`"
@@ -153,7 +159,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Optical offset tracking, strain and fusion**"
-msgstr ""
+msgstr "**光学偏移跟踪、应变与融合**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_optical_offset_tracking.py`, `test_strain_and_fusion.py`"
@@ -161,17 +167,17 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Multi-sensor pipelines**"
-msgstr ""
+msgstr "**多传感器流水线**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
 "`tests/multisensor/` (five pipeline suites, plus the audit regressions and "
 "terrain/packaging pins)"
-msgstr ""
+msgstr "`tests/multisensor/`（五个流水线测试套件，以及审计回归测试和地形/打包固定测试）"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Streaming**"
-msgstr ""
+msgstr "**流式读取**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_streaming.py`"
@@ -179,7 +185,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Data organisation**"
-msgstr ""
+msgstr "**数据组织**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_data_organizer.py`"
@@ -187,7 +193,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Visualization**"
-msgstr ""
+msgstr "**可视化**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_viz_plot.py`"
@@ -195,7 +201,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:46
 msgid "Streaming tests"
-msgstr ""
+msgstr "流式读取测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:48
 msgid ""
@@ -205,10 +211,12 @@ msgid ""
 "the same window, and that archives are refused. No test contacts a live "
 "provider."
 msgstr ""
+"`tests/test_streaming.py` 运行一个实现了范围请求并统计所提供字节数的本地 HTTP 服务器。这些测试断言：读取 AOI "
+"只传输文件的一小部分，像元值与对同一窗口的本地读取结果一致，并且归档文件会被拒绝。没有任何测试会连接真实的提供商。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:53
 msgid "Multi-sensor regression tests"
-msgstr ""
+msgstr "多传感器回归测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:55
 msgid ""
@@ -220,27 +228,30 @@ msgid ""
 "terrain test inverted the pipeline's own correction with the pipeline's own "
 "aspect function, so a sign error cancelled out and passed."
 msgstr ""
+"多传感器审计新增了一些测试，它们在早期代码上失败、在修复后通过，例如含光学 nodata 的洪水场景、带有 `-9999` 空洞的 "
+"DEM、与测地面积参考值对比的地理网格上的体积，以及由 `unit_normal . unit_sun` "
+"独立推导的光照。独立推导期望值很重要：早期的一个地形测试用流水线自身的坡向函数去反演流水线自身的校正，导致符号错误相互抵消而通过了测试。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:62
 msgid "Writing tests"
-msgstr ""
+msgstr "编写测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:64
 msgid "Put new tests in `tests/`, named `test_<area>.py`."
-msgstr ""
+msgstr "将新测试放在 `tests/` 中，命名为 `test_<area>.py`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:65
 msgid ""
 "Test against a real behaviour, not only that a call returns. For numerical "
 "code, derive the expected value independently of the code under test."
-msgstr ""
+msgstr "针对真实行为进行测试，而不仅仅是检查调用有返回。对于数值代码，请独立于被测代码推导期望值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:66
 msgid "Do not depend on network access. Use a local server or mock for HTTP."
-msgstr ""
+msgstr "不要依赖网络访问。对 HTTP 使用本地服务器或 mock。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:67
 msgid ""
 "Skip, rather than fail, when an optional dependency is missing: "
 "`pytest.importorskip(\"rasterio\")`."
-msgstr ""
+msgstr "当缺少可选依赖时，应跳过而不是失败：`pytest.importorskip(\"rasterio\")`。"

@@ -1,0 +1,112 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:1
+msgid "MapViewer"
+msgstr "MapViewer"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:3
+msgid ""
+"Interactive maps built on `leafmap` — search footprints, rasters, vectors, "
+"and split comparisons."
+msgstr ""
+"خرائط تفاعلية مبنية على `leafmap` — بصمات نتائج البحث، وrasters، والمتجهات، "
+"والمقارنات المقسّمة."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:16
+msgid ""
+"`add_raster()` needs `rioxarray` and `localtileserver` alongside `leafmap` —"
+" all three are declared in the `[viz]` extra."
+msgstr ""
+"تحتاج `add_raster()` إلى `rioxarray` و`localtileserver` إلى جانب `leafmap` —"
+" وكلها معلنة في الإضافة `[viz]`."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:19
+msgid "Overview"
+msgstr "نظرة عامة"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:21
+msgid ""
+"The map viewer is for exploration. Before downloading anything, you can draw"
+" the footprints of your search results on a map to see how well they cover "
+"your area, and after processing you can overlay rasters and vectors on a "
+"basemap to judge them in context. Maps are interactive, so you can pan, zoom"
+" and toggle layers, and a split-panel view places two layers side by side "
+"with a slider, which is the quickest way to compare before and after."
+msgstr ""
+"عارض الخرائط مخصص للاستكشاف. قبل تنزيل أي شيء يمكنك رسم بصمات نتائج البحث "
+"على خريطة لترى مدى تغطيتها لمنطقتك، وبعد المعالجة يمكنك تراكب rasters "
+"والمتجهات على خريطة أساس لتقييمها في سياقها. الخرائط تفاعلية، فيمكنك التحريك"
+" والتكبير وتبديل الطبقات، كما تضع لوحة العرض المقسّم طبقتين جنبًا إلى جنب مع"
+" شريط منزلق، وهي أسرع طريقة للمقارنة قبل وبعد."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:23
+msgid ""
+"Maps are built in a notebook or script and can be saved as a self-contained "
+"HTML file that opens in any browser, so a result can be shared with someone "
+"who has no Python installed."
+msgstr ""
+"تُبنى الخرائط في دفتر ملاحظات أو سكربت ويمكن حفظها كملف HTML مستقل يُفتح في "
+"أي متصفح، بحيث يمكن مشاركة النتيجة مع شخص لا يملك Python مثبتًا."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:25
+msgid "Search result footprints — see before you download"
+msgstr "بصمات نتائج البحث — شاهد قبل أن تنزّل"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:36
+msgid ""
+"Uses each result's provider-supplied geometry when available, and falls back"
+" automatically to a bounding-box rectangle when it isn't — safe to call "
+"against any provider's results. See [Providers](../data-access/providers.md)"
+" for which providers return precise footprint geometry today."
+msgstr ""
+"يستخدم الهندسة التي يوفّرها المزوّد لكل نتيجة عند توفرها، ويعود تلقائيًا إلى"
+" مستطيل الإطار المحيط (bounding box) عند عدم توفرها — لذا يمكن استدعاؤه "
+"بأمان مع نتائج أي مزوّد. انظر [المزوّدون](../data-access/providers.md) "
+"لمعرفة المزوّدين الذين يعيدون هندسة بصمات دقيقة حاليًا."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:42
+msgid "Split-panel comparison"
+msgstr "مقارنة بلوحات مقسّمة"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:44
+msgid ""
+"Draggable side-by-side comparison of two rasters — e.g. a DSM against a DTM,"
+" or two independent DEM sources — backed by leafmap's own `split_map()`."
+msgstr ""
+"مقارنة جنبًا إلى جنب قابلة للسحب بين raster ين — مثل DSM مقابل DTM، أو "
+"مصدرين مستقلين لـ DEM — مدعومة بالدالة `split_map()` الخاصة بـ leafmap."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:57
+msgid ""
+"The interactive split view depends on `localtileserver` spinning up a local "
+"background HTTP server, which is known to fail in some restricted/sandboxed "
+"network environments (firewalls, some corporate VPNs) with a "
+"`ServerDownError`. When that happens, `add_split_comparison()` automatically"
+" falls back to a static side-by-side comparison that needs no server at all."
+msgstr ""
+"يعتمد العرض المقسّم التفاعلي على تشغيل `localtileserver` لخادم HTTP محلي في "
+"الخلفية، وهو معروف بأنه يفشل في بعض بيئات الشبكة المقيّدة/المعزولة (جدران "
+"الحماية، وبعض شبكات VPN في الشركات) مع الخطأ `ServerDownError`. وعند حدوث "
+"ذلك تعود `add_split_comparison()` تلقائيًا إلى مقارنة ثابتة جنبًا إلى جنب لا"
+" تحتاج إلى أي خادم."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:64
+msgid "Inspecting and saving"
+msgstr "الفحص والحفظ"

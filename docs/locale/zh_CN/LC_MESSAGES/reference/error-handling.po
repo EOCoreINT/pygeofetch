@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,25 +25,25 @@ msgstr "错误处理与容错"
 msgid ""
 "This page describes how pygeofetch reports failures and which parts of the "
 "download path retry automatically."
-msgstr ""
+msgstr "本页介绍 pygeofetch 如何报告失败，以及下载路径中哪些部分会自动重试。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:6
 msgid "Exceptions"
-msgstr ""
+msgstr "异常"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:8
 msgid ""
 "Provider code raises subclasses of `ProviderError`, defined in "
 "`pygeofetch.providers.base`:"
-msgstr ""
+msgstr "提供方代码会抛出 `ProviderError` 的子类，其定义于 `pygeofetch.providers.base`："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Exception"
-msgstr ""
+msgstr "异常"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Raised when"
-msgstr ""
+msgstr "触发条件"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`ProviderError`"
@@ -51,7 +51,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Base class for everything below."
-msgstr ""
+msgstr "下列所有异常的基类。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`AuthenticationError`"
@@ -59,7 +59,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Credentials are missing, expired or rejected."
-msgstr ""
+msgstr "凭据缺失、已过期或被拒绝。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`SearchError`"
@@ -67,7 +67,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A search request fails."
-msgstr ""
+msgstr "搜索请求失败。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`DownloadError`"
@@ -75,7 +75,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A download request fails."
-msgstr ""
+msgstr "下载请求失败。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`QuotaExceededError`"
@@ -83,7 +83,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "The provider's quota or rate limit is exceeded."
-msgstr ""
+msgstr "超出提供方的配额或速率限制。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`ProviderUnavailableError`"
@@ -91,19 +91,19 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "The provider is temporarily unavailable."
-msgstr ""
+msgstr "提供方暂时不可用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:19
 msgid "Other exceptions you may meet:"
-msgstr ""
+msgstr "你可能遇到的其他异常："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Module"
-msgstr ""
+msgstr "模块"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Meaning"
-msgstr ""
+msgstr "含义"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`CircuitBreakerOpenError`"
@@ -115,7 +115,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A provider failed repeatedly and its breaker is open (see below)."
-msgstr ""
+msgstr "某个提供方反复失败，其熔断器已打开（见下文）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`OpticalValidationError`"
@@ -127,7 +127,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A validation setting is invalid."
-msgstr ""
+msgstr "某个验证设置无效。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`StreamingUnsupportedError`, `AOIOutsideRasterError`"
@@ -139,7 +139,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "The asset is an archive, or the AOI does not intersect the raster."
-msgstr ""
+msgstr "该资产是压缩包，或 AOI 与栅格不相交。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "`MissingDependencyError`"
@@ -152,11 +152,11 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "An optional dependency (for example Zarr or GeoParquet support) is missing."
-msgstr ""
+msgstr "缺少某个可选依赖（例如对 Zarr 或 GeoParquet 的支持）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:39
 msgid "Search does not raise for a failed provider"
-msgstr ""
+msgstr "搜索不会因某个提供方失败而抛出异常"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:41
 msgid ""
@@ -167,10 +167,14 @@ msgid ""
 "unexpectedly returns nothing. The `--on-provider-failure abort` and `retry` "
 "values are accepted but have no effect; see [Known issues](known-issues.md)."
 msgstr ""
+"`client.search()` "
+"会并行运行各提供方。超时或抛出异常的提供方会被记录日志并被**排除**，其他提供方的结果则会照常返回。如果所有提供方都失败，你得到的是空列表，而不是异常。当搜索意外地没有返回任何内容时，请查看日志，或运行"
+" `pygeofetch auth test PROVIDER`。`--on-provider-failure abort` 和 `retry` "
+"这两个值虽然可被接受，但没有任何效果；参见[已知问题](known-issues.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:48
 msgid "Downloads return results, not exceptions"
-msgstr ""
+msgstr "下载返回结果，而不是异常"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:50
 msgid ""
@@ -180,40 +184,44 @@ msgid ""
 "`ProductOffline`). The list length and order always match the input. Inspect"
 " results rather than wrapping the call in `try`:"
 msgstr ""
+"`client.download()` 会为每个输入项返回一个 `DownloadResult`。失败以 `status=\"failed\"` "
+"报告，并设置 `error` 和 `error_type`（异常类名，或像 `ProductOffline` "
+"这样特定于提供方的值）。返回列表的长度和顺序始终与输入一致。请检查返回结果，而不是用 `try` 包裹该调用："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:61
 msgid "Common problems"
-msgstr ""
+msgstr "常见问题"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Symptom"
-msgstr ""
+msgstr "症状"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Likely cause and fix"
-msgstr ""
+msgstr "可能的原因和修复方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Authentication fails"
-msgstr ""
+msgstr "认证失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "Run `pygeofetch auth test PROVIDER`. Re-add credentials with `auth add`. "
 "Environment variables are **not** read for credentials."
 msgstr ""
+"运行 `pygeofetch auth test PROVIDER`。用 `auth add` 重新添加凭据。凭据**不会**从环境变量中读取。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "A provider times out"
-msgstr ""
+msgstr "某个提供方超时"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Raise `search run --timeout 120` (per-provider seconds, default 60)."
-msgstr ""
+msgstr "调大 `search run --timeout 120`（每个提供方的秒数，默认 60）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Zero results"
-msgstr ""
+msgstr "零结果"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
@@ -222,48 +230,55 @@ msgid ""
 "range. For Copernicus Sentinel-2 L2A the processing level value is "
 "`S2MSI2A`, not `L2A`."
 msgstr ""
+"放宽 `--cloud-cover 0-30`，检查 bbox 是否为 "
+"`min_lon,min_lat,max_lon,max_lat`（经度在前），并检查日期范围。对于 Copernicus Sentinel-2 "
+"L2A，处理级别的取值是 `S2MSI2A`，而不是 `L2A`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Keyring errors in Docker or over SSH"
-msgstr ""
+msgstr "在 Docker 中或通过 SSH 时出现 keyring 错误"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "There is no keyring daemon. Use `PyGeoFetch(auth_backend=\"file\")`, or set "
 "`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring`."
 msgstr ""
+"没有 keyring 守护进程。请使用 `PyGeoFetch(auth_backend=\"file\")`，或设置 "
+"`PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Rate limiting"
-msgstr ""
+msgstr "速率限制"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "Use `download run --parallel 1 --bandwidth-limit 2MB`. Commercial providers "
 "are the strictest."
-msgstr ""
+msgstr "使用 `download run --parallel 1 --bandwidth-limit 2MB`。商业提供方是限制最严格的。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Post-processing fails"
-msgstr ""
+msgstr "后处理失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Usually a missing `rasterio` or GDAL: `pip install \"pygeofetch[geo]\"`."
-msgstr ""
+msgstr "通常是缺少 `rasterio` 或 GDAL：`pip install \"pygeofetch[geo]\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid "Downloaded data \"not found\" by your own code"
-msgstr ""
+msgstr "下载的数据被你自己的代码“找不到”"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:0
 msgid ""
 "Files are under `<destination>/<provider>/`, and archives are not extracted."
 " See [Downloading](../data-access/download.md#where-files-are-written)."
 msgstr ""
+"文件位于 `<destination>/<provider>/` 之下，并且压缩包不会被解压。参见[下载](../data-"
+"access/download.md#where-files-are-written)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:73
 msgid "Download resilience"
-msgstr ""
+msgstr "下载的韧性"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:75
 msgid ""
@@ -274,6 +289,10 @@ msgid ""
 "`retry_strategy` contains `\"jitter\"` (the default is `exponential_jitter`)"
 " the delay is multiplied by a random factor between 0.5 and 1.0."
 msgstr ""
+"**重试。** 一次下载最多尝试 `retry_attempts + 1` 次（默认重试 3 "
+"次）。当出现提供方失败、异常，或文件在下载后验证失败（例如文件被截断）时，会进行重试。第 *n* 次重试前的延迟为 "
+"`retry_delay_seconds x 2^n`，上限为 60 秒。当 `retry_strategy` 包含 `\"jitter\"`（默认值为"
+" `exponential_jitter`）时，延迟会乘以介于 0.5 与 1.0 之间的随机因子。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:81
 msgid ""
@@ -283,6 +302,8 @@ msgid ""
 " with an HTTP `Range` request. See [Downloading](../data-"
 "access/download.md#resuming)."
 msgstr ""
+"**续传。** `resume=True` 会跳过文件已存在且通过验证的影像。缺失或损坏的文件会从头重新下载。Copernicus 提供方还会通过 "
+"HTTP `Range` 请求，在多次重试之间继续下载部分文件。参见[下载](../data-access/download.md#resuming)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:86
 msgid ""
@@ -294,16 +315,23 @@ msgid ""
 "supplied no checksum, nothing is compared. The `checksum_algorithm` option "
 "does not choose the algorithm."
 msgstr ""
+"**完整性。** 每次下载之后，都会检查文件是否被截断或损坏。设置 `verify_checksum=True` "
+"时，还会将文件与**提供方在资产元数据中提供的**校验和进行比较（若有 MD5 则使用 MD5，否则使用 "
+"SHA256）。不匹配时会记录日志，并在结果上设置 "
+"`checksum_verified=False`。它不会重试，也不会使下载失败。如果提供方没有提供校验和，则不进行任何比较。`checksum_algorithm`"
+" 选项并不用于选择算法。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:93
 msgid ""
 "**Search cache.** Results are cached per query. `PyGeoFetch(cache_ttl=3600)`"
 " sets the lifetime, and `search run --no-cache` bypasses it."
 msgstr ""
+"**搜索缓存。** 结果按查询进行缓存。`PyGeoFetch(cache_ttl=3600)` 设置其有效期，`search run --no-"
+"cache` 则会绕过缓存。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:96
 msgid "Circuit breaker"
-msgstr ""
+msgstr "熔断器"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/error-handling.md:98
 msgid ""
@@ -316,3 +344,7 @@ msgid ""
 "success resets the count. The breaker lives for the life of the `PyGeoFetch`"
 " instance, so a new process starts with all breakers closed."
 msgstr ""
+"`FederatedSearcher` 在其生命周期内为每个提供方 ID 保留一个提供方实例，并将每次提供方搜索包裹在该提供方的熔断器中。连续失败 "
+"`failure_threshold` 次（默认 5 次）后，熔断器打开，此后的调用会立即以 `CircuitBreakerOpenError` "
+"失败，并表现为一条普通的单提供方搜索错误。经过 `recovery_timeout`（默认 60 "
+"秒）后，允许一次调用通过，成功则重置计数。熔断器的存续期与 `PyGeoFetch` 实例相同，因此新进程启动时所有熔断器均处于关闭状态。"

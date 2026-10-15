@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,11 @@ msgid ""
 "when they come from an analysis run on real satellite data, or **Synthetic**"
 " when they were generated from simulated scenes to illustrate a function."
 msgstr ""
+"توضح دراسات الحالة هذه كيف تُستخدم pygeofetch في أسئلة حقيقية، من أول بحث "
+"حتى خريطة يمكن تفسيرها. تسرد كل دراسة ما أُنجز، وما تُظهره النتيجة، وما لا "
+"تُظهره. وتُوسَم الأشكال بـ **حقيقي** حين تأتي من تحليل أُجري على بيانات "
+"أقمار اصطناعية حقيقية، أو بـ **اصطناعي** حين وُلّدت من مشاهد محاكاة لتوضيح "
+"دالة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:6
 msgid ""
@@ -38,11 +43,16 @@ msgid ""
 "relying on them. The processing steps were verified on the figures' "
 "underlying data or on synthetic scenes, as stated in each section."
 msgstr ""
+"لم تُنفَّذ استدعاءات البحث والتنزيل في أمثلة الشيفرة على مزوّدين فعليين "
+"أثناء كتابة هذا التوثيق. تحقق من أسماء المزوّدين ومعرّفات المجموعات وبيانات "
+"الاعتماد مقابل حسابك قبل الاعتماد عليها. أما خطوات المعالجة فقد جرى التحقق "
+"منها على البيانات التي تقوم عليها الأشكال أو على مشاهد اصطناعية، كما هو "
+"مذكور في كل قسم."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:9
 msgid ""
 "Vegetation trend in the Obuasi Municipal District, Ghana (2018 to 2024)"
-msgstr ""
+msgstr "اتجاه الغطاء النباتي في بلدية أوبواسي، غانا (من 2018 إلى 2024)"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:11
 msgid ""
@@ -51,6 +61,9 @@ msgid ""
 "Region, so land cover is changing for several reasons at once: mining, "
 "settlement, farming and regrowth."
 msgstr ""
+"**السؤال.** هل الغطاء النباتي في المنطقة يتعافى أم يستقر أم يتدهور، وأين؟ "
+"تقع أوبواسي في حزام لتعدين الذهب في منطقة أشانتي، لذا فإن الغطاء الأرضي "
+"يتغير لعدة أسباب في آن واحد: التعدين، والاستيطان، والزراعة، وإعادة النمو."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:13
 msgid ""
@@ -62,12 +75,20 @@ msgid ""
 "shown on the map. The slopes were then grouped into four classes: strong "
 "decline, moderate decline, stable and increasing."
 msgstr ""
+"**المنهج.** استُخدمت بيانات USGS Landsat لبناء مركّب NDVI واحد للموسم الجاف "
+"لكل سنة من 2018 إلى 2024. ومقارنة المواسم الجافة تزيل معظم التذبذب الموسمي "
+"في الاخضرار، فيبقى في الغالب الإشارة متعددة السنوات. ولكل بكسل قُدّر اتجاه "
+"خطي عبر القيم السنوية السبع، وميله، بوحدات NDVI في السنة، هو مقياس الاتجاه "
+"المعروض على الخريطة. ثم جُمعت الميول في أربع فئات: تدهور شديد، وتدهور متوسط،"
+" ومستقر، ومتزايد."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:15
 msgid ""
 "Map of per-pixel NDVI trend for Obuasi from 2018 to 2024, red for decline "
 "and blue for increase"
 msgstr ""
+"خريطة اتجاه NDVI لكل بكسل في أوبواسي من 2018 إلى 2024، بالأحمر للتدهور "
+"وبالأزرق للزيادة"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:18
 msgid ""
@@ -76,6 +97,10 @@ msgid ""
 "increasing greenness, in NDVI units per year. White areas inside the "
 "district are masked pixels. Click the image to enlarge."
 msgstr ""
+"<span class=\"gf-tag real\">حقيقي</span> اتجاه NDVI لكل بكسل، من 2018 إلى "
+"2024، انطلاقًا من مركّبات الموسم الجاف. يشير الأحمر إلى تراجع الاخضرار ويشير"
+" الأزرق إلى زيادته، بوحدات NDVI في السنة. والمناطق البيضاء داخل المنطقة "
+"الإدارية بكسلات محجوبة. انقر على الصورة لتكبيرها."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:21
 msgid ""
@@ -86,12 +111,19 @@ msgid ""
 "water bodies, where NDVI is low and unstable from year to year, and they "
 "should be ignored when reading the map."
 msgstr ""
+"خريطة الميل هي العرض الأكثر إفادة لأنها تحتفظ بمقدار التغيّر. فأقوى تدهور "
+"وأوسعه يقع على الحافة الغربية للمنطقة، غرب خط الطول 1.70 درجة غربًا تقريبًا،"
+" بينما يقترب الوسط من الصفر. أما الكتل الزرقاء الداكنة جدًا فليست زيادة في "
+"الغطاء النباتي: إنها مسطحات مائية، حيث يكون NDVI منخفضًا وغير مستقر من سنة "
+"إلى أخرى، ويجب تجاهلها عند قراءة الخريطة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:23
 msgid ""
 "Classified map of vegetation trend with four classes: strong decline, "
 "moderate decline, stable and increasing"
 msgstr ""
+"خريطة مصنّفة لاتجاه الغطاء النباتي بأربع فئات: تدهور شديد، وتدهور متوسط، "
+"ومستقر، ومتزايد"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:26
 msgid ""
@@ -100,6 +132,10 @@ msgid ""
 " 22.8 percent moderate), 57.5 percent is stable, and 10.5 percent is "
 "increasing. Percentages exclude masked pixels."
 msgstr ""
+"<span class=\"gf-tag real\">حقيقي</span> الاتجاه نفسه مصنّفًا في أربع فئات. "
+"يُظهر نحو 32 بالمئة من المنطقة تدهورًا (9.2 بالمئة شديد، و22.8 بالمئة "
+"متوسط)، و57.5 بالمئة مستقر، و10.5 بالمئة متزايد. وتستثني النسب المئوية "
+"البكسلات المحجوبة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:29
 msgid ""
@@ -108,6 +144,10 @@ msgid ""
 "the original script: the scene selection is left to you, and the trend is a "
 "simple least-squares fit that you can replace with a robust method."
 msgstr ""
+"**كيفية إعادة إنتاج سير العمل.** تستخدم خطوات البحث والتنزيل والمؤشرات "
+"pygeofetch. والشيفرة أدناه رسم توضيحي لسير العمل هذا، وليست السكربت الأصلي: "
+"اختيار المشاهد متروك لك، والاتجاه عبارة عن ملاءمة بسيطة بالمربعات الصغرى "
+"يمكنك استبدالها بطريقة متينة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:64
 msgid ""
@@ -118,16 +158,24 @@ msgid ""
 "separate them. Treat the classes as a screening layer that shows where to "
 "look next."
 msgstr ""
+"**ما الذي يمكن استخلاصه منها، وما الذي لا يمكن.** تخبرك خريطة الاتجاه أين "
+"تغيّر اخضرار الغطاء النباتي، لا لماذا. فالتدهور قد يكون إزالة للتعدين أو "
+"الزراعة، أو تغيّرًا في نوع المحصول، أو إجهادًا ناتجًا عن الجفاف، أو تغيّرًا "
+"في تواريخ المركّبات، ولا يفصل بينها إلا المعرفة الميدانية أو صور أعلى دقة. "
+"تعامل مع الفئات كطبقة فرز أولي تُظهر أين يجب النظر لاحقًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:66
 msgid ""
 "*Source: the Obuasi trend maps and the percentages above are taken from the "
 "project's own analysis, as published in the repository README.*"
 msgstr ""
+"*المصدر: خرائط اتجاه أوبواسي والنسب المئوية أعلاه مأخوذة من تحليل المشروع "
+"نفسه، كما نُشر في README الخاص بالمستودع.*"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:68
 msgid "Mexico City subsidence with InSAR (Iztapalapa, 2016 to 2017)"
 msgstr ""
+"هبوط التربة في مدينة مكسيكو باستخدام InSAR (إيستابالابا، من 2016 إلى 2017)"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:70
 msgid ""
@@ -139,6 +187,13 @@ msgid ""
 " the same area with far less data: Sentinel-1 track 147, descending, from "
 "July 2016 to September 2017."
 msgstr ""
+"**السؤال.** هل تستطيع سلسلة قياس تداخل بلغة Python الخالصة استعادة إشارة "
+"هبوط الأرض ومقداره التقريبي في مكان موثّق جيدًا؟ تقع إيستابالابا على قاع "
+"البحيرة القديمة لمدينة مكسيكو، وهي من المناطق التي تهبط فيها الأرض أسرع ما "
+"يكون، وتفيد الأعمال المنشورة بذروة تقارب -39 سم في السنة اعتمادًا على عدة "
+"سنوات من بيانات Sentinel-1. اختبر المشروع pygeofetch على المنطقة نفسها بكمية"
+" بيانات أقل بكثير: المسار 147 من Sentinel-1، نازل، من يوليو 2016 إلى سبتمبر "
+"2017."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:72
 msgid ""
@@ -149,12 +204,20 @@ msgid ""
 "groups, and the largest group of 10 dates gave vertical velocities between "
 "about -35.5 and -2.9 cm per year (2nd to 98th percentile)."
 msgstr ""
+"**ماذا فعلت السلسلة.** بحثت عن مشاهد ذات هندسة رصد متطابقة، وفحصتها ببوابة "
+"فحص مسبق قبل التنزيل، وكوّنت 78 إنترفيروغرامًا، وفكّت التفافها، ودمجت "
+"الموثوق منها بطريقة خط الأساس القصير (small-baseline). وبعد التصفية بحسب "
+"الموثوقية، انقسمت 58 تاريخًا إلى 17 مجموعة متصلة، وأعطت أكبر مجموعة وتضم 10 "
+"تواريخ سرعات رأسية بين نحو -35.5 و-2.9 سم في السنة (من المئين 2 إلى المئين "
+"98)."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:74
 msgid ""
 "SBAS results for Mexico City: velocity at reliable pixels, uncertainty, "
 "reliable-pixel mask and displacement time series"
 msgstr ""
+"نتائج SBAS لمدينة مكسيكو: السرعة عند البكسلات الموثوقة، وعدم اليقين، وقناع "
+"البكسلات الموثوقة، والسلسلة الزمنية للإزاحة"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:77
 msgid ""
@@ -164,6 +227,11 @@ msgid ""
 "wrapped and unwrapped phase, is in the [worked example](../processing/sar-"
 "insar/insar-mexico-city-tutorial.md#results-of-the-reference-run)."
 msgstr ""
+"<span class=\"gf-tag real\">حقيقي</span> مخرجات SBAS لتشغيل مدينة مكسيكو. لا"
+" تحمل سرعة (أعلى اليسار) سوى البكسلات الواقعة في قناع البكسلات الموثوقة "
+"(أسفل اليسار، بالأبيض). والمجموعة الكاملة من الأشكال، من بصمات المشاهد إلى "
+"الطور الملتف وغير الملتف، موجودة في [المثال التطبيقي](../processing/sar-"
+"insar/insar-mexico-city-tutorial.md#results-of-the-reference-run)."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:80
 msgid ""
@@ -175,10 +243,16 @@ msgid ""
 "above: there the same chain reported that it could not recover the signal at"
 " all, and that honest failure is as useful as a success."
 msgstr ""
+"**ما الذي تُظهره، وما الذي لا تُظهره.** إن الإشارة والمقدار التقريبي متسقان "
+"مع النتيجة المنشورة، وهذا ما استهدف المشروع اختباره. لكن نحو 0.2 بالمئة فقط "
+"من البكسلات كانت صالحة للاستخدام، وكانت الشبكة هشة، ولم يُتحقق من النتيجة، "
+"لذا فهي عرض توضيحي لسير العمل وليست قياسًا يُعتمد عليه. قارن ذلك بـ Bu'ertai"
+" أعلاه: هناك أبلغت السلسلة نفسها بأنها لم تستطع استعادة الإشارة إطلاقًا، "
+"وهذا الفشل الصريح مفيد بقدر النجاح."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:82
 msgid "Bu'ertai Mine, China: when conventional InSAR fails"
-msgstr ""
+msgstr "منجم Bu'ertai، الصين: عندما يفشل InSAR التقليدي"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:84
 msgid ""
@@ -187,6 +261,9 @@ msgid ""
 "underground extraction causes large displacement that is concentrated in a "
 "small area."
 msgstr ""
+"**السؤال.** هل يمكن لقياس التداخل قياس الهبوط فوق منجم فحم نشط؟ منجم "
+"Bu'ertai في حقل Shendong للفحم حالة منشورة يتسبب فيها الاستخراج الجوفي "
+"بإزاحة كبيرة تتركز في مساحة صغيرة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:86
 msgid ""
@@ -201,12 +278,23 @@ msgid ""
 "pixels. Where the surface moves more than that within one revisit, the phase"
 " cannot be unwrapped."
 msgstr ""
+"**ما الذي حدث.** شغّلت دراسة الحالة السلسلة الكاملة على بيانات Sentinel-1 "
+"حقيقية: اختيار مشاهد من المسار نفسه، وفحص مسبق لتزامن الرشقات وخطوط الأساس، "
+"وتوليد الإنترفيروغرامات، وشبكة SBAS. أعاد عدة أزواج تداخلية تغطية موثوقة "
+"معدومة، ولم تغطِّ الشبكة النهائية سوى نحو 0.1 بالمئة من مساحة منطقة "
+"الاهتمام. والسبب فيزيائي. فهدب تداخلي واحد يمثل نحو 28 ملم من الحركة على "
+"امتداد خط البصر عند الطول الموجي لـ Sentinel-1، ولا يمكن فك التفاف الطور "
+"بموثوقية إلا إذا تغيّر بأقل من نصف هدب، أي نحو 14 ملم، بين بكسلين متجاورين. "
+"وحيث يتحرك السطح أكثر من ذلك خلال زيارة إعادة واحدة، لا يمكن فك التفاف "
+"الطور."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:88
 msgid ""
 "Coherence image between two Sentinel-1 acquisitions over Bu'ertai, mostly "
 "low values with a few brighter patches"
 msgstr ""
+"صورة ترابط بين عمليتي استحواذ لـ Sentinel-1 فوق Bu'ertai، قيمها منخفضة في "
+"معظمها مع بقع أكثر سطوعًا قليلة"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:91
 msgid ""
@@ -216,6 +304,10 @@ msgid ""
 "measurement. The few brighter patches are stable surfaces such as built-up "
 "areas and bare ground."
 msgstr ""
+"<span class=\"gf-tag real\">حقيقي</span> الترابط التداخلي بين استحواذَي "
+"Sentinel-1 بتاريخي 2023-04-22 و2023-06-21. يتراوح الترابط في معظم المشهد بين"
+" نحو 0.2 و0.4، وهو منخفض جدًا لقياس طور موثوق. أما البقع الأكثر سطوعًا "
+"القليلة فهي أسطح مستقرة مثل المناطق المبنية والأرض العارية."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:94
 msgid ""
@@ -228,10 +320,17 @@ msgid ""
 "mexico-city-tutorial.md) above shows the opposite case, a smooth subsidence "
 "bowl that InSAR handles well."
 msgstr ""
+"هذه هي قيمة الإبلاغ عن الفشل بدلًا من إخفائه. فـ[تتبع الإزاحة "
+"البصري](../processing/sar-insar/optical-offset-tracking.md) في pygeofetch "
+"يقيس الإزاحة من أزواج الصور البصرية، حيث تبقى الحركات الكبيرة قابلة للقياس، "
+"ويستخدم خط [دمج InSAR والبصري](../processing/multisensor.md) كل مصدر حيث "
+"يكون موثوقًا. ويُظهر [المثال التطبيقي لمدينة مكسيكو](../processing/sar-"
+"insar/insar-mexico-city-tutorial.md) أعلاه الحالة المعاكسة، وهي حوض هبوط سلس"
+" يتعامل معه InSAR جيدًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:96
 msgid "Demonstration: indices and radar flood mapping on synthetic scenes"
-msgstr ""
+msgstr "عرض توضيحي: المؤشرات ورسم خرائط الفيضانات بالرادار على مشاهد اصطناعية"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:98
 msgid ""
@@ -240,12 +339,17 @@ msgid ""
 " show what each function takes in and returns. They are not measurements of "
 "any real place."
 msgstr ""
+"أُنتج الشكلان أدناه بواسطة `tools/gen_figures.py` من مشاهد محاكاة، باستخدام "
+"شيفرة `client.indices` و`client.sar` الخاصة بـ pygeofetch نفسها. وهما يوضحان"
+" ما تأخذه كل دالة وما تعيده. وليسا قياسات لأي مكان حقيقي."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:100
 msgid ""
 "False-colour synthetic scene with NDVI and NDWI maps showing forest, fields,"
 " a river and a built-up block"
 msgstr ""
+"مشهد اصطناعي بألوان زائفة مع خريطتي NDVI وNDWI تُظهران غابة وحقولًا ونهرًا "
+"وكتلة مبنية"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:103
 msgid ""
@@ -253,12 +357,17 @@ msgid ""
 " forest, fields, a river and a built-up block. NDVI separates vegetation "
 "from water and buildings, and NDWI highlights the river."
 msgstr ""
+"<span class=\"gf-tag synthetic\">اصطناعي</span> مشهد طبيعي محاكى يضم غابة "
+"وحقولًا ونهرًا وكتلة مبنية. يفصل NDVI الغطاء النباتي عن الماء والمباني، "
+"ويبرز NDWI النهر."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:106
 msgid ""
 "Raw SAR backscatter with speckle, the same scene after a Lee filter, and a "
 "flood mask at minus 15 decibels"
 msgstr ""
+"تشتت راداري خام مع التبقّع (speckle)، والمشهد نفسه بعد مرشح Lee، وقناع فيضان"
+" عند سالب 15 ديسيبل"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:109
 msgid ""
@@ -266,6 +375,9 @@ msgid ""
 "radar scene with two flooded areas. The Lee filter suppresses speckle while "
 "keeping edges, and a threshold at -15 dB then maps the water."
 msgstr ""
+"<span class=\"gf-tag synthetic\">اصطناعي</span> مشهد راداري محاكى بأربع "
+"نظرات (looks) مع منطقتي فيضان. يكبح مرشح Lee التبقّع مع الحفاظ على الحواف، "
+"ثم تحدد عتبة عند -15 dB الماء على الخريطة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:112
 msgid ""
@@ -273,28 +385,37 @@ msgid ""
 "threshold: on the raw image a single threshold would label many scattered "
 "pixels, while after filtering the flooded areas stand out as solid regions."
 msgstr ""
+"التبقّع في الصور الرادارية الحقيقية هو سبب وضع المرشح قبل أي عتبة: ففي "
+"الصورة الخام ستصنّف عتبة واحدة بكسلات متناثرة كثيرة، بينما تبرز مناطق "
+"الفيضان بعد الترشيح كمناطق صلبة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:114
 msgid "Monitoring artisanal mining expansion"
-msgstr ""
+msgstr "رصد توسع التعدين الحرفي"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:116
 msgid ""
 "**Goal.** Detect new bare ground and disturbed vegetation around a "
 "concession over time."
 msgstr ""
+"**الهدف.** اكتشاف الأرض العارية الجديدة والغطاء النباتي المضطرب حول امتياز "
+"تعدين عبر الزمن."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:118
 msgid ""
 "**Find scenes.** Search Sentinel-2 L2A with low cloud cover over a fixed "
 "AOI, for each season. See [Searching](../data-access/search.md)."
 msgstr ""
+"**إيجاد المشاهد.** ابحث في Sentinel-2 L2A بغطاء سحابي منخفض فوق AOI ثابتة، "
+"لكل موسم. انظر [البحث](../data-access/search.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:119
 msgid ""
 "**Get only the AOI.** Use [`stream()`](../data-access/streaming.md) with a "
 "Planetary Computer or Element84 source so you do not download full tiles."
 msgstr ""
+"**احصل على AOI فقط.** استخدم [`stream()`](../data-access/streaming.md) مع "
+"مصدر Planetary Computer أو Element84 كي لا تنزّل البلاطات كاملة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:120
 msgid ""
@@ -302,6 +423,9 @@ msgid ""
 "`optical_offset=-1000` and `optical_scale=10000` where the pipeline asks for"
 " it. See [Multi-sensor pipelines](../processing/multisensor.md)."
 msgstr ""
+"**صحّح الإزاحة.** بالنسبة إلى Sentinel-2 L2A عند خط الأساس 04.00 أو أحدث، "
+"اضبط `optical_offset=-1000` و`optical_scale=10000` حيث يطلبهما الخط. انظر "
+"[خطوط المستشعرات المتعددة](../processing/multisensor.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:121
 msgid ""
@@ -309,18 +433,25 @@ msgid ""
 "exposed ground. See [Spectral indices](../processing/optical/spectral-"
 "indices.md)."
 msgstr ""
+"**احسب المؤشرات.** NDVI لفقد الغطاء النباتي ومؤشر للتربة العارية للأرض "
+"المكشوفة. انظر [المؤشرات الطيفية](../processing/optical/spectral-"
+"indices.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:122
 msgid ""
 "**Add radar.** Use the NDVI plus SAR coherence pipeline to separate cloud-"
 "affected gaps from real disturbance, since coherence is unaffected by cloud."
 msgstr ""
+"**أضف الرادار.** استخدم خط NDVI مع ترابط SAR لفصل الفجوات المتأثرة بالسحب عن"
+" الاضطراب الحقيقي، إذ إن الترابط لا يتأثر بالسحب."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:123
 msgid ""
 "**Map and report.** Use [Visualization](../visualization/plotter.md) to "
 "produce maps and change summaries."
 msgstr ""
+"**ارسم الخرائط وأعدّ التقرير.** استخدم [التصوير "
+"البصري](../visualization/plotter.md) لإنتاج الخرائط وملخصات التغيّر."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:125
 msgid ""
@@ -328,10 +459,12 @@ msgid ""
 "activity. Field validation is needed before drawing conclusions about "
 "specific locations."
 msgstr ""
+"رصد التعدين من التغيّر الطيفي مؤشر وليس دليلًا على النشاط. ويلزم التحقق "
+"الميداني قبل استخلاص استنتاجات عن مواقع بعينها."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:127
 msgid "Mineral exploration screening"
-msgstr ""
+msgstr "فرز أولي للتنقيب عن المعادن"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:129
 msgid ""
@@ -346,10 +479,19 @@ msgid ""
 "do not identify mineralogy. Treat the result as a ranking of places to "
 "visit."
 msgstr ""
+"**الهدف.** إبراز مناطق التغيّر (alteration) لأعمال ميدانية لاحقة. نزّل مشاهد"
+" Sentinel-2 أو Landsat لمنطقة الترخيص "
+"([Landsat](../processing/optical/landsat.md))، واحسب المؤشرات الجيولوجية "
+"(أكسيد الحديد، والطين، والمعادن الحديدوزية وما شابهها) من [المؤشرات "
+"الطيفية](../processing/optical/spectral-indices.md)، وصنّف باستخدام "
+"[التصنيف](../processing/optical/classification.md) بمناطق تدريب من مواقع "
+"معروفة، وأضف سياق التضاريس عبر [التضاريس](../processing/optical/terrain.md)."
+" المؤشرات الطيفية تفرز ولا تحدد التركيب المعدني. تعامل مع النتيجة كترتيب "
+"للأماكن التي ينبغي زيارتها."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:131
 msgid "Drought and vegetation time series"
-msgstr ""
+msgstr "الجفاف والسلاسل الزمنية للغطاء النباتي"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:133
 msgid ""
@@ -361,10 +503,16 @@ msgid ""
 "pipeline](pipelines.md) can run the acquisition on a schedule so new scenes "
 "arrive automatically."
 msgstr ""
+"**الهدف.** تتبع حالة الغطاء النباتي الموسمية على مدى عدة سنوات لمنطقة "
+"إدارية. عرّف AOI وحلقة تواريخ شهرية، وابحث ثم مرّر أو نزّل مشهدًا واحدًا "
+"منخفض السحب كل شهر، واحسب NDVI لكل مشهد وكدّسها باستخدام [السلاسل "
+"الزمنية](../processing/optical/timeseries.md)، وقارن كل شهر بمتوسطه متعدد "
+"السنوات لإيجاد الشذوذات. ويمكن لـ[خط YAML](pipelines.md) تشغيل الاقتناء وفق "
+"جدول بحيث تصل المشاهد الجديدة تلقائيًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:135
 msgid "Flood extent after a storm"
-msgstr ""
+msgstr "امتداد الفيضان بعد عاصفة"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:137
 msgid ""
@@ -375,10 +523,16 @@ msgid ""
 "([Multi-sensor pipelines](../processing/multisensor.md)). Export the flood "
 "mask and compute the affected area."
 msgstr ""
+"**الهدف.** رسم خريطة الفيضان بسرعة، بما في ذلك تحت السحب. ابحث في Sentinel-1"
+" GRD قبل الحدث وبعده ([SAR](../processing/sar-insar/sar.md))، وشغّل خط SAR "
+"لرسم خرائط الفيضان للحصول على امتداد رادار فقط، وإذا توفرت بيانات بصرية "
+"خالية من السحب فاستخدم خط الفيضان بـ SAR مع البصري لتحسينه ([خطوط المستشعرات"
+" المتعددة](../processing/multisensor.md)). صدّر قناع الفيضان واحسب المساحة "
+"المتضررة."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:139
 msgid "Ground deformation with InSAR"
-msgstr ""
+msgstr "تشوّه الأرض باستخدام InSAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:141
 msgid ""
@@ -389,3 +543,8 @@ msgid ""
 "[streaming](../data-access/streaming.md) does not apply and you must "
 "download full products."
 msgstr ""
+"**الهدف.** قياس الهبوط أو حركة المنحدرات. اتبع المثال التطبيقي في [درس InSAR"
+" لمدينة مكسيكو](../processing/sar-insar/insar-mexico-city-tutorial.md)، ثم "
+"انظر [InSAR](../processing/sar-insar/insar.md) لمعرفة SBAS وفحوصات ما قبل "
+"المعالجة. تقدّم Copernicus منتجات SLC كأرشيفات zip، لذا لا ينطبق "
+"[التمرير](../data-access/streaming.md) ويجب عليك تنزيل المنتجات كاملة."

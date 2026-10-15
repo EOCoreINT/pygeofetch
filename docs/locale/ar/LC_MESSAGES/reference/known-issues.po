@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,39 +28,44 @@ msgid ""
 "Entries describe the current code; when one is fixed, remove it here and "
 "note it in the [changelog](../project/changelog.md)."
 msgstr ""
+"سلوكيات تختلف عمّا قد تتوقعه، مع حلول بديلة. جرى التحقق من كل بند مقابل "
+"الشيفرة المصدرية أو إعادة إنتاجه بتشغيل الشيفرة. تصف البنود الشيفرة الحالية؛"
+" وعند إصلاح أحدها، أزله من هنا ودوّنه في [سجل "
+"التغييرات](../project/changelog.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Area"
-msgstr ""
+msgstr "المجال"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Issue"
-msgstr ""
+msgstr "المشكلة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Impact"
-msgstr ""
+msgstr "الأثر"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "SAR"
-msgstr ""
+msgstr "SAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid ""
 "[Coherence fails on complex input](#sar-coherence-fails-on-complex-input)"
 msgstr ""
+"[فشل التماسك مع المدخلات المركّبة](#sar-coherence-fails-on-complex-input)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`client.sar.coherence()` and `pygeofetch sar coherence` do not work"
-msgstr ""
+msgstr "`client.sar.coherence()` و`pygeofetch sar coherence` لا يعملان"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Backends are not wired in](#sar-backends-are-not-wired-in)"
-msgstr ""
+msgstr "[الواجهات الخلفية غير موصولة](#sar-backends-are-not-wired-in)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`SARProcessor(backend=...)` raises `TypeError`"
-msgstr ""
+msgstr "`SARProcessor(backend=...)` يثير `TypeError`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Configuration"
@@ -70,56 +75,59 @@ msgstr "الإعداد"
 msgid ""
 "[Settings layer is not applied](#settings-layer-is-not-applied-at-runtime)"
 msgstr ""
+"[طبقة الإعدادات غير مطبّقة](#settings-layer-is-not-applied-at-runtime)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Config files and `PYGEOFETCH_*` variables do not change behaviour"
-msgstr ""
+msgstr "ملفات الإعدادات والمتغيرات `PYGEOFETCH_*` لا تغيّر السلوك"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Search"
-msgstr ""
+msgstr "البحث"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[`--on-provider-failure`](#on-provider-failure-has-no-effect)"
-msgstr ""
+msgstr "[`--on-provider-failure`](#on-provider-failure-has-no-effect)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`abort` and `retry` do nothing"
-msgstr ""
+msgstr "`abort` و`retry` لا يفعلان شيئًا"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Download"
-msgstr ""
+msgstr "التنزيل"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid ""
 "[`extract_archives` and archives](#archives-are-not-extracted-by-extract-"
 "archives)"
 msgstr ""
+"[`extract_archives` والأرشيفات](#archives-are-not-extracted-by-extract-"
+"archives)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Option has no effect"
-msgstr ""
+msgstr "الخيار بلا أي أثر"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Checksum verification](#checksum-verification-is-advisory)"
-msgstr ""
+msgstr "[التحقق من المجموع الاختباري](#checksum-verification-is-advisory)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Mismatch is logged, not retried"
-msgstr ""
+msgstr "يُسجَّل عدم التطابق ولا تُعاد المحاولة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Install"
-msgstr ""
+msgstr "التثبيت"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Undeclared dependencies](#undeclared-dependencies)"
-msgstr ""
+msgstr "[تبعيات غير معلنة](#undeclared-dependencies)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`pygeofetch --help` can fail on a clean install"
-msgstr ""
+msgstr "قد يفشل `pygeofetch --help` في تثبيت نظيف"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Providers"
@@ -128,27 +136,28 @@ msgstr "المزوّدون"
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "[Registered but unusable](#registered-but-unusable-providers)"
 msgstr ""
+"[مسجَّلة لكنها غير قابلة للاستخدام](#registered-but-unusable-providers)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "Two providers cannot return data"
-msgstr ""
+msgstr "مزوّدان لا يمكنهما إعادة بيانات"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "CLI"
-msgstr ""
+msgstr "CLI"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid ""
 "[`monitor` is not registered](#monitor-command-group-is-not-registered)"
-msgstr ""
+msgstr "[`monitor` غير مسجَّل](#monitor-command-group-is-not-registered)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:0
 msgid "`pygeofetch monitor` does not exist"
-msgstr ""
+msgstr "`pygeofetch monitor` غير موجود"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:19
 msgid "SAR coherence fails on complex input"
-msgstr ""
+msgstr "فشل تماسك SAR مع المدخلات المركّبة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:21
 msgid ""
@@ -156,6 +165,9 @@ msgid ""
 "a.tif b.tif` raise `ValueError: cannot reshape array of size 2048 into shape"
 " (64,64)` for `complex64` SLC rasters."
 msgstr ""
+"**العَرَض.** يثير `client.sar.coherence(a, b)` و`pygeofetch sar coherence "
+"a.tif b.tif` الخطأ `ValueError: cannot reshape array of size 2048 into shape"
+" (64,64)` مع راسترات SLC من النوع `complex64`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:24
 msgid ""
@@ -165,10 +177,15 @@ msgid ""
 "`pygeofetch.sar.SARProcessor` reads complex bands directly with `rasterio` "
 "and does not have this problem."
 msgstr ""
+"**السبب.** تقرأ `pygeofetch.processing.sar.SARProcessor.coherence` النطاقات "
+"المركّبة عبر `_safe_read_band` التي تحوّلها إلى `float32` حقيقي، ثم تعيد "
+"تفسير تلك الذاكرة على أنها مركّبة. أما `pygeofetch.sar.SARProcessor` "
+"المستقلة فتقرأ النطاقات المركّبة مباشرة بواسطة `rasterio` ولا تعاني من هذه "
+"المشكلة."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:29
 msgid "**Workaround.**"
-msgstr ""
+msgstr "**الحل البديل.**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:36
 msgid ""
@@ -176,16 +193,21 @@ msgid ""
 "the standalone call returns a mean coherence of 1.0 for two identical-up-to-"
 "phase images."
 msgstr ""
+"تم إعادة إنتاج المشكلة باستخدام زوج `complex64` بحجم 64 × 64: يفشل استدعاء "
+"`client.sar`، بينما يعيد الاستدعاء المستقل متوسط اتساق (coherence) يساوي 1.0"
+" لصورتين متطابقتين باستثناء الطور."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:39
 msgid "SAR backends are not wired in"
-msgstr ""
+msgstr "واجهات SAR الخلفية غير مربوطة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:41
 msgid ""
 "**Symptom.** `SARProcessor(backend=\"sarxarray\")` raises `TypeError: "
 "SARProcessor() takes no arguments`."
 msgstr ""
+"**العَرَض.** يؤدي `SARProcessor(backend=\"sarxarray\")` إلى ظهور `TypeError:"
+" SARProcessor() takes no arguments`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:44
 msgid ""
@@ -195,16 +217,23 @@ msgid ""
 "backends, and `terrain_correct()`, are unreachable. The `pygeofetch[sar]` "
 "and `pygeofetch[ost]` extras install packages that are not currently used."
 msgstr ""
+"**السبب.** الصنف `pygeofetch.sar.processor.SARProcessor` لا يحتوي على "
+"`__init__`. توجد الوحدات `_native.py` و`_sarxarray.py` و`_ost.py` في "
+"`pygeofetch/sar/` لكن لا شيء يستوردها، ولذلك تصبح الواجهتان الخلفيتان "
+"`sarxarray` و`ost` والدالة `terrain_correct()` غير قابلة للوصول. وتثبّت "
+"الإضافتان `pygeofetch[sar]` و`pygeofetch[ost]` حزمًا غير مستخدمة حاليًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:49
 msgid ""
 "**Workaround.** Use `SARProcessor()` with no arguments for despeckle, "
 "calibrate, flood mapping and coherence."
 msgstr ""
+"**حل بديل.** استخدم `SARProcessor()` بدون وسائط لإزالة التبقّع (despeckle) "
+"والمعايرة ورسم خرائط الفيضانات والاتساق."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:52
 msgid "Settings layer is not applied at runtime"
-msgstr ""
+msgstr "طبقة الإعدادات لا تُطبَّق أثناء التشغيل"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:54
 msgid ""
@@ -212,6 +241,9 @@ msgid ""
 "with `pygeofetch config set`, or through `PYGEOFETCH_DOWNLOAD__PARALLEL` "
 "changes what `pygeofetch config get` prints but not how downloads run."
 msgstr ""
+"**العَرَض.** تغيير `download.parallel` في `~/.pygeofetch/config.yaml` أو "
+"باستخدام `pygeofetch config set` أو عبر `PYGEOFETCH_DOWNLOAD__PARALLEL` "
+"يغيّر ما يطبعه `pygeofetch config get` لكنه لا يغيّر طريقة تنفيذ التنزيلات."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:58
 msgid ""
@@ -225,22 +257,35 @@ msgid ""
 "`notifications.*` and `download.checksum_algorithm`. The engine's "
 "`config_path` argument loads a dictionary that nothing reads."
 msgstr ""
+"**السبب.** الصنف `pygeofetch.config.settings.Settings` تقرؤه أوامر `config` "
+"والأمر `cache ttl` فقط. أما البحث والتنزيل والمحرّك فتأخذ قيمها من خيارات "
+"سطر الأوامر ومن `SearchQuery` و`DownloadOptions` ومُنشئ `PyGeoFetch()`. تم "
+"التحقق: مع `PYGEOFETCH_DOWNLOAD__PARALLEL=7` تكون قيمة "
+"`Settings().download.parallel` هي `7` بينما `DownloadOptions().parallel` هي "
+"`4`. وينطبق الأمر نفسه على `security.credential_storage` "
+"و`security.verify_ssl` و`proxy.*` و`notifications.*` "
+"و`download.checksum_algorithm`. أما الوسيط `config_path` للمحرّك فيحمّل "
+"قاموسًا لا يقرؤه أي شيء."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:66
 msgid ""
 "**Related.** `pygeofetch cache ttl show` reads an attribute that does not "
 "exist on `Settings` and always prints `3600`."
 msgstr ""
+"**ذو صلة.** يقرأ `pygeofetch cache ttl show` سمة غير موجودة في `Settings` "
+"ويطبع دائمًا `3600`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:69
 msgid ""
 "**Workaround.** Pass values explicitly. See "
 "[Configuration](configuration.md#what-controls-behaviour)."
 msgstr ""
+"**حل بديل.** مرّر القيم صراحةً. راجع [الإعدادات](configuration.md#what-"
+"controls-behaviour)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:72
 msgid "`--on-provider-failure` has no effect"
-msgstr ""
+msgstr "الخيار `--on-provider-failure` لا يُحدث أي أثر"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:74
 msgid ""
@@ -249,10 +294,14 @@ msgid ""
 " that fails is logged and skipped regardless of the value. Implement abort "
 "or retry in your own code."
 msgstr ""
+"يقبل `search run --on-provider-failure abort` و`retry` ويخزّنهما في "
+"`SearchQuery`، لكن `FederatedSearcher` لا يقرأ هذا الحقل أبدًا. المزوّد الذي"
+" يفشل يُسجَّل في السجل ويُتجاوَز بصرف النظر عن القيمة. نفّذ الإيقاف أو إعادة"
+" المحاولة في شيفرتك الخاصة."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:79
 msgid "Archives are not extracted by `extract_archives`"
-msgstr ""
+msgstr "لا تُستخرج الأرشيفات بواسطة `extract_archives`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:81
 msgid ""
@@ -261,10 +310,14 @@ msgid ""
 "is extracted unless you add the `unzip` post-processing action. See "
 "[Downloading](../data-access/download.md#archives)."
 msgstr ""
+"الخيار `DownloadOptions.extract_archives` مُعرَّف (القيمة الافتراضية `True`)"
+" لكن لا توجد شيفرة تقرؤه. يوفّر Copernicus ملفات `.SAFE.zip` ويوفّر USGS "
+"ملفات `.tar`؛ ولا يُستخرج أي منهما ما لم تضف إجراء المعالجة اللاحقة `unzip`."
+" راجع [التنزيل](../data-access/download.md#archives)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:85
 msgid "Checksum verification is advisory"
-msgstr ""
+msgstr "التحقق من المجموع الاختباري استشاري فقط"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:87
 msgid ""
@@ -275,10 +328,16 @@ msgid ""
 "compared. `checksum_algorithm` does not select the algorithm. Check "
 "`result.checksum_verified` and the logs yourself if integrity matters."
 msgstr ""
+"عند استخدام `verify_checksum=True` تتم مقارنة الملف بالمجموع الاختباري الذي "
+"أدرجه المزوّد في بيانات الأصل الوصفية (MD5 إن وُجد، وإلا SHA256). يُسجَّل "
+"عدم التطابق في السجل وتُضبط `checksum_verified` على `False`؛ ولا تُعاد "
+"المحاولة ولا يُعدّ التنزيل فاشلًا. وإذا لم يوفّر المزوّد مجموعًا اختباريًا "
+"فلا تتم أي مقارنة. كما أن `checksum_algorithm` لا يحدّد الخوارزمية. افحص "
+"`result.checksum_verified` والسجلات بنفسك إذا كانت سلامة البيانات مهمة."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:93
 msgid "Undeclared dependencies"
-msgstr ""
+msgstr "تبعيات غير مُعلَنة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:95
 msgid ""
@@ -288,16 +347,23 @@ msgid ""
 " a clean install, `pygeofetch --help` can fail with `ModuleNotFoundError: No"
 " module named 'rich'`."
 msgstr ""
+"تستورد واجهة سطر الأوامر الحزمة `rich`، ويستورد التحقق من الصور البصرية "
+"الحزمة `shapely`. وفي `pyproject.toml` لا تُعدّ أي منهما تبعية أساسية "
+"(`shapely` موجودة فقط في الإضافتين `geo` و`insar`؛ بينما تُدرج وصفة conda "
+"الحزمة `rich`). وعلى تثبيت نظيف قد يفشل `pygeofetch --help` مع "
+"`ModuleNotFoundError: No module named 'rich'`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:99
 msgid ""
 "**Workaround.** `pip install rich shapely`, or install the `geo` extra for "
 "`shapely`."
 msgstr ""
+"**حل بديل.** نفّذ `pip install rich shapely`، أو ثبّت الإضافة `geo` للحصول "
+"على `shapely`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:101
 msgid "Registered but unusable providers"
-msgstr ""
+msgstr "مزوّدون مسجَّلون لكنهم غير قابلين للاستخدام"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:103
 msgid ""
@@ -309,10 +375,16 @@ msgid ""
 "`providers/terrabotics.py` remain in the package but are not registered. See"
 " [Providers](../data-access/providers.md)."
 msgstr ""
+"يستهدف `esa_scihub` خدمة أوقفتها ESA في 2 نوفمبر 2023، بينما "
+"`google_earth_engine` غير منفَّذ. كلاهما مسجَّل، فيظهران في `providers list`"
+" ويُحتسبان ضمن \"22 providers\"، لكن كل استدعاء لهما يفشل برسالة توضيحية. "
+"استخدم `copernicus` بدلًا من `esa_scihub`. ملفا المصدر "
+"`providers/eodag_provider.py` و`providers/terrabotics.py` ما زالا في الحزمة "
+"لكنهما غير مسجَّلين. راجع [المزوّدون](../data-access/providers.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:109
 msgid "`monitor` command group is not registered"
-msgstr ""
+msgstr "مجموعة الأوامر `monitor` غير مسجَّلة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:111
 msgid ""
@@ -320,40 +392,50 @@ msgid ""
 "history`, but `cli/main.py` never calls `cli.add_command(monitor)`. "
 "`pygeofetch monitor` reports \"No such command\"."
 msgstr ""
+"يعرّف `pygeofetch/cli/monitor_commands.py` الأمرين `monitor run` و`monitor "
+"history`، لكن `cli/main.py` لا يستدعي `cli.add_command(monitor)` أبدًا. "
+"ويُبلغ `pygeofetch monitor` بالرسالة \"No such command\"."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:115
 msgid "Smaller items"
-msgstr ""
+msgstr "بنود أصغر"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:117
 msgid "**Search and scoring**"
-msgstr ""
+msgstr "**البحث وحساب الدرجات**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:119
 msgid ""
 "Deduplication uses provider and ID only. The same scene returned by two "
 "providers appears twice. De-duplicate on your own key."
 msgstr ""
+"يعتمد إلغاء التكرار على المزوّد والمعرّف فقط. المشهد نفسه الذي يعيده مزوّدان"
+" يظهر مرتين. أزل التكرار باستخدام مفتاحك الخاص."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:120
 msgid ""
 "The relevance score uses cloud cover, recency and processing level. The "
 "docstring's fourth factor (spatial coverage) is not applied."
 msgstr ""
+"تستخدم درجة الصلة نسبة الغطاء السحابي والحداثة ومستوى المعالجة. أما العامل "
+"الرابع المذكور في سلسلة التوثيق (docstring)، وهو التغطية المكانية، فلا "
+"يُطبَّق."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:121
 msgid ""
 "STAC providers ignore `sort_by`. Sort results yourself, for example "
 "`sorted(results, key=lambda s: s.cloud_cover or 100)`."
 msgstr ""
+"يتجاهل مزوّدو STAC الخيار `sort_by`. رتّب النتائج بنفسك، مثلًا "
+"`sorted(results, key=lambda s: s.cloud_cover or 100)`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:122
 msgid "Credentials are not read from environment variables."
-msgstr ""
+msgstr "لا تُقرأ بيانات الاعتماد من متغيرات البيئة."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:124
 msgid "**Download behaviour**"
-msgstr ""
+msgstr "**سلوك التنزيل**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:126
 msgid ""
@@ -361,22 +443,29 @@ msgid ""
 "nothing (`resolve_band_keys()`), and logs a warning. [Streaming](../data-"
 "access/streaming.md) treats it as an error."
 msgstr ""
+"تعود `download()` إلى **جميع** الأصول عندما لا يطابق نطاق مطلوب أي شيء "
+"(`resolve_band_keys()`)، وتسجّل تحذيرًا. أما [البث](../data-"
+"access/streaming.md) فيعدّ ذلك خطأً."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:127
 msgid ""
 "Files are written under `<destination>/<provider>/`, which surprises code "
 "that expects a flat folder."
 msgstr ""
+"تُكتب الملفات تحت `<destination>/<provider>/`، وهو ما يفاجئ الشيفرة التي "
+"تتوقع مجلدًا مسطّحًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:129
 msgid "**Packaging and code**"
-msgstr ""
+msgstr "**التغليف والشيفرة**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:131
 msgid ""
 "`pygeofetch/multisensor/_init.py` is a stale copy of `__init__.py` left "
 "beside it. It is unused and can be deleted."
 msgstr ""
+"الملف `pygeofetch/multisensor/_init.py` نسخة قديمة من `__init__.py` تُركت "
+"بجانبه. وهو غير مستخدم ويمكن حذفه."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:132
 msgid ""
@@ -385,6 +474,11 @@ msgid ""
 "CLI banner refer to `v2.4.0`. The documentation and conda metadata also "
 "point to different documentation URLs (GitHub Pages versus Read the Docs)."
 msgstr ""
+"سلاسل الإصدار غير متطابقة: تذكر `pygeofetch.__version__` ووصفة conda الإصدار"
+" `2.6.3.0.4`، بينما يذكر `pyproject.toml` الإصدار `2.6.3.0`، وتشير سلسلة "
+"توثيق الحزمة وشعار واجهة سطر الأوامر إلى `v2.4.0`. كما تشير الوثائق وبيانات "
+"conda الوصفية إلى عناوين URL مختلفة للوثائق (GitHub Pages مقابل Read the "
+"Docs)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:133
 msgid ""
@@ -392,6 +486,10 @@ msgid ""
 "`insar/flatearth.py`, `insar/coregister.py`, `insar/extraction.py` and "
 "`processing/classification.py`. The multi-sensor modules no longer use it."
 msgstr ""
+"ما زالت عمليات `Affine * tuple` الحسابية (المهجورة في مكتبة `affine`) موجودة"
+" في `insar/flatearth.py` و`insar/coregister.py` و`insar/extraction.py` "
+"و`processing/classification.py`. أما وحدات الحساسات المتعددة فلم تعد "
+"تستخدمها."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:134
 msgid ""
@@ -400,16 +498,21 @@ msgid ""
 "`pygeofetch.streaming` (scene-level). See [Streaming](../data-"
 "access/streaming.md#other-streaming-tools)."
 msgstr ""
+"يوجد تنفيذان متداخلان للبث: `pygeofetch.stac_compute` (قراءات نوافذ من عنوان"
+" URL واحد وقراءات نبضات Sentinel-1) و`pygeofetch.streaming` (على مستوى "
+"المشهد). راجع [البث](../data-access/streaming.md#other-streaming-tools)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:135
 msgid ""
 "Importing `pygeofetch.insar` prints a \"snaphu not found\" message when "
 "`snaphu` is not installed, even if you do not unwrap."
 msgstr ""
+"يؤدي استيراد `pygeofetch.insar` إلى طباعة رسالة \"snaphu not found\" عندما "
+"لا يكون `snaphu` مثبّتًا، حتى لو لم تكن تجري فك الالتفاف (unwrapping)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:137
 msgid "**Processing limitations**"
-msgstr ""
+msgstr "**قيود المعالجة**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:139
 msgid ""
@@ -417,15 +520,22 @@ msgid ""
 "angle: suitable for relative comparison within a scene, not for absolute "
 "accuracy. See [SAR](../processing/sar-insar/sar.md#radiometric-calibration)."
 msgstr ""
+"تستخدم المعايرة الراديومترية لـ SAR ثابت معايرة محددًا وزاوية سقوط اسمية: "
+"وهي مناسبة للمقارنة النسبية داخل المشهد الواحد، لا للدقة المطلقة. راجع "
+"[SAR](../processing/sar-insar/sar.md#radiometric-calibration)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:140
 msgid ""
 "Atmospheric correction: only `dos1` and `dos2` are full implementations. See"
 " [Preprocessing](../processing/optical/preprocessing.md)."
 msgstr ""
+"التصحيح الجوي: `dos1` و`dos2` فقط هما التنفيذان الكاملان. راجع [المعالجة "
+"المسبقة](../processing/optical/preprocessing.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:141
 msgid ""
 "Sentinel-2 L2A at baseline 04.00 or later carries a +1000 DN offset that "
 "spectral indices do not remove automatically."
 msgstr ""
+"تحمل صور Sentinel-2 L2A ذات خط الأساس 04.00 أو أحدث إزاحة قدرها +1000 DN لا "
+"تزيلها المؤشرات الطيفية تلقائيًا."

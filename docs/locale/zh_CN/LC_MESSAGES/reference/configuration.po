@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,10 @@ msgid ""
 "`download.parallel` in `config.yaml` or through "
 "`PYGEOFETCH_DOWNLOAD__PARALLEL` does not change how many downloads run."
 msgstr ""
+"**范围。** pygeofetch "
+"具有分层的设置模型（`pygeofetch.config.settings.Settings`），但在当前版本中，只有 `pygeofetch "
+"config` 命令和 `pygeofetch cache ttl` 会读取它。搜索、下载和处理代码**不会**参考它。在 `config.yaml` "
+"中或通过 `PYGEOFETCH_DOWNLOAD__PARALLEL` 修改 `download.parallel`，不会改变同时运行的下载数量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:10
 msgid ""
@@ -37,42 +41,47 @@ msgid ""
 "controls-behaviour) below. See [Known issues](known-issues.md#settings-"
 "layer-is-not-applied-at-runtime)."
 msgstr ""
+"行为由下面[实际生效的选项](#what-controls-behaviour)控制。参见[已知问题](known-"
+"issues.md#settings-layer-is-not-applied-at-runtime)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:14
 msgid "What controls behaviour"
-msgstr ""
+msgstr "控制行为的因素"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "You want to change"
-msgstr ""
+msgstr "您想要更改"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Set it with"
-msgstr ""
+msgstr "设置方式"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Parallelism, retries, checksum, bandwidth, bands, post-processing"
-msgstr ""
+msgstr "并行度、重试、校验和、带宽、波段、后处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "CLI flags on `download run`, or [`DownloadOptions`](python-"
 "api.md#downloadoptions) in Python"
 msgstr ""
+"`download run` 的 CLI 标志，或 Python 中的 [`DownloadOptions`](python-"
+"api.md#downloadoptions)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Search limits, sorting, cloud cover"
-msgstr ""
+msgstr "搜索数量限制、排序、云量"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "CLI flags on `search run`, or [`SearchQuery`](python-api.md#searchquery) in "
 "Python"
 msgstr ""
+"`search run` 的 CLI 标志，或 Python 中的 [`SearchQuery`](python-api.md#searchquery)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Search-cache lifetime"
-msgstr ""
+msgstr "搜索缓存有效期"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "`PyGeoFetch(cache_ttl=...)`, or `CacheManager(ttl_seconds=...)`"
@@ -80,7 +89,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Search workers, credential backend, optical validation"
-msgstr ""
+msgstr "搜索工作线程、凭据后端、光学验证"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
@@ -89,49 +98,53 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Log level, file and format"
-msgstr ""
+msgstr "日志级别、文件和格式"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "Global CLI options `--log-level`, `--log-file`, `--log-format`; or "
 "`PyGeoFetch(log_level=..., log_json=...)`"
 msgstr ""
+"全局 CLI 选项 `--log-level`、`--log-file`、`--log-format`；或 "
+"`PyGeoFetch(log_level=..., log_json=...)`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Where `snaphu` is found"
-msgstr ""
+msgstr "`snaphu` 的查找位置"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Environment variable `PYGEOFETCH_SNAPHU_DIR`"
-msgstr ""
+msgstr "环境变量 `PYGEOFETCH_SNAPHU_DIR`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Path of an external atmospheric-correction binary"
-msgstr ""
+msgstr "外部大气校正二进制文件的路径"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid ""
 "Environment variable `PYGEOFETCH_<METHOD>_BIN` (for example "
 "`PYGEOFETCH_FLAASH_BIN`)"
-msgstr ""
+msgstr "环境变量 `PYGEOFETCH_<METHOD>_BIN`（例如 `PYGEOFETCH_FLAASH_BIN`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Log level for the CLI"
-msgstr ""
+msgstr "CLI 的日志级别"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:3
 msgid "Environment variable `PYGEOFETCH_LOG_LEVEL`"
-msgstr ""
+msgstr "环境变量 `PYGEOFETCH_LOG_LEVEL`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:27
 msgid ""
 "`PyGeoFetch(config_path=\"my.yaml\")` loads the file into `client.config`, a"
 " plain dictionary. Nothing in the engine currently reads it."
 msgstr ""
+"`PyGeoFetch(config_path=\"my.yaml\")` 会将该文件加载到 "
+"`client.config`（一个普通字典）中。目前引擎中没有任何部分读取它。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:30
 msgid "Credentials"
-msgstr ""
+msgstr "凭据"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:32
 msgid ""
@@ -140,10 +153,12 @@ msgid ""
 "[Authentication](../data-access/authentication.md) and "
 "[Security](security.md)."
 msgstr ""
+"凭据**不会**从环境变量中读取。请使用 `add_credentials()` 或 `pygeofetch auth add` "
+"显式传递。参见[身份验证](../data-access/authentication.md)和[安全](security.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:36
 msgid "The settings model"
-msgstr ""
+msgstr "设置模型"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:38
 msgid ""
@@ -151,6 +166,8 @@ msgid ""
 "place to store preferences. The schema and bundled defaults "
 "(`pygeofetch/config/defaults.yaml`) are:"
 msgstr ""
+"`Settings` 模型和 `pygeofetch config` "
+"命令提供了一个存储偏好设置的结构化位置。其模式和内置默认值（`pygeofetch/config/defaults.yaml`）如下："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:105
 msgid ""
@@ -158,18 +175,20 @@ msgid ""
 "`DownloadOptions()` defaults to `parallel=4`, `verify_checksum=False` and "
 "`SHA256`, not the values above."
 msgstr ""
+"请注意它们与运行时实际应用的值之间的差异。`DownloadOptions()` 默认为 "
+"`parallel=4`、`verify_checksum=False` 和 `SHA256`，而不是上述值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:108
 msgid "Precedence"
-msgstr ""
+msgstr "优先级"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:110
 msgid "When `Settings` is loaded, later sources override earlier ones:"
-msgstr ""
+msgstr "加载 `Settings` 时，后面的来源会覆盖前面的来源："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:112
 msgid "Bundled defaults (`pygeofetch/config/defaults.yaml`)"
-msgstr ""
+msgstr "内置默认值（`pygeofetch/config/defaults.yaml`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:113
 msgid "`~/.pygeofetch/config.yaml`"
@@ -179,11 +198,11 @@ msgstr ""
 msgid ""
 "Environment variables `PYGEOFETCH_<SECTION>__<FIELD>` (case-insensitive, "
 "double underscore for nesting)"
-msgstr ""
+msgstr "环境变量 `PYGEOFETCH_<SECTION>__<FIELD>`（不区分大小写，嵌套使用双下划线）"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:122
 msgid "Configuration commands"
-msgstr ""
+msgstr "配置命令"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:132
 msgid ""
@@ -191,6 +210,8 @@ msgid ""
 "value is stored and shown by `config show`, but search and download do not "
 "read it."
 msgstr ""
+"`config set` 会写入 `~/.pygeofetch/config.yaml`。如上所述，该值会被存储并由 `config show` "
+"显示，但搜索和下载不会读取它。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:136
 msgid ""
@@ -198,7 +219,10 @@ msgid ""
 "and always prints `3600`. `pygeofetch cache ttl set N` does store "
 "`cache.ttl_seconds`. See [Known issues](known-issues.md)."
 msgstr ""
+"`pygeofetch cache ttl show` 读取的是 `Settings` 上不存在的字段，因此始终输出 "
+"`3600`。`pygeofetch cache ttl set N` 确实会存储 "
+"`cache.ttl_seconds`。参见[已知问题](known-issues.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/configuration.md:141
 msgid "In Python"
-msgstr ""
+msgstr "在 Python 中"

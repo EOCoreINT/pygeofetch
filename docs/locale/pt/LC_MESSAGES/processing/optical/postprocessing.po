@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,10 +24,12 @@ msgstr "Pós-processamento"
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:3
 msgid "Turn a raster analysis result into GIS-ready vectors and statistics."
 msgstr ""
+"Transforme o resultado de uma análise raster em vetores e estatísticas "
+"prontos para SIG."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:13
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:15
 msgid ""
@@ -39,6 +41,15 @@ msgid ""
 "statistics are computed for each zone you supply, and finished rasters are "
 "compressed or written as Cloud-Optimized GeoTIFFs."
 msgstr ""
+"Os resultados em raster nem sempre são o produto final. Planejadores e "
+"gestores muitas vezes precisam de polígonos que possam abrir em um SIG, "
+"estatísticas resumidas por parcela ou distrito e arquivos pequenos o "
+"bastante para serem compartilhados. As ferramentas de pós-processamento "
+"convertem o resultado de uma análise nessas formas: rasters com limiar viram"
+" polígonos, os polígonos são suavizados e regularizados em formas mais "
+"limpas, as estatísticas são calculadas para cada zona que você fornece, e os"
+" rasters finalizados são compactados ou gravados como Cloud-Optimized "
+"GeoTIFFs."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:17
 msgid ""
@@ -48,10 +59,15 @@ msgid ""
 "vector tools, such as buffer, centroids, dissolve and overlay, then prepare "
 "the layers for the final map or report."
 msgstr ""
+"Uma sequência típica parte de um índice ou mapa de classes, vetoriza as "
+"células que atendem a uma condição, limpa a geometria e, então, resume o "
+"raster sob cada parcela ou limite administrativo em uma tabela. As "
+"ferramentas de vetor para vetor, como buffer, centroides, dissolve e "
+"overlay, preparam então as camadas para o mapa ou relatório final."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:19
 msgid "Raster → vector"
-msgstr ""
+msgstr "Raster → vetor"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:28
 msgid ""
@@ -62,18 +78,25 @@ msgid ""
 "`min_area` discards polygons smaller than that area in CRS units² — useful "
 "for dropping single-pixel noise from a noisy classification."
 msgstr ""
+"Converte um raster (por exemplo, uma classificação ou uma máscara binária) "
+"em polígonos vetoriais. `threshold` aplica um corte binário antes da "
+"vetorização (pixels ≥ threshold → 1, caso contrário 0) — omita-o para "
+"vetorizar diretamente os valores discretos existentes do raster. `format` "
+"aceita `\"geojson\"`, `\"gpkg\"` ou `\"shp\"`. `min_area` descarta polígonos"
+" menores que essa área em unidades do CRS² — útil para eliminar ruído de "
+"pixels isolados em uma classificação ruidosa."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:36
 msgid "Vector cleanup"
-msgstr ""
+msgstr "Limpeza de vetores"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "What it does"
-msgstr ""
+msgstr "O que faz"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`smooth(input, tolerance=1.0, method=\"simplify\")`"
@@ -84,6 +107,9 @@ msgid ""
 "Simplify/smooth boundaries — `\"simplify\"` (Douglas-Peucker) or "
 "`\"buffer\"` (buffer then un-buffer, rounds sharp corners)"
 msgstr ""
+"Simplifica/suaviza limites — `\"simplify\"` (Douglas-Peucker) ou "
+"`\"buffer\"` (aplica buffer e depois remove o buffer, arredondando cantos "
+"agudos)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`regularize(input, corner_threshold_deg=30.0)`"
@@ -94,6 +120,9 @@ msgid ""
 "Orthogonalize building footprints or irregular polygons — snaps edges to "
 "right angles where the corner angle is within `corner_threshold_deg` of 90°"
 msgstr ""
+"Ortogonaliza pegadas de edificações ou polígonos irregulares — ajusta as "
+"arestas para ângulos retos quando o ângulo do canto está dentro de "
+"`corner_threshold_deg` de 90°"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`buffer(input, distance=10.0, cap_style=\"round\", join_style=\"round\")`"
@@ -105,6 +134,9 @@ msgid ""
 "`\"round\"`/`\"flat\"`/`\"square\"`. `join_style`: "
 "`\"round\"`/`\"mitre\"`/`\"bevel\"`"
 msgstr ""
+"Aplica buffer às geometrias por `distance` (unidades do CRS). `cap_style`: "
+"`\"round\"`/`\"flat\"`/`\"square\"`. `join_style`: "
+"`\"round\"`/`\"mitre\"`/`\"bevel\"`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`centroids(input)`"
@@ -112,7 +144,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "Extract centroid points from polygon/line geometries"
-msgstr ""
+msgstr "Extrai pontos centroides de geometrias de polígono/linha"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`add_geometry_metrics(input)`"
@@ -123,10 +155,12 @@ msgid ""
 "Adds `area_m2`, `perimeter_m`, and `compactness` (Polsby-Popper — 1.0 = a "
 "perfect circle) columns"
 msgstr ""
+"Adiciona as colunas `area_m2`, `perimeter_m` e `compactness` (Polsby-Popper "
+"— 1,0 = um círculo perfeito)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:54
 msgid "Zonal statistics"
-msgstr ""
+msgstr "Estatísticas zonais"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:63
 msgid ""
@@ -135,10 +169,15 @@ msgid ""
 "touching a zone's boundary, not just pixels whose center falls inside it — "
 "matters for small zones relative to pixel size."
 msgstr ""
+"Calcula `mean`, `median`, `min`, `max`, `std`, `count` por zona por padrão; "
+"passe `stats` para calcular um subconjunto. `all_touched=True` inclui "
+"qualquer pixel que toque o limite de uma zona, e não apenas os pixels cujo "
+"centro cai dentro dela — importante para zonas pequenas em relação ao "
+"tamanho do pixel."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:68
 msgid "Compression & Cloud Optimized GeoTIFF"
-msgstr ""
+msgstr "Compressão e GeoTIFF otimizado para nuvem (Cloud Optimized GeoTIFF)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:77
 msgid ""
@@ -149,10 +188,17 @@ msgid ""
 "cloud-native raster tools (rasterio, GDAL VSI, STAC-based viewers) expect "
 "for efficient partial reads."
 msgstr ""
+"`compress()` aplica compressão GeoTIFF sem perdas (`\"lzw\"`, `\"deflate\"`,"
+" `\"zstd\"`, `\"packbits\"`) e informa a taxa de compressão medida e os "
+"tamanhos dos arquivos em `result.metadata` — não uma estimativa. `cog()` "
+"converte para um Cloud Optimized GeoTIFF (tiling interno + overviews), o "
+"formato que a maioria das ferramentas raster nativas de nuvem (rasterio, "
+"GDAL VSI, visualizadores baseados em STAC) espera para leituras parciais "
+"eficientes."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:85
 msgid "Vector ↔ vector overlay"
-msgstr ""
+msgstr "Sobreposição vetor ↔ vetor"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:87
 msgid ""
@@ -161,6 +207,11 @@ msgid ""
 "three are thin wrappers around GeoPandas's own overlay engine, so behavior "
 "matches `geopandas.overlay`/`dissolve`/`sjoin` if you already know them."
 msgstr ""
+"Combine, una e relacione duas camadas vetoriais por sua geometria — "
+"diferente de `zonal_stats` acima, que relaciona um *raster* a zonas "
+"vetoriais. Essas três funções são wrappers finos em torno do próprio "
+"mecanismo de sobreposição do GeoPandas, portanto o comportamento coincide "
+"com `geopandas.overlay`/`dissolve`/`sjoin` se você já os conhece."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`overlay(left, right, output, how=\"intersection\")`"
@@ -172,6 +223,9 @@ msgid ""
 "`\"union\"`, `\"difference\"` (left minus right), "
 "`\"symmetric_difference\"`, or `\"identity\"`"
 msgstr ""
+"Combina duas camadas por relação geométrica — `\"intersection\"`, "
+"`\"union\"`, `\"difference\"` (esquerda menos direita), "
+"`\"symmetric_difference\"` ou `\"identity\"`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`dissolve(input, output, by=None, aggfunc=\"first\")`"
@@ -182,6 +236,8 @@ msgid ""
 "Merge polygons sharing the same value in the `by` column into single "
 "geometries; omit `by` to merge everything into one"
 msgstr ""
+"Une polígonos que compartilham o mesmo valor na coluna `by` em geometrias "
+"únicas; omita `by` para unir tudo em uma só"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
 msgid "`spatial_join(left, right, output, how=\"inner\", predicate=\"intersects\")`"
@@ -193,6 +249,9 @@ msgid ""
 "(`\"intersects\"`, `\"within\"`, `\"contains\"`, `\"touches\"`, "
 "`\"crosses\"`, `\"overlaps\"`) instead of a shared key column"
 msgstr ""
+"Anexa os atributos de `right` a `left` por relação espacial "
+"(`\"intersects\"`, `\"within\"`, `\"contains\"`, `\"touches\"`, "
+"`\"crosses\"`, `\"overlaps\"`) em vez de uma coluna-chave compartilhada"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:112
 msgid ""
@@ -203,6 +262,13 @@ msgid ""
 "the result, unlike raster outputs which have a sensible default naming "
 "convention."
 msgstr ""
+"As três reprojetam `right` para corresponder ao CRS de `left` "
+"automaticamente quando os dois diferem — verificado e tratado, em vez de "
+"deixar produzir silenciosamente um resultado errado ou vazio. As três exigem"
+" um caminho `output` explícito, já que o formato vetorial adequado (GeoJSON,"
+" Shapefile, GeoPackage) depende do que você fará com o resultado, ao "
+"contrário das saídas raster, que têm uma convenção de nomenclatura padrão "
+"sensata."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:119
 msgid ""
@@ -211,3 +277,7 @@ msgid ""
 "an edge. If you need points *inside* a polygon, not on its boundary, use "
 "`predicate=\"within\"` instead."
 msgstr ""
+"**Um erro comum que vale a pena destacar**: `predicate=\"intersects\"` (o "
+"padrão de `spatial_join`) também corresponde a feições que apenas se tocam "
+"em uma aresta. Se você precisa de pontos *dentro* de um polígono, e não "
+"sobre seu limite, use `predicate=\"within\"`."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,11 +25,11 @@ msgstr "快速入门（5 分钟）"
 msgid ""
 "The full path from nothing installed to a file on disk, using a free, no-"
 "account provider — no login, no API key, no waiting on an approval email."
-msgstr ""
+msgstr "从未安装任何东西到磁盘上拿到一个文件的完整流程，使用免费、无需账号的提供商——无需登录，无需 API 密钥，也无需等待审批邮件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:7
 msgid "What you will do"
-msgstr ""
+msgstr "你将要做什么"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:9
 msgid ""
@@ -43,6 +43,9 @@ msgid ""
 " the `PyGeoFetch` client, and they share the same query and download "
 "options."
 msgstr ""
+"本演练分四个简短步骤，带你从一个空环境到在磁盘上获得一个场景，所用的提供商无需账号，因此在你获得第一个结果的路上不会有任何阻碍。你将安装软件包，运行一次搜索并将结果写入"
+" GeoJSON 文件，从该文件下载排名最靠前的场景，并检查结果。随后会用 Python 重复同样的工作流程，让你看到命令行与 API "
+"如何对应：命令行界面中的每个命令在 `PyGeoFetch` 客户端上都有对应的方法，并且它们共用相同的查询和下载选项。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:11
 msgid ""
@@ -56,57 +59,61 @@ msgid ""
 "access/search.md) to learn the filters, and to [Authentication](../data-"
 "access/authentication.md) when you want providers that require a login."
 msgstr ""
+"阅读时有两点值得牢记。第一，搜索和下载是两个独立的步骤。搜索只返回场景的描述（标识符、日期、覆盖范围、云量以及文件列表），因此速度很快，你可以在决定下载什么之前随意多次运行。第二，GeoJSON"
+" 结果文件是这两个步骤之间的交接物，因此你可以今天搜索、检查该文件，之后或在另一台机器上再下载。这个流程跑通之后，请继续阅读[搜索](../data-"
+"access/search.md)了解各种过滤条件，当你需要使用要求登录的提供商时，再阅读[身份验证](../data-"
+"access/authentication.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:13
 msgid "1. Install"
-msgstr ""
+msgstr "1. 安装"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:19
 msgid "2. Search"
-msgstr ""
+msgstr "2. 搜索"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:31
 msgid ""
 "This searches AWS Earth's open Sentinel-2 archive and writes a real GeoJSON "
 "results file rather than just printing to the terminal."
-msgstr ""
+msgstr "这会搜索 AWS Earth 的开放 Sentinel-2 归档，并将真实的 GeoJSON 结果文件写出，而不是仅仅打印到终端。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:34
 msgid "3. Download"
-msgstr ""
+msgstr "3. 下载"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:43
 msgid "Reads that same file and downloads the top-ranked scene."
-msgstr ""
+msgstr "读取同一个文件并下载排名最靠前的场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:45
 msgid "4. Verify"
-msgstr ""
+msgstr "4. 验证"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:51
 msgid ""
 "A Sentinel-2 scene, on disk, ready to open in QGIS or load with rasterio."
-msgstr ""
+msgstr "一个 Sentinel-2 场景已保存在磁盘上，可直接在 QGIS 中打开或用 rasterio 加载。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:54
 msgid "The same thing in Python"
-msgstr ""
+msgstr "用 Python 完成同样的事"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:56
 msgid ""
 "If you'd rather script this than use the CLI, here's the exact same five "
 "minutes as Python:"
-msgstr ""
+msgstr "如果你更愿意编写脚本而不是使用 CLI，下面就是完全相同的五分钟流程的 Python 版本："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:81
 msgid ""
 "No credentials, no `auth add` step needed — `aws_earth` is a real, free, no-"
 "account provider, same as the CLI example above."
-msgstr ""
+msgstr "无需凭据，也无需 `auth add` 步骤——`aws_earth` 是真实的、免费的、无需账号的提供商，与上面的 CLI 示例相同。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:84
 msgid "What's next"
-msgstr ""
+msgstr "下一步"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:86
 msgid ""
@@ -114,6 +121,8 @@ msgid ""
 " and hover for scene details. See "
 "[MapViewer](../visualization/mapviewer.md)."
 msgstr ""
+"**先在地图上查看**——在决定下载之前，先查看覆盖范围，并将鼠标悬停以查看场景详情。参见 "
+"[MapViewer](../visualization/mapviewer.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:89
 msgid ""
@@ -121,6 +130,8 @@ msgid ""
 "line each. See [Spectral Indices](../processing/optical/spectral-"
 "indices.md)."
 msgstr ""
+"**计算一些东西**——NDVI、水体指数、燃烧严重程度等，每个只需一行。参见[光谱指数](../processing/optical/spectral-"
+"indices.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:91
 msgid ""
@@ -128,6 +139,8 @@ msgid ""
 "download quality gate for optical imagery. See [Optical Data Validation & "
 "Preflight](../data-access/optical-validation.md)."
 msgstr ""
+"**自动跳过多云或偏离目标的场景**——针对光学影像的可配置下载前质量门控。参见[光学数据验证与预检](../data-access/optical-"
+"validation.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:94
 msgid ""
@@ -136,12 +149,15 @@ msgid ""
 "Processing](../processing/sar-insar/sar.md) or [InSAR "
 "Processing](../processing/sar-insar/insar.md)."
 msgstr ""
+"**要处理 SAR/Sentinel-1？** 去斑、定标以及完整的 InSAR 处理链与光学工作流程不同。参见 [SAR "
+"处理](../processing/sar-insar/sar.md)或 [InSAR 处理](../processing/sar-"
+"insar/insar.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:97
 msgid ""
 "**Doing this on a schedule?** Turn a one-off search into a repeatable "
 "pipeline. See [Pipelines & Batch Processing](../workflows/pipelines.md)."
-msgstr ""
+msgstr "**需要按计划执行？** 将一次性搜索变为可重复的流水线。参见[流水线与批处理](../workflows/pipelines.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/quickstart.md:99
 msgid ""
@@ -149,3 +165,5 @@ msgid ""
 "issues on Docker/SSH. See [Error Handling & Resilience](../reference/error-"
 "handling.md)."
 msgstr ""
+"**出了问题？** 身份验证错误、超时、零结果、Docker/SSH 上的 keyring "
+"问题。参见[错误处理与容错](../reference/error-handling.md)。"

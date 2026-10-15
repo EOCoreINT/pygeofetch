@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,12 @@ msgid ""
 "*dates* of the *same* sensor — these combine multiple *sensor types* on "
 "(usually) the same or overlapping dates."
 msgstr ""
+"Cinco pipelines padrão que combinam, cada um, **dois tipos diferentes de "
+"sensor** para fazer algo que nenhum dos dois faz de forma confiável sozinho."
+" Esta é uma ideia diferente dos cinco pipelines de [Processamento SAR](sar-"
+"insar/sar.md), que combinam várias *datas* do *mesmo* sensor — estes "
+"combinam vários *tipos de sensor* em datas (geralmente) iguais ou "
+"sobrepostas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:10
 msgid ""
@@ -38,10 +44,15 @@ msgid ""
 "with pipeline-specific detail — a consistent interface whether you're fusing"
 " InSAR and optical, or computing DEM volumes."
 msgstr ""
+"Todo pipeline aqui retorna o mesmo tipo real "
+"`pygeofetch.sar.pipelines.PipelineResult` usado em todos os pipelines "
+"orquestrados do pygeofetch: `success`, `final_output` e um dict `metadata` "
+"com detalhes específicos do pipeline — uma interface consistente, seja para "
+"fundir InSAR e óptico ou para calcular volumes de DEM."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:21
 msgid "Choosing a pipeline"
-msgstr ""
+msgstr "Escolhendo um pipeline"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:23
 msgid ""
@@ -51,6 +62,12 @@ msgid ""
 " but is blocked by cloud. The pipelines combine the two, or combine imagery "
 "with elevation data, so that each source covers the other's weakness."
 msgstr ""
+"Cada pipeline responde a uma pergunta que um único sensor trata mal por "
+"conta própria. O radar enxerga através das nuvens e mede movimento da "
+"superfície e água, mas não distingue tipos de vegetação; a imagem óptica "
+"mostra vegetação e cobertura da terra, mas é bloqueada por nuvens. Os "
+"pipelines combinam os dois, ou combinam imagens com dados de elevação, de "
+"modo que cada fonte cubra a fraqueza da outra."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:25
 msgid ""
@@ -66,10 +83,22 @@ msgid ""
 "the quality information needed to judge it, and the parameters used, so that"
 " an analysis can be reproduced."
 msgstr ""
+"Escolha pela pergunta. Para movimento do terreno em áreas onde a "
+"interferometria falha parcialmente, use a fusão de deslocamento InSAR e "
+"óptico. Para a extensão de uma inundação quando as nuvens obscurecem parte "
+"do evento, use o mapeamento de inundação SAR e óptico. Para comparar cenas "
+"ópticas em terreno inclinado sem que diferenças de iluminação criem falsas "
+"mudanças, use a detecção de mudanças com correção de terreno. Para medir o "
+"volume ganho ou perdido, por exemplo em uma cava ou uma pilha de estoque, "
+"compare dois modelos de elevação com o pipeline de DEM de Diferença. E para "
+"encontrar perturbação da vegetação abaixo do dossel, combine o NDVI com a "
+"coerência do radar. Todo pipeline retorna um objeto de resultado com o "
+"raster de saída, as informações de qualidade necessárias para julgá-lo e os "
+"parâmetros usados, de modo que uma análise possa ser reproduzida."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:27
 msgid "1. InSAR + Optical Displacement Fusion"
-msgstr ""
+msgstr "1. Fusão de deslocamento InSAR + óptico"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:52
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:143
@@ -77,7 +106,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:335
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:436
 msgid "Why this exists"
-msgstr ""
+msgstr "Por que isto existe"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:54
 msgid ""
@@ -90,6 +119,16 @@ msgid ""
 "(typically sub-metre to a few metres), but keeps working exactly where InSAR"
 " can't, since it never depends on phase coherence at all."
 msgstr ""
+"Isto formaliza a combinação comprovada que a própria **execução de validação"
+" da Mina de Bu'ertai** deste projeto demonstrou funcionar: o [InSAR](sar-"
+"insar/insar.md) fornece um deslocamento vertical preciso (em escala "
+"milimétrica), mas é estruturalmente cego onde quer que a mudança do terreno "
+"entre as duas passagens SAR exceda o limite de coerência de fase — uma "
+"restrição física, não um problema de ajuste. O [rastreamento de deslocamento"
+" de pixels ópticos](sar-insar/optical-offset-tracking.md) é mais grosseiro "
+"(tipicamente de submétrico a alguns metros), mas continua funcionando "
+"exatamente onde o InSAR não consegue, pois nunca depende de coerência de "
+"fase."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:64
 msgid ""
@@ -98,11 +137,16 @@ msgid ""
 "**83.7%**. Neither number is a target — both are what actually came out of a"
 " executed pipeline run."
 msgstr ""
+"Na execução de Bu'ertai, a cobertura final utilizável do InSAR foi de "
+"**0,1%** da cena processada. O rastreamento de deslocamento óptico, na mesma"
+" área e nas mesmas datas, cobriu **83,7%**. Nenhum dos dois números é uma "
+"meta — ambos são o que realmente resultou de uma execução real do pipeline."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:69
 msgid ""
 "What this pipeline actually does that the two underlying functions don't"
 msgstr ""
+"O que este pipeline realmente faz que as duas funções subjacentes não fazem"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:71
 msgid ""
@@ -113,12 +157,22 @@ msgid ""
 "`step_size` × the optical pixel size — e.g. 160m for a 10m-pixel image with "
 "`step_size=16`) essentially never share a native grid. This pipeline:"
 msgstr ""
+"[`fuse_insar_optical`](sar-insar/optical-offset-tracking.md#fusing-insar-"
+"and-optical) por si só pressupõe que as duas entradas já tenham o mesmo "
+"formato. Na realidade, o InSAR (Sentinel-1, frequentemente com pixels de "
+"5-20 m após o multilook) e o rastreamento de deslocamento óptico "
+"(Sentinel-2, que produz uma grade de deslocamento com `step_size` × o "
+"tamanho do pixel óptico — por exemplo, 160 m para uma imagem de pixel de 10 "
+"m com `step_size=16`) praticamente nunca compartilham uma grade nativa. Este"
+" pipeline:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:79
 msgid ""
 "Runs `prepare_optical_pair` and `compute_pixel_offsets` on the raw optical "
 "rasters."
 msgstr ""
+"Executa `prepare_optical_pair` e `compute_pixel_offsets` nos rasters ópticos"
+" brutos."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:81
 msgid ""
@@ -128,20 +182,27 @@ msgid ""
 "original image's own transform gives for that window's pixel-coordinate "
 "center)."
 msgstr ""
+"Constrói a transformação corretamente georreferenciada para a grade esparsa "
+"de deslocamento resultante (verificada em relação a um exemplo calculado à "
+"mão antes do uso — o centro em coordenadas de terreno da janela `(0, 0)` "
+"deve coincidir exatamente com o que a transformação da própria imagem "
+"original fornece para o centro, em coordenadas de pixel, dessa janela)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:86
 msgid ""
 "Reprojects the optical displacement and SNR rasters onto the InSAR grid via "
 "`rasterio.warp.reproject`."
 msgstr ""
+"Reprojeta os rasters de deslocamento óptico e de SNR para a grade do InSAR "
+"por meio de `rasterio.warp.reproject`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:88
 msgid "Calls `fuse_insar_optical` on the now-aligned arrays."
-msgstr ""
+msgstr "Chama `fuse_insar_optical` nos arrays agora alinhados."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:90
 msgid "Edge effect"
-msgstr ""
+msgstr "Efeito de borda"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:92
 msgid ""
@@ -154,19 +215,28 @@ msgid ""
 " if you see InSAR-dominant pixels exactly at your scene's edges even under "
 "low coherence, this is why."
 msgstr ""
+"A correlação baseada em janelas não consegue medir exatamente na borda de "
+"uma imagem — uma janela precisa de pixels além do seu próprio centro para "
+"correlacionar. Isso significa que uma faixa de borda da grade do InSAR não "
+"tem cobertura óptica real após a reprojeção e recorre corretamente ao InSAR,"
+" independentemente da coerência ali (pela própria lógica de fallback real e "
+"documentada de `fuse_insar_optical`: usar a fonte que estiver de fato "
+"presente). Este é o comportamento correto, não um bug — se você vir pixels "
+"dominados pelo InSAR exatamente nas bordas da sua cena, mesmo com baixa "
+"coerência, é por isso."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:102
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:396
 msgid "Output"
-msgstr ""
+msgstr "Saída"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "File"
-msgstr ""
+msgstr "Arquivo"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "Contents"
-msgstr ""
+msgstr "Conteúdo"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "`fused_displacement.tif`"
@@ -177,6 +247,8 @@ msgid ""
 "The fused value — InSAR's where InSAR-dominant, optical's where optical-"
 "dominant, blended in the transition zone"
 msgstr ""
+"O valor fundido — o do InSAR onde o InSAR é dominante, o do óptico onde o "
+"óptico é dominante, combinado na zona de transição"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "`fused_source_mask.tif`"
@@ -187,6 +259,8 @@ msgid ""
 "`2`=InSAR-dominant, `1`=transition, `0`=optical-dominant — **always check "
 "this alongside the fused value**"
 msgstr ""
+"`2`=dominado pelo InSAR, `1`=transição, `0`=dominado pelo óptico — **sempre "
+"verifique isto junto com o valor fundido**"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:110
 msgid ""
@@ -196,10 +270,15 @@ msgid ""
 "produced it — read the source mask, don't treat the fused value as one "
 "uniform physical quantity."
 msgstr ""
+"Conforme a ressalva científica do próprio `fuse_insar_optical`: o InSAR "
+"fornece deslocamento *vertical*, o óptico fornece magnitude *horizontal*. O "
+"significado físico do raster fundido em qualquer pixel depende de qual fonte"
+" realmente o produziu — leia a máscara de fonte, não trate o valor fundido "
+"como uma única grandeza física uniforme."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:119
 msgid "2. SAR + Optical Flood/Water Mapping"
-msgstr ""
+msgstr "2. Mapeamento de inundação/água com SAR + óptico"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:145
 msgid ""
@@ -210,6 +289,14 @@ msgid ""
 "gives cleaner, more precise spectral water discrimination (NDWI) wherever "
 "clouds do clear. Neither alone is as complete as the two combined."
 msgstr ""
+"A mesma ideia que o Emergency Management Service do Copernicus usa em seus "
+"próprios produtos de extensão de inundação: o SAR enxerga através da "
+"cobertura de nuvens que quase sempre acompanha um evento de inundação (uma "
+"propriedade física do radar — as nuvens são efetivamente transparentes nos "
+"comprimentos de onda do SAR, não é um apelo de marketing); o óptico oferece "
+"uma discriminação espectral da água (NDWI) mais limpa e precisa onde quer "
+"que as nuvens se abram. Nenhum dos dois sozinho é tão completo quanto os "
+"dois combinados."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:153
 msgid ""
@@ -219,38 +306,46 @@ msgid ""
 "pipeline's own contribution is the optical NDWI side and the fusion logic "
 "between the two."
 msgstr ""
+"Reutiliza [`flood_mapping_pipeline`](sar-"
+"insar/sar.md#flood_mapping_pipeline) para o lado SAR (que já impõe a cadeia "
+"real de pré-requisitos calibrar→reduzir speckle), em vez de reimplementar a "
+"detecção de inundação por SAR — a contribuição própria deste pipeline é o "
+"lado óptico com NDWI e a lógica de fusão entre os dois."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:159
 msgid "Fusion modes"
-msgstr ""
+msgstr "Modos de fusão"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Mode"
-msgstr ""
+msgstr "Modo"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Behaviour"
-msgstr ""
+msgstr "Comportamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "When to use"
-msgstr ""
+msgstr "Quando usar"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "`cloud_aware` (default)"
-msgstr ""
+msgstr "`cloud_aware` (padrão)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid ""
 "Trust optical wherever it has a cloud-free reading; fall back to SAR "
 "wherever clouded"
 msgstr ""
+"Confiar no óptico onde houver uma leitura sem nuvens; recorrer ao SAR onde "
+"houver nuvens"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid ""
 "The physically-motivated default — optical is more precise where it has "
 "signal"
 msgstr ""
+"O padrão com motivação física — o óptico é mais preciso onde tem sinal"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "`union`"
@@ -259,12 +354,15 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Water if *either* source says water, wherever both have coverage"
 msgstr ""
+"Água se *qualquer uma* das fontes indicar água, onde ambas tiverem cobertura"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid ""
 "Disaster response, where missing flooded area is a worse error than a false "
 "positive"
 msgstr ""
+"Resposta a desastres, em que deixar de detectar área inundada é um erro pior"
+" que um falso positivo"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "`intersection`"
@@ -272,15 +370,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Water only where *both* sources agree"
-msgstr ""
+msgstr "Água somente onde *ambas* as fontes concordarem"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Higher-confidence, fewer false positives, less complete coverage"
-msgstr ""
+msgstr "Maior confiança, menos falsos positivos, cobertura menos completa"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:167
 msgid "NDWI threshold"
-msgstr ""
+msgstr "Limiar do NDWI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:169
 msgid ""
@@ -291,10 +389,17 @@ msgid ""
 "different cutoff (turbid or sediment-laden water can shift NDWI away from "
 "the clean-water assumption the original threshold was calibrated against)."
 msgstr ""
+"Usa a fórmula do NDWI de McFeeters (1996) (`(GREEN - NIR) / (GREEN + NIR)`) "
+"por meio de [`pygeofetch.processor.indices.SpectralIndex`](optical/spectral-"
+"indices.md), com o limiar original de McFeeters, `0.0`, como padrão — "
+"substitua `optical_ndwi_threshold` se os corpos d'água da sua cena "
+"precisarem de um corte diferente (água turva ou carregada de sedimentos pode"
+" deslocar o NDWI para longe da premissa de água limpa em relação à qual o "
+"limiar original foi calibrado)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:178
 msgid "Cloud mask classes"
-msgstr ""
+msgstr "Classes da máscara de nuvens"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:180
 msgid ""
@@ -303,10 +408,14 @@ msgid ""
 "probability), and thin cirrus — override if using a different sensor's own "
 "cloud-mask convention."
 msgstr ""
+"O padrão `cloud_mask_scl_classes=[3, 8, 9, 10]` corresponde aos próprios "
+"valores da banda SCL do Sentinel-2 para sombra de nuvem, nuvem "
+"(probabilidade média), nuvem (probabilidade alta) e cirro fino — substitua "
+"se estiver usando a convenção de máscara de nuvens de outro sensor."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:185
 msgid "Optical nodata and reflectance scaling"
-msgstr ""
+msgstr "Nodata óptico e escala de refletância"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:187
 msgid ""
@@ -318,6 +427,14 @@ msgid ""
 "in `metadata[\"n_optical_nodata_pixels\"]`. A NIR band or cloud mask whose "
 "shape differs from the green band raises a clear error."
 msgstr ""
+"Pixels ópticos sem dados utilizáveis são tratados como nuvem, de modo que o "
+"SAR decide sobre eles. Um pixel conta como no-data quando a banda verde ou a"
+" NIR declara nodata, quando ambas as bandas são `0` ou quando o NDWI não é "
+"finito. Sem isso, `0/0` resulta em `NaN`, `NaN > threshold` é falso, e o "
+"pixel seria lido como *terra* sem nuvens e anularia uma inundação que o SAR "
+"viu. O número desses pixels está em `metadata[\"n_optical_nodata_pixels\"]`."
+" Uma banda NIR ou máscara de nuvens cujo formato difere do da banda verde "
+"gera um erro claro."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:194
 msgid ""
@@ -328,10 +445,17 @@ msgid ""
 "optical_offset) * optical_scale` to both bands before NDWI. The defaults "
 "(`0.0`, `1.0`) leave the values unchanged."
 msgstr ""
+"O NDWI **não é invariante ao offset**. O Sentinel-2 L2A na baseline de "
+"processamento 04.00 ou posterior armazena `DN = reflectance x 10000 + 1000`,"
+" de modo que um índice calculado sobre DNs brutos fica comprimido em direção"
+" a zero. Passe `optical_offset=-1000, optical_scale=1e-4` para esses dados. "
+"Eles são aplicados como `(DN + optical_offset) * optical_scale` a ambas as "
+"bandas antes do NDWI. Os padrões (`0.0`, `1.0`) deixam os valores "
+"inalterados."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:202
 msgid "3. Terrain-Corrected Optical Change Detection"
-msgstr ""
+msgstr "3. Detecção de mudanças ópticas com correção de terreno"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:231
 msgid ""
@@ -344,6 +468,15 @@ msgid ""
 "illumination difference alone can look exactly like change to a naive pixel-"
 "by-pixel comparison."
 msgstr ""
+"Em terreno montanhoso ou de relevo acentuado, a detecção de mudanças óptica "
+"bruta confunde mudança de cobertura da terra com artefatos de "
+"sombra/iluminação do próprio terreno. Uma encosta voltada para o sol parece "
+"mais clara; a mesma encosta voltada para o lado oposto parece mais escura — "
+"independentemente de qualquer mudança real no terreno. Como a posição do sol"
+" quase nunca é idêntica entre duas datas de aquisição diferentes (estação "
+"diferente, horário diferente, ou ambos), essa diferença de iluminação, por "
+"si só, pode parecer exatamente uma mudança para uma comparação ingênua pixel"
+" a pixel."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:241
 msgid ""
@@ -354,10 +487,16 @@ msgid ""
 "safeguards-custom-dems-layovershadow-and-topographic-residuals) into optical"
 " illumination correction."
 msgstr ""
+"Este pipeline calcula a posição solar independente de cada data e aplica a "
+"correção topográfica por cosseno padrão (Teillet et al. 1982) antes de "
+"calcular a diferença — estendendo à correção de iluminação óptica a mesma "
+"física real de declividade/aspecto já construída para a [máscara de "
+"layover/sombra do InSAR](sar-insar/insar.md#advanced-safeguards-custom-dems-"
+"layovershadow-and-topographic-residuals)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:248
 msgid "The physics"
-msgstr ""
+msgstr "A física"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:250
 msgid ""
@@ -367,42 +506,55 @@ msgid ""
 "implementation in `pvlib`, where it agrees to within 0.19° (zenith) and "
 "0.49° (azimuth) over 22 daylight cases at five latitudes and seasons:"
 msgstr ""
+"A posição solar usa a aproximação em série de Fourier de Spencer (1971), a "
+"padrão na literatura de correção topográfica e na calculadora solar da NOAA."
+" Verificações em relação a pontos de referência conhecidos e à implementação"
+" NREL SPA no `pvlib`, com a qual concorda dentro de 0,19° (zênite) e 0,49° "
+"(azimute) em 22 casos diurnos em cinco latitudes e estações:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:255
 msgid ""
 "Equator at the equinox at solar noon → zenith ≈ 0° (sun directly overhead) —"
 " confirmed."
 msgstr ""
+"Equador no equinócio ao meio-dia solar → zênite ≈ 0° (sol a pino) — "
+"confirmado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:257
 msgid ""
 "Tropic of Cancer at the June solstice at solar noon → zenith ≈ 0°, "
 "declination ≈ 23.44° — confirmed."
 msgstr ""
+"Trópico de Câncer no solstício de junho ao meio-dia solar → zênite ≈ 0°, "
+"declinação ≈ 23,44° — confirmado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:259
 msgid ""
 "45°N at the equinox at solar noon → zenith matching the real, expected "
 "`|latitude − declination|` relationship to within 0.03° — confirmed."
 msgstr ""
+"45°N no equinócio ao meio-dia solar → zênite correspondendo à relação real "
+"esperada `|latitude − declination|` dentro de 0,03° — confirmado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:263
 msgid "Cosine correction:"
-msgstr ""
+msgstr "Correção por cosseno:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:265
 msgid "L_{corrected} = L_{observed} \\times \\frac{\\cos(\\theta_z)}{\\cos(i)}"
-msgstr ""
+msgstr "L_{corrected} = L_{observed} \\times \\frac{\\cos(\\theta_z)}{\\cos(i)}"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:269
 msgid ""
 "where the local illumination angle {math}`i` (the angle between the sun's "
 "rays and the surface normal at each pixel) is:"
 msgstr ""
+"em que o ângulo de iluminação local {math}`i` (o ângulo entre os raios "
+"solares e a normal da superfície em cada pixel) é:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:272
 msgid "\\cos(i) = \\cos(s)\\cos(\\theta_z) + \\sin(s)\\sin(\\theta_z)\\cos(\\phi_s - a)"
-msgstr ""
+msgstr "\\cos(i) = \\cos(s)\\cos(\\theta_z) + \\sin(s)\\sin(\\theta_z)\\cos(\\phi_s - a)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:276
 msgid ""
@@ -410,6 +562,9 @@ msgid ""
 "`pygeofetch.insar.advanced_safeguards.slope_aspect_degrees`), "
 "{math}`\\theta_z` = solar zenith, {math}`\\phi_s` = solar azimuth."
 msgstr ""
+"— {math}`s` = declividade, {math}`a` = aspecto (ambos obtidos do DEM por "
+"meio de `pygeofetch.insar.advanced_safeguards.slope_aspect_degrees`), "
+"{math}`\\theta_z` = zênite solar, {math}`\\phi_s` = azimute solar."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:281
 msgid ""
@@ -420,10 +575,16 @@ msgid ""
 " real, known limitation of this specific method, not just this "
 "implementation of it."
 msgstr ""
+"Esta é a correção padrão mais simples (correção por cosseno) — existem "
+"métodos mais sofisticados (correção C, Minnaert, SCS+C) que lidam melhor com"
+" terreno muito íngreme ou dossel denso, e não estão implementados aqui. Se a"
+" correção por cosseno subcorrigir na sua própria área de estudo muito "
+"íngreme, essa é uma limitação real e conhecida deste método específico, não "
+"apenas desta implementação dele."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:290
 msgid "Accuracy check"
-msgstr ""
+msgstr "Verificação de acurácia"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:292
 msgid ""
@@ -434,10 +595,16 @@ msgid ""
 "purely from illumination, and (2) the pipeline's correction reduces that "
 "false signal to less than 30% of the naive amount."
 msgstr ""
+"A suíte de testes deste pipeline não verifica apenas se a fórmula executa — "
+"ela constrói um cenário sintético em que a refletância real subjacente "
+"permanece **inalterada** entre duas datas com geometria solar "
+"deliberadamente diferente e, então, confirma: (1) uma diferença ingênua, sem"
+" correção, sinaliza falsamente mudança apenas pela iluminação, e (2) a "
+"correção do pipeline reduz esse falso sinal a menos de 30% do valor ingênuo."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:302
 msgid "Input requirements"
-msgstr ""
+msgstr "Requisitos de entrada"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:304
 msgid ""
@@ -449,10 +616,18 @@ msgid ""
 "those pixels are written as `255` in the change mask, and "
 "`metadata[\"n_valid_pixels\"]` counts the rest."
 msgstr ""
+"Forneça ao pipeline **bandas de refletância** (por exemplo, a B08 do "
+"Sentinel-2), e não um índice como o NDVI. Uma correção de iluminação por "
+"cosseno é fisicamente válida para refletância, não para uma razão de bandas."
+" A declividade é calculada em metros, de modo que DEMs baseados em graus "
+"(EPSG:4326) são convertidos usando o tamanho de pixel dependente da "
+"latitude. O nodata, seja no DEM ou nos rasters ópticos, é excluído: esses "
+"pixels são gravados como `255` na máscara de mudança, e "
+"`metadata[\"n_valid_pixels\"]` conta os demais."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:312
 msgid "4. DEM Differencing / Volumetric Change"
-msgstr ""
+msgstr "4. Diferenciação de DEMs / Mudança volumétrica"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:337
 msgid ""
@@ -464,10 +639,18 @@ msgid ""
 "tracking — not just the open-pit mine or quarry that might be the most "
 "obvious use case."
 msgstr ""
+"Uma técnica padrão de geomorfologia — o \"DEM de Diferença\" (DoD), seguindo"
+" Brasington et al. (2000) e Lane et al. (2003) — que compara dois DEMs de "
+"datas diferentes para quantificar a mudança de elevação e de volume. Para "
+"uso geral: a mesma técnica se aplica a volumes de escarpas/depósitos de "
+"deslizamentos, balanço de massa de geleiras, erosão de dunas/falésias "
+"costeiras e acompanhamento do andamento de obras e terraplenagem — não "
+"apenas à mina a céu aberto ou à pedreira que podem ser o caso de uso mais "
+"óbvio."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:346
 msgid "The detail most naive implementations skip"
-msgstr ""
+msgstr "O detalhe que a maioria das implementações ingênuas ignora"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:348
 msgid ""
@@ -475,10 +658,13 @@ msgid ""
 " as change. The standard fix — Brasington et al. (2000)'s own methodology — "
 "is a propagated **Level of Detection** (LoD):"
 msgstr ""
+"A diferenciação bruta de elevação sem um limiar de incerteza trata o ruído "
+"do DEM como mudança. A correção padrão — a própria metodologia de Brasington"
+" et al. (2000) — é um **Limite de Detecção** (LoD) propagado:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:353
 msgid "\\text{LoD} = t \\sqrt{\\sigma_{old}^2 + \\sigma_{new}^2}"
-msgstr ""
+msgstr "\\text{LoD} = t \\sqrt{\\sigma_{old}^2 + \\sigma_{new}^2}"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:357
 msgid ""
@@ -486,6 +672,9 @@ msgid ""
 "statistically change; `t = 1.96` (95% confidence under a normal error "
 "assumption) is the standard default."
 msgstr ""
+"Somente os pixels em que `|elevation difference| > LoD` são tratados como "
+"mudança estatisticamente significativa; `t = 1.96` (95% de confiança sob uma"
+" suposição de erro normal) é o padrão usual."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:362
 msgid ""
@@ -498,10 +687,18 @@ msgid ""
 "threshold — and therefore every volume number this pipeline reports — "
 "meaningless."
 msgstr ""
+"`dem_old_vertical_rmse_m`/`dem_new_vertical_rmse_m` **não** são algo que "
+"esta função mede — são uma propriedade conhecida de forma independente de "
+"cada produto DEM específico que você fornece (a acurácia vertical absoluta "
+"real e publicada do SRTM costuma ser citada em torno de 5-10 m, dependendo "
+"do terreno; um DEM de fotogrametria com UAV pode ter 5-20 cm; consulte a "
+"documentação do seu próprio DEM). Errar esses valores não quebra o pipeline,"
+" mas torna o limiar de LoD — e, portanto, todo número de volume que este "
+"pipeline informa — sem significado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:372
 msgid "Accuracy check (DEM volumes)"
-msgstr ""
+msgstr "Verificação de acurácia (volumes de DEM)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:374
 msgid ""
@@ -511,10 +708,16 @@ msgid ""
 "matches the exact analytical value (50,000 m³ for a 10×10-pixel, 10m-pixel, "
 "5m-tall test case) to within 1%."
 msgstr ""
+"A suíte de testes não verifica apenas se \"sai algum número positivo\" — ela"
+" constrói uma \"pilha\" sintética de tamanho preciso (uma contagem conhecida"
+" de pixels × área de pixel conhecida × altura conhecida) e confirma que o "
+"volume de deposição calculado corresponde ao valor analítico exato (50.000 "
+"m³ para um caso de teste de 10×10 pixels, pixel de 10 m e 5 m de altura) com"
+" precisão de 1%."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:380
 msgid "Pixel area and nodata"
-msgstr ""
+msgstr "Área do pixel e nodata"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:382
 msgid ""
@@ -526,10 +729,18 @@ msgid ""
 "`-9999` void is never counted as erosion. `metadata[\"n_valid_pixels\"]` is "
 "the number of pixels used, and `pct_significant` is computed over those."
 msgstr ""
+"Os volumes precisam da área real de cada pixel em metros quadrados. Para um "
+"CRS projetado, o pipeline usa a unidade linear do CRS. Para um **CRS "
+"geográfico** (EPSG:4326, como são os DEMs SRTM e Copernicus do "
+"OpenTopography), ele calcula uma área WGS84 por linha, porque um grau de "
+"longitude diminui com a latitude. O nodata no novo DEM é mascarado tanto no "
+"caminho de mesma grade quanto no reprojetado, de modo que um vazio `-9999` "
+"nunca é contado como erosão. `metadata[\"n_valid_pixels\"]` é o número de "
+"pixels usados, e `pct_significant` é calculado sobre eles."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:389
 msgid "Grid handling"
-msgstr ""
+msgstr "Tratamento da grade"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:391
 msgid ""
@@ -537,14 +748,18 @@ msgid ""
 " onto the old DEM's grid (the same real `rasterio.warp.reproject` pattern "
 "used throughout pygeofetch) — you don't need to align them yourself first."
 msgstr ""
+"Se os dois DEMs não compartilham uma grade, o novo DEM é reprojetado "
+"automaticamente para a grade do DEM antigo (o mesmo padrão real de "
+"`rasterio.warp.reproject` usado em todo o pygeofetch) — você não precisa "
+"alinhá-los antes por conta própria."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Metadata key"
-msgstr ""
+msgstr "Chave de metadados"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Meaning"
-msgstr ""
+msgstr "Significado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`level_of_detection_m`"
@@ -552,7 +767,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "The LoD threshold actually used"
-msgstr ""
+msgstr "O limiar de LoD efetivamente usado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`n_valid_pixels`"
@@ -560,7 +775,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Pixels with valid data in both DEMs"
-msgstr ""
+msgstr "Pixels com dados válidos em ambos os DEMs"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`erosion_volume_m3`"
@@ -569,6 +784,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Real volume loss (from pixels with a significant negative difference)"
 msgstr ""
+"Perda real de volume (a partir de pixels com diferença negativa "
+"significativa)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`deposition_volume_m3`"
@@ -576,7 +793,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Real volume gain"
-msgstr ""
+msgstr "Ganho real de volume"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`net_volume_change_m3`"
@@ -595,10 +812,13 @@ msgid ""
 "Real fraction of pixels exceeding the LoD — a useful sanity check on whether"
 " your two RMSE values are sensible for the actual, observed differences"
 msgstr ""
+"Fração real de pixels que excedem o LoD — uma verificação de consistência "
+"útil para saber se os seus dois valores de RMSE são razoáveis para as "
+"diferenças realmente observadas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:409
 msgid "5. Vegetation Health + Sub-Canopy Disturbance"
-msgstr ""
+msgstr "5. Saúde da vegetação + perturbação sob o dossel"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:438
 msgid ""
@@ -610,28 +830,38 @@ msgid ""
 "it only requires the physical scatterers within each resolution cell to have"
 " moved between the two acquisitions)."
 msgstr ""
+"Os sensores ópticos enxergam o topo do dossel. Corte seletivo, limpeza do "
+"sub-bosque ou construção em estágio inicial sob um dossel ainda em pé podem "
+"deixar a copa visível praticamente inalterada — uma queda de NDVI pequena ou"
+" inexistente — enquanto a perturbação ao nível do solo é grave o bastante "
+"para decorrelacionar a fase do SAR quase imediatamente (a perda de coerência"
+" não exige mudança *visível*; exige apenas que os espalhadores físicos "
+"dentro de cada célula de resolução tenham se movido entre as duas "
+"aquisições)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:447
 msgid ""
 "This pipeline distinguishes two different situations a single-sensor "
 "approach can't tell apart:"
 msgstr ""
+"Este pipeline distingue duas situações diferentes que uma abordagem com um "
+"único sensor não consegue diferenciar:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Class"
-msgstr ""
+msgstr "Classe"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "NDVI"
-msgstr ""
+msgstr "NDVI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "SAR coherence"
-msgstr ""
+msgstr "Coerência SAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Interpretation"
-msgstr ""
+msgstr "Interpretação"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`CLASS_NO_DISTURBANCE` (0)"
@@ -639,15 +869,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Unchanged"
-msgstr ""
+msgstr "Inalterado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "High"
-msgstr ""
+msgstr "Alta"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Nothing detected"
-msgstr ""
+msgstr "Nada detectado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`CLASS_VISIBLE_DISTURBANCE` (1)"
@@ -655,15 +885,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Dropped significantly"
-msgstr ""
+msgstr "Caiu significativamente"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "(usually also drops)"
-msgstr ""
+msgstr "(geralmente também cai)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "visible canopy loss — clear-cutting, fire"
-msgstr ""
+msgstr "perda visível de dossel — corte raso, incêndio"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`CLASS_SUBCANOPY_DISTURBANCE` (2)"
@@ -671,17 +901,19 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "**Unchanged**"
-msgstr ""
+msgstr "**Inalterado**"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "**Dropped significantly**"
-msgstr ""
+msgstr "**Caiu significativamente**"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid ""
 "Real ground disturbance *invisible from above* — the pipeline's actual "
 "reason for existing"
 msgstr ""
+"Perturbação real do solo *invisível de cima* — a verdadeira razão de ser do "
+"pipeline"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:456
 msgid ""
@@ -693,6 +925,13 @@ msgid ""
 "to SAR-only nodata (zero-valued SLC pixels). The count is in "
 "`metadata[\"n_unclassified_pixels\"]`."
 msgstr ""
+"Pixels **sem evidência utilizável** são gravados como `255` (não "
+"classificado), em vez de rotulados como \"sem perturbação\" ou \"sob o "
+"dossel\". A perturbação sob o dossel é definida como perda de coerência *sem"
+" queda de NDVI*, e sem dados ópticos não há evidência de que o NDVI não "
+"caiu. Isso se aplica ao nodata óptico (nodata declarado, ambas as bandas `0`"
+" ou NDVI não finito) e ao nodata exclusivo do SAR (pixels SLC com valor "
+"zero). A contagem está em `metadata[\"n_unclassified_pixels\"]`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:462
 msgid ""
@@ -701,6 +940,10 @@ msgid ""
 "is compressed (0.198 instead of 0.292 in a test case) and "
 "`ndvi_drop_threshold` fires less often than intended."
 msgstr ""
+"O NDVI não é invariante ao offset. Para o Sentinel-2 L2A na baseline 04.00 "
+"ou posterior, passe `optical_offset=-1000, optical_scale=1e-4`; com DNs "
+"brutos, a queda de NDVI é comprimida (0,198 em vez de 0,292 em um caso de "
+"teste) e `ndvi_drop_threshold` dispara menos vezes do que o pretendido."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:466
 msgid ""
@@ -710,10 +953,15 @@ msgid ""
 "insar/sar.md#coherence_disturbance_pipeline) and `client.sar.coherence()` "
 "both already use — not a third, independent implementation."
 msgstr ""
+"Reutiliza a mesma fórmula canônica "
+"`pygeofetch.utils.sar_math.estimate_interferometric_coherence` que "
+"[`coherence_disturbance_pipeline`](sar-"
+"insar/sar.md#coherence_disturbance_pipeline) e `client.sar.coherence()` já "
+"usam — não uma terceira implementação independente."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:472
 msgid "Grid requirement"
-msgstr ""
+msgstr "Requisito de grade"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:474
 msgid ""
@@ -723,10 +971,15 @@ msgid ""
 "`coherence_disturbance_pipeline`). Reproject the optical side onto the SAR "
 "grid yourself first if they don't already match; never the reverse."
 msgstr ""
+"Os dois rasters SLC do SAR já devem compartilhar uma grade com o par óptico "
+"— este pipeline **não** reprojeta entre eles, porque os dados SLC não podem "
+"ser reamostrados sem corromper sua fase (a mesma restrição documentada para "
+"`coherence_disturbance_pipeline`). Reprojete você mesmo o lado óptico para a"
+" grade do SAR antes, se ainda não coincidirem; nunca o inverso."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:481
 msgid "Coherence-window edge effect"
-msgstr ""
+msgstr "Efeito de borda da janela de coerência"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:483
 msgid ""
@@ -741,10 +994,21 @@ msgid ""
 "disturbance combined with the coherence window's own smoothing is a genuine,"
 " physical reason why, not necessarily a detection failure."
 msgstr ""
+"A fórmula de coerência compartilhada usa uma janela de média local "
+"(`coherence_window`, padrão 7). Isso significa que as próprias *bordas* de "
+"uma região perturbada se misturam com a área coerente ao redor — verificado "
+"diretamente: uma região sintética de 10×10 pixels totalmente "
+"decorrelacionada mostrou coerência ≈0,13 no centro (bem abaixo do limiar de "
+"0,3, corretamente classificada), mas ≈0,39 nas bordas (misturada, acima do "
+"limiar). Este é o comportamento correto e esperado de um estimador de "
+"coerência em janela, não um bug — se a sua classificação de perturbação "
+"parecer um pouco menor que a área esperada, uma perturbação mais ampla "
+"combinada com a própria suavização da janela de coerência é uma razão "
+"genuína e física para isso, e não necessariamente uma falha de detecção."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:495
 msgid "Threshold tuning"
-msgstr ""
+msgstr "Ajuste de limiares"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:497
 msgid ""
@@ -754,3 +1018,8 @@ msgid ""
 "strict for sparse savanna, where the entire dynamic range of NDVI is smaller"
 " to begin with."
 msgstr ""
+"`ndvi_drop_threshold` (padrão `0.15`) é um valor moderado e comumente usado "
+"na literatura de detecção de desmatamento, mas ajuste-o à linha de base de "
+"vegetação da sua própria área — um limiar calibrado para dossel tropical "
+"denso pode ser rigoroso demais para uma savana esparsa, onde toda a faixa "
+"dinâmica do NDVI já é menor desde o início."

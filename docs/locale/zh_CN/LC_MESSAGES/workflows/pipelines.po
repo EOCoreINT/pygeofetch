@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgid ""
 "**Four different things share the word \"pipeline\" in this codebase** — "
 "this page covers the first two, clearly separated; the other two each have "
 "their own dedicated page."
-msgstr ""
+msgstr "**在这个代码库中，有四种不同的东西共用“流水线”这个词**——本页涵盖前两种，并将它们清晰区分；另外两种各有专门的页面。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:9
 msgid ""
@@ -34,6 +34,8 @@ msgid ""
 " `process` → `export`, run ad-hoc or on a cron schedule via the CLI. Built "
 "for *acquisition* workflows."
 msgstr ""
+"**YAML 流水线编排**（见下文）——`search` → `filter` → `download` → `process` → "
+"`export`，可通过 CLI 临时运行或按 cron 计划运行。专为*数据获取*工作流而设计。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:12
 msgid ""
@@ -43,6 +45,8 @@ msgid ""
 "(`.clip().reproject().ndvi().cog().run(...)`). Built for *processing* "
 "workflows on files you already have."
 msgstr ""
+"**Python 流式处理流水线**（`client.pipeline(...)`，见本页后文）——对预处理/指数/后处理/SAR "
+"操作的可链式构建器（`.clip().reproject().ndvi().cog().run(...)`）。专为对你已有文件进行*处理*的工作流而设计。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:17
 msgid ""
@@ -55,6 +59,10 @@ msgid ""
 "Processing](../processing/sar-insar/sar.md#five-standard-sar-processing-"
 "pipelines)."
 msgstr ""
+"**五种 SAR 处理流水线**（`pygeofetch.sar.pipelines`）——标准的端到端 SAR "
+"工作流（`standard_grd_preprocessing_pipeline`、`flood_mapping_pipeline`、`change_detection_pipeline`、`coherence_disturbance_pipeline`、`bright_target_detection_pipeline`），每一种都把"
+" `SARProcessor` 的原子操作编排成一条针对*同一传感器多个日期*的具名分析链。参见 [SAR 处理](../processing/sar-"
+"insar/sar.md#five-standard-sar-processing-pipelines)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:25
 msgid ""
@@ -63,26 +71,27 @@ msgid ""
 "DEM+DEM, optical+SAR) to do something neither sensor alone reliably does. "
 "See [Multi-Sensor Pipelines](../processing/multisensor.md)."
 msgstr ""
+"**五种多传感器流水线**（`pygeofetch.multisensor`）——组合两种*不同类型的传感器*（InSAR+光学、SAR+光学、DEM+光学、DEM+DEM、光学+SAR），完成单一传感器无法可靠完成的任务。参见[多传感器流水线](../processing/multisensor.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:31
 msgid ""
 "Neither 3 nor 4 is documented on this page, since both are specific to their"
 " own sensor-combination physics rather than general-purpose acquisition or "
 "file-processing chains."
-msgstr ""
+msgstr "第 3 种和第 4 种不在本页介绍，因为它们都取决于各自传感器组合的物理特性，而不是通用的数据获取或文件处理链。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:35
 msgid ""
 "There's also a fifth, simpler option for \"run this same processing chain "
 "over many files in parallel\" that isn't any of the above — see \"Batch "
 "Processing\" at the bottom of this page."
-msgstr ""
+msgstr "对于“并行地对许多文件运行同一条处理链”，还有第五种更简单的选择，它不属于上述任何一种——参见本页末尾的“批处理”。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:39
 msgid ""
 "Define recurring satellite data workflows in a single YAML file. Schedule on"
 " cron, run ad-hoc, validate before committing, watch live logs."
-msgstr ""
+msgstr "在单个 YAML 文件中定义周期性的卫星数据工作流。可按 cron 调度、临时运行、提交前验证、实时查看日志。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:45
 msgid ""
@@ -91,10 +100,13 @@ msgid ""
 "`export` copies files to local disk, uploads to S3 (`s3://...`) or GCS "
 "(`gs://...`), and can POST a webhook notification on completion."
 msgstr ""
+"**`process` 和 `export` 步骤。** `process` 复用 `DownloadOptions.post_process` 和 "
+"CLI `--post-process` 标志背后的动作执行器。`export` 将文件复制到本地磁盘，上传到 S3（`s3://...`）或 "
+"GCS（`gs://...`），并可在完成时通过 POST 发送 webhook 通知。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:50
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:52
 msgid ""
@@ -105,6 +117,9 @@ msgid ""
 "the results. You can run it once, run it on a cron schedule, or hand it to a"
 " colleague, and it behaves the same way each time."
 msgstr ""
+"当同一组步骤需要反复执行，例如每周一次或每有新影像时执行，把它们写下来比每次手动输入更好。YAML "
+"流水线描述整个数据获取过程：要搜索的区域和日期、要应用的过滤条件、要下载的内容、要运行的处理步骤，以及结果的导出位置。你可以运行一次，也可以按 cron"
+" 计划运行，或者交给同事，每次的行为都完全一致。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:54
 msgid ""
@@ -118,22 +133,26 @@ msgid ""
 "instead, and batch processing applies a function across many files in "
 "parallel."
 msgstr ""
+"流水线文件包含若干具名部分。search 步骤说明要查找什么，filter 步骤对结果进行筛选，download 步骤负责获取，process "
+"步骤应用后处理动作或指数计算，export 步骤则把成品文件发送到本地磁盘、S3 或 GCS，并可选择发送 webhook "
+"通知。请从某个内置模板开始，运行前先验证文件，然后通过 CLI 运行。对于已有文件的处理工作，Python "
+"处理流水线允许你在代码中链式组合各项操作，而批处理则可以把一个函数并行应用到许多文件上。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:56
 msgid "Pipeline steps"
-msgstr ""
+msgstr "流水线步骤"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Step"
-msgstr ""
+msgstr "步骤"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Config keys"
-msgstr ""
+msgstr "配置键"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Status"
-msgstr ""
+msgstr "状态"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`search`"
@@ -145,7 +164,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Functional"
-msgstr ""
+msgstr "可用"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`filter`"
@@ -158,7 +177,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid ""
 "Functional — `expression` is evaluated against each result's `data` object"
-msgstr ""
+msgstr "可用——`expression` 会针对每条结果的 `data` 对象求值"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`download`"
@@ -174,11 +193,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "a comma-separated action string, or a list of action strings/dicts"
-msgstr ""
+msgstr "以逗号分隔的动作字符串，或由动作字符串/字典组成的列表"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Functional — reproject/COG/NDVI/clip/etc."
-msgstr ""
+msgstr "可用——重投影/COG/NDVI/裁剪等"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`export`"
@@ -186,15 +205,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`destination` (local path, `s3://`, or `gs://`), `format`, `notify`"
-msgstr ""
+msgstr "`destination`（本地路径、`s3://` 或 `gs://`）、`format`、`notify`"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Functional — file transfer + optional webhook"
-msgstr ""
+msgstr "可用——文件传输 + 可选 webhook"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:66
 msgid "Example pipeline YAML"
-msgstr ""
+msgstr "YAML 流水线示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:100
 msgid ""
@@ -204,6 +223,9 @@ msgid ""
 "`download` step's output and writes its result forward for `export` to pick "
 "up."
 msgstr ""
+"`process` 接受与 `DownloadOptions.post_process` / CLI 的 `--post-process` "
+"标志相同的语法：以逗号分隔的字符串、字符串列表，或 `{action: ..., params: {...}}` 字典列表。它读取 `download`"
+" 步骤的输出，并把结果向前传递，供 `export` 取用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:106
 msgid ""
@@ -215,10 +237,14 @@ msgid ""
 "small JSON summary (`{\"exported\": N, \"total\": M, \"destination\": ...}`)"
 " once the transfer completes."
 msgstr ""
+"`export` 的 `destination` 会自动决定传输方式——`s3://bucket/prefix/` 通过 `boto3` "
+"上传，`gs://bucket/prefix/` 通过 `google-cloud-storage` 上传（它不是默认依赖——如需 GCS "
+"导出，请另行安装），其他情况一律视为本地目录。`notify` 接受 `webhook:URL` 字符串（或由它们组成的列表），并在传输完成后 POST"
+" 一份简短的 JSON 摘要（`{\"exported\": N, \"total\": M, \"destination\": ...}`）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:115
 msgid "Pipeline CLI commands"
-msgstr ""
+msgstr "流水线 CLI 命令"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:148
 msgid ""
@@ -226,10 +252,12 @@ msgid ""
 "Task Scheduler on Windows. Run `pygeofetch pipeline list-scheduled` to "
 "confirm registration."
 msgstr ""
+"`pipeline schedule` 在 Linux/macOS 上使用系统 cron 守护进程，在 Windows 上使用 Windows "
+"任务计划程序。运行 `pygeofetch pipeline list-scheduled` 以确认已注册。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:154
 msgid "Python Processing Pipeline — `client.pipeline(...)`"
-msgstr ""
+msgstr "Python 处理流水线——`client.pipeline(...)`"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:156
 msgid ""
@@ -241,6 +269,10 @@ msgid ""
 "Processing](../processing/sar-insar/sar.md) — for processing files you "
 "already have, not for search/download orchestration."
 msgstr ""
+"这是与上文 YAML 编排不同的另一种能力：一个**可链式构建器**，建立在 "
+"[预处理引擎](../processing/optical/preprocessing.md)、[光谱指数](../processing/optical/spectral-"
+"indices.md)、[后处理](../processing/optical/postprocessing.md)和 [SAR "
+"处理](../processing/sar-insar/sar.md)各处所介绍的处理操作之上——用于处理你已有的文件，而不是用于搜索/下载编排。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:180
 msgid ""
@@ -249,30 +281,32 @@ msgid ""
 " executes every queued step in order and returns a `PipelineRunResult` with "
 "per-step status, output paths, and timing."
 msgstr ""
+"每个步骤的输出会直接作为下一步的输入——这是一条链，而不是恰好按顺序书写的相互独立的调用。`.run(input=...)` "
+"会按顺序执行所有已排队的步骤，并返回一个 `PipelineRunResult`，其中包含每个步骤的状态、输出路径和耗时。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:186
 msgid "Every chainable step"
-msgstr ""
+msgstr "所有可链式调用的步骤"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:188
 msgid ""
 "Nearly every operation documented elsewhere on this site is available as a "
 "pipeline step, grouped by where it's documented in full:"
-msgstr ""
+msgstr "本站其他位置介绍的几乎所有操作都可以作为流水线步骤使用，按其完整文档所在位置分组如下："
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "Category"
-msgstr ""
+msgstr "类别"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "Steps"
-msgstr ""
+msgstr "步骤"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
 "Preprocessing ([Preprocessing "
 "Engine](../processing/optical/preprocessing.md))"
-msgstr ""
+msgstr "预处理（[预处理引擎](../processing/optical/preprocessing.md)）"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
@@ -284,7 +318,7 @@ msgstr ""
 msgid ""
 "Spectral indices ([Spectral Indices](../processing/optical/spectral-"
 "indices.md))"
-msgstr ""
+msgstr "光谱指数（[光谱指数](../processing/optical/spectral-indices.md)）"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
@@ -295,7 +329,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
 "Postprocessing ([Postprocessing](../processing/optical/postprocessing.md))"
-msgstr ""
+msgstr "后处理（[后处理](../processing/optical/postprocessing.md)）"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
@@ -305,7 +339,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "SAR ([SAR Processing](../processing/sar-insar/sar.md))"
-msgstr ""
+msgstr "SAR（[SAR 处理](../processing/sar-insar/sar.md)）"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "`despeckle`, `calibrate`, `flood_map`, `coherence`"
@@ -320,10 +354,14 @@ msgid ""
 "queuing layer over those same implementations, not a separate "
 "reimplementation."
 msgstr ""
+"每个步骤方法所接受的关键字参数，与这些页面中记录的对应 "
+"`client.preprocess`/`client.indices`/`client.post`/ `client.sar` "
+"方法完全相同——`.clip(bbox=...)`、`.ndvi(red=..., nir=...)` "
+"等等——因为流水线构建器只是在这些相同实现之上的一层轻量排队封装，而不是单独的重新实现。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:205
 msgid "From YAML"
-msgstr ""
+msgstr "从 YAML 构建"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:216
 msgid ""
@@ -335,6 +373,11 @@ msgid ""
 "'from_yaml'`. Use `ProcessingPipeline.from_yaml(path, engine=client)`, as "
 "shown above."
 msgstr ""
+"**类文档字符串中的用法示例无法运行。** `ProcessingPipeline` 的文档字符串给出了 "
+"`client.pipeline.from_yaml(\"ndvi_workflow.yaml\").run()`。`from_yaml` 是 "
+"`ProcessingPipeline` 上的类方法，而 `client.pipeline` 是一个方法，因此该调用会抛出 "
+"`AttributeError: 'function' object has no attribute 'from_yaml'`。请按上文所示使用 "
+"`ProcessingPipeline.from_yaml(path, engine=client)`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:224
 msgid ""
@@ -345,17 +388,21 @@ msgid ""
 "`ProcessingPipeline.from_yaml()` won't produce the steps you expect, and "
 "vice versa."
 msgstr ""
+"这种 YAML 格式（针对单个文件的一串处理步骤）与本页开头的数据获取流水线 YAML（用于周期性 cron 任务的 "
+"`search`/`filter`/`download`/`process`/`export`）**不是同一种 YAML 格式**。不要混用——把 "
+"`weekly-sentinel2.yaml` 这类文件传给 `ProcessingPipeline.from_yaml()` "
+"不会产生你预期的步骤，反之亦然。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:234
 msgid "Batch Processing — `client.batch`"
-msgstr ""
+msgstr "批处理——`client.batch`"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:236
 msgid ""
 "For \"run the same processing chain over many files, in parallel\" — simpler"
 " than either pipeline concept above when there's no need for scheduling or "
 "acquisition steps, just parallel fan-out over a file list."
-msgstr ""
+msgstr "适用于“对许多文件并行运行同一条处理链”——当不需要调度或数据获取步骤、只需对文件列表并行扇出时，它比上文任何一种流水线概念都更简单。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:254
 msgid ""
@@ -367,10 +414,15 @@ msgid ""
 "file aborts the whole batch or is skipped so the rest still complete — "
 "default `\"skip\"`."
 msgstr ""
+"`chain` 是由 `(step_type, kwargs)` "
+"元组组成的有序列表——步骤名称与上文可链式流水线构建器相同，并独立地应用到每个输入文件上（不是在文件*之间*串联，而是在每个文件*内部*串联）。`on_error`（通过"
+" `client.batch.process(..., on_error=\"skip\")` "
+"传入，`client.batch_process(...)` "
+"快捷方式不提供该参数）控制某个文件失败时是中止整个批处理，还是跳过它以便其余文件仍能完成——默认为 `\"skip\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:262
 msgid "Arbitrary custom functions"
-msgstr ""
+msgstr "任意自定义函数"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:272
 msgid ""
@@ -378,3 +430,5 @@ msgid ""
 "**kwargs) -> result` — across a file list in parallel, for processing steps "
 "that don't already exist as a named pipeline step."
 msgstr ""
+"`apply()` 可对文件列表并行运行你自己编写的任何函数——`(input_path, output_dir, **kwargs) -> "
+"result`——适用于尚无对应具名流水线步骤的处理操作。"

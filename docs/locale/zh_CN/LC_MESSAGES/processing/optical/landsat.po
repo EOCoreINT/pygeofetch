@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,10 +26,12 @@ msgid ""
 "Not wired into `PyGeoFetch` (there's no `client.landsat`) — always a "
 "standalone import, unlike `client.indices`/`client.sar`."
 msgstr ""
+"未接入 `PyGeoFetch`（没有 `client.landsat`）— 始终是独立导入，这与 "
+"`client.indices`/`client.sar` 不同。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:16
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:18
 msgid ""
@@ -41,6 +43,9 @@ msgid ""
 "use object with correctly named bands, scale factors applied and, if you ask"
 " for it, clouds and shadows masked."
 msgstr ""
+"Landsat "
+"拥有现有最长的连续光学记录，但其产品需要谨慎处理：不同传感器世代的波段编号不同，反射率和温度值以缩放整数存储，质量信息则打包在位掩码中。`LandsatExtractor`"
+" 接收已下载的 Landsat 场景，并返回一个可直接使用的对象，其波段命名正确、已应用缩放因子，并且在你需要时还会掩膜云和阴影。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:20
 msgid ""
@@ -51,10 +56,12 @@ msgid ""
 "the same index code can be run over decades of imagery, which is what makes "
 "Landsat suitable for long time series."
 msgstr ""
+"通常在 USGS 下载之后立即使用它。传入下载结果，得到一个场景对象，然后按名称（例如红光和近红外）请求波段，而不必记住 Landsat 5、7、8 或"
+" 9 中哪个编号的文件对应哪个波段。由于不同传感器的输出保持一致，同一套指数代码可以在数十年的影像上运行，这正是 Landsat 适合长时间序列的原因。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:22
 msgid "Two easy-to-get-wrong things this handles"
-msgstr ""
+msgstr "它处理的两个容易出错的问题"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:24
 msgid ""
@@ -63,6 +70,8 @@ msgid ""
 "NIR on TM/ETM+. Sensor is auto-detected from the filename "
 "(`_detect_sensor()`) and the correct map applied."
 msgstr ""
+"**波段映射因传感器而异。** OLI（Landsat 8/9）与 TM/ETM+（4/5/7）对同一波长使用不同的波段编号 — `SR_B4` 在 "
+"OLI 上是红光，在 TM/ETM+ 上是近红外。系统会根据文件名自动检测传感器（`_detect_sensor()`）并应用正确的映射。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:28
 msgid ""
@@ -74,10 +83,15 @@ msgid ""
 " and uses those files directly, skipping tar extraction entirely — the same "
 "call works regardless of which delivery style the provider used."
 msgstr ""
+"**交付格式因提供方而异。** 并非所有提供方都交付单一归档文件 — Planetary Computer "
+"将每个波段作为独立的资产文件下载（`SR_B4.TIF`、`SR_B5.TIF`、`QA_PIXEL.TIF` 等），而不是一个 `.tar` 包，因此"
+" `DownloadResult.output_paths` 包含多个文件，而不是一个。`process_scene()` "
+"会自动检测这种情况（`_resolve_individual_files()`），直接使用这些文件，完全跳过 tar 解压 — "
+"无论提供方采用哪种交付方式，同一个调用都适用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:37
 msgid "`process_scene()` — the full chain"
-msgstr ""
+msgstr "`process_scene()` — 完整处理链"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:45
 msgid ""
@@ -92,24 +106,30 @@ msgid ""
 "change detection). `mask_clouds` overrides the instance-level setting for "
 "just this call."
 msgstr ""
+"一次调用完成完整处理链：解压归档 → 缩放波段 → 云掩膜 → 返回。`source` 接受 `DownloadResult`（推荐 — 直接使用 "
+"`.output_path`/`.output_paths`）或指向 `.tar` 包的直接路径。`bands` 默认为 "
+"`[\"blue\",\"green\",\"red\",\"nir\",\"swir1\",\"swir2\"]` — 如果只需要例如用于 NDVI "
+"的 `[\"red\",\"nir\"]`，可以传入更少的波段以加快处理。`label` 在将多个场景处理到同一个 `output_dir` "
+"时，为解压子文件夹命名空间（例如变化检测时使用 `label=\"before\"` / "
+"`label=\"after\"`）。`mask_clouds` 仅对本次调用覆盖实例级别的设置。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:56
 msgid "Individual building-block methods"
-msgstr ""
+msgstr "单独的构建模块方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:58
 msgid ""
 "`process_scene()` is a convenience wrapper — each step is also independently"
 " callable:"
-msgstr ""
+msgstr "`process_scene()` 是一个便捷封装 — 其中每个步骤也都可以单独调用："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "What it does"
-msgstr ""
+msgstr "功能说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`extract_bundle(tar_path, output_dir)`"
@@ -120,6 +140,8 @@ msgid ""
 "Extract every band + QA GeoTIFF from a Landsat C2L2 `.tar` bundle. Returns "
 "`{member_filename: extracted_path}`."
 msgstr ""
+"从 Landsat C2L2 `.tar` 包中提取所有波段和 QA GeoTIFF。返回 `{member_filename: "
+"extracted_path}`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`load_scaled_band(path)`"
@@ -132,6 +154,9 @@ msgid ""
 "temperature `ST_B*`). Fill pixels (`DN=0`, the Collection 2 fill value) "
 "become NaN. Returns `(scaled_array, rasterio_profile)`."
 msgstr ""
+"加载一个波段并应用正确的**官方 USGS 缩放因子 + 偏移量**，按波段类型自动选择（地表反射率 `SR_B*` 或地表温度 "
+"`ST_B*`）。填充像元（`DN=0`，即 Collection 2 的填充值）会变为 NaN。返回 `(scaled_array, "
+"rasterio_profile)`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`cloud_mask(qa_pixel_path, shape=None)`"
@@ -145,6 +170,9 @@ msgid ""
 "Guide, Table 6-2/6-3 — the same bit positions apply across the full Landsat "
 "4-9 Collection 2 `QA_PIXEL` spec."
 msgstr ""
+"将 Landsat Collection 2 的 `QA_PIXEL` 位标志解码为云/阴影掩膜（`True` = 被掩掉）。依据官方《Landsat "
+"8-9 C2 Level-2 科学产品指南》表 6-2/6-3，检查第 1 位（膨胀云）、第 3 位（云）和第 4 位（云阴影）— "
+"相同的位位置适用于整个 Landsat 4-9 Collection 2 `QA_PIXEL` 规范。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`find_band(extracted_files, band_suffix)`"
@@ -152,15 +180,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "Look up an extracted file by band suffix, e.g. `\"SR_B4\"` or `\"QA_PIXEL\"`."
-msgstr ""
+msgstr "按波段后缀查找已提取的文件，例如 `\"SR_B4\"` 或 `\"QA_PIXEL\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:80
 msgid "`LandsatScene` — the returned object"
-msgstr ""
+msgstr "`LandsatScene` — 返回的对象"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:88
 msgid "Verification basis"
-msgstr ""
+msgstr "验证依据"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:90
 msgid ""
@@ -168,3 +196,5 @@ msgid ""
 "0.313 reflectance; DN 44947 → 302.6 K. Cloud masking decodes `QA_PIXEL` bits"
 " per the official Science Product Guide, not an approximated threshold."
 msgstr ""
+"辐射定标已对照 USGS 自己的示例验证：DN 18639 → 反射率 0.313；DN 44947 → 302.6 K。云掩膜按官方科学产品指南解码 "
+"`QA_PIXEL` 位，而不是近似的阈值。"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,10 +28,13 @@ msgid ""
 "options of every command are in the [Command reference](cli-commands.md), "
 "which is generated from the installed package."
 msgstr ""
+"يوفّر الأمر `pygeofetch` البحث والتنزيل والمعالجة وتنسيق خطوط المعالجة. تغطي"
+" هذه الصفحة الاصطلاحات وأمثلة عملية. أما الخيارات الدقيقة لكل أمر فهي في "
+"[مرجع الأوامر](cli-commands.md)، الذي يُولَّد من الحزمة المثبّتة."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:8
 msgid "Overview"
-msgstr ""
+msgstr "نظرة عامة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:10
 msgid ""
@@ -44,6 +47,13 @@ msgid ""
 "orchestration. Each group has its own help, so `pygeofetch search run "
 "--help` shows exactly what that command accepts."
 msgstr ""
+"يمكن أيضًا تنفيذ كل ما تفعله المكتبة من الطرفية، مما يجعل pygeofetch قابلة "
+"للاستخدام من سكربتات الصدفة والمجدولات ومهام التكامل المستمر دون كتابة "
+"Python. تُنظَّم الأوامر في مجموعات تتبع سير العمل: `auth` لبيانات الاعتماد، "
+"و`providers` لتصفح المصادر، و`search` و`download` للاقتناء، و`preprocess` "
+"و`index` و`classify` و`sar` و`multisensor` للمعالجة، و`pipeline` للتنسيق عبر"
+" YAML. ولكل مجموعة تعليمات مساعدة خاصة بها، فالأمر `pygeofetch search run "
+"--help` يعرض بدقة ما يقبله ذلك الأمر."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:12
 msgid ""
@@ -52,10 +62,13 @@ msgid ""
 "from the installed package, so it always matches the version you are "
 "running."
 msgstr ""
+"تعرض هذه الصفحة الاصطلاحات والوصفات العملية، بينما يسرد [مرجع الأوامر](cli-"
+"commands.md) كل خيار. يُولَّد المرجع من الحزمة المثبّتة، لذا فهو يطابق "
+"دائمًا الإصدار الذي تشغّله."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:14
 msgid "Conventions"
-msgstr ""
+msgstr "الأعراف"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:20
 msgid ""
@@ -63,22 +76,25 @@ msgid ""
 "ndvi`). A few are single commands (`pygeofetch doctor`, `pygeofetch "
 "status`). `--help` works at every level:"
 msgstr ""
+"معظم الأوامر مجمّعة (`pygeofetch search run` و`pygeofetch index ndvi`). "
+"وبعضها أوامر مفردة (`pygeofetch doctor` و`pygeofetch status`). يعمل `--help`"
+" على كل مستوى:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:30
 msgid "Global options"
-msgstr ""
+msgstr "الخيارات العامة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Option"
-msgstr ""
+msgstr "الخيار"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Default"
-msgstr ""
+msgstr "الافتراضي"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Description"
-msgstr ""
+msgstr "الوصف"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--log-level`"
@@ -98,11 +114,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "none"
-msgstr ""
+msgstr "لا شيء"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Also write logs to this file."
-msgstr ""
+msgstr "اكتب السجلات أيضًا في هذا الملف."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--log-format`"
@@ -114,7 +130,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`console` or `json` (for log shippers)."
-msgstr ""
+msgstr "`console` أو `json` (لأدوات شحن السجلات)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--config`"
@@ -122,7 +138,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Path to a configuration YAML that overrides user defaults."
-msgstr ""
+msgstr "مسار ملف YAML للإعدادات يتجاوز الإعدادات الافتراضية للمستخدم."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--version`"
@@ -130,31 +146,36 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Print the version and exit."
-msgstr ""
+msgstr "اطبع الإصدار ثم اخرج."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:40
 msgid "Global options go **before** the group name:"
-msgstr ""
+msgstr "تُوضَع الخيارات العامة **قبل** اسم المجموعة:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:46
 msgid "Argument conventions"
-msgstr ""
+msgstr "اصطلاحات الوسائط"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:48
 msgid ""
 "**Bounding boxes** are `\"min_lon,min_lat,max_lon,max_lat\"` in EPSG:4326. "
 "Quote the value so a leading minus sign is not read as a flag."
 msgstr ""
+"**المستطيلات المحيطة** تكتب بالشكل `\"min_lon,min_lat,max_lon,max_lat\"` في "
+"EPSG:4326. ضع القيمة بين علامتي اقتباس حتى لا تُقرأ علامة الطرح في البداية "
+"كخيار."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:49
 msgid "**Dates** are `YYYY-MM-DD`."
-msgstr ""
+msgstr "**التواريخ** بالصيغة `YYYY-MM-DD`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:50
 msgid ""
 "**Output paths** are given with `--output` / `-o`. Commands that process a "
 "raster write a new file and never modify the input."
 msgstr ""
+"**مسارات المخرجات** تُحدَّد بالخيار `--output` / `-o`. الأوامر التي تعالج "
+"صورة نقطية تكتب ملفًا جديدًا ولا تعدّل المدخلات أبدًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:51
 msgid ""
@@ -162,22 +183,25 @@ msgid ""
 "named options (`--red`, `--nir`, ...) that match the Python keyword "
 "arguments."
 msgstr ""
+"**مدخلات الصور النقطية** وسائط موضعية. أما مدخلات النطاقات الخاصة بالمؤشرات "
+"فهي خيارات مسمّاة (`--red` و`--nir` و...) تطابق وسائط Python ذات الأسماء "
+"نفسها."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:53
 msgid "Where each group is documented"
-msgstr ""
+msgstr "أين توثَّق كل مجموعة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Group"
-msgstr ""
+msgstr "المجموعة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Purpose"
-msgstr ""
+msgstr "الغرض"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Guide"
-msgstr ""
+msgstr "الدليل"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`auth`"
@@ -185,11 +209,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Store and test provider credentials"
-msgstr ""
+msgstr "تخزين بيانات اعتماد المزوّدين واختبارها"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Authentication](../data-access/authentication.md)"
-msgstr ""
+msgstr "[المصادقة](../data-access/authentication.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`providers`"
@@ -197,11 +221,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "List and inspect providers"
-msgstr ""
+msgstr "عرض المزوّدين وفحصهم"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Providers](../data-access/providers.md)"
-msgstr ""
+msgstr "[المزوّدون](../data-access/providers.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`search`"
@@ -209,11 +233,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Federated search"
-msgstr ""
+msgstr "البحث الموحّد (Federated)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Searching](../data-access/search.md)"
-msgstr ""
+msgstr "[البحث](../data-access/search.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`download`"
@@ -221,11 +245,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Download, status and history"
-msgstr ""
+msgstr "التنزيل والحالة والسجل"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Downloading](../data-access/download.md)"
-msgstr ""
+msgstr "[التنزيل](../data-access/download.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`stream`"
@@ -233,11 +257,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Windowed COG reads, Zarr and GeoParquet conversion"
-msgstr ""
+msgstr "قراءات COG بالنوافذ وتحويل Zarr وGeoParquet"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Streaming](../data-access/streaming.md)"
-msgstr ""
+msgstr "[البث](../data-access/streaming.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`cache`"
@@ -245,11 +269,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Search-cache management"
-msgstr ""
+msgstr "إدارة ذاكرة البحث المؤقتة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Configuration](configuration.md)"
-msgstr ""
+msgstr "[الإعدادات](configuration.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`pipeline`"
@@ -257,11 +281,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "YAML acquisition pipelines and scheduling"
-msgstr ""
+msgstr "خطوط اقتناء YAML والجدولة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Pipelines](../workflows/pipelines.md)"
-msgstr ""
+msgstr "[خطوط المعالجة](../workflows/pipelines.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`proc-pipeline`"
@@ -269,7 +293,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "YAML processing chains"
-msgstr ""
+msgstr "سلاسل معالجة YAML"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`preprocess`"
@@ -277,11 +301,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Clip, reproject, mask, mosaic"
-msgstr ""
+msgstr "القص وإعادة الإسقاط والإخفاء والفسيفساء"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Preprocessing](../processing/optical/preprocessing.md)"
-msgstr ""
+msgstr "[المعالجة المسبقة](../processing/optical/preprocessing.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`index`"
@@ -289,11 +313,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Spectral indices and band math"
-msgstr ""
+msgstr "المؤشرات الطيفية والجبر النطاقي"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Spectral indices](../processing/optical/spectral-indices.md)"
-msgstr ""
+msgstr "[المؤشرات الطيفية](../processing/optical/spectral-indices.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`classify`"
@@ -301,11 +325,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "K-means, Random Forest and SVM"
-msgstr ""
+msgstr "K-means وRandom Forest وSVM"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Classification](../processing/optical/classification.md)"
-msgstr ""
+msgstr "[التصنيف](../processing/optical/classification.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`post`"
@@ -313,11 +337,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Vectorize, zonal statistics, COG"
-msgstr ""
+msgstr "التحويل إلى متجهات والإحصاءات المنطقية وCOG"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Post-processing](../processing/optical/postprocessing.md)"
-msgstr ""
+msgstr "[المعالجة اللاحقة](../processing/optical/postprocessing.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`sar`"
@@ -325,11 +349,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Despeckle, calibrate, flood map, coherence"
-msgstr ""
+msgstr "إزالة التبقّع والمعايرة وخريطة الفيضان والاتساق"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[SAR](../processing/sar-insar/sar.md)"
-msgstr ""
+msgstr "[SAR](../processing/sar-insar/sar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`optical`"
@@ -337,13 +361,14 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Pixel-offset tracking"
-msgstr ""
+msgstr "تتبّع إزاحة البكسلات"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid ""
 "[Optical offset tracking](../processing/sar-insar/optical-offset-"
 "tracking.md)"
 msgstr ""
+"[تتبّع الإزاحة البصرية](../processing/sar-insar/optical-offset-tracking.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`multisensor`"
@@ -351,11 +376,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Five multi-sensor pipelines"
-msgstr ""
+msgstr "خمسة خطوط معالجة متعددة الحساسات"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Multi-sensor](../processing/multisensor.md)"
-msgstr ""
+msgstr "[الحساسات المتعددة](../processing/multisensor.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`config`"
@@ -363,7 +388,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Inspect and edit configuration"
-msgstr ""
+msgstr "عرض الإعدادات وتحريرها"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`status`, `doctor`, `version`"
@@ -371,11 +396,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Diagnostics"
-msgstr ""
+msgstr "التشخيص"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Diagnostics](../getting-started/diagnostics.md)"
-msgstr ""
+msgstr "[التشخيص](../getting-started/diagnostics.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`geocode`, `reverse-geocode`"
@@ -383,11 +408,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Place name to coordinates and back"
-msgstr ""
+msgstr "من اسم المكان إلى الإحداثيات والعكس"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Geocoding](../data-access/geocoding.md)"
-msgstr ""
+msgstr "[الترميز الجغرافي](../data-access/geocoding.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`assess-feasibility`"
@@ -395,49 +420,54 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Check whether an InSAR project is viable"
-msgstr ""
+msgstr "التحقق من جدوى مشروع InSAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[InSAR](../processing/sar-insar/insar.md)"
-msgstr ""
+msgstr "[InSAR](../processing/sar-insar/insar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:77
 msgid "Search and download"
-msgstr ""
+msgstr "البحث والتنزيل"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:96
 msgid "Preprocessing"
-msgstr ""
+msgstr "المعالجة المسبقة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:105
 msgid ""
 "`pansharpen` takes the **panchromatic image first, then the multispectral "
 "image**:"
 msgstr ""
+"يأخذ `pansharpen` **الصورة البانكروماتية أولًا، ثم الصورة متعددة الأطياف**:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:111
 msgid "Spectral indices"
-msgstr ""
+msgstr "المؤشرات الطيفية"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:118
 msgid ""
 "`band-math` takes the input rasters as positional arguments, and addresses "
 "them in the expression as `B[0]`, `B[1]`, ... in the order given:"
 msgstr ""
+"يأخذ `band-math` الصور النقطية المدخلة كوسائط موضعية، ويشير إليها في التعبير"
+" بالصيغة `B[0]` و`B[1]` و... وفق الترتيب المعطى:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:127
 msgid ""
 "Add `--chunked` to process large rasters (for example a drone orthomosaic) "
 "in tiles instead of loading them whole."
 msgstr ""
+"أضف `--chunked` لمعالجة الصور النقطية الكبيرة (مثل فسيفساء طائرة مسيّرة) على"
+" شكل مربعات بدلًا من تحميلها كاملة."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:130
 msgid "Post-processing"
-msgstr ""
+msgstr "ما بعد المعالجة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:138
 msgid "SAR"
-msgstr ""
+msgstr "SAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:147
 msgid ""
@@ -447,19 +477,24 @@ msgid ""
 "map` uses a fixed backscatter threshold (dB) on its own, and change "
 "detection against the pre-event image when `--reference` is given."
 msgstr ""
+"يكتب `sar calibrate` القيم بالديسيبل افتراضيًا؛ مرّر `--linear` للحصول على "
+"القدرة الخطية. أما `sar coherence` فيفشل حاليًا مع مدخلات SLC المعقدة (راجع "
+"[المشكلات المعروفة](known-issues.md#sar-coherence-fails-on-complex-input)). "
+"ويستخدم `sar flood-map` عتبة تبعثر خلفي ثابتة (dB) بمفرده، ويجري كشف التغيّر"
+" مقابل الصورة السابقة للحدث عند تحديد `--reference`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:152
 msgid "Optical offset tracking"
-msgstr ""
+msgstr "تتبّع الإزاحة البصرية"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:163
 msgid ""
 "The output is a three-band GeoTIFF: `dx`, `dy` (ground metres) and `snr`."
-msgstr ""
+msgstr "المخرَج ملف GeoTIFF ثلاثي النطاقات: `dx` و`dy` (أمتار أرضية) و`snr`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:165
 msgid "Multi-sensor pipelines"
-msgstr ""
+msgstr "خطوط معالجة متعددة المستشعرات"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:177
 msgid ""
@@ -468,10 +503,14 @@ msgid ""
 "pipelines](../processing/multisensor.md) for the full set of commands and "
 "what each option controls."
 msgstr ""
+"يطبع كل أمر البيانات الوصفية لخط المعالجة بصيغة JSON عند النجاح، أو خطأً "
+"محددًا يسمّي الفحص الذي فشل. راجع [خطوط المعالجة متعددة "
+"الحساسات](../processing/multisensor.md) للاطلاع على المجموعة الكاملة من "
+"الأوامر وما يتحكم به كل خيار."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:181
 msgid "Windowed reads and format conversion"
-msgstr ""
+msgstr "القراءات بالنوافذ وتحويل الصيغ"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:189
 msgid ""
@@ -479,10 +518,13 @@ msgid ""
 "whole scenes returned by a search, use `PyGeoFetch.stream()` — see "
 "[Streaming](../data-access/streaming.md)."
 msgstr ""
+"الأمر `pygeofetch stream` مخصص لعنوان URL واحد لـ COG تعرفه مسبقًا. ولبث "
+"مشاهد كاملة أعادها البحث، استخدم `PyGeoFetch.stream()` — راجع "
+"[البث](../data-access/streaming.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:192
 msgid "Processing-chain pipelines"
-msgstr ""
+msgstr "خطوط سلاسل المعالجة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:194
 msgid ""
@@ -490,24 +532,28 @@ msgid ""
 "file. It is distinct from `pygeofetch pipeline`, which orchestrates search, "
 "download and export."
 msgstr ""
+"ينفّذ `pygeofetch proc-pipeline` سلسلة YAML من خطوات المعالجة على ملف واحد. "
+"وهو يختلف عن `pygeofetch pipeline` الذي ينسّق البحث والتنزيل والتصدير."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:216
 msgid "Configuration and cache"
-msgstr ""
+msgstr "الإعدادات والذاكرة المؤقتة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:233
 msgid "Shell completion"
-msgstr ""
+msgstr "الإكمال التلقائي في الصدفة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:239
 msgid ""
 "This prints the line to add to your shell start-up file (for example "
 "`~/.bashrc`); it does not edit the file for you."
 msgstr ""
+"يطبع هذا السطر الذي تضيفه إلى ملف بدء تشغيل الصدفة لديك (مثل `~/.bashrc`)؛ "
+"ولا يحرّر الملف نيابةً عنك."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:242
 msgid "Known gaps"
-msgstr ""
+msgstr "الثغرات المعروفة"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:244
 msgid ""
@@ -515,6 +561,9 @@ msgid ""
 "implemented in `cli/monitor_commands.py` but is not registered, so "
 "`pygeofetch monitor` is not available. See [Known issues](known-issues.md)."
 msgstr ""
+"مجموعة الأوامر `monitor` (`monitor run` و`monitor history`) منفَّذة في "
+"`cli/monitor_commands.py` لكنها غير مسجَّلة، لذا فإن `pygeofetch monitor` "
+"غير متاح. راجع [المشكلات المعروفة](known-issues.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:247
 msgid ""
@@ -522,3 +571,5 @@ msgid ""
 "`flood_mapping_pipeline`) are available from Python only; they have no CLI "
 "command."
 msgstr ""
+"خطوط SAR الخمسة في `pygeofetch.sar.pipelines` (مثل `flood_mapping_pipeline`)"
+" متاحة من Python فقط؛ وليس لها أمر في سطر الأوامر."

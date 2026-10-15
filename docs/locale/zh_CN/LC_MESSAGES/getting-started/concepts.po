@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,33 +23,33 @@ msgstr "核心概念"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:3
 msgid "A short tour of the ideas the rest of the documentation assumes."
-msgstr ""
+msgstr "对其余文档所假定的各项概念做一次简要介绍。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:5
 msgid "The big picture"
-msgstr ""
+msgstr "整体概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:20
 msgid "pygeofetch has three layers:"
-msgstr ""
+msgstr "pygeofetch 分为三层："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:22
 msgid ""
 "**Data access.** `search()` queries providers; `download()` and `stream()` "
 "retrieve the data."
-msgstr ""
+msgstr "**数据访问。** `search()` 查询提供商；`download()` 和 `stream()` 获取数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:23
 msgid ""
 "**Processing.** Optical, SAR, InSAR and multi-sensor processing that works "
 "on the files you retrieved."
-msgstr ""
+msgstr "**处理。** 对你所获取的文件进行光学、SAR、InSAR 和多传感器处理。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:24
 msgid ""
 "**Orchestration.** YAML pipelines that chain search, download, process and "
 "export, optionally on a schedule."
-msgstr ""
+msgstr "**编排。** 通过 YAML 流水线串联搜索、下载、处理和导出，并可按计划运行。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:26
 msgid "Providers"
@@ -61,38 +61,43 @@ msgid ""
 "`SearchQuery` into that source's API and returns results as `SatelliteData`."
 " Providers differ in what they serve and how:"
 msgstr ""
+"**提供商**是针对某一数据源的适配器。每个提供商会将 `SearchQuery` 转换为该数据源的 API，并以 `SatelliteData` "
+"形式返回结果。各提供商在所提供的数据和提供方式上有所不同："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Property"
-msgstr ""
+msgstr "属性"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Examples"
-msgstr ""
+msgstr "示例"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**Needs credentials**"
-msgstr ""
+msgstr "**是否需要凭据**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "`copernicus`, `usgs`, `planet` need them; `planetary_computer`, `element84` "
 "do not."
 msgstr ""
+"`copernicus`、`usgs`、`planet` 需要凭据；`planetary_computer`、`element84` 不需要。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**STAC or not**"
-msgstr ""
+msgstr "**是否为 STAC**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "STAC providers (`planetary_computer`, `element84`, `sentinel_hub`) share a "
 "data model. Others use their own APIs."
 msgstr ""
+"STAC 提供商（`planetary_computer`、`element84`、`sentinel_hub`）共享同一数据模型。其他提供商使用各自的"
+" API。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**How data is packaged**"
-msgstr ""
+msgstr "**数据的打包方式**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
@@ -100,22 +105,25 @@ msgid ""
 "Optimized GeoTIFF per band (`planetary_computer`). Packaging decides whether"
 " you can [stream](../data-access/streaming.md)."
 msgstr ""
+"每个场景一个 `.SAFE.zip`（`copernicus`）、一个 `.tar`（`usgs`），或每个波段一个云优化 "
+"GeoTIFF（`planetary_computer`）。打包方式决定了你能否进行[流式读取](../data-"
+"access/streaming.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:37
 msgid "See [Providers](../data-access/providers.md) for the full list."
-msgstr ""
+msgstr "完整列表参见[提供商](../data-access/providers.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:39
 msgid "The data model"
-msgstr ""
+msgstr "数据模型"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Class"
-msgstr ""
+msgstr "类别"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Role"
-msgstr ""
+msgstr "角色"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`SearchQuery`"
@@ -123,7 +131,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "What you want: area, dates, cloud cover, satellites, sorting."
-msgstr ""
+msgstr "你想要的内容：区域、日期、云量、卫星、排序。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`SatelliteData`"
@@ -132,7 +140,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "One scene: ID, provider, time, footprint, cloud cover, and its `assets`."
-msgstr ""
+msgstr "一个场景：ID、提供商、时间、覆盖范围、云量及其 `assets`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`SatelliteAsset`"
@@ -141,7 +149,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "One file of a scene (a band, a metadata file, an archive), with its `href`."
-msgstr ""
+msgstr "场景中的一个文件（波段、元数据文件或归档文件），带有其 `href`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`DownloadOptions`"
@@ -149,7 +157,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "How to download: parallelism, retries, bands, post-processing."
-msgstr ""
+msgstr "如何下载：并行度、重试、波段、后处理。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`DownloadResult`"
@@ -157,17 +165,19 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "The outcome for one scene: status, output paths, errors."
-msgstr ""
+msgstr "单个场景的结果：状态、输出路径、错误。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:49
 msgid ""
 "All are Pydantic models in `pygeofetch.models`. See the [Python API "
 "reference](../reference/python-api.md)."
 msgstr ""
+"所有模型均为 `pygeofetch.models` 中的 Pydantic 模型。参见 [Python API "
+"参考](../reference/python-api.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:51
 msgid "Conventions"
-msgstr ""
+msgstr "约定"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:53
 msgid ""
@@ -175,50 +185,55 @@ msgid ""
 " longitude first. The CLI takes the same order as "
 "`\"min_lon,min_lat,max_lon,max_lat\"`."
 msgstr ""
+"**边界框**采用 EPSG:4326 下的 `(min_lon, min_lat, max_lon, max_lat)`——经度在前。CLI "
+"采用相同的顺序，写作 `\"min_lon,min_lat,max_lon,max_lat\"`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:54
 msgid ""
 "**Dates** are `YYYY-MM-DD` on the CLI and `date`, `datetime` or ISO strings "
 "in Python."
 msgstr ""
+"**日期**在 CLI 中为 `YYYY-MM-DD`，在 Python 中可以是 `date`、`datetime` 或 ISO 字符串。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:55
 msgid "**Cloud cover** is a percentage from 0 to 100."
-msgstr ""
+msgstr "**云量**是 0 到 100 的百分比。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:56
 msgid ""
 "**Downloads land in provider sub-folders:** `<destination>/<provider>/...`. "
 "See [Downloading](../data-access/download.md#where-files-are-written)."
 msgstr ""
+"**下载的文件会落在提供商子文件夹中：** `<destination>/<provider>/...`。参见[下载](../data-"
+"access/download.md#where-files-are-written)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:57
 msgid ""
 "**Archives are not extracted automatically.** Use the `unzip` post-"
 "processing action."
-msgstr ""
+msgstr "**归档文件不会自动解压。** 请使用 `unzip` 后处理操作。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:59
 msgid "Whole scene, band subset, or AOI window"
-msgstr ""
+msgstr "整景、波段子集或 AOI 窗口"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:61
 msgid ""
 "Optical scenes are large, and you usually need a small part of them. "
 "pygeofetch offers three levels of data reduction:"
-msgstr ""
+msgstr "光学场景体积很大，而你通常只需要其中一小部分。pygeofetch 提供三个层级的数据缩减方式："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Approach"
-msgstr ""
+msgstr "方式"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Transfers"
-msgstr ""
+msgstr "传输内容"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Use when"
-msgstr ""
+msgstr "适用场景"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`download()`"
@@ -226,11 +241,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "The complete asset(s)"
-msgstr ""
+msgstr "完整的资产"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "You need the original product, or the provider serves archives."
-msgstr ""
+msgstr "你需要原始产品，或者提供商提供的是归档文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`download(bands=[...])`"
@@ -238,11 +253,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Only the chosen band files"
-msgstr ""
+msgstr "仅所选的波段文件"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "The provider serves one file per band."
-msgstr ""
+msgstr "提供商为每个波段提供一个文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`stream(bbox=...)`"
@@ -250,124 +265,125 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Only the pixels under your AOI"
-msgstr ""
+msgstr "仅 AOI 范围内的像素"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "The provider serves Cloud-Optimized GeoTIFFs and you only need a small area."
-msgstr ""
+msgstr "提供商提供云优化 GeoTIFF，而你只需要一小块区域。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:70
 msgid "Data formats you will meet"
-msgstr ""
+msgstr "你会遇到的数据格式"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:72
 msgid ""
 "**GeoTIFF / COG.** Raster data. A *Cloud-Optimized* GeoTIFF is internally "
 "tiled so a client can fetch just part of it over HTTP."
 msgstr ""
+"**GeoTIFF / COG。** 栅格数据。*云优化* GeoTIFF 在内部进行了分块，因此客户端可以通过 HTTP 仅获取其中一部分。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:73
 msgid "**SAFE.** The Sentinel product folder, usually delivered zipped."
-msgstr ""
+msgstr "**SAFE。** Sentinel 的产品文件夹，通常以压缩形式交付。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:74
 msgid ""
 "**SLC and GRD.** Sentinel-1 *Single Look Complex* (phase preserved; needed "
 "for InSAR) and *Ground Range Detected* (amplitude only)."
-msgstr ""
+msgstr "**SLC 和 GRD。** Sentinel-1 的*单视复数*（保留相位；InSAR 所需）和*地距检测*（仅含振幅）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:75
 msgid ""
 "**STAC.** A standard JSON catalogue format for spatiotemporal assets, used "
 "by many providers."
-msgstr ""
+msgstr "**STAC。** 一种用于时空资产的标准 JSON 目录格式，被许多提供商采用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:76
 msgid ""
 "**GeoParquet and Zarr.** Cloud-native vector and array formats, available "
 "through the `pygeofetch stream` conversion commands."
-msgstr ""
+msgstr "**GeoParquet 和 Zarr。** 云原生的矢量和数组格式，可通过 `pygeofetch stream` 转换命令使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:78
 msgid "Four things called \"pipeline\""
-msgstr ""
+msgstr "四种被称为“流水线”的东西"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:80
 msgid "The word is used for four different features:"
-msgstr ""
+msgstr "这个词被用于四种不同的功能："
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Feature"
-msgstr ""
+msgstr "功能"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "What it chains"
-msgstr ""
+msgstr "串联的内容"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Where"
-msgstr ""
+msgstr "位置"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**YAML acquisition pipeline** (`pygeofetch pipeline run`)"
-msgstr ""
+msgstr "**YAML 数据获取流水线**（`pygeofetch pipeline run`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "search, filter, download, process, export; can be scheduled"
-msgstr ""
+msgstr "搜索、过滤、下载、处理、导出；可按计划运行"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "[Pipelines](../workflows/pipelines.md)"
-msgstr ""
+msgstr "[流水线](../workflows/pipelines.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**Fluent processing pipeline** (`client.pipeline(...)`)"
-msgstr ""
+msgstr "**流式处理流水线**（`client.pipeline(...)`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "clip, reproject, index, COG on files you already have"
-msgstr ""
+msgstr "对你已有的文件进行裁剪、重投影、指数计算、COG 输出"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**SAR pipelines** (`pygeofetch.sar.pipelines`)"
-msgstr ""
+msgstr "**SAR 流水线**（`pygeofetch.sar.pipelines`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "calibrate, despeckle, flood or change detection on one sensor over several "
 "dates"
-msgstr ""
+msgstr "对同一传感器的多个日期进行定标、去斑、洪水或变化检测"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "[SAR](../processing/sar-insar/sar.md)"
-msgstr ""
+msgstr "[SAR](../processing/sar-insar/sar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**Multi-sensor pipelines** (`pygeofetch.multisensor`)"
-msgstr ""
+msgstr "**多传感器流水线**（`pygeofetch.multisensor`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "two different sensors combined"
-msgstr ""
+msgstr "两种不同传感器的组合"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "[Multi-sensor pipelines](../processing/multisensor.md)"
-msgstr ""
+msgstr "[多传感器流水线](../processing/multisensor.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:89
 msgid "Where to go next"
-msgstr ""
+msgstr "后续阅读"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:91
 msgid "New to the tool: [Quick start](quickstart.md)."
-msgstr ""
+msgstr "初次使用本工具：[快速入门](quickstart.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:92
 msgid "Want only your study area: [Streaming](../data-access/streaming.md)."
-msgstr ""
+msgstr "只想要你的研究区域：[流式读取](../data-access/streaming.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:93
 msgid ""
 "Doing deformation monitoring: [InSAR](../processing/sar-insar/insar.md)."
-msgstr ""
+msgstr "进行形变监测：[InSAR](../processing/sar-insar/insar.md)。"

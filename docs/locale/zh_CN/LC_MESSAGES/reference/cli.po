@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,10 +28,12 @@ msgid ""
 "options of every command are in the [Command reference](cli-commands.md), "
 "which is generated from the installed package."
 msgstr ""
+"`pygeofetch` 命令提供搜索、下载、处理和流水线编排功能。本页介绍各项约定和实际示例。每个命令的确切选项见[命令参考](cli-"
+"commands.md)，该参考由已安装的软件包生成。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:8
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:10
 msgid ""
@@ -44,6 +46,11 @@ msgid ""
 "orchestration. Each group has its own help, so `pygeofetch search run "
 "--help` shows exactly what that command accepts."
 msgstr ""
+"库的所有功能同样可以在终端中运行，这使得 pygeofetch 无需编写 Python 即可用于 shell "
+"脚本、调度器和持续集成作业。命令按照工作流程分组：`auth` 用于凭据，`providers` 用于浏览数据源，`search` 和 "
+"`download` 用于数据获取，`preprocess`、`index`、`classify`、`sar` 和 `multisensor` "
+"用于处理，`pipeline` 用于 YAML 编排。每个命令组都有自己的帮助，因此 `pygeofetch search run --help` "
+"会准确显示该命令接受的内容。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:12
 msgid ""
@@ -52,10 +59,11 @@ msgid ""
 "from the installed package, so it always matches the version you are "
 "running."
 msgstr ""
+"本页介绍各项约定和实用示例，[命令参考](cli-commands.md)则列出每一个选项。该参考由已安装的软件包生成，因此始终与你所运行的版本一致。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:14
 msgid "Conventions"
-msgstr ""
+msgstr "约定"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:20
 msgid ""
@@ -63,22 +71,24 @@ msgid ""
 "ndvi`). A few are single commands (`pygeofetch doctor`, `pygeofetch "
 "status`). `--help` works at every level:"
 msgstr ""
+"大多数命令都是分组的（`pygeofetch search run`、`pygeofetch index "
+"ndvi`）。少数是单一命令（`pygeofetch doctor`、`pygeofetch status`）。`--help` 在每一层级都可用："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:30
 msgid "Global options"
-msgstr ""
+msgstr "全局选项"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Option"
-msgstr ""
+msgstr "选项"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Default"
-msgstr ""
+msgstr "默认值"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Description"
-msgstr ""
+msgstr "说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--log-level`"
@@ -98,11 +108,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "none"
-msgstr ""
+msgstr "无"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Also write logs to this file."
-msgstr ""
+msgstr "同时将日志写入此文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--log-format`"
@@ -114,7 +124,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`console` or `json` (for log shippers)."
-msgstr ""
+msgstr "`console` 或 `json`（供日志收集器使用）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--config`"
@@ -122,7 +132,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Path to a configuration YAML that overrides user defaults."
-msgstr ""
+msgstr "用于覆盖用户默认值的配置 YAML 路径。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`--version`"
@@ -130,54 +140,56 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Print the version and exit."
-msgstr ""
+msgstr "打印版本并退出。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:40
 msgid "Global options go **before** the group name:"
-msgstr ""
+msgstr "全局选项须放在组名**之前**："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:46
 msgid "Argument conventions"
-msgstr ""
+msgstr "参数约定"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:48
 msgid ""
 "**Bounding boxes** are `\"min_lon,min_lat,max_lon,max_lat\"` in EPSG:4326. "
 "Quote the value so a leading minus sign is not read as a flag."
 msgstr ""
+"**边界框**采用 EPSG:4326 下的 "
+"`\"min_lon,min_lat,max_lon,max_lat\"`。请为该值加上引号，以免开头的负号被当作标志。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:49
 msgid "**Dates** are `YYYY-MM-DD`."
-msgstr ""
+msgstr "**日期**格式为 `YYYY-MM-DD`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:50
 msgid ""
 "**Output paths** are given with `--output` / `-o`. Commands that process a "
 "raster write a new file and never modify the input."
-msgstr ""
+msgstr "**输出路径**通过 `--output` / `-o` 指定。处理栅格的命令会写入新文件，绝不会修改输入文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:51
 msgid ""
 "**Raster inputs** are positional arguments. Band inputs for indices are "
 "named options (`--red`, `--nir`, ...) that match the Python keyword "
 "arguments."
-msgstr ""
+msgstr "**栅格输入**为位置参数。指数的波段输入是命名选项（`--red`、`--nir` 等），与 Python 关键字参数一一对应。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:53
 msgid "Where each group is documented"
-msgstr ""
+msgstr "各命令组的文档位置"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Group"
-msgstr ""
+msgstr "命令组"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Purpose"
-msgstr ""
+msgstr "用途"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Guide"
-msgstr ""
+msgstr "指南"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`auth`"
@@ -185,11 +197,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Store and test provider credentials"
-msgstr ""
+msgstr "存储并测试提供商凭据"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Authentication](../data-access/authentication.md)"
-msgstr ""
+msgstr "[身份验证](../data-access/authentication.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`providers`"
@@ -197,11 +209,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "List and inspect providers"
-msgstr ""
+msgstr "列出并查看提供商"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Providers](../data-access/providers.md)"
-msgstr ""
+msgstr "[提供商](../data-access/providers.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`search`"
@@ -209,11 +221,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Federated search"
-msgstr ""
+msgstr "联合搜索"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Searching](../data-access/search.md)"
-msgstr ""
+msgstr "[搜索](../data-access/search.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`download`"
@@ -221,11 +233,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Download, status and history"
-msgstr ""
+msgstr "下载、状态和历史"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Downloading](../data-access/download.md)"
-msgstr ""
+msgstr "[下载](../data-access/download.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`stream`"
@@ -233,11 +245,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Windowed COG reads, Zarr and GeoParquet conversion"
-msgstr ""
+msgstr "COG 窗口读取、Zarr 和 GeoParquet 转换"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Streaming](../data-access/streaming.md)"
-msgstr ""
+msgstr "[流式读取](../data-access/streaming.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`cache`"
@@ -245,11 +257,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Search-cache management"
-msgstr ""
+msgstr "搜索缓存管理"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Configuration](configuration.md)"
-msgstr ""
+msgstr "[配置](configuration.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`pipeline`"
@@ -257,11 +269,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "YAML acquisition pipelines and scheduling"
-msgstr ""
+msgstr "YAML 数据获取流水线与调度"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Pipelines](../workflows/pipelines.md)"
-msgstr ""
+msgstr "[流水线](../workflows/pipelines.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`proc-pipeline`"
@@ -269,7 +281,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "YAML processing chains"
-msgstr ""
+msgstr "YAML 处理链"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`preprocess`"
@@ -277,11 +289,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Clip, reproject, mask, mosaic"
-msgstr ""
+msgstr "裁剪、重投影、掩膜、镶嵌"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Preprocessing](../processing/optical/preprocessing.md)"
-msgstr ""
+msgstr "[预处理](../processing/optical/preprocessing.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`index`"
@@ -289,11 +301,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Spectral indices and band math"
-msgstr ""
+msgstr "光谱指数与波段运算"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Spectral indices](../processing/optical/spectral-indices.md)"
-msgstr ""
+msgstr "[光谱指数](../processing/optical/spectral-indices.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`classify`"
@@ -301,11 +313,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "K-means, Random Forest and SVM"
-msgstr ""
+msgstr "K-means、随机森林和 SVM"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Classification](../processing/optical/classification.md)"
-msgstr ""
+msgstr "[分类](../processing/optical/classification.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`post`"
@@ -313,11 +325,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Vectorize, zonal statistics, COG"
-msgstr ""
+msgstr "矢量化、分区统计、COG"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Post-processing](../processing/optical/postprocessing.md)"
-msgstr ""
+msgstr "[后处理](../processing/optical/postprocessing.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`sar`"
@@ -325,11 +337,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Despeckle, calibrate, flood map, coherence"
-msgstr ""
+msgstr "去斑、定标、洪水图、相干性"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[SAR](../processing/sar-insar/sar.md)"
-msgstr ""
+msgstr "[SAR](../processing/sar-insar/sar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`optical`"
@@ -337,13 +349,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Pixel-offset tracking"
-msgstr ""
+msgstr "像素偏移跟踪"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid ""
 "[Optical offset tracking](../processing/sar-insar/optical-offset-"
 "tracking.md)"
-msgstr ""
+msgstr "[光学偏移跟踪](../processing/sar-insar/optical-offset-tracking.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`multisensor`"
@@ -351,11 +363,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Five multi-sensor pipelines"
-msgstr ""
+msgstr "五条多传感器流水线"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Multi-sensor](../processing/multisensor.md)"
-msgstr ""
+msgstr "[多传感器](../processing/multisensor.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`config`"
@@ -363,7 +375,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Inspect and edit configuration"
-msgstr ""
+msgstr "查看和编辑配置"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`status`, `doctor`, `version`"
@@ -371,11 +383,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Diagnostics"
-msgstr ""
+msgstr "诊断"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Diagnostics](../getting-started/diagnostics.md)"
-msgstr ""
+msgstr "[诊断](../getting-started/diagnostics.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`geocode`, `reverse-geocode`"
@@ -383,11 +395,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Place name to coordinates and back"
-msgstr ""
+msgstr "地名与坐标互转"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[Geocoding](../data-access/geocoding.md)"
-msgstr ""
+msgstr "[地理编码](../data-access/geocoding.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "`assess-feasibility`"
@@ -395,49 +407,49 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "Check whether an InSAR project is viable"
-msgstr ""
+msgstr "检查 InSAR 项目是否可行"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:0
 msgid "[InSAR](../processing/sar-insar/insar.md)"
-msgstr ""
+msgstr "[InSAR](../processing/sar-insar/insar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:77
 msgid "Search and download"
-msgstr ""
+msgstr "搜索与下载"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:96
 msgid "Preprocessing"
-msgstr ""
+msgstr "预处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:105
 msgid ""
 "`pansharpen` takes the **panchromatic image first, then the multispectral "
 "image**:"
-msgstr ""
+msgstr "`pansharpen` 要求**先给全色影像，再给多光谱影像**："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:111
 msgid "Spectral indices"
-msgstr ""
+msgstr "光谱指数"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:118
 msgid ""
 "`band-math` takes the input rasters as positional arguments, and addresses "
 "them in the expression as `B[0]`, `B[1]`, ... in the order given:"
-msgstr ""
+msgstr "`band-math` 将输入栅格作为位置参数，并在表达式中按给定顺序以 `B[0]`、`B[1]`、... 引用它们："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:127
 msgid ""
 "Add `--chunked` to process large rasters (for example a drone orthomosaic) "
 "in tiles instead of loading them whole."
-msgstr ""
+msgstr "添加 `--chunked` 可分块处理大型栅格（例如无人机正射镶嵌图），而不是将其整体加载。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:130
 msgid "Post-processing"
-msgstr ""
+msgstr "后处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:138
 msgid "SAR"
-msgstr ""
+msgstr "SAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:147
 msgid ""
@@ -447,19 +459,22 @@ msgid ""
 "map` uses a fixed backscatter threshold (dB) on its own, and change "
 "detection against the pre-event image when `--reference` is given."
 msgstr ""
+"`sar calibrate` 默认输出分贝值；传入 `--linear` 可输出线性功率。`sar coherence` 目前在复数 SLC "
+"输入上会失败（参见[已知问题](known-issues.md#sar-coherence-fails-on-complex-input)）。`sar "
+"flood-map` 单独使用时采用固定的后向散射阈值（dB），给出 `--reference` 时则与事件前影像进行变化检测。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:152
 msgid "Optical offset tracking"
-msgstr ""
+msgstr "光学偏移跟踪"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:163
 msgid ""
 "The output is a three-band GeoTIFF: `dx`, `dy` (ground metres) and `snr`."
-msgstr ""
+msgstr "输出为三波段 GeoTIFF：`dx`、`dy`（地面距离，单位为米）和 `snr`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:165
 msgid "Multi-sensor pipelines"
-msgstr ""
+msgstr "多传感器流水线"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:177
 msgid ""
@@ -468,10 +483,12 @@ msgid ""
 "pipelines](../processing/multisensor.md) for the full set of commands and "
 "what each option controls."
 msgstr ""
+"每个命令成功时会以 JSON "
+"形式输出流水线的元数据，失败时则给出指明未通过检查项的具体错误。完整的命令集以及各选项的作用，参见[多传感器流水线](../processing/multisensor.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:181
 msgid "Windowed reads and format conversion"
-msgstr ""
+msgstr "窗口读取与格式转换"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:189
 msgid ""
@@ -479,10 +496,12 @@ msgid ""
 "whole scenes returned by a search, use `PyGeoFetch.stream()` — see "
 "[Streaming](../data-access/streaming.md)."
 msgstr ""
+"`pygeofetch stream` 适用于你已知的单个 COG URL。若要流式读取搜索返回的整个场景，请使用 "
+"`PyGeoFetch.stream()`——参见[流式读取](../data-access/streaming.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:192
 msgid "Processing-chain pipelines"
-msgstr ""
+msgstr "处理链流水线"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:194
 msgid ""
@@ -490,24 +509,26 @@ msgid ""
 "file. It is distinct from `pygeofetch pipeline`, which orchestrates search, "
 "download and export."
 msgstr ""
+"`pygeofetch proc-pipeline` 对单个文件运行由处理步骤组成的 YAML 链。它不同于 `pygeofetch "
+"pipeline`，后者用于编排搜索、下载和导出。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:216
 msgid "Configuration and cache"
-msgstr ""
+msgstr "配置与缓存"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:233
 msgid "Shell completion"
-msgstr ""
+msgstr "Shell 补全"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:239
 msgid ""
 "This prints the line to add to your shell start-up file (for example "
 "`~/.bashrc`); it does not edit the file for you."
-msgstr ""
+msgstr "这会打印需要添加到 shell 启动文件（例如 `~/.bashrc`）中的那一行；它不会替你编辑该文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:242
 msgid "Known gaps"
-msgstr ""
+msgstr "已知缺口"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:244
 msgid ""
@@ -515,6 +536,8 @@ msgid ""
 "implemented in `cli/monitor_commands.py` but is not registered, so "
 "`pygeofetch monitor` is not available. See [Known issues](known-issues.md)."
 msgstr ""
+"`monitor` 命令组（`monitor run`、`monitor history`）已在 `cli/monitor_commands.py` "
+"中实现，但未注册，因此无法使用 `pygeofetch monitor`。参见[已知问题](known-issues.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/cli.md:247
 msgid ""
@@ -522,3 +545,5 @@ msgid ""
 "`flood_mapping_pipeline`) are available from Python only; they have no CLI "
 "command."
 msgstr ""
+"`pygeofetch.sar.pipelines` 中的五条 SAR 流水线（例如 `flood_mapping_pipeline`）仅可从 "
+"Python 使用；它们没有 CLI 命令。"

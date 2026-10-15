@@ -1,0 +1,232 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:1
+msgid "Plotter"
+msgstr "Plotter"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:7
+msgid ""
+"Static plotting for almost any raster output: indices, SAR intensity, "
+"classifications, comparisons, and 3D terrain."
+msgstr ""
+"رسم ثابت لأي مخرجات نقطية (raster) تقريبًا: المؤشرات، وشدة SAR، والتصنيفات، "
+"والمقارنات، والتضاريس ثلاثية الأبعاد."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:10
+msgid "Overview"
+msgstr "نظرة عامة"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:12
+msgid ""
+"Plotting is how you check that an analysis did what you expected. The "
+"plotter produces static figures from the files pygeofetch writes, so that "
+"you can inspect an index, a classification, a radar image or a before-and-"
+"after comparison without leaving Python. `quicklook` is the fastest route: "
+"give it a raster and it chooses sensible colours and limits, and the "
+"purpose-built plots add the extras that particular outputs need, such as a "
+"legend with class names or a diverging colour scale centred on zero for "
+"change maps."
+msgstr ""
+"الرسم هو الطريقة التي تتحقق بها من أن التحليل فعل ما توقعته. ينتج Plotter "
+"أشكالًا ثابتة من الملفات التي تكتبها pygeofetch، بحيث يمكنك فحص مؤشر أو "
+"تصنيف أو صورة رادارية أو مقارنة قبل وبعد دون مغادرة Python. تُعد `quicklook`"
+" أسرع طريق: أعطها raster فتختار ألوانًا وحدودًا مناسبة، بينما تضيف الرسوم "
+"المخصصة ما تحتاجه مخرجات معينة، مثل مفتاح يحمل أسماء الفئات أو مقياس لوني "
+"متباعد متمركز حول الصفر لخرائط التغيّر."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:14
+msgid ""
+"Figures can be saved at publication resolution and used directly in reports."
+" Choose the colour map to match the meaning of the data: a diverging scale "
+"for change, a sequential scale for quantities, and a categorical palette for"
+" classes, as in the vegetation trend maps in the [case "
+"studies](../workflows/case-studies.md)."
+msgstr ""
+"يمكن حفظ الأشكال بدقة صالحة للنشر واستخدامها مباشرة في التقارير. اختر خريطة "
+"الألوان بما يناسب معنى البيانات: مقياس متباعد للتغيّر، ومقياس متسلسل "
+"للكميات، ولوحة فئوية للفئات، كما في خرائط اتجاه الغطاء النباتي في [دراسات "
+"الحالة](../workflows/case-studies.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:16
+msgid "quicklook — one call for almost anything"
+msgstr "quicklook — استدعاء واحد لأي شيء تقريبًا"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:28
+msgid ""
+"`quicklook()` uses value-range heuristics, not format detection: few "
+"distinct values → categorical; mostly-negative dB range → SAR grayscale; "
+"values within `[-1, 1]` → diverging index colormap; otherwise → continuous. "
+"All overridable via `mode=`."
+msgstr ""
+"تعتمد `quicklook()` على استدلالات نطاق القيم، وليس على اكتشاف الصيغة: قيم "
+"متمايزة قليلة ← فئوي؛ نطاق dB سالب في معظمه ← تدرج رمادي لـ SAR؛ قيم ضمن "
+"`[-1, 1]` ← خريطة ألوان متباعدة للمؤشرات؛ وغير ذلك ← مستمر. ويمكن تجاوزها "
+"جميعًا عبر `mode=`."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:33
+msgid "Purpose-built plots"
+msgstr "رسوم مخصصة"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:49
+msgid ""
+"`plot_raster()` and `plot_rgb()` accept in-memory numpy arrays directly — no"
+" round-trip through disk needed."
+msgstr ""
+"تقبل `plot_raster()` و`plot_rgb()` مصفوفات numpy الموجودة في الذاكرة مباشرة "
+"— دون الحاجة إلى المرور بالقرص."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:52
+msgid "Other plot types"
+msgstr "أنواع رسوم أخرى"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Method"
+msgstr "الأسلوب"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Use"
+msgstr "استخدم"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_raster()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Single raster, any colormap"
+msgstr "raster واحد، بأي خريطة ألوان"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_rgb()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "3-band composite"
+msgstr "مركّب من 3 نطاقات"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_multi_panel_comparison()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "N-panel grid comparison"
+msgstr "مقارنة بشبكة من N لوحة"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_timeseries()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid ""
+"Line plot over dates — pairs directly with "
+"`TimeSeriesAnalyzer.zone_series()`"
+msgstr ""
+"رسم خطي عبر التواريخ — يقترن مباشرة مع `TimeSeriesAnalyzer.zone_series()`"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_histogram()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Value distribution"
+msgstr "توزيع القيم"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_terrain_summary()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid ""
+"2x2 terrain analysis figure (hillshade, elevation, slope, difference maps) —"
+" see below"
+msgstr ""
+"شكل تحليل التضاريس 2x2 (التظليل التضاريسي، والارتفاع، والانحدار، وخرائط "
+"الفروق) — انظر أدناه"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_3d_terrain()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Fast, static hillshade-draped 3D surface, no extra dependency"
+msgstr ""
+"سطح ثلاثي الأبعاد ثابت وسريع مكسوّ بالتظليل التضاريسي، دون أي اعتمادية "
+"إضافية"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_3d_terrain_interactive()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Real interactive mesh (PyVista), rotate/zoom/pan in-browser"
+msgstr ""
+"شبكة تفاعلية حقيقية (PyVista)، مع التدوير والتكبير والتحريك داخل المتصفح"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:65
+msgid "Terrain summary — a purpose-built 2x2 figure"
+msgstr "ملخص التضاريس — شكل 2x2 مخصص"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:80
+msgid "Lays out a purpose-built figure:"
+msgstr "ينسّق شكلًا مخصصًا:"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:87
+msgid ""
+"Pass `hillshade`/`slope` directly if you've already computed them via "
+"[Terrain Analysis (DEM / DSM / DTM)](../processing/optical/terrain.md)'s "
+"`terrain_derivatives()`; omit either and this method generates it from the "
+"DEM itself. `diffs` accepts one or more `{label: raster}` pairs — e.g. "
+"comparing two different DEM sources over the same AOI — rendered with a "
+"diverging colormap (`vmin_diff`/`vmax_diff`, default ±20). `summit_points` "
+"overlays labeled markers at `(lon, lat)` coordinates. `steep_threshold` "
+"(degrees) controls the \"% steep terrain\" statistic shown alongside the "
+"slope panel."
+msgstr ""
+"مرّر `hillshade`/`slope` مباشرة إذا كنت قد حسبتهما مسبقًا عبر "
+"`terrain_derivatives()` من [تحليل التضاريس (DEM / DSM / "
+"DTM)](../processing/optical/terrain.md)؛ وإذا حذفت أيًّا منهما تولّده هذه "
+"الطريقة من DEM نفسه. تقبل `diffs` زوجًا أو أكثر من الأزواج `{label: raster}`"
+" — مثل مقارنة مصدري DEM مختلفين فوق منطقة الاهتمام (AOI) نفسها — وتُعرض "
+"بخريطة ألوان متباعدة (`vmin_diff`/`vmax_diff`، والافتراضي ±20). تضع "
+"`summit_points` علامات مسمّاة عند الإحداثيات `(lon, lat)`. يتحكم "
+"`steep_threshold` (بالدرجات) في إحصاء \"% من التضاريس الشديدة الانحدار\" "
+"المعروض بجانب لوحة الانحدار."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:97
+msgid "3D terrain"
+msgstr "التضاريس ثلاثية الأبعاد"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:110
+msgid ""
+"`plot_3d_terrain_interactive()` needs `pip install \"pyvista[jupyter]\"` — "
+"the `[jupyter]` extra specifically for HTML export."
+msgstr ""
+"تحتاج `plot_3d_terrain_interactive()` إلى `pip install \"pyvista[jupyter]\"`"
+" — والإضافة `[jupyter]` مطلوبة تحديدًا للتصدير إلى HTML."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:115
+msgid ""
+"Both are hardened against a failure mode: a near-uniform elevation field "
+"(e.g. an AOI that barely overlaps terrain) previously rendered as a flat, "
+"confusingly \"empty\" plot with no explanation. Now raises a clear warning "
+"identifying the actual cause."
+msgstr ""
+"كلتاهما محصّنتان ضد حالة فشل: حقل ارتفاع شبه منتظم (مثل منطقة اهتمام بالكاد "
+"تتقاطع مع تضاريس) كان يُرسم سابقًا كشكل مسطح \"فارغ\" يثير الحيرة دون أي "
+"تفسير. أما الآن فيصدر تحذيرًا واضحًا يحدد السبب الفعلي."

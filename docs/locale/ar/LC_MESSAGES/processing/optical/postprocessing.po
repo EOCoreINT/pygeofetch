@@ -1,0 +1,271 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:1
+msgid "Postprocessing"
+msgstr "المعالجة اللاحقة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:3
+msgid "Turn a raster analysis result into GIS-ready vectors and statistics."
+msgstr ""
+"حوّل نتيجة تحليل رستري إلى متجهات وإحصاءات جاهزة لنظم المعلومات الجغرافية "
+"(GIS)."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:13
+msgid "Overview"
+msgstr "نظرة عامة"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:15
+msgid ""
+"Raster results are not always the end product. Planners and managers often "
+"need polygons they can open in a GIS, summary statistics per parcel or "
+"district, and files that are small enough to share. The postprocessing tools"
+" convert an analysis result into those forms: thresholded rasters become "
+"polygons, polygons are smoothed and regularised into cleaner shapes, "
+"statistics are computed for each zone you supply, and finished rasters are "
+"compressed or written as Cloud-Optimized GeoTIFFs."
+msgstr ""
+"ليست النتائج الرسترية دائماً المنتج النهائي. فالمخططون والمديرون يحتاجون "
+"غالباً إلى مضلّعات يمكنهم فتحها في GIS، وإحصاءات موجزة لكل قطعة أرض أو منطقة"
+" إدارية، وملفات صغيرة بما يكفي للمشاركة. تحوّل أدوات المعالجة اللاحقة نتيجة "
+"التحليل إلى هذه الأشكال: تتحول الرسترات المعتَّبة إلى مضلّعات، وتُنعَّم "
+"المضلّعات وتُنظَّم لتصبح أشكالاً أنظف، وتُحسب الإحصاءات لكل نطاق تزوّده، "
+"وتُضغط الرسترات النهائية أو تُكتب بصيغة Cloud-Optimized GeoTIFF."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:17
+msgid ""
+"A typical sequence starts from an index or class map, vectorises the cells "
+"that meet a condition, cleans the geometry, and then summarises the raster "
+"under each parcel or administrative boundary into a table. The vector-to-"
+"vector tools, such as buffer, centroids, dissolve and overlay, then prepare "
+"the layers for the final map or report."
+msgstr ""
+"يبدأ التسلسل المعتاد من مؤشر أو خريطة فئات، فيحوّل إلى متجهات الخلايا التي "
+"تستوفي شرطاً، وينظّف الهندسة، ثم يلخّص الرستر الواقع تحت كل قطعة أرض أو حد "
+"إداري في جدول. وتُجهّز أدوات متجه-إلى-متجه، مثل buffer وcentroids وdissolve "
+"وoverlay، الطبقات للخريطة أو التقرير النهائي."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:19
+msgid "Raster → vector"
+msgstr "رستر → متجه"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:28
+msgid ""
+"Converts a raster (e.g. a classification or binary mask) to vector polygons."
+" `threshold` applies a binary cutoff before vectorizing (pixels ≥ threshold "
+"→ 1, else 0) — omit it to vectorize the raster's existing discrete values "
+"directly. `format` accepts `\"geojson\"`, `\"gpkg\"`, or `\"shp\"`. "
+"`min_area` discards polygons smaller than that area in CRS units² — useful "
+"for dropping single-pixel noise from a noisy classification."
+msgstr ""
+"يحوّل رستراً (مثل تصنيف أو قناع ثنائي) إلى مضلّعات متجهية. يطبّق `threshold`"
+" عتبة ثنائية قبل التحويل إلى متجهات (البكسلات ≥ العتبة ← 1، وإلا 0) — احذفه "
+"لتحويل القيم المنفصلة الموجودة في الرستر مباشرة. يقبل `format` القيم "
+"`\"geojson\"` أو `\"gpkg\"` أو `\"shp\"`. يتجاهل `min_area` المضلّعات الأصغر"
+" من تلك المساحة بوحدات CRS² — وهو مفيد لإسقاط ضوضاء البكسل المنفرد من تصنيف "
+"مشوَّش."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:36
+msgid "Vector cleanup"
+msgstr "تنظيف البيانات المتجهية"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "Method"
+msgstr "الأسلوب"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "What it does"
+msgstr "ما الذي تفعله"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`smooth(input, tolerance=1.0, method=\"simplify\")`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid ""
+"Simplify/smooth boundaries — `\"simplify\"` (Douglas-Peucker) or "
+"`\"buffer\"` (buffer then un-buffer, rounds sharp corners)"
+msgstr ""
+"تبسيط/تنعيم الحدود — `\"simplify\"` (Douglas-Peucker) أو `\"buffer\"` (توسيع"
+" ثم تقليص النطاق، مما يدوّر الزوايا الحادة)"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`regularize(input, corner_threshold_deg=30.0)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid ""
+"Orthogonalize building footprints or irregular polygons — snaps edges to "
+"right angles where the corner angle is within `corner_threshold_deg` of 90°"
+msgstr ""
+"تعامد المضلعات غير المنتظمة أو بصمات المباني — يضبط الأضلاع على زوايا قائمة "
+"حيثما كانت زاوية الركن ضمن `corner_threshold_deg` من 90°"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`buffer(input, distance=10.0, cap_style=\"round\", join_style=\"round\")`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid ""
+"Buffer geometries by `distance` (CRS units). `cap_style`: "
+"`\"round\"`/`\"flat\"`/`\"square\"`. `join_style`: "
+"`\"round\"`/`\"mitre\"`/`\"bevel\"`"
+msgstr ""
+"إنشاء نطاق حول الأشكال الهندسية بمقدار `distance` (بوحدات نظام الإحداثيات). "
+"`cap_style`: `\"round\"`/`\"flat\"`/`\"square\"`. `join_style`: "
+"`\"round\"`/`\"mitre\"`/`\"bevel\"`"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`centroids(input)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "Extract centroid points from polygon/line geometries"
+msgstr "استخراج نقاط المراكز الهندسية من أشكال المضلعات/الخطوط"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`add_geometry_metrics(input)`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid ""
+"Adds `area_m2`, `perimeter_m`, and `compactness` (Polsby-Popper — 1.0 = a "
+"perfect circle) columns"
+msgstr ""
+"يضيف الأعمدة `area_m2` و`perimeter_m` و`compactness` (Polsby-Popper — القيمة"
+" 1.0 = دائرة مثالية)"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:54
+msgid "Zonal statistics"
+msgstr "الإحصاءات المنطقية (Zonal statistics)"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:63
+msgid ""
+"Computes `mean`, `median`, `min`, `max`, `std`, `count` per zone by default;"
+" pass `stats` to compute a subset. `all_touched=True` includes any pixel "
+"touching a zone's boundary, not just pixels whose center falls inside it — "
+"matters for small zones relative to pixel size."
+msgstr ""
+"يحسب افتراضيًا `mean` و`median` و`min` و`max` و`std` و`count` لكل منطقة؛ "
+"مرّر `stats` لحساب مجموعة جزئية. يشمل `all_touched=True` كل بكسل يلامس حدود "
+"المنطقة، وليس فقط البكسلات التي يقع مركزها داخلها — وهذا مهم للمناطق الصغيرة"
+" قياسًا بحجم البكسل."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:68
+msgid "Compression & Cloud Optimized GeoTIFF"
+msgstr "الضغط وصيغة Cloud Optimized GeoTIFF"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:77
+msgid ""
+"`compress()` applies lossless GeoTIFF compression (`\"lzw\"`, `\"deflate\"`,"
+" `\"zstd\"`, `\"packbits\"`) and reports the measured compression ratio and "
+"file sizes in `result.metadata` — not an estimate. `cog()` converts to a "
+"Cloud Optimized GeoTIFF (internal tiling + overviews), the format most "
+"cloud-native raster tools (rasterio, GDAL VSI, STAC-based viewers) expect "
+"for efficient partial reads."
+msgstr ""
+"تطبّق `compress()` ضغط GeoTIFF دون فقد (`\"lzw\"` و`\"deflate\"` و`\"zstd\"`"
+" و`\"packbits\"`) وتبلّغ عن نسبة الضغط وأحجام الملفات المقيسة فعليًا في "
+"`result.metadata` — وليست تقديرًا. أما `cog()` فتحوّل الملف إلى Cloud "
+"Optimized GeoTIFF (تجزئة داخلية إلى بلاطات مع ملخصات overviews)، وهي الصيغة "
+"التي تتوقعها معظم أدوات الرستر السحابية الأصلية (rasterio وGDAL VSI "
+"والعارضات المعتمدة على STAC) لإجراء قراءات جزئية فعّالة."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:85
+msgid "Vector ↔ vector overlay"
+msgstr "التراكب بين طبقتين متجهيتين"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:87
+msgid ""
+"Combine, merge, and relate two vector layers by their geometry — different "
+"from `zonal_stats` above, which relates a *raster* to vector zones. These "
+"three are thin wrappers around GeoPandas's own overlay engine, so behavior "
+"matches `geopandas.overlay`/`dissolve`/`sjoin` if you already know them."
+msgstr ""
+"دمج طبقتين متجهيتين وربطهما وفق هندستهما — وهذا يختلف عن `zonal_stats` أعلاه"
+" الذي يربط *رستر* بمناطق متجهية. هذه الدوال الثلاث أغلفة رقيقة حول محرك "
+"التراكب في GeoPandas نفسه، لذا يطابق سلوكها "
+"`geopandas.overlay`/`dissolve`/`sjoin` إن كنت تعرفها مسبقًا."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`overlay(left, right, output, how=\"intersection\")`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid ""
+"Combine two layers by geometric relationship — `\"intersection\"`, "
+"`\"union\"`, `\"difference\"` (left minus right), "
+"`\"symmetric_difference\"`, or `\"identity\"`"
+msgstr ""
+"دمج طبقتين وفق العلاقة الهندسية — `\"intersection\"` أو `\"union\"` أو "
+"`\"difference\"` (اليسرى ناقص اليمنى) أو `\"symmetric_difference\"` أو "
+"`\"identity\"`"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`dissolve(input, output, by=None, aggfunc=\"first\")`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid ""
+"Merge polygons sharing the same value in the `by` column into single "
+"geometries; omit `by` to merge everything into one"
+msgstr ""
+"دمج المضلعات التي تشترك في القيمة نفسها في العمود `by` في أشكال هندسية "
+"مفردة؛ احذف `by` لدمج كل شيء في شكل واحد"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid "`spatial_join(left, right, output, how=\"inner\", predicate=\"intersects\")`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:0
+msgid ""
+"Attach `right`'s attributes to `left` by spatial relationship "
+"(`\"intersects\"`, `\"within\"`, `\"contains\"`, `\"touches\"`, "
+"`\"crosses\"`, `\"overlaps\"`) instead of a shared key column"
+msgstr ""
+"إلحاق سمات `right` بـ `left` وفق العلاقة المكانية (`\"intersects\"` أو "
+"`\"within\"` أو `\"contains\"` أو `\"touches\"` أو `\"crosses\"` أو "
+"`\"overlaps\"`) بدلًا من عمود مفتاح مشترك"
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:112
+msgid ""
+"All three reproject `right` to match `left`'s CRS automatically when the two"
+" differ — checked and handled, not left to silently produce a wrong or empty"
+" result. All three require an explicit `output` path, since the right vector"
+" format (GeoJSON, Shapefile, GeoPackage) depends on what you're doing with "
+"the result, unlike raster outputs which have a sensible default naming "
+"convention."
+msgstr ""
+"تعيد الدوال الثلاث إسقاط `right` تلقائيًا لمطابقة نظام إحداثيات `left` عندما"
+" يختلف النظامان — يجري التحقق من ذلك ومعالجته، بدلًا من تركه ينتج نتيجة "
+"خاطئة أو فارغة بصمت. وتتطلب الدوال الثلاث مسار `output` صريحًا، لأن صيغة "
+"المتجهات المناسبة (GeoJSON أو Shapefile أو GeoPackage) تعتمد على ما ستفعله "
+"بالنتيجة، بخلاف مخرجات الرستر التي لها اصطلاح تسمية افتراضي معقول."
+
+#: ../../home/claude/work/docs_audit/docs_out/processing/optical/postprocessing.md:119
+msgid ""
+"**A common mistake worth flagging directly**: `predicate=\"intersects\"` "
+"(the default for `spatial_join`) also matches features that merely touch at "
+"an edge. If you need points *inside* a polygon, not on its boundary, use "
+"`predicate=\"within\"` instead."
+msgstr ""
+"**خطأ شائع يستحق التنبيه المباشر**: يطابق `predicate=\"intersects\"` (وهو "
+"الافتراضي في `spatial_join`) أيضًا العناصر التي تلامس الحافة فحسب. إذا كنت "
+"تريد النقاط *داخل* المضلع، لا على حدّه، فاستخدم `predicate=\"within\"` بدلًا"
+" منه."

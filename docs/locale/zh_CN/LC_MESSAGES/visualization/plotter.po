@@ -1,0 +1,210 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:1
+msgid "Plotter"
+msgstr "绘图器"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:7
+msgid ""
+"Static plotting for almost any raster output: indices, SAR intensity, "
+"classifications, comparisons, and 3D terrain."
+msgstr "为几乎所有栅格输出提供静态绘图：指数、SAR 强度、分类结果、对比图以及三维地形。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:10
+msgid "Overview"
+msgstr "概览"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:12
+msgid ""
+"Plotting is how you check that an analysis did what you expected. The "
+"plotter produces static figures from the files pygeofetch writes, so that "
+"you can inspect an index, a classification, a radar image or a before-and-"
+"after comparison without leaving Python. `quicklook` is the fastest route: "
+"give it a raster and it chooses sensible colours and limits, and the "
+"purpose-built plots add the extras that particular outputs need, such as a "
+"legend with class names or a diverging colour scale centred on zero for "
+"change maps."
+msgstr ""
+"绘图是检验分析是否符合预期的方式。绘图器根据 pygeofetch 写出的文件生成静态图件，使你无需离开 Python "
+"就能检查指数、分类结果、雷达图像或前后对比。`quicklook` "
+"是最快捷的途径：给它一个栅格，它会自行选择合理的颜色和范围；而专用绘图函数则为特定输出补充所需的额外内容，例如带类别名称的图例，或针对变化图的以零为中心的发散色标。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:14
+msgid ""
+"Figures can be saved at publication resolution and used directly in reports."
+" Choose the colour map to match the meaning of the data: a diverging scale "
+"for change, a sequential scale for quantities, and a categorical palette for"
+" classes, as in the vegetation trend maps in the [case "
+"studies](../workflows/case-studies.md)."
+msgstr ""
+"图件可以按出版级分辨率保存，并直接用于报告。请根据数据的含义选择色图：变化用发散色标，数量用连续色标，类别用分类调色板，正如[案例研究](../workflows/case-"
+"studies.md)中的植被趋势图那样。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:16
+msgid "quicklook — one call for almost anything"
+msgstr "quicklook——几乎任何数据，一次调用"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:28
+msgid ""
+"`quicklook()` uses value-range heuristics, not format detection: few "
+"distinct values → categorical; mostly-negative dB range → SAR grayscale; "
+"values within `[-1, 1]` → diverging index colormap; otherwise → continuous. "
+"All overridable via `mode=`."
+msgstr ""
+"`quicklook()` 使用的是取值范围启发式规则，而不是格式检测：不同取值很少 → 分类；以负值为主的 dB 范围 → SAR 灰度；取值在 "
+"`[-1, 1]` 之内 → 发散型指数色图；其他情况 → 连续。均可通过 `mode=` 覆盖。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:33
+msgid "Purpose-built plots"
+msgstr "专用绘图"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:49
+msgid ""
+"`plot_raster()` and `plot_rgb()` accept in-memory numpy arrays directly — no"
+" round-trip through disk needed."
+msgstr "`plot_raster()` 和 `plot_rgb()` 可直接接受内存中的 numpy 数组——无需经由磁盘中转。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:52
+msgid "Other plot types"
+msgstr "其他绘图类型"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Method"
+msgstr "方法"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Use"
+msgstr "使用"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_raster()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Single raster, any colormap"
+msgstr "单个栅格，任意色图"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_rgb()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "3-band composite"
+msgstr "3 波段合成"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_multi_panel_comparison()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "N-panel grid comparison"
+msgstr "N 面板网格对比"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_timeseries()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid ""
+"Line plot over dates — pairs directly with "
+"`TimeSeriesAnalyzer.zone_series()`"
+msgstr "随日期变化的折线图——可直接与 `TimeSeriesAnalyzer.zone_series()` 配合使用"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_histogram()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Value distribution"
+msgstr "数值分布"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_terrain_summary()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid ""
+"2x2 terrain analysis figure (hillshade, elevation, slope, difference maps) —"
+" see below"
+msgstr "2x2 地形分析图（山体阴影、高程、坡度、差值图）——见下文"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_3d_terrain()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Fast, static hillshade-draped 3D surface, no extra dependency"
+msgstr "快速的静态山体阴影覆盖三维曲面，无需额外依赖"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "`plot_3d_terrain_interactive()`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
+msgid "Real interactive mesh (PyVista), rotate/zoom/pan in-browser"
+msgstr "真正的交互式网格（PyVista），可在浏览器中旋转/缩放/平移"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:65
+msgid "Terrain summary — a purpose-built 2x2 figure"
+msgstr "地形概览——专用的 2x2 图件"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:80
+msgid "Lays out a purpose-built figure:"
+msgstr "排布一幅专用图件："
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:87
+msgid ""
+"Pass `hillshade`/`slope` directly if you've already computed them via "
+"[Terrain Analysis (DEM / DSM / DTM)](../processing/optical/terrain.md)'s "
+"`terrain_derivatives()`; omit either and this method generates it from the "
+"DEM itself. `diffs` accepts one or more `{label: raster}` pairs — e.g. "
+"comparing two different DEM sources over the same AOI — rendered with a "
+"diverging colormap (`vmin_diff`/`vmax_diff`, default ±20). `summit_points` "
+"overlays labeled markers at `(lon, lat)` coordinates. `steep_threshold` "
+"(degrees) controls the \"% steep terrain\" statistic shown alongside the "
+"slope panel."
+msgstr ""
+"如果你已通过[地形分析（DEM / DSM / DTM）](../processing/optical/terrain.md)的 "
+"`terrain_derivatives()` 计算出 `hillshade`/`slope`，可直接传入；省略其中任一项，则此方法会从 DEM "
+"本身生成。`diffs` 接受一个或多个 `{label: raster}` 键值对——例如比较同一 AOI 上两个不同的 DEM "
+"来源——并以发散色图渲染（`vmin_diff`/`vmax_diff`，默认 ±20）。`summit_points` 会在 `(lon, lat)`"
+" 坐标处叠加带标签的标记。`steep_threshold`（单位为度）用于控制坡度面板旁显示的“陡峭地形占比”统计量。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:97
+msgid "3D terrain"
+msgstr "三维地形"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:110
+msgid ""
+"`plot_3d_terrain_interactive()` needs `pip install \"pyvista[jupyter]\"` — "
+"the `[jupyter]` extra specifically for HTML export."
+msgstr ""
+"`plot_3d_terrain_interactive()` 需要 `pip install \"pyvista[jupyter]\"`——其中的 "
+"`[jupyter]` 额外依赖专门用于 HTML 导出。"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:115
+msgid ""
+"Both are hardened against a failure mode: a near-uniform elevation field "
+"(e.g. an AOI that barely overlaps terrain) previously rendered as a flat, "
+"confusingly \"empty\" plot with no explanation. Now raises a clear warning "
+"identifying the actual cause."
+msgstr ""
+"两者都针对一种失效模式做了加固：近乎均匀的高程场（例如仅与地形略有重叠的 "
+"AOI）此前会渲染成一幅平坦、令人困惑的“空白”图，且没有任何说明。现在会发出清晰的警告，指出真正的原因。"

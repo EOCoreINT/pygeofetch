@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,8 @@ msgid ""
 "*dates* of the *same* sensor — these combine multiple *sensor types* on "
 "(usually) the same or overlapping dates."
 msgstr ""
+"五个标准流程，每个都结合**两种不同的传感器类型**，完成单靠任何一种都难以可靠完成的任务。这与 [SAR 处理](sar-"
+"insar/sar.md)中的五个流程思路不同，后者是结合*同一*传感器的多个*日期*，而这里是结合（通常）相同或相近日期的多种*传感器类型*。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:10
 msgid ""
@@ -38,10 +40,14 @@ msgid ""
 "with pipeline-specific detail — a consistent interface whether you're fusing"
 " InSAR and optical, or computing DEM volumes."
 msgstr ""
+"这里的每个流程都返回整个 pygeofetch 编排流程中通用的同一个真实的 "
+"`pygeofetch.sar.pipelines.PipelineResult` "
+"类型：`success`、`final_output`，以及包含流程特定细节的 `metadata` 字典——无论你是在融合 InSAR "
+"与光学，还是在计算 DEM 体积，接口都保持一致。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:21
 msgid "Choosing a pipeline"
-msgstr ""
+msgstr "选择流程"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:23
 msgid ""
@@ -51,6 +57,7 @@ msgid ""
 " but is blocked by cloud. The pipelines combine the two, or combine imagery "
 "with elevation data, so that each source covers the other's weakness."
 msgstr ""
+"每个流程都回答一个单一传感器难以处理的问题。雷达能穿透云层并测量地表运动和水体，但无法区分植被类型；光学影像能显示植被和土地覆盖，但会被云遮挡。这些流程将两者结合，或将影像与高程数据结合，使每个数据源弥补另一个的不足。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:25
 msgid ""
@@ -66,10 +73,14 @@ msgid ""
 "the quality information needed to judge it, and the parameters used, so that"
 " an analysis can be reproduced."
 msgstr ""
+"按问题选择。对于干涉测量部分失效区域的地面运动，请使用 InSAR 与光学位移融合。对于云层遮挡了部分事件的洪水范围，请使用 SAR "
+"与光学洪水制图。若要比较坡地上的光学场景而不让光照差异造成虚假变化，请使用地形校正的变化检测。若要测量增加或减少的体积，例如在矿坑或料堆中，请使用 "
+"DEM-of-Difference 流程比较两个高程模型。若要发现冠层下方的植被扰动，请将 NDVI "
+"与雷达相干性结合。每个流程都会返回一个结果对象，其中包含输出栅格、评判其质量所需的质量信息以及所用参数，以便重现分析。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:27
 msgid "1. InSAR + Optical Displacement Fusion"
-msgstr ""
+msgstr "1. InSAR + 光学位移融合"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:52
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:143
@@ -77,7 +88,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:335
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:436
 msgid "Why this exists"
-msgstr ""
+msgstr "为什么需要它"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:54
 msgid ""
@@ -90,6 +101,11 @@ msgid ""
 "(typically sub-metre to a few metres), but keeps working exactly where InSAR"
 " can't, since it never depends on phase coherence at all."
 msgstr ""
+"这将本项目自己的 **Bu'ertai Mine 验证运行**所证明可行的组合形式化：[InSAR](sar-insar/insar.md) "
+"能给出精确的（毫米级）垂直位移，但在两次 SAR "
+"过境之间地面变化超过相位相干性极限的任何地方，它在结构上都是盲区——这是物理约束，而不是调参问题。[光学像素偏移跟踪](sar-"
+"insar/optical-offset-tracking.md)较粗糙（通常为亚米到数米），但在 InSAR "
+"失效的地方依然有效，因为它完全不依赖相位相干性。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:64
 msgid ""
@@ -98,11 +114,13 @@ msgid ""
 "**83.7%**. Neither number is a target — both are what actually came out of a"
 " executed pipeline run."
 msgstr ""
+"在 Bu'ertai 的运行中，InSAR 最终可用的覆盖率仅为已处理场景的 **0.1%**。同一区域、同样日期下，光学偏移跟踪覆盖了 "
+"**83.7%**。这两个数字都不是目标——它们都是一次已执行的流程运行实际得出的结果。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:69
 msgid ""
 "What this pipeline actually does that the two underlying functions don't"
-msgstr ""
+msgstr "这个流程实际完成了底层两个函数没有做的事情"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:71
 msgid ""
@@ -113,12 +131,16 @@ msgid ""
 "`step_size` × the optical pixel size — e.g. 160m for a 10m-pixel image with "
 "`step_size=16`) essentially never share a native grid. This pipeline:"
 msgstr ""
+"[`fuse_insar_optical`](sar-insar/optical-offset-tracking.md#fusing-insar-"
+"and-optical) 本身假定两个输入已经具有相同的形状。实际上，InSAR（Sentinel-1，多视处理后通常为 5-20m "
+"像素）和光学偏移跟踪（Sentinel-2，生成的位移网格为 `step_size` × 光学像素大小——例如 10m 像素影像在 "
+"`step_size=16` 时为 160m）基本上从不共享原生网格。该流程会："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:79
 msgid ""
 "Runs `prepare_optical_pair` and `compute_pixel_offsets` on the raw optical "
 "rasters."
-msgstr ""
+msgstr "对原始光学栅格运行 `prepare_optical_pair` 和 `compute_pixel_offsets`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:81
 msgid ""
@@ -128,20 +150,22 @@ msgid ""
 "original image's own transform gives for that window's pixel-coordinate "
 "center)."
 msgstr ""
+"为所得的稀疏位移网格构建正确的地理配准变换（使用前已对照手工计算的示例进行验证——窗口 `(0, 0)` "
+"的地面坐标中心必须与原始影像自身的变换对该窗口像素坐标中心给出的结果完全一致）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:86
 msgid ""
 "Reprojects the optical displacement and SNR rasters onto the InSAR grid via "
 "`rasterio.warp.reproject`."
-msgstr ""
+msgstr "通过 `rasterio.warp.reproject` 将光学位移和 SNR 栅格重投影到 InSAR 网格上。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:88
 msgid "Calls `fuse_insar_optical` on the now-aligned arrays."
-msgstr ""
+msgstr "对已对齐的数组调用 `fuse_insar_optical`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:90
 msgid "Edge effect"
-msgstr ""
+msgstr "边缘效应"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:92
 msgid ""
@@ -154,19 +178,23 @@ msgid ""
 " if you see InSAR-dominant pixels exactly at your scene's edges even under "
 "low coherence, this is why."
 msgstr ""
+"基于窗口的相关无法在影像边界处进行测量——窗口需要在自身中心之外还有像素才能进行相关。这意味着 InSAR "
+"网格的边缘一圈在重投影后没有真正的光学覆盖，并且无论该处相干性如何，都会正确地回退到 InSAR（遵循 `fuse_insar_optical` "
+"自身真实、有文档记录的回退逻辑：使用实际存在的那个数据源）。这是正确的行为，而不是缺陷——如果你看到即使在低相干性下，场景边缘恰好是 InSAR "
+"主导的像素，原因就在于此。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:102
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:396
 msgid "Output"
-msgstr ""
+msgstr "输出"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "File"
-msgstr ""
+msgstr "文件"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "Contents"
-msgstr ""
+msgstr "内容"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "`fused_displacement.tif`"
@@ -176,7 +204,7 @@ msgstr ""
 msgid ""
 "The fused value — InSAR's where InSAR-dominant, optical's where optical-"
 "dominant, blended in the transition zone"
-msgstr ""
+msgstr "融合值——InSAR 主导处取 InSAR 的值，光学主导处取光学的值，过渡区则为两者混合"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:16
 msgid "`fused_source_mask.tif`"
@@ -186,7 +214,7 @@ msgstr ""
 msgid ""
 "`2`=InSAR-dominant, `1`=transition, `0`=optical-dominant — **always check "
 "this alongside the fused value**"
-msgstr ""
+msgstr "`2`=InSAR 主导，`1`=过渡，`0`=光学主导——**务必将其与融合值一起查看**"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:110
 msgid ""
@@ -196,10 +224,12 @@ msgid ""
 "produced it — read the source mask, don't treat the fused value as one "
 "uniform physical quantity."
 msgstr ""
+"按 `fuse_insar_optical` 自身的科学提示：InSAR "
+"给出的是*垂直*位移，光学给出的是*水平*量级。融合栅格在任一像素处的物理含义取决于该值实际由哪个数据源产生——请读取数据源掩膜，不要把融合值当作单一统一的物理量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:119
 msgid "2. SAR + Optical Flood/Water Mapping"
-msgstr ""
+msgstr "2. SAR + 光学洪水/水体制图"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:145
 msgid ""
@@ -210,6 +240,8 @@ msgid ""
 "gives cleaner, more precise spectral water discrimination (NDWI) wherever "
 "clouds do clear. Neither alone is as complete as the two combined."
 msgstr ""
+"与 Copernicus 紧急管理服务为其洪水范围产品所采用的思路相同：SAR 能穿透几乎总是伴随洪水事件的云层（这是雷达的物理特性——云在 SAR "
+"波长下实际上是透明的，而不是营销说法）；光学则在云层散开的地方给出更清晰、更精确的光谱水体判别（NDWI）。单独使用任何一种都不如两者结合完整。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:153
 msgid ""
@@ -219,38 +251,41 @@ msgid ""
 "pipeline's own contribution is the optical NDWI side and the fusion logic "
 "between the two."
 msgstr ""
+"SAR 部分复用 [`flood_mapping_pipeline`](sar-"
+"insar/sar.md#flood_mapping_pipeline)（它已经强制执行真实的 calibrate→despeckle "
+"先决条件链），而不是重新实现 SAR 洪水检测——该流程自身的贡献是光学 NDWI 部分以及两者之间的融合逻辑。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:159
 msgid "Fusion modes"
-msgstr ""
+msgstr "融合模式"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Mode"
-msgstr ""
+msgstr "模式"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Behaviour"
-msgstr ""
+msgstr "行为"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "When to use"
-msgstr ""
+msgstr "适用场景"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "`cloud_aware` (default)"
-msgstr ""
+msgstr "`cloud_aware`（默认）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid ""
 "Trust optical wherever it has a cloud-free reading; fall back to SAR "
 "wherever clouded"
-msgstr ""
+msgstr "在光学有无云读数的地方信任光学；在有云的地方回退到 SAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid ""
 "The physically-motivated default — optical is more precise where it has "
 "signal"
-msgstr ""
+msgstr "基于物理原理的默认值——光学在有信号的地方更精确"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "`union`"
@@ -258,13 +293,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Water if *either* source says water, wherever both have coverage"
-msgstr ""
+msgstr "在两种数据源都有覆盖的地方，只要*任一*数据源判为水体即视为水体"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid ""
 "Disaster response, where missing flooded area is a worse error than a false "
 "positive"
-msgstr ""
+msgstr "灾害响应，在此场景下漏掉受淹区域比误报更严重"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "`intersection`"
@@ -272,15 +307,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Water only where *both* sources agree"
-msgstr ""
+msgstr "仅在*两种*数据源一致的地方判为水体"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:109
 msgid "Higher-confidence, fewer false positives, less complete coverage"
-msgstr ""
+msgstr "置信度更高，误报更少，覆盖不够完整"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:167
 msgid "NDWI threshold"
-msgstr ""
+msgstr "NDWI 阈值"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:169
 msgid ""
@@ -291,10 +326,14 @@ msgid ""
 "different cutoff (turbid or sediment-laden water can shift NDWI away from "
 "the clean-water assumption the original threshold was calibrated against)."
 msgstr ""
+"通过 [`pygeofetch.processor.indices.SpectralIndex`](optical/spectral-"
+"indices.md) 使用 McFeeters (1996) 的 NDWI 公式（`(GREEN - NIR) / (GREEN + "
+"NIR)`），默认采用 McFeeters 原始的阈值 `0.0`——如果你自己场景中的水体需要不同的截断值，请覆盖 "
+"`optical_ndwi_threshold`（浑浊或含泥沙的水体可能使 NDWI 偏离原阈值所校准的清水假设）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:178
 msgid "Cloud mask classes"
-msgstr ""
+msgstr "云掩膜类别"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:180
 msgid ""
@@ -303,10 +342,12 @@ msgid ""
 "probability), and thin cirrus — override if using a different sensor's own "
 "cloud-mask convention."
 msgstr ""
+"默认的 `cloud_mask_scl_classes=[3, 8, 9, 10]` 对应 Sentinel-2 自身 SCL "
+"波段中云影、云（中等概率）、云（高概率）和薄卷云的取值——如果使用其他传感器自己的云掩膜约定，请覆盖该值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:185
 msgid "Optical nodata and reflectance scaling"
-msgstr ""
+msgstr "光学无数据与反射率缩放"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:187
 msgid ""
@@ -318,6 +359,10 @@ msgid ""
 "in `metadata[\"n_optical_nodata_pixels\"]`. A NIR band or cloud mask whose "
 "shape differs from the green band raises a clear error."
 msgstr ""
+"没有可用数据的光学像素会被当作云处理，因此由 SAR 来决定。当绿波段或近红外波段声明了 nodata、两个波段都为 `0`，或 NDWI "
+"不是有限值时，该像素就算作无数据。如果没有这一处理，`0/0` 会得到 `NaN`，`NaN > threshold` "
+"为假，该像素就会被读作无云的*陆地*，并覆盖 SAR 观测到的洪水。此类像素的数量记录在 "
+"`metadata[\"n_optical_nodata_pixels\"]` 中。如果近红外波段或云掩膜的形状与绿波段不同，会抛出明确的错误。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:194
 msgid ""
@@ -328,10 +373,14 @@ msgid ""
 "optical_offset) * optical_scale` to both bands before NDWI. The defaults "
 "(`0.0`, `1.0`) leave the values unchanged."
 msgstr ""
+"NDWI **不是偏移不变的**。处理基线 04.00 或更高版本的 Sentinel-2 L2A 存储的是 `DN = reflectance x "
+"10000 + 1000`，因此基于原始 DN 计算的指数会被压缩到接近零。对此类数据请传入 `optical_offset=-1000, "
+"optical_scale=1e-4`。它们会在计算 NDWI 之前以 `(DN + optical_offset) * optical_scale` "
+"的形式应用于两个波段。默认值（`0.0`、`1.0`）不改变数值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:202
 msgid "3. Terrain-Corrected Optical Change Detection"
-msgstr ""
+msgstr "3. 地形校正的光学变化检测"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:231
 msgid ""
@@ -344,6 +393,7 @@ msgid ""
 "illumination difference alone can look exactly like change to a naive pixel-"
 "by-pixel comparison."
 msgstr ""
+"在山区或高起伏地形中，原始光学变化检测会把土地覆盖变化与地形本身造成的阴影/光照伪影混淆。朝向太阳的坡面看起来更亮；同一坡面背向太阳时则看起来更暗——与地面上实际是否发生变化无关。由于两个不同采集日期之间太阳位置几乎不可能完全相同（季节不同、一天中的时间不同，或两者兼有），仅这种光照差异就可能在朴素的逐像素比较中看起来与变化完全一样。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:241
 msgid ""
@@ -354,10 +404,13 @@ msgid ""
 "safeguards-custom-dems-layovershadow-and-topographic-residuals) into optical"
 " illumination correction."
 msgstr ""
+"该流程计算每个日期各自独立的太阳位置，并在差分之前应用标准的余弦地形校正（Teillet et al. 1982）——把已为 [InSAR "
+"叠掩/阴影掩膜](sar-insar/insar.md#advanced-safeguards-custom-dems-layovershadow-"
+"and-topographic-residuals)构建的同一套真实坡度/坡向物理，扩展到光学光照校正中。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:248
 msgid "The physics"
-msgstr ""
+msgstr "物理原理"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:250
 msgid ""
@@ -367,42 +420,45 @@ msgid ""
 "implementation in `pvlib`, where it agrees to within 0.19° (zenith) and "
 "0.49° (azimuth) over 22 daylight cases at five latitudes and seasons:"
 msgstr ""
+"太阳位置采用 Spencer (1971) 的傅里叶级数近似，这是地形校正文献和 NOAA 太阳计算器中的标准方法。已与已知参考点以及 `pvlib` "
+"中的 NREL SPA 实现进行核对，在五个纬度和季节的 22 个白天案例中，两者吻合到天顶角 0.19° 和方位角 0.49° 以内："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:255
 msgid ""
 "Equator at the equinox at solar noon → zenith ≈ 0° (sun directly overhead) —"
 " confirmed."
-msgstr ""
+msgstr "赤道春秋分正午 → 天顶角 ≈ 0°（太阳在正上方）——已确认。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:257
 msgid ""
 "Tropic of Cancer at the June solstice at solar noon → zenith ≈ 0°, "
 "declination ≈ 23.44° — confirmed."
-msgstr ""
+msgstr "夏至日正午的北回归线 → 天顶角 ≈ 0°，赤纬 ≈ 23.44°——已确认。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:259
 msgid ""
 "45°N at the equinox at solar noon → zenith matching the real, expected "
 "`|latitude − declination|` relationship to within 0.03° — confirmed."
 msgstr ""
+"春秋分正午的北纬 45° → 天顶角与真实、预期的 `|latitude − declination|` 关系吻合到 0.03° 以内——已确认。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:263
 msgid "Cosine correction:"
-msgstr ""
+msgstr "余弦校正："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:265
 msgid "L_{corrected} = L_{observed} \\times \\frac{\\cos(\\theta_z)}{\\cos(i)}"
-msgstr ""
+msgstr "L_{corrected} = L_{observed} \\times \\frac{\\cos(\\theta_z)}{\\cos(i)}"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:269
 msgid ""
 "where the local illumination angle {math}`i` (the angle between the sun's "
 "rays and the surface normal at each pixel) is:"
-msgstr ""
+msgstr "其中局部光照角 {math}`i`（每个像素处太阳光线与地表法线之间的夹角）为："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:272
 msgid "\\cos(i) = \\cos(s)\\cos(\\theta_z) + \\sin(s)\\sin(\\theta_z)\\cos(\\phi_s - a)"
-msgstr ""
+msgstr "\\cos(i) = \\cos(s)\\cos(\\theta_z) + \\sin(s)\\sin(\\theta_z)\\cos(\\phi_s - a)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:276
 msgid ""
@@ -410,6 +466,9 @@ msgid ""
 "`pygeofetch.insar.advanced_safeguards.slope_aspect_degrees`), "
 "{math}`\\theta_z` = solar zenith, {math}`\\phi_s` = solar azimuth."
 msgstr ""
+"—— {math}`s` = 坡度，{math}`a` = 坡向（二者均通过 "
+"`pygeofetch.insar.advanced_safeguards.slope_aspect_degrees` 由 DEM "
+"得到），{math}`\\theta_z` = 太阳天顶角，{math}`\\phi_s` = 太阳方位角。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:281
 msgid ""
@@ -420,10 +479,12 @@ msgid ""
 " real, known limitation of this specific method, not just this "
 "implementation of it."
 msgstr ""
+"这是最简单的标准校正（余弦校正）——还有更复杂的方法（C "
+"校正、Minnaert、SCS+C）能更好地处理非常陡峭的地形或茂密冠层，但此处未实现。如果余弦校正在你自己非常陡峭的研究区中校正不足，那是这种方法本身已知的真实局限，而不仅仅是这个实现的问题。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:290
 msgid "Accuracy check"
-msgstr ""
+msgstr "精度检查"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:292
 msgid ""
@@ -434,10 +495,12 @@ msgid ""
 "purely from illumination, and (2) the pipeline's correction reduces that "
 "false signal to less than 30% of the naive amount."
 msgstr ""
+"该流程的测试套件不只是检查公式能否运行——它构造了一个合成场景：在太阳几何刻意不同的两个日期之间，真实的底层反射率**保持不变**，然后确认：(1) "
+"朴素的、未经校正的差分仅因光照就错误地标记出变化，并且 (2) 该流程的校正将这种虚假信号降低到朴素量的 30% 以下。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:302
 msgid "Input requirements"
-msgstr ""
+msgstr "输入要求"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:304
 msgid ""
@@ -449,10 +512,14 @@ msgid ""
 "those pixels are written as `255` in the change mask, and "
 "`metadata[\"n_valid_pixels\"]` counts the rest."
 msgstr ""
+"请向该流程提供**反射率波段**（例如 Sentinel-2 B08），而不是 NDVI "
+"这样的指数。余弦光照校正在物理上适用于反射率，而不适用于波段比值。坡度以米为单位计算，因此以度为单位（EPSG:4326）的 DEM "
+"会使用随纬度变化的像素大小进行换算。DEM 或光学栅格中的无数据会被排除：这些像素在变化掩膜中写为 `255`，其余像素由 "
+"`metadata[\"n_valid_pixels\"]` 计数。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:312
 msgid "4. DEM Differencing / Volumetric Change"
-msgstr ""
+msgstr "4. DEM 差分 / 体积变化"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:337
 msgid ""
@@ -464,10 +531,13 @@ msgid ""
 "tracking — not just the open-pit mine or quarry that might be the most "
 "obvious use case."
 msgstr ""
+"一种标准的地貌学技术——“DEM of Difference”（DoD），遵循 Brasington et al. (2000) 和 Lane et "
+"al. (2003)——比较不同日期的两个 "
+"DEM，以量化高程和体积变化。它是通用的：同样的技术适用于滑坡滑坡壁/堆积体积、冰川物质平衡、海岸沙丘/悬崖侵蚀，以及施工/土方工程进度跟踪——而不仅仅是可能最显而易见的露天矿或采石场用途。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:346
 msgid "The detail most naive implementations skip"
-msgstr ""
+msgstr "大多数朴素实现会忽略的细节"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:348
 msgid ""
@@ -475,10 +545,12 @@ msgid ""
 " as change. The standard fix — Brasington et al. (2000)'s own methodology — "
 "is a propagated **Level of Detection** (LoD):"
 msgstr ""
+"不设不确定性阈值的原始高程差分会把 DEM 噪声当作变化。标准的解决方法——Brasington et al. (2000) "
+"自己的方法——是传播得到的**检测限**（Level of Detection，LoD）："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:353
 msgid "\\text{LoD} = t \\sqrt{\\sigma_{old}^2 + \\sigma_{new}^2}"
-msgstr ""
+msgstr "\\text{LoD} = t \\sqrt{\\sigma_{old}^2 + \\sigma_{new}^2}"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:357
 msgid ""
@@ -486,6 +558,8 @@ msgid ""
 "statistically change; `t = 1.96` (95% confidence under a normal error "
 "assumption) is the standard default."
 msgstr ""
+"只有 `|elevation difference| > LoD` 的像素才被视为在统计上发生了变化；`t = 1.96`（在正态误差假设下为 95% "
+"置信度）是标准默认值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:362
 msgid ""
@@ -498,10 +572,14 @@ msgid ""
 "threshold — and therefore every volume number this pipeline reports — "
 "meaningless."
 msgstr ""
+"`dem_old_vertical_rmse_m`/`dem_new_vertical_rmse_m` "
+"**不是**该函数所测量的内容——它们是你所提供的每个具体 DEM 产品各自独立已知的属性（SRTM 实际公布的绝对垂直精度通常被引用为 "
+"5-10m，取决于地形；无人机摄影测量 DEM 可能为 5-20cm；请查阅你自己 DEM 的文档）。填错这些值不会使流程崩溃，但会使 LoD "
+"阈值——进而使该流程报告的每一个体积数字——失去意义。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:372
 msgid "Accuracy check (DEM volumes)"
-msgstr ""
+msgstr "精度检查（DEM 体积）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:374
 msgid ""
@@ -511,10 +589,12 @@ msgid ""
 "matches the exact analytical value (50,000 m³ for a 10×10-pixel, 10m-pixel, "
 "5m-tall test case) to within 1%."
 msgstr ""
+"该测试套件不只是检查“会得出某个正数”——它构造了一个尺寸精确的合成“堆体”（已知的像素数 × 已知的像素面积 × "
+"已知的高度），并确认计算出的堆积体积与精确的解析值（10×10 像素、10m 像素、5m 高的测试用例为 50,000 m³）在 1% 以内吻合。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:380
 msgid "Pixel area and nodata"
-msgstr ""
+msgstr "像素面积与无数据"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:382
 msgid ""
@@ -526,10 +606,15 @@ msgid ""
 "`-9999` void is never counted as erosion. `metadata[\"n_valid_pixels\"]` is "
 "the number of pixels used, and `pct_significant` is computed over those."
 msgstr ""
+"体积需要每个像素以平方米计的真实面积。对于投影 CRS，该流程使用 CRS 的线性单位。对于**地理 CRS**（EPSG:4326，来自 "
+"OpenTopography 的 SRTM 和 Copernicus DEM 即是如此），它会按行计算 WGS84 "
+"面积，因为经度每一度的长度会随纬度缩小。新 DEM 中的无数据在同网格路径和重投影路径上都会被掩膜，因此 `-9999` "
+"的空洞绝不会被计为侵蚀。`metadata[\"n_valid_pixels\"]` 是所用像素的数量，`pct_significant` "
+"即基于这些像素计算。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:389
 msgid "Grid handling"
-msgstr ""
+msgstr "网格处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:391
 msgid ""
@@ -537,14 +622,16 @@ msgid ""
 " onto the old DEM's grid (the same real `rasterio.warp.reproject` pattern "
 "used throughout pygeofetch) — you don't need to align them yourself first."
 msgstr ""
+"如果两个 DEM 不共享网格，新 DEM 会自动重投影到旧 DEM 的网格上（与整个 pygeofetch 中使用的真实 "
+"`rasterio.warp.reproject` 模式相同）——你无需事先自行对齐。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Metadata key"
-msgstr ""
+msgstr "元数据键"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Meaning"
-msgstr ""
+msgstr "含义"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`level_of_detection_m`"
@@ -552,7 +639,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "The LoD threshold actually used"
-msgstr ""
+msgstr "实际使用的 LoD 阈值"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`n_valid_pixels`"
@@ -560,7 +647,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Pixels with valid data in both DEMs"
-msgstr ""
+msgstr "两个 DEM 中都有有效数据的像素"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`erosion_volume_m3`"
@@ -568,7 +655,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Real volume loss (from pixels with a significant negative difference)"
-msgstr ""
+msgstr "真实体积损失（来自存在显著负差值的像素）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`deposition_volume_m3`"
@@ -576,7 +663,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Real volume gain"
-msgstr ""
+msgstr "真实体积增加"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`net_volume_change_m3`"
@@ -594,11 +681,11 @@ msgstr ""
 msgid ""
 "Real fraction of pixels exceeding the LoD — a useful sanity check on whether"
 " your two RMSE values are sensible for the actual, observed differences"
-msgstr ""
+msgstr "超过 LoD 的像素的真实比例——可用于合理性检查，判断你的两个 RMSE 值相对于实际观测到的差异是否合理"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:409
 msgid "5. Vegetation Health + Sub-Canopy Disturbance"
-msgstr ""
+msgstr "5. 植被健康 + 冠层下扰动"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:438
 msgid ""
@@ -610,28 +697,31 @@ msgid ""
 "it only requires the physical scatterers within each resolution cell to have"
 " moved between the two acquisitions)."
 msgstr ""
+"光学传感器看到的是冠层顶部。选择性采伐、林下清理，或仍有冠层覆盖之下的早期施工，可能使可见树冠基本不变——NDVI "
+"下降很小或根本没有——而地面层的扰动却严重到足以让 SAR "
+"相位几乎立即失相干（相干性丧失并不需要*可见*变化；它只要求每个分辨单元内的物理散射体在两次采集之间发生了移动）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:447
 msgid ""
 "This pipeline distinguishes two different situations a single-sensor "
 "approach can't tell apart:"
-msgstr ""
+msgstr "该流程区分了单传感器方法无法区分的两种不同情形："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Class"
-msgstr ""
+msgstr "类别"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "NDVI"
-msgstr ""
+msgstr "NDVI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "SAR coherence"
-msgstr ""
+msgstr "SAR 相干性"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Interpretation"
-msgstr ""
+msgstr "解释"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`CLASS_NO_DISTURBANCE` (0)"
@@ -639,15 +729,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Unchanged"
-msgstr ""
+msgstr "未变化"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "High"
-msgstr ""
+msgstr "高"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Nothing detected"
-msgstr ""
+msgstr "未检测到任何变化"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`CLASS_VISIBLE_DISTURBANCE` (1)"
@@ -655,15 +745,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "Dropped significantly"
-msgstr ""
+msgstr "显著下降"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "(usually also drops)"
-msgstr ""
+msgstr "（通常也会下降）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "visible canopy loss — clear-cutting, fire"
-msgstr ""
+msgstr "可见的冠层损失——皆伐、火灾"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "`CLASS_SUBCANOPY_DISTURBANCE` (2)"
@@ -671,17 +761,17 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "**Unchanged**"
-msgstr ""
+msgstr "**未变化**"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid "**Dropped significantly**"
-msgstr ""
+msgstr "**显著下降**"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:361
 msgid ""
 "Real ground disturbance *invisible from above* — the pipeline's actual "
 "reason for existing"
-msgstr ""
+msgstr "真实的地面扰动，*从上方不可见*——这正是该流程存在的真正原因"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:456
 msgid ""
@@ -693,6 +783,9 @@ msgid ""
 "to SAR-only nodata (zero-valued SLC pixels). The count is in "
 "`metadata[\"n_unclassified_pixels\"]`."
 msgstr ""
+"**没有可用证据**的像素会写为 `255`（未分类），而不是被标为“无扰动”或“冠层下”。冠层下扰动被定义为*没有 NDVI "
+"下降*的相干性丧失，而没有光学数据就无法证明 NDVI 没有下降。这适用于光学无数据（声明的 nodata、两个波段均为 `0`，或 NDVI "
+"非有限值）以及仅 SAR 的无数据（零值 SLC 像素）。其数量记录在 `metadata[\"n_unclassified_pixels\"]` 中。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:462
 msgid ""
@@ -701,6 +794,9 @@ msgid ""
 "is compressed (0.198 instead of 0.292 in a test case) and "
 "`ndvi_drop_threshold` fires less often than intended."
 msgstr ""
+"NDVI 不是偏移不变的。对于 Sentinel-2 L2A 基线 04.00 或更高版本，请传入 `optical_offset=-1000, "
+"optical_scale=1e-4`；使用原始 DN 时 NDVI 下降会被压缩（在一个测试用例中为 0.198 而不是 0.292），并且 "
+"`ndvi_drop_threshold` 触发的次数会低于预期。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:466
 msgid ""
@@ -710,10 +806,14 @@ msgid ""
 "insar/sar.md#coherence_disturbance_pipeline) and `client.sar.coherence()` "
 "both already use — not a third, independent implementation."
 msgstr ""
+"复用同一个规范的 `pygeofetch.utils.sar_math.estimate_interferometric_coherence` "
+"公式，[`coherence_disturbance_pipeline`](sar-"
+"insar/sar.md#coherence_disturbance_pipeline) 和 `client.sar.coherence()` "
+"也都使用它——而不是第三个独立的实现。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:472
 msgid "Grid requirement"
-msgstr ""
+msgstr "网格要求"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:474
 msgid ""
@@ -723,10 +823,13 @@ msgid ""
 "`coherence_disturbance_pipeline`). Reproject the optical side onto the SAR "
 "grid yourself first if they don't already match; never the reverse."
 msgstr ""
+"两个 SAR SLC 栅格必须已与光学影像对共享同一网格——该流程**不会**在它们之间进行重投影，因为 SLC 数据在不破坏相位的前提下无法重采样（与"
+" `coherence_disturbance_pipeline` 所记录的约束相同）。如果它们尚未匹配，请先自行把光学一侧重投影到 SAR "
+"网格上；绝不要反过来。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:481
 msgid "Coherence-window edge effect"
-msgstr ""
+msgstr "相干窗口边缘效应"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:483
 msgid ""
@@ -741,10 +844,14 @@ msgid ""
 "disturbance combined with the coherence window's own smoothing is a genuine,"
 " physical reason why, not necessarily a detection failure."
 msgstr ""
+"共享的相干性公式使用局部平均窗口（`coherence_window`，默认 "
+"7）。这意味着扰动区域自身的*边缘*会与周围的相干区域混合——已直接验证：一个合成的 10×10 像素完全失相干区域，其中心的相干性约为 "
+"0.13（远低于 0.3 阈值，被正确分类），但其边缘约为 "
+"0.39（混合后高于阈值）。这是窗口化相干性估计器正确且符合预期的行为，而不是缺陷——如果你自己的扰动分类看起来比你预期的区域略小，那么更宽的扰动叠加相干窗口自身的平滑，是一个真实的物理原因，未必是检测失败。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:495
 msgid "Threshold tuning"
-msgstr ""
+msgstr "阈值调优"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/multisensor.md:497
 msgid ""
@@ -754,3 +861,6 @@ msgid ""
 "strict for sparse savanna, where the entire dynamic range of NDVI is smaller"
 " to begin with."
 msgstr ""
+"`ndvi_drop_threshold`（默认 "
+"`0.15`）是毁林检测文献中常用的适中取值，但请根据你自己的植被基线进行调整——针对茂密热带冠层校准的阈值，对于稀疏稀树草原可能过于严格，因为后者 "
+"NDVI 的整个动态范围本来就更小。"

@@ -1,0 +1,3469 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:3
+msgid "Command reference"
+msgstr "Referência de comandos"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:5
+msgid ""
+"Every command and option in the installed CLI. For worked examples see "
+"[Command-line guide](cli.md)."
+msgstr ""
+"Todos os comandos e opções da CLI instalada. Para exemplos práticos, veja o "
+"[Guia de linha de comando](cli.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:12
+msgid "`auth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:14
+msgid "Manage provider credentials."
+msgstr "Gerencia as credenciais dos provedores."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Command"
+msgstr "Comando"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Purpose"
+msgstr "Finalidade"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth add`](#auth-add)"
+msgstr "[`auth add`](#auth-add)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:27
+msgid "Add credentials for PROVIDER."
+msgstr "Adiciona credenciais para PROVIDER."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth login`](#auth-login)"
+msgstr "[`auth login`](#auth-login)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:56
+msgid "Interactive login for PROVIDER (prompts for all required fields)."
+msgstr ""
+"Login interativo para PROVIDER (solicita todos os campos obrigatórios)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth list`](#auth-list)"
+msgstr "[`auth list`](#auth-list)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:73
+msgid "List all stored provider credentials."
+msgstr "Lista todas as credenciais de provedores armazenadas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth test`](#auth-test)"
+msgstr "[`auth test`](#auth-test)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:85
+msgid "Test stored credentials for PROVIDER by attempting authentication."
+msgstr "Testa as credenciais armazenadas de PROVIDER tentando se autenticar."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth remove`](#auth-remove)"
+msgstr "[`auth remove`](#auth-remove)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:102
+msgid "Remove stored credentials for PROVIDER."
+msgstr "Remove as credenciais armazenadas de PROVIDER."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth export`](#auth-export)"
+msgstr "[`auth export`](#auth-export)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:123
+msgid "Export stored credentials to a JSON file for backup."
+msgstr "Exporta as credenciais armazenadas para um arquivo JSON, para backup."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:25
+msgid "`auth add`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Argument"
+msgstr "Argumento"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PROVIDER`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "required"
+msgstr "obrigatório"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Option"
+msgstr "Opção"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Type"
+msgstr "Tipo"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Default"
+msgstr "Padrão"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Description"
+msgstr "Descrição"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--username`, `-u`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "text"
+msgstr "texto"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Username or email."
+msgstr "Nome de usuário ou e-mail."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--password`, `-p`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Password (prompted if omitted)."
+msgstr "Senha (solicitada se omitida)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--api-key`, `-k`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "API key (alternative to username/password)."
+msgstr "Chave de API (alternativa a usuário/senha)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--client-id`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "OAuth2 client ID."
+msgstr "ID de cliente OAuth2."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--client-secret`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "OAuth2 client secret."
+msgstr "Segredo de cliente OAuth2."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--token`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Bearer token."
+msgstr "Token de portador (bearer)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--store`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: keyring, file"
+msgstr "um de: keyring, file"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`keyring`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Credential storage backend."
+msgstr "Backend de armazenamento de credenciais."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:54
+msgid "`auth login`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:71
+msgid "`auth list`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--json`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "flag"
+msgstr "flag"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output as JSON."
+msgstr "Saída em JSON."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:83
+msgid "`auth test`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:100
+msgid "`auth remove`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--yes`, `-y`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Skip confirmation prompt."
+msgstr "Pula o prompt de confirmação."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:121
+msgid "`auth export`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--provider`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Export only this provider (default: all)."
+msgstr "Exporta somente este provedor (padrão: todos)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output`, `-o`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`credentials_backup.json`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output file path."
+msgstr "Caminho do arquivo de saída."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:143
+msgid "`providers`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:145
+msgid "Browse and inspect the provider registry."
+msgstr "Navega e inspeciona o registro de provedores."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`providers list`](#providers-list)"
+msgstr "[`providers list`](#providers-list)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:155
+msgid "List available providers with optional filtering."
+msgstr "Lista os provedores disponíveis, com filtros opcionais."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`providers info`](#providers-info)"
+msgstr "[`providers info`](#providers-info)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:179
+msgid "Show detailed information about a specific provider."
+msgstr "Mostra informações detalhadas sobre um provedor específico."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`providers search`](#providers-search)"
+msgstr "[`providers search`](#providers-search)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:201
+msgid "Search providers by name, satellite, or description."
+msgstr "Busca provedores por nome, satélite ou descrição."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:153
+msgid "`providers list`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--auth`, `--no-auth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Filter by auth requirement."
+msgstr "Filtra por exigência de autenticação."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--capabilities`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated capabilities: sar,optical,sub-meter,stac,direct-s3"
+msgstr "Recursos separados por vírgula: sar,optical,sub-meter,stac,direct-s3"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--region`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Filter by region (e.g. 'global', 'europe')."
+msgstr "Filtra por região (por exemplo, 'global', 'europe')."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--satellite`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Filter by satellite name substring."
+msgstr "Filtra por trecho do nome do satélite."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:177
+msgid "`providers info`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PROVIDER_ID`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:199
+msgid "`providers search`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`TERM`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:215
+msgid "`search`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:217
+msgid "Federated search across providers."
+msgstr "Busca federada entre provedores."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`search run`](#search-run)"
+msgstr "[`search run`](#search-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:225
+msgid "Search for satellite imagery across one or more providers."
+msgstr "Busca imagens de satélite em um ou mais provedores."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:223
+msgid "`search run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bbox`, `-b`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Bounding box \"minx,miny,maxx,maxy\"."
+msgstr "Caixa delimitadora \"minx,miny,maxx,maxy\"."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry-file`, `-g`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "path"
+msgstr "caminho"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "GeoJSON file with search AOI (alternative to --bbox)."
+msgstr "Arquivo GeoJSON com a AOI da busca (alternativa a --bbox)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--start-date`, `-s`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Start date YYYY-MM-DD."
+msgstr "Data inicial AAAA-MM-DD."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--end-date`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "End date YYYY-MM-DD."
+msgstr "Data final AAAA-MM-DD."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cloud-cover`, `-c`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0-100`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Cloud cover range \"min-max\" e.g. 0-20."
+msgstr "Intervalo de cobertura de nuvens \"min-max\", por exemplo 0-20."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resolution`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Resolution range in metres \"min-max\" e.g. 10-30."
+msgstr "Intervalo de resolução em metros \"min-max\", por exemplo 10-30."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--processing-level`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Processing level e.g. L2A."
+msgstr "Nível de processamento, por exemplo L2A."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--providers`, `-p`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated provider IDs e.g. usgs,copernicus,planetary_computer."
+msgstr ""
+"IDs de provedores separados por vírgula, por exemplo "
+"usgs,copernicus,planetary_computer."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--satellites`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated satellite names e.g. Sentinel-2,Landsat-8."
+msgstr ""
+"Nomes de satélites separados por vírgula, por exemplo Sentinel-2,Landsat-8."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--product-type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"SAR product type e.g. GRD, SLC, GRD-COG. Currently only meaningfully filters"
+" Copernicus (OData-based, not STAC) — STAC providers like "
+"planetary_computer/element84 offer only pre-processed Sentinel-1 RTC via "
+"their collection mapping, not raw GRD/SLC, so this has no effect there "
+"regardless of value."
+msgstr ""
+"Tipo de produto SAR, por exemplo GRD, SLC, GRD-COG. Atualmente só filtra de "
+"forma significativa o Copernicus (baseado em OData, não em STAC) — "
+"provedores STAC como planetary_computer/element84 oferecem apenas Sentinel-1"
+" RTC pré-processado por meio de seu mapeamento de coleções, não GRD/SLC "
+"brutos, portanto isto não tem efeito neles, qualquer que seja o valor."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--polarisation`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as "
+"--product-type."
+msgstr ""
+"Polarização SAR, por exemplo VV, VH, HH, HV. Mesma ressalva de somente "
+"Copernicus que --product-type."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-results`, `-n`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "integer"
+msgstr "inteiro"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`100`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sort-by`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: datetime, cloud_cover, score, satellite"
+msgstr "um de: datetime, cloud_cover, score, satellite"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`datetime`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Sort field."
+msgstr "Campo de ordenação."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sort-order`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: asc, desc"
+msgstr "um de: asc, desc"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`desc`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cql2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "CQL2 filter expression."
+msgstr "Expressão de filtro CQL2."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Save results to this file."
+msgstr "Salva os resultados neste arquivo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--format`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: table, json, stac, geojson, geoparquet, csv, ids"
+msgstr "um de: table, json, stac, geojson, geoparquet, csv, ids"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`table`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output format."
+msgstr "Formato de saída."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--on-provider-failure`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: skip, abort, retry"
+msgstr "um de: skip, abort, retry"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`skip`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "How to handle provider failures."
+msgstr "Como tratar falhas de provedores."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--timeout`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`60`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Per-provider timeout in seconds."
+msgstr "Tempo limite por provedor, em segundos."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--no-cache`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Bypass result cache."
+msgstr "Ignora o cache de resultados."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--validate-optical`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Run optical preflight validation (AOI coverage, cloud cover, required bands,"
+" processing level, temporal bounds) on results before returning them. Not "
+"appropriate for SAR/InSAR searches -- the default required bands are optical"
+" band names."
+msgstr ""
+"Executa a validação óptica prévia (cobertura da AOI, cobertura de nuvens, "
+"bandas obrigatórias, nível de processamento, limites temporais) nos "
+"resultados antes de retorná-los. Não é adequada para buscas SAR/InSAR -- as "
+"bandas obrigatórias padrão são nomes de bandas ópticas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-max-cloud-cover`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "float"
+msgstr "float"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Override the max cloud cover threshold used by --validate-optical (default "
+"20.0)."
+msgstr ""
+"Substitui o limite máximo de cobertura de nuvens usado por --validate-"
+"optical (padrão 20.0)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-min-coverage`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Override the min AOI coverage ratio used by --validate-optical, 0-1 (default"
+" 0.8)."
+msgstr ""
+"Substitui a razão mínima de cobertura da AOI usada por --validate-optical, "
+"0-1 (padrão 0.8)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-required-bands`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Comma-separated required bands for --validate-optical (default "
+"B02,B03,B04,B08,SCL)."
+msgstr ""
+"Bandas obrigatórias para --validate-optical, separadas por vírgula (padrão "
+"B02,B03,B04,B08,SCL)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:282
+msgid "`download`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:284
+msgid "Download scenes and inspect download history."
+msgstr "Baixa cenas e inspeciona o histórico de downloads."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`download run`](#download-run)"
+msgstr "[`download run`](#download-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:294
+msgid ""
+"Download satellite data products from a search results file or scene IDs."
+msgstr ""
+"Baixa produtos de dados de satélite a partir de um arquivo de resultados de "
+"busca ou de IDs de cenas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`download status`](#download-status)"
+msgstr "[`download status`](#download-status)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:348
+msgid "Show downloaded files in OUTPUT_DIR."
+msgstr "Mostra os arquivos baixados em OUTPUT_DIR."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`download history`](#download-history)"
+msgstr "[`download history`](#download-history)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:364
+msgid "Show download history."
+msgstr "Mostra o histórico de downloads."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:292
+msgid "`download run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--from-search`, `-f`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "GeoJSON results file from `search run --output`."
+msgstr "Arquivo GeoJSON de resultados gerado por `search run --output`."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--scene-ids`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated scene IDs to download."
+msgstr "IDs de cenas a baixar, separados por vírgula."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`./pygeofetch_data`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output directory."
+msgstr "Diretório de saída."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--parallel`, `-p`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Parallel download workers."
+msgstr "Workers de download em paralelo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--retry`, `-r`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`3`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Retry attempts per file."
+msgstr "Tentativas de repetição por arquivo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--retry-delay`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`5.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Base retry delay seconds (exponential backoff)."
+msgstr "Atraso base entre tentativas, em segundos (backoff exponencial)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--verify-checksum`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "SHA256 checksum verification after download."
+msgstr "Verificação de checksum SHA256 após o download."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resume`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Resume interrupted downloads (default on)."
+msgstr "Retoma downloads interrompidos (ativado por padrão)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bandwidth-limit`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Max bandwidth e.g. 10MB, 5MB (0=unlimited)."
+msgstr "Largura de banda máxima, por exemplo 10MB, 5MB (0=ilimitada)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--priority`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: high, normal, low"
+msgstr "um de: high, normal, low"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`normal`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Download priority."
+msgstr "Prioridade do download."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--notify`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Notifications: webhook:URL or email:ADDRESS (repeatable)."
+msgstr "Notificações: webhook:URL ou email:ENDEREÇO (repetível)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-process`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Post-process chain e.g. \"unzip,reproject:EPSG:4326,compress:lzw\"."
+msgstr ""
+"Cadeia de pós-processamento, por exemplo "
+"\"unzip,reproject:EPSG:4326,compress:lzw\"."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--on-failure`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "How to handle individual file failures."
+msgstr "Como tratar falhas em arquivos individuais."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-items`, `-n`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Limit number of items to download."
+msgstr "Limita o número de itens a baixar."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--overwrite`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Overwrite existing files."
+msgstr "Sobrescreve arquivos existentes."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bands`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Comma-separated band names to download e.g. \"B02,B03,B04\" (default: all "
+"data assets)."
+msgstr ""
+"Nomes de bandas a baixar, separados por vírgula, por exemplo \"B02,B03,B04\""
+" (padrão: todos os ativos de dados)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output results summary as JSON."
+msgstr "Exibe o resumo dos resultados em JSON."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Run optical preflight validation as a final gate before downloading (AOI "
+"coverage, cloud cover, required bands, processing level, temporal bounds). "
+"Items that fail are never attempted -- a failed result explaining why is "
+"returned in their place, same position, so output length always matches "
+"input."
+msgstr ""
+"Executa a validação óptica prévia como barreira final antes do download "
+"(cobertura da AOI, cobertura de nuvens, bandas obrigatórias, nível de "
+"processamento, limites temporais). Itens que falham nunca são tentados -- um"
+" resultado de falha explicando o motivo é retornado em seu lugar, na mesma "
+"posição, de modo que o tamanho da saída sempre corresponde ao da entrada."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:346
+msgid "`download status`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`OUTPUT_DIR`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:362
+msgid "`download history`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--limit`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`20`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--status`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: success, failed, active"
+msgstr "um de: success, failed, active"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:376
+msgid "`cache`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:378
+msgid "Manage the search-result cache."
+msgstr "Gerencia o cache de resultados de busca."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache stats`](#cache-stats)"
+msgstr "[`cache stats`](#cache-stats)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:390
+msgid "Show cache statistics: size, entry count, location, TTL."
+msgstr ""
+"Mostra estatísticas do cache: tamanho, número de entradas, local, TTL."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache clear`](#cache-clear)"
+msgstr "[`cache clear`](#cache-clear)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:402
+msgid "Delete cache entries with optional filters."
+msgstr "Exclui entradas do cache, com filtros opcionais."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache ttl`](#cache-ttl)"
+msgstr "[`cache ttl`](#cache-ttl)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:424
+msgid "Show or set cache TTL. Usage: ttl show | ttl set SECONDS"
+msgstr "Mostra ou define o TTL do cache. Uso: ttl show | ttl set SEGUNDOS"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache location`](#cache-location)"
+msgstr "[`cache location`](#cache-location)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:437
+msgid "Show the cache directory path."
+msgstr "Mostra o caminho do diretório de cache."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache prune`](#cache-prune)"
+msgstr "[`cache prune`](#cache-prune)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:445
+msgid "Remove oldest cache entries to stay under max-size."
+msgstr ""
+"Remove as entradas mais antigas do cache para ficar abaixo de max-size."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:388
+msgid "`cache stats`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:400
+msgid "`cache clear`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clear only entries for this provider."
+msgstr "Limpa apenas as entradas deste provedor."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--older-than`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clear entries older than (e.g. 7d, 24h)."
+msgstr "Limpa entradas mais antigas que (por exemplo, 7d, 24h)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dry-run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Show what would be removed without deleting."
+msgstr "Mostra o que seria removido, sem excluir."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--yes`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Confirm the action without prompting."
+msgstr "Confirma a ação sem solicitar."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:422
+msgid "`cache ttl`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`ACTION`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`SECONDS`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "optional"
+msgstr "opcional"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:435
+msgid "`cache location`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:443
+msgid "`cache prune`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1GB`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Prune oldest entries until cache is below this size (e.g. 500MB, 2GB)."
+msgstr ""
+"Remove as entradas mais antigas até que o cache fique abaixo deste tamanho "
+"(por exemplo, 500MB, 2GB)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:455
+msgid "`pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:457
+msgid "YAML acquisition pipelines: run, validate and schedule."
+msgstr "Pipelines de aquisição em YAML: executar, validar e agendar."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline run`](#pipeline-run)"
+msgstr "[`pipeline run`](#pipeline-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:472
+msgid "Run a pipeline from a YAML definition file."
+msgstr "Executa um pipeline a partir de um arquivo de definição YAML."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline validate`](#pipeline-validate)"
+msgstr "[`pipeline validate`](#pipeline-validate)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:488
+msgid "Validate a pipeline YAML file without executing it."
+msgstr "Valida um arquivo YAML de pipeline sem executá-lo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline schedule`](#pipeline-schedule)"
+msgstr "[`pipeline schedule`](#pipeline-schedule)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:500
+msgid "Schedule a pipeline for recurring execution (saves to config)."
+msgstr "Agenda um pipeline para execução recorrente (salva na configuração)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline list-scheduled`](#pipeline-list-scheduled)"
+msgstr "[`pipeline list-scheduled`](#pipeline-list-scheduled)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:517
+msgid "List all scheduled pipelines."
+msgstr "Lista todos os pipelines agendados."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline unschedule`](#pipeline-unschedule)"
+msgstr "[`pipeline unschedule`](#pipeline-unschedule)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:529
+msgid "Remove a pipeline from the schedule."
+msgstr "Remove um pipeline do agendamento."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline logs`](#pipeline-logs)"
+msgstr "[`pipeline logs`](#pipeline-logs)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:541
+msgid "Show execution logs for a pipeline."
+msgstr "Mostra os logs de execução de um pipeline."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline history`](#pipeline-history)"
+msgstr "[`pipeline history`](#pipeline-history)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:558
+msgid "Show pipeline execution history."
+msgstr "Mostra o histórico de execuções do pipeline."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline retry`](#pipeline-retry)"
+msgstr "[`pipeline retry`](#pipeline-retry)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:571
+msgid "Retry a failed pipeline run by its run ID."
+msgstr ""
+"Tenta novamente uma execução de pipeline que falhou, pelo ID da execução."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:470
+msgid "`pipeline run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PIPELINE_FILE`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--step`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Run only this step name."
+msgstr "Executa somente esta etapa."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:486
+msgid "`pipeline validate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:498
+msgid "`pipeline schedule`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--name`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Override pipeline name."
+msgstr "Substitui o nome do pipeline."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cron`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Override cron schedule expression."
+msgstr "Substitui a expressão cron de agendamento."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:515
+msgid "`pipeline list-scheduled`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:527
+msgid "`pipeline unschedule`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`NAME`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:539
+msgid "`pipeline logs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--tail`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`50`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Show last N lines."
+msgstr "Mostra as últimas N linhas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--follow`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Follow log output (streaming)."
+msgstr "Acompanha a saída do log (streaming)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:556
+msgid "`pipeline history`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:569
+msgid "`pipeline retry`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`RUN_ID`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:581
+msgid "`proc-pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:583
+msgid "YAML processing-chain pipelines for files you already have."
+msgstr ""
+"Pipelines YAML de cadeia de processamento para arquivos que você já possui."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`proc-pipeline run`](#proc-pipeline-run)"
+msgstr "[`proc-pipeline run`](#proc-pipeline-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:593
+msgid "Run a processing pipeline defined in YAML."
+msgstr "Executa um pipeline de processamento definido em YAML."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`proc-pipeline validate`](#proc-pipeline-validate)"
+msgstr "[`proc-pipeline validate`](#proc-pipeline-validate)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:611
+msgid "Validate a processing pipeline YAML without running it."
+msgstr "Valida o YAML de um pipeline de processamento sem executá-lo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`proc-pipeline template`](#proc-pipeline-template)"
+msgstr "[`proc-pipeline template`](#proc-pipeline-template)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:623
+msgid "Generate a starter YAML pipeline template."
+msgstr "Gera um modelo inicial de pipeline YAML."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:591
+msgid "`proc-pipeline run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`YAML_FILE`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--input`, `-i`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Starting input file."
+msgstr "Arquivo de entrada inicial."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-dir`, `-o`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`./pipeline_out`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output summary as JSON."
+msgstr "Resumo da saída em JSON."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:609
+msgid "`proc-pipeline validate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:621
+msgid "`proc-pipeline template`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`TEMPLATE_NAME`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:637
+msgid "`preprocess`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:639
+msgid "Clip, reproject, mask, correct and mosaic rasters."
+msgstr "Recorte, reprojeção, máscara, correção e mosaico de rasters."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess clip`](#preprocess-clip)"
+msgstr "[`preprocess clip`](#preprocess-clip)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:657
+msgid "Clip raster to bounding box or polygon geometry."
+msgstr "Recorta o raster por uma caixa delimitadora ou geometria de polígono."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess reproject`](#preprocess-reproject)"
+msgstr "[`preprocess reproject`](#preprocess-reproject)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:676
+msgid "Reproject raster to a new CRS (e.g. EPSG:4326, EPSG:32618)."
+msgstr ""
+"Reprojeta o raster para um novo CRS (por exemplo, EPSG:4326, EPSG:32618)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess resample`](#preprocess-resample)"
+msgstr "[`preprocess resample`](#preprocess-resample)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:695
+msgid "Resample raster to different spatial resolution."
+msgstr "Reamostra o raster para uma resolução espacial diferente."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess cloud-mask`](#preprocess-cloud-mask)"
+msgstr "[`preprocess cloud-mask`](#preprocess-cloud-mask)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:714
+msgid "Apply cloud masking to set cloud pixels to NoData."
+msgstr "Aplica máscara de nuvens para definir os pixels de nuvem como NoData."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess cloud-fill`](#preprocess-cloud-fill)"
+msgstr "[`preprocess cloud-fill`](#preprocess-cloud-fill)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:732
+msgid "Fill cloud gaps using a time series of auxiliary scenes."
+msgstr ""
+"Preenche lacunas de nuvens usando uma série temporal de cenas auxiliares."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess atmos`](#preprocess-atmos)"
+msgstr "[`preprocess atmos`](#preprocess-atmos)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:750
+msgid "Atmospheric correction (DOS1, DOS2, Sen2Cor, FLAASH, 6S, iCOR)."
+msgstr "Correção atmosférica (DOS1, DOS2, Sen2Cor, FLAASH, 6S, iCOR)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess topo-correct`](#preprocess-topo-correct)"
+msgstr "[`preprocess topo-correct`](#preprocess-topo-correct)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:767
+msgid "Topographic correction using a DEM (cosine, Minnaert, C-correction)."
+msgstr "Correção topográfica usando um DEM (cosseno, Minnaert, correção C)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess pansharpen`](#preprocess-pansharpen)"
+msgstr "[`preprocess pansharpen`](#preprocess-pansharpen)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:785
+msgid "Pan-sharpen multispectral using panchromatic band."
+msgstr ""
+"Aplica pansharpening em imagem multiespectral usando a banda pancromática."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess mosaic`](#preprocess-mosaic)"
+msgstr "[`preprocess mosaic`](#preprocess-mosaic)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:803
+msgid "Merge multiple rasters into a seamless mosaic."
+msgstr "Une vários rasters em um mosaico contínuo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess composite`](#preprocess-composite)"
+msgstr "[`preprocess composite`](#preprocess-composite)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:820
+msgid "Create multi-temporal composite (median, mean, max, min, best-pixel)."
+msgstr ""
+"Cria um composto multitemporal (mediana, média, máximo, mínimo, melhor "
+"pixel)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess tile`](#preprocess-tile)"
+msgstr "[`preprocess tile`](#preprocess-tile)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:837
+msgid "Split large raster into overlapping tiles for AI inference."
+msgstr "Divide um raster grande em blocos sobrepostos para inferência de IA."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:655
+msgid "`preprocess clip`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "\"minx,miny,maxx,maxy\""
+msgstr "\"minx,miny,maxx,maxy\""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry`, `-g`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--all-touched`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:674
+msgid "`preprocess reproject`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--crs`, `-c`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`EPSG:4326`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resampling`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: nearest, bilinear, cubic, lanczos, average"
+msgstr "um de: nearest, bilinear, cubic, lanczos, average"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`bilinear`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resolution`, `-r`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:693
+msgid "`preprocess resample`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Target resolution in CRS units."
+msgstr "Resolução alvo em unidades do CRS."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--scale`, `-s`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Scale factor (0.5=half, 2.0=double)."
+msgstr "Fator de escala (0.5=metade, 2.0=dobro)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--method`, `-m`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:712
+msgid "`preprocess cloud-mask`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: scl, fmask, threshold, ndsi"
+msgstr "um de: scl, fmask, threshold, ndsi"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`scl`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--scl-band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:730
+msgid "`preprocess cloud-fill`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`TIME_SERIES`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: interpolate, nearest"
+msgstr "um de: interpolate, nearest"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`interpolate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:748
+msgid "`preprocess atmos`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: dos1, dos2, sen2cor, flaash, 6s, icor"
+msgstr "um de: dos1, dos2, sen2cor, flaash, 6s, icor"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`dos1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:765
+msgid "`preprocess topo-correct`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`DEM`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: cosine, minnaert, c_correction"
+msgstr "um de: cosine, minnaert, c_correction"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`cosine`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:783
+msgid "`preprocess pansharpen`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PAN`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`MS`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: brovey, ihs, gram_schmidt, simple_mean"
+msgstr "um de: brovey, ihs, gram_schmidt, simple_mean"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`brovey`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:801
+msgid "`preprocess mosaic`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUTS`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: first, last, min, max"
+msgstr "um de: first, last, min, max"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`first`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:818
+msgid "`preprocess composite`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: median, mean, max, min, best_pixel"
+msgstr "um de: median, mean, max, min, best_pixel"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`median`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:835
+msgid "`preprocess tile`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--tile-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`512`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--overlap`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`64`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--min-coverage`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:854
+msgid "`index`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:856
+msgid "Spectral indices and band arithmetic."
+msgstr "Índices espectrais e aritmética de bandas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndvi`](#index-ndvi)"
+msgstr "[`index ndvi`](#index-ndvi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:881
+msgid ""
+"NDVI — Normalized Difference Vegetation Index. Range: -1 to +1. Vegetation >"
+" 0.3."
+msgstr ""
+"NDVI — Índice de Vegetação por Diferença Normalizada. Intervalo: -1 a +1. "
+"Vegetação > 0.3."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndre`](#index-ndre)"
+msgstr "[`index ndre`](#index-ndre)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:906
+msgid "NDRE — Normalized Difference Red Edge Index. Range: -1 to +1."
+msgstr ""
+"NDRE — Índice de Borda do Vermelho por Diferença Normalizada. Intervalo: -1 "
+"a +1."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index evi`](#index-evi)"
+msgstr "[`index evi`](#index-evi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:932
+msgid ""
+"EVI — Enhanced Vegetation Index. Better than NDVI in high-biomass areas."
+msgstr ""
+"EVI — Índice de Vegetação Melhorado. Melhor que o NDVI em áreas de alta "
+"biomassa."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index savi`](#index-savi)"
+msgstr "[`index savi`](#index-savi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:957
+msgid ""
+"SAVI — Soil Adjusted Vegetation Index. Reduces soil brightness influence."
+msgstr ""
+"SAVI — Índice de Vegetação Ajustado ao Solo. Reduz a influência do brilho do"
+" solo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndwi`](#index-ndwi)"
+msgstr "[`index ndwi`](#index-ndwi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:982
+msgid "NDWI — Normalized Difference Water Index. Water > 0."
+msgstr "NDWI — Índice de Água por Diferença Normalizada. Água > 0."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index mndwi`](#index-mndwi)"
+msgstr "[`index mndwi`](#index-mndwi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1006
+msgid "MNDWI — Modified NDWI. Better separation of water from built-up areas."
+msgstr ""
+"MNDWI — NDWI Modificado. Melhor separação entre água e áreas construídas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndbi`](#index-ndbi)"
+msgstr "[`index ndbi`](#index-ndbi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1030
+msgid "NDBI — Normalized Difference Built-up Index. Urban > 0."
+msgstr ""
+"NDBI — Índice de Área Construída por Diferença Normalizada. Urbano > 0."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndsi`](#index-ndsi)"
+msgstr "[`index ndsi`](#index-ndsi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1054
+msgid "NDSI — Snow Index. Snow > 0.4."
+msgstr "NDSI — Índice de Neve. Neve > 0.4."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndmi`](#index-ndmi)"
+msgstr "[`index ndmi`](#index-ndmi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1078
+msgid "NDMI — Moisture Index. Sensitive to canopy water content."
+msgstr "NDMI — Índice de Umidade. Sensível ao conteúdo de água do dossel."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index nbr`](#index-nbr)"
+msgstr "[`index nbr`](#index-nbr)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1102
+msgid "NBR — Normalized Burn Ratio. Use dNBR for burn severity."
+msgstr ""
+"NBR — Razão de Queimada Normalizada. Use o dNBR para a severidade da "
+"queimada."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index dnbr`](#index-dnbr)"
+msgstr "[`index dnbr`](#index-dnbr)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1126
+msgid ""
+"dNBR — Differenced Burn Ratio. Range: >0.66 high severity, <-0.25 regrowth."
+msgstr ""
+"dNBR — Razão de Queimada Diferenciada. Intervalo: >0.66 severidade alta, "
+"<-0.25 rebrota."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index tct`](#index-tct)"
+msgstr "[`index tct`](#index-tct)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1142
+msgid ""
+"Tasseled Cap Transformation — Brightness, Greenness, Wetness (3-band "
+"output)."
+msgstr ""
+"Transformação Tasseled Cap — Brilho, Verdor, Umidade (saída de 3 bandas)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index pca`](#index-pca)"
+msgstr "[`index pca`](#index-pca)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1161
+msgid ""
+"PCA — Principal Component Analysis. Reduces dimensionality of multi-band "
+"data."
+msgstr ""
+"PCA — Análise de Componentes Principais. Reduz a dimensionalidade de dados "
+"multibanda."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index texture`](#index-texture)"
+msgstr "[`index texture`](#index-texture)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1178
+msgid ""
+"GLCM Texture — contrast, homogeneity, energy, correlation, dissimilarity, "
+"ASM."
+msgstr ""
+"Textura GLCM — contraste, homogeneidade, energia, correlação, "
+"dissimilaridade, ASM."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index lst`](#index-lst)"
+msgstr "[`index lst`](#index-lst)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1196
+msgid ""
+"Land Surface Temperature from thermal band. Output: Band1=Kelvin, "
+"Band2=Celsius."
+msgstr ""
+"Temperatura da Superfície Terrestre a partir da banda termal. Saída: "
+"Band1=Kelvin, Band2=Celsius."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index albedo`](#index-albedo)"
+msgstr "[`index albedo`](#index-albedo)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1214
+msgid "Surface albedo from narrowband to broadband conversion (Liang 2001)."
+msgstr ""
+"Albedo de superfície a partir da conversão de banda estreita para banda "
+"larga (Liang 2001)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index band-math`](#index-band-math)"
+msgstr "[`index band-math`](#index-band-math)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1231
+msgid "Arbitrary band arithmetic. Example: --expr '(B[1]-B[0])/(B[1]+B[0])'."
+msgstr ""
+"Aritmética de bandas arbitrária. Exemplo: --expr '(B[1]-B[0])/(B[1]+B[0])'."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index stack`](#index-stack)"
+msgstr "[`index stack`](#index-stack)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1253
+msgid "Stack single-band rasters into a multi-band GeoTIFF."
+msgstr "Empilha rasters de banda única em um GeoTIFF multibanda."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:879
+msgid "`index ndvi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--red`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Red band (e.g. B04.tif)"
+msgstr "Banda do vermelho (por exemplo, B04.tif)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "NIR band (e.g. B08.tif)"
+msgstr "Banda NIR (por exemplo, B08.tif)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--chunked`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Process in memory-safe tiles for large rasters (e.g. drone orthomosaics) "
+"that exceed available RAM or the 4GB GeoTIFF limit."
+msgstr ""
+"Processa em blocos seguros para a memória, para rasters grandes (por "
+"exemplo, ortomosaicos de drone) que excedem a RAM disponível ou o limite de "
+"4GB do GeoTIFF."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1024`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Tile edge length in pixels when --chunked is set."
+msgstr ""
+"Comprimento da aresta do bloco em pixels quando --chunked está definido."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry-crs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "CRS of --bbox/--geometry coordinates."
+msgstr "CRS das coordenadas de --bbox/--geometry."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clip the result to a GeoJSON file's geometry instead of a bbox."
+msgstr ""
+"Recorta o resultado pela geometria de um arquivo GeoJSON em vez de uma bbox."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bbox`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clip the result to minx,miny,maxx,maxy (comma-separated)."
+msgstr "Recorta o resultado para minx,miny,maxx,maxy (separados por vírgula)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:904
+msgid "`index ndre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--rededge`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Red edge band"
+msgstr "Banda da borda do vermelho"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "NIR band"
+msgstr "Banda NIR"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Process in memory-safe tiles for large rasters that exceed available RAM or "
+"the 4GB GeoTIFF limit."
+msgstr ""
+"Processa em blocos seguros para a memória, para rasters grandes que excedem "
+"a RAM disponível ou o limite de 4GB do GeoTIFF."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:930
+msgid "`index evi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--blue`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Process in memory-safe tiles for large rasters."
+msgstr "Processa em blocos seguros para a memória, para rasters grandes."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:955
+msgid "`index savi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--soil-l`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.5`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:980
+msgid "`index ndwi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--green`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1004
+msgid "`index mndwi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--swir1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1028
+msgid "`index ndbi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1052
+msgid "`index ndsi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1076
+msgid "`index ndmi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1100
+msgid "`index nbr`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--swir2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1124
+msgid "`index dnbr`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre-nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre-swir2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-swir2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1140
+msgid "`index tct`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sensor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: sentinel2, landsat8"
+msgstr "um de: sentinel2, landsat8"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`sentinel2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1159
+msgid "`index pca`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--components`, `-n`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1176
+msgid "`index texture`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--window`, `-w`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`5`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--features`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`contrast,homogeneity,energy,correlation`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated GLCM features."
+msgstr "Atributos GLCM separados por vírgula."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1194
+msgid "`index lst`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`THERMAL`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--emissivity`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.97`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: landsat8, landsat9, modis"
+msgstr "um de: landsat8, landsat9, modis"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`landsat8`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1212
+msgid "`index albedo`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1229
+msgid "`index band-math`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--expr`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Python expression. Bands as B[0], B[1], ..."
+msgstr "Expressão Python. Bandas como B[0], B[1], ..."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1251
+msgid "`index stack`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1267
+msgid "`classify`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1269
+msgid "Unsupervised and supervised classification."
+msgstr "Classificação não supervisionada e supervisionada."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`classify kmeans`](#classify-kmeans)"
+msgstr "[`classify kmeans`](#classify-kmeans)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1279
+msgid "Unsupervised K-means clustering. No training data needed."
+msgstr ""
+"Agrupamento K-means não supervisionado. Não requer dados de treinamento."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`classify train`](#classify-train)"
+msgstr "[`classify train`](#classify-train)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1301
+msgid "Train a supervised classifier from labeled vector training samples."
+msgstr ""
+"Treina um classificador supervisionado a partir de amostras de treinamento "
+"vetoriais rotuladas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`classify predict`](#classify-predict)"
+msgstr "[`classify predict`](#classify-predict)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1327
+msgid ""
+"Apply a trained model to a real raster stack, producing a classification "
+"map."
+msgstr ""
+"Aplica um modelo treinado a uma pilha de rasters real, produzindo um mapa de"
+" classificação."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1277
+msgid "`classify kmeans`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--clusters`, `-k`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Number of clusters."
+msgstr "Número de clusters."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--random-state`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`42`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1299
+msgid "`classify train`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--training-data`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Vector file (GeoJSON/Shapefile) with labeled training geometries."
+msgstr ""
+"Arquivo vetorial (GeoJSON/Shapefile) com geometrias de treinamento "
+"rotuladas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--class-field`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Attribute column holding the real class label."
+msgstr "Coluna de atributo que contém o rótulo real da classe."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-model`, `-o`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Where to save the trained model."
+msgstr "Onde salvar o modelo treinado."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--model-type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: random_forest, svm"
+msgstr "um de: random_forest, svm"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`random_forest`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--n-estimators`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Random Forest tree count."
+msgstr "Número de árvores do Random Forest."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--test-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Fraction of samples held out for real accuracy reporting."
+msgstr "Fração das amostras reservada para o relatório de acurácia real."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1325
+msgid "`classify predict`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--model`, `-m`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "A model trained via 'classify train'."
+msgstr "Um modelo treinado via 'classify train'."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1346
+msgid "`post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1348
+msgid "Vector and raster post-processing."
+msgstr "Pós-processamento vetorial e raster."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post vectorize`](#post-vectorize)"
+msgstr "[`post vectorize`](#post-vectorize)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1367
+msgid "Convert raster to vector polygons (polygonize)."
+msgstr "Converte raster em polígonos vetoriais (poligonização)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post smooth`](#post-smooth)"
+msgstr "[`post smooth`](#post-smooth)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1387
+msgid ""
+"Smooth/simplify vector geometries (Douglas-Peucker or buffer-unbuffer)."
+msgstr ""
+"Suaviza/simplifica geometrias vetoriais (Douglas-Peucker ou buffer-"
+"unbuffer)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post regularize`](#post-regularize)"
+msgstr "[`post regularize`](#post-regularize)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1405
+msgid "Regularize (orthogonalize) building footprints or polygons."
+msgstr "Regulariza (ortogonaliza) contornos de edificações ou polígonos."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post zonal-stats`](#post-zonal-stats)"
+msgstr "[`post zonal-stats`](#post-zonal-stats)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1421
+msgid "Compute zonal statistics for each polygon zone."
+msgstr "Calcula estatísticas zonais para cada zona poligonal."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post buffer`](#post-buffer)"
+msgstr "[`post buffer`](#post-buffer)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1440
+msgid "Add buffer around vector geometries."
+msgstr "Adiciona um buffer ao redor de geometrias vetoriais."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post centroids`](#post-centroids)"
+msgstr "[`post centroids`](#post-centroids)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1458
+msgid "Extract centroid points from polygons."
+msgstr "Extrai pontos centroides de polígonos."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post geometry-metrics`](#post-geometry-metrics)"
+msgstr "[`post geometry-metrics`](#post-geometry-metrics)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1474
+msgid "Add area, perimeter, and compactness columns to vector file."
+msgstr ""
+"Adiciona colunas de área, perímetro e compacidade ao arquivo vetorial."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post compress`](#post-compress)"
+msgstr "[`post compress`](#post-compress)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1490
+msgid "Apply lossless compression to a GeoTIFF."
+msgstr "Aplica compressão sem perdas a um GeoTIFF."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post cog`](#post-cog)"
+msgstr "[`post cog`](#post-cog)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1507
+msgid ""
+"Convert to Cloud Optimized GeoTIFF (COG) with internal tiling and overviews."
+msgstr ""
+"Converte para Cloud Optimized GeoTIFF (COG) com tiling interno e overviews."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post overlay`](#post-overlay)"
+msgstr "[`post overlay`](#post-overlay)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1525
+msgid "Real polygon overlay between two vector layers."
+msgstr "Sobreposição real de polígonos entre duas camadas vetoriais."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post dissolve`](#post-dissolve)"
+msgstr "[`post dissolve`](#post-dissolve)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1547
+msgid ""
+"Merge polygons sharing the same attribute value into single geometries."
+msgstr ""
+"Mescla polígonos que compartilham o mesmo valor de atributo em geometrias "
+"únicas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post spatial-join`](#post-spatial-join)"
+msgstr "[`post spatial-join`](#post-spatial-join)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1569
+msgid ""
+"Attach attributes from one vector layer to another by real spatial "
+"relationship."
+msgstr ""
+"Anexa atributos de uma camada vetorial a outra por uma relação espacial "
+"real."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1365
+msgid "`post vectorize`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--band`, `-b`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--threshold`, `-t`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Binary threshold before vectorizing."
+msgstr "Limiar binário antes da vetorização."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--format`, `-f`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: geojson, gpkg, shp"
+msgstr "um de: geojson, gpkg, shp"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`geojson`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--min-area`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Minimum polygon area to keep (CRS units²)."
+msgstr "Área mínima do polígono a manter (unidades do CRS²)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1385
+msgid "`post smooth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--tolerance`, `-t`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: simplify, buffer"
+msgstr "um de: simplify, buffer"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`simplify`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1403
+msgid "`post regularize`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1419
+msgid "`post zonal-stats`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`RASTER`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`ZONES`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output CSV path."
+msgstr "Caminho do CSV de saída."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--stats`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`count,mean,median,min,max,std`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated statistics to compute."
+msgstr "Estatísticas a calcular, separadas por vírgula."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1438
+msgid "`post buffer`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--distance`, `-d`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cap-style`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: round, flat, square"
+msgstr "um de: round, flat, square"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`round`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1456
+msgid "`post centroids`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1472
+msgid "`post geometry-metrics`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1488
+msgid "`post compress`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: lzw, deflate, zstd, packbits"
+msgstr "um de: lzw, deflate, zstd, packbits"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`lzw`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1505
+msgid "`post cog`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--compress`, `-c`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: deflate, lzw, zstd, none"
+msgstr "um de: deflate, lzw, zstd, none"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`deflate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--blocksize`, `-b`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1523
+msgid "`post overlay`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`LEFT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`RIGHT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--how`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"one of: intersection, union, difference, symmetric_difference, identity"
+msgstr ""
+"um de: intersection, union, difference, symmetric_difference, identity"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`intersection`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1545
+msgid "`post dissolve`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--by`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Attribute column to group by before dissolving."
+msgstr "Coluna de atributo para agrupar antes de dissolver."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--aggfunc`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "How to aggregate other columns within each group."
+msgstr "Como agregar as demais colunas dentro de cada grupo."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1567
+msgid "`post spatial-join`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: inner, left, right"
+msgstr "um de: inner, left, right"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`inner`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--predicate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: intersects, contains, within, touches, crosses, overlaps"
+msgstr "um de: intersects, contains, within, touches, crosses, overlaps"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`intersects`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1590
+msgid "`sar`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1592
+msgid "SAR despeckling, calibration, flood mapping and coherence."
+msgstr ""
+"Redução de speckle, calibração, mapeamento de inundações e coerência em SAR."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar despeckle`](#sar-despeckle)"
+msgstr "[`sar despeckle`](#sar-despeckle)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1603
+msgid "SAR speckle filtering (Lee, Enhanced Lee, Frost, Gamma MAP, Boxcar)."
+msgstr ""
+"Filtragem de speckle SAR (Lee, Enhanced Lee, Frost, Gamma MAP, Boxcar)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar calibrate`](#sar-calibrate)"
+msgstr "[`sar calibrate`](#sar-calibrate)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1622
+msgid ""
+"Radiometric calibration: DN → sigma0/gamma0/beta0 backscatter coefficient."
+msgstr ""
+"Calibração radiométrica: DN → coeficiente de retroespalhamento "
+"sigma0/gamma0/beta0."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar flood-map`](#sar-flood-map)"
+msgstr "[`sar flood-map`](#sar-flood-map)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1640
+msgid "Flood mapping from SAR backscatter (simple threshold or change-based)."
+msgstr ""
+"Mapeamento de inundações a partir do retroespalhamento SAR (limiar simples "
+"ou baseado em mudança)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar coherence`](#sar-coherence)"
+msgstr "[`sar coherence`](#sar-coherence)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1658
+msgid "Interferometric coherence between two co-registered SAR images."
+msgstr "Coerência interferométrica entre duas imagens SAR co-registradas."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1601
+msgid "`sar despeckle`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--filter`, `-f`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: lee, enhanced_lee, frost, gamma, boxcar"
+msgstr "um de: lee, enhanced_lee, frost, gamma, boxcar"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`lee`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--looks`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1620
+msgid "`sar calibrate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: sigma0, gamma0, beta0"
+msgstr "um de: sigma0, gamma0, beta0"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`sigma0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--db`, `--linear`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`True`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1638
+msgid "`sar flood-map`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`-15.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Backscatter threshold below which pixels = water (dB)."
+msgstr "Limiar de retroespalhamento abaixo do qual os pixels = água (dB)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--reference`, `-r`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Pre-event reference image for change-based detection."
+msgstr "Imagem de referência pré-evento para detecção baseada em mudança."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1656
+msgid "`sar coherence`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`IMAGE1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`IMAGE2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`7`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1674
+msgid "`optical`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1676
+msgid "Optical pixel-offset tracking."
+msgstr "Rastreamento óptico de deslocamento de pixels."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`optical offset-track`](#optical-offset-track)"
+msgstr "[`optical offset-track`](#optical-offset-track)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Measure 2D ground displacement between two optical scenes via"
+msgstr "Mede o deslocamento 2D do terreno entre duas cenas ópticas via"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1682
+msgid "`optical offset-track`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1684
+msgid ""
+"Measure 2D ground displacement between two optical scenes via image "
+"correlation."
+msgstr ""
+"Mede o deslocamento 2D do terreno entre duas cenas ópticas via correlação de"
+" imagens."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--ref`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Reference-date raster."
+msgstr "Raster da data de referência."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sec`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Secondary-date raster."
+msgstr "Raster da data secundária."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output GeoTIFF (dx/dy/snr, 3 bands)."
+msgstr "GeoTIFF de saída (dx/dy/snr, 3 bandas)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "1-based band index to correlate."
+msgstr "Índice da banda a correlacionar, começando em 1."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--window-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Search window size, pixels."
+msgstr "Tamanho da janela de busca, em pixels."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--step-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`16`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Spacing between window centers, pixels."
+msgstr "Espaçamento entre os centros das janelas, em pixels."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--chip-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Reference template size, pixels. Default: window-size // 2."
+msgstr ""
+"Tamanho do template de referência, em pixels. Padrão: window-size // 2."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--snr-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`3.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Minimum SNR to mark a window reliable."
+msgstr "SNR mínima para marcar uma janela como confiável."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cloud-mask`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real Sentinel-2 SCL raster, already aligned to --ref."
+msgstr "Raster SCL real do Sentinel-2, já alinhado a --ref."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--water-mask-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Mask pixels where NDWI exceeds this value (needs --green-band/--nir-band)."
+msgstr ""
+"Mascara os pixels em que o NDWI excede este valor (requer --green-"
+"band/--nir-band)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--green-band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "1-based green band index, for --water-mask-threshold."
+msgstr "Índice da banda verde, começando em 1, para --water-mask-threshold."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir-band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "1-based NIR band index, for --water-mask-threshold."
+msgstr "Índice da banda NIR, começando em 1, para --water-mask-threshold."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1720
+msgid "`multisensor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1722
+msgid "Multi-sensor pipelines."
+msgstr "Pipelines multissensor."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"[`multisensor insar-optical-fusion`](#multisensor-insar-optical-fusion)"
+msgstr ""
+"[`multisensor insar-optical-fusion`](#multisensor-insar-optical-fusion)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1734
+msgid "Fuse InSAR displacement with optical pixel offset tracking."
+msgstr ""
+"Funde o deslocamento InSAR com o rastreamento óptico de deslocamento de "
+"pixels."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`multisensor flood-map`](#multisensor-flood-map)"
+msgstr "[`multisensor flood-map`](#multisensor-flood-map)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1756
+msgid "Fuse SAR and optical NDWI for flood/water extent mapping."
+msgstr ""
+"Funde SAR e NDWI óptico para o mapeamento da extensão de inundação/água."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`multisensor terrain-change`](#multisensor-terrain-change)"
+msgstr "[`multisensor terrain-change`](#multisensor-terrain-change)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Terrain-corrected optical change detection (removes real"
+msgstr "Detecção de mudanças ópticas com correção de terreno (remove"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`multisensor dem-diff`](#multisensor-dem-diff)"
+msgstr "[`multisensor dem-diff`](#multisensor-dem-diff)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1796
+msgid "DEM-of-Difference volumetric change analysis."
+msgstr "Análise de mudança volumétrica por DEM de Diferença."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"[`multisensor vegetation-disturbance`](#multisensor-vegetation-disturbance)"
+msgstr ""
+"[`multisensor vegetation-disturbance`](#multisensor-vegetation-disturbance)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Classify visible canopy loss vs. real sub-canopy ground"
+msgstr ""
+"Classifica a perda de dossel visível versus o distúrbio real do solo sob o "
+"dossel"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1732
+msgid "`multisensor insar-optical-fusion`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--insar-velocity`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--insar-coherence`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-ref`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-sec`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-dir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-low`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.4`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-high`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.6`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1754
+msgid "`multisensor flood-map`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sar`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-green`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sar-reference`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sar-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--ndwi-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--fusion-mode`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: cloud_aware, union, intersection"
+msgstr "um de: cloud_aware, union, intersection"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`cloud_aware`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1774
+msgid "`multisensor terrain-change`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1776
+msgid ""
+"Terrain-corrected optical change detection (removes real illumination "
+"artifacts using each date's own solar position)."
+msgstr ""
+"Detecção de mudanças ópticas com correção de terreno (remove artefatos reais"
+" de iluminação usando a posição solar de cada data)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dem`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre-datetime`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real UTC ISO datetime, e.g. 2024-01-15T10:30:00"
+msgstr "Data e hora ISO UTC reais, por exemplo 2024-01-15T10:30:00"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-datetime`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real UTC ISO datetime"
+msgstr "Data e hora ISO UTC reais"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--lat`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--lon`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--change-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1794
+msgid "`multisensor dem-diff`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dem-old`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dem-new`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--old-rmse`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real vertical RMSE of the old DEM, metres."
+msgstr "RMSE vertical real do DEM antigo, em metros."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--new-rmse`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real vertical RMSE of the new DEM, metres."
+msgstr "RMSE vertical real do DEM novo, em metros."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--confidence-t`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1.96`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1811
+msgid "`multisensor vegetation-disturbance`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1813
+msgid ""
+"Classify visible canopy loss vs. real sub-canopy ground disturbance, from "
+"optical NDVI + SAR coherence."
+msgstr ""
+"Classifica a perda de dossel visível versus o distúrbio real do solo sob o "
+"dossel, a partir do NDVI óptico + coerência SAR."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--red-pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir-pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--red-post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir-post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--slc-pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--slc-post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--ndvi-drop-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.15`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.3`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-window`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1832
+msgid "`stream`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1834
+msgid "Windowed COG reads and cloud-native format conversion."
+msgstr "Leituras em janela de COG e conversão para formatos nativos de nuvem."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream cog-window`](#stream-cog-window)"
+msgstr "[`stream cog-window`](#stream-cog-window)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1846
+msgid ""
+"Read a real, spatial window from a remote COG without downloading the whole "
+"file."
+msgstr ""
+"Lê uma janela espacial real de um COG remoto sem baixar o arquivo inteiro."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream to-geoparquet`](#stream-to-geoparquet)"
+msgstr "[`stream to-geoparquet`](#stream-to-geoparquet)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1871
+msgid "Convert any real vector file to GeoParquet."
+msgstr "Converte qualquer arquivo vetorial real para GeoParquet."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream to-zarr`](#stream-to-zarr)"
+msgstr "[`stream to-zarr`](#stream-to-zarr)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1891
+msgid "Convert a real GeoTIFF to a chunked Zarr store."
+msgstr "Converte um GeoTIFF real em um armazenamento Zarr em chunks."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream zarr-to-tif`](#stream-zarr-to-tif)"
+msgstr "[`stream zarr-to-tif`](#stream-zarr-to-tif)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1913
+msgid ""
+"Convert a real Zarr store (written with real geo metadata) back to GeoTIFF."
+msgstr ""
+"Converte um armazenamento Zarr real (gravado com metadados geográficos "
+"reais) de volta para GeoTIFF."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream chunked-process`](#stream-chunked-process)"
+msgstr "[`stream chunked-process`](#stream-chunked-process)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1933
+msgid "Process a large raster in real, memory-safe, overlap-aware tiles."
+msgstr ""
+"Processa um raster grande em blocos reais, seguros para a memória e cientes "
+"de sobreposição."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1844
+msgid "`stream cog-window`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`URL`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "min_lon,min_lat,max_lon,max_lat"
+msgstr "min_lon,min_lat,max_lon,max_lat"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bbox-crs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated 1-based band indices. Default: all real bands."
+msgstr ""
+"Índices de banda, começando em 1, separados por vírgula. Padrão: todas as "
+"bandas reais."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output GeoTIFF path for the real, windowed result."
+msgstr "Caminho do GeoTIFF de saída para o resultado real em janela."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--no-range-check`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Skip the real, honest pre-flight range-request support check."
+msgstr ""
+"Ignora a verificação prévia real e honesta de suporte a requisições de "
+"intervalo (range requests)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1869
+msgid "`stream to-geoparquet`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT_VECTOR`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1889
+msgid "`stream to-zarr`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT_RASTER`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output .zarr store directory."
+msgstr "Diretório de saída do armazenamento .zarr."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--chunks`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated chunk shape, e.g. 512,512. Default: real, automatic."
+msgstr ""
+"Formato dos chunks separado por vírgula, por exemplo 512,512. Padrão: real, "
+"automático."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--compressor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: zstd, lz4, gzip, zlib, none"
+msgstr "um de: zstd, lz4, gzip, zlib, none"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`zstd`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1911
+msgid "`stream zarr-to-tif`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT_ZARR`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1931
+msgid "`stream chunked-process`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--expression`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Python expression over tile arrays, e.g. \"(B[1]-B[0])/(B[1]+B[0]+1e-6)\" "
+"for pixel-independent math, or \"uniform_filter(B[0], size=3)\" for a real "
+"neighborhood filter."
+msgstr ""
+"Expressão Python sobre os arrays dos blocos, por exemplo "
+"\"(B[1]-B[0])/(B[1]+B[0]+1e-6)\" para matemática independente por pixel, ou "
+"\"uniform_filter(B[0], size=3)\" para um filtro de vizinhança real."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Real pixel margin for neighborhood operations -- 0 for pixel-independent "
+"math."
+msgstr ""
+"Margem de pixels real para operações de vizinhança -- 0 para matemática "
+"independente por pixel."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-format`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: cog, zarr"
+msgstr "um de: cog, zarr"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`cog`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1970
+msgid "`config`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1972
+msgid "Read and modify configuration."
+msgstr "Ler e modificar a configuração."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config show`](#config-show)"
+msgstr "[`config show`](#config-show)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1984
+msgid "Show the effective configuration (all layers merged)."
+msgstr "Mostra a configuração efetiva (todas as camadas mescladas)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config get`](#config-get)"
+msgstr "[`config get`](#config-get)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1996
+msgid "Get a single configuration value by dotted KEY path."
+msgstr "Obtém um único valor de configuração pelo caminho KEY com pontos."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config set`](#config-set)"
+msgstr "[`config set`](#config-set)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2013
+msgid "Set a configuration value in the user config file."
+msgstr ""
+"Define um valor de configuração no arquivo de configuração do usuário."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config path`](#config-path)"
+msgstr "[`config path`](#config-path)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2035
+msgid "Show the location of configuration files."
+msgstr "Mostra a localização dos arquivos de configuração."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config reset`](#config-reset)"
+msgstr "[`config reset`](#config-reset)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2043
+msgid "Remove the user configuration file, restoring defaults."
+msgstr "Remove o arquivo de configuração do usuário, restaurando os padrões."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1982
+msgid "`config show`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1994
+msgid "`config get`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`KEY`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2011
+msgid "`config set`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`VALUE`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2033
+msgid "`config path`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2041
+msgid "`config reset`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2053
+msgid "Top-level commands"
+msgstr "Comandos de nível superior"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2055
+msgid "`status`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2057
+msgid ""
+"Show full system status: providers, cache, downloads, pipelines, version."
+msgstr ""
+"Mostra o status completo do sistema: provedores, cache, downloads, "
+"pipelines, versão."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2072
+msgid "`doctor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2074
+msgid "Diagnose the PyGeoFetch installation and connectivity."
+msgstr "Diagnostica a instalação e a conectividade do PyGeoFetch."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2085
+msgid "`version`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2087
+msgid "Show version information."
+msgstr "Mostra as informações de versão."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2097
+msgid "`geocode`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2099
+msgid "Look up a place name and get its coordinates and bounding box."
+msgstr ""
+"Consulta o nome de um lugar e obtém suas coordenadas e caixa delimitadora."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`QUERY`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Max results to return."
+msgstr "Máximo de resultados a retornar."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2119
+msgid "`reverse-geocode`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2121
+msgid "Look up the real place name at a coordinate."
+msgstr "Consulta o nome real do lugar em uma coordenada."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`LAT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`LON`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2136
+msgid "`assess-feasibility`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2138
+msgid "Assess InSAR feasibility for an AOI before downloading anything."
+msgstr ""
+"Avalia a viabilidade de InSAR para uma AOI antes de baixar qualquer coisa."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--start-date`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--end-date`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-temporal-baseline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`72`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--deep-check`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Also run real, live burst-sync screening on the best track (costs real "
+"network calls)."
+msgstr ""
+"Também executa uma triagem real e ao vivo de burst-sync na melhor trilha "
+"(gera chamadas de rede reais)."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2160
+msgid "`--install-completion`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2162
+msgid ""
+"Install shell tab completion. Usage: --install-completion bash|zsh|fish"
+msgstr ""
+"Instala o autocompletar de shell com tab. Uso: --install-completion "
+"bash|zsh|fish"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`SHELL`"
+msgstr ""

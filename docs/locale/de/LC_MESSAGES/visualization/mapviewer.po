@@ -1,0 +1,120 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:1
+msgid "MapViewer"
+msgstr "MapViewer"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:3
+msgid ""
+"Interactive maps built on `leafmap` — search footprints, rasters, vectors, "
+"and split comparisons."
+msgstr ""
+"Interaktive Karten auf Basis von `leafmap` – Suchfootprints, Raster, "
+"Vektoren und geteilte Vergleiche."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:16
+msgid ""
+"`add_raster()` needs `rioxarray` and `localtileserver` alongside `leafmap` —"
+" all three are declared in the `[viz]` extra."
+msgstr ""
+"`add_raster()` benötigt `rioxarray` und `localtileserver` zusätzlich zu "
+"`leafmap` – alle drei sind im Extra `[viz]` deklariert."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:19
+msgid "Overview"
+msgstr "Überblick"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:21
+msgid ""
+"The map viewer is for exploration. Before downloading anything, you can draw"
+" the footprints of your search results on a map to see how well they cover "
+"your area, and after processing you can overlay rasters and vectors on a "
+"basemap to judge them in context. Maps are interactive, so you can pan, zoom"
+" and toggle layers, and a split-panel view places two layers side by side "
+"with a slider, which is the quickest way to compare before and after."
+msgstr ""
+"Der Map Viewer dient der Exploration. Bevor Sie etwas herunterladen, können "
+"Sie die Footprints Ihrer Suchergebnisse auf einer Karte darstellen, um zu "
+"sehen, wie gut sie Ihr Gebiet abdecken; nach der Verarbeitung können Sie "
+"Raster und Vektoren über einer Basiskarte einblenden, um sie im Kontext zu "
+"beurteilen. Die Karten sind interaktiv, sodass Sie verschieben, zoomen und "
+"Ebenen ein- und ausblenden können, und eine Split-Panel-Ansicht stellt zwei "
+"Ebenen mit einem Schieberegler nebeneinander – der schnellste Weg, Vorher "
+"und Nachher zu vergleichen."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:23
+msgid ""
+"Maps are built in a notebook or script and can be saved as a self-contained "
+"HTML file that opens in any browser, so a result can be shared with someone "
+"who has no Python installed."
+msgstr ""
+"Karten werden in einem Notebook oder Skript erstellt und können als "
+"eigenständige HTML-Datei gespeichert werden, die sich in jedem Browser "
+"öffnen lässt, sodass ein Ergebnis auch mit Personen geteilt werden kann, auf"
+" deren Rechner Python nicht installiert ist."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:25
+msgid "Search result footprints — see before you download"
+msgstr "Footprints der Suchergebnisse – ansehen, bevor Sie herunterladen"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:36
+msgid ""
+"Uses each result's provider-supplied geometry when available, and falls back"
+" automatically to a bounding-box rectangle when it isn't — safe to call "
+"against any provider's results. See [Providers](../data-access/providers.md)"
+" for which providers return precise footprint geometry today."
+msgstr ""
+"Verwendet die vom Anbieter gelieferte Geometrie jedes Ergebnisses, sofern "
+"verfügbar, und greift automatisch auf ein Begrenzungsrechteck zurück, wenn "
+"keine vorliegt – der Aufruf ist für die Ergebnisse jedes Anbieters sicher. "
+"Welche Anbieter derzeit präzise Footprint-Geometrien liefern, steht unter "
+"[Anbieter](../data-access/providers.md)."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:42
+msgid "Split-panel comparison"
+msgstr "Split-Panel-Vergleich"
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:44
+msgid ""
+"Draggable side-by-side comparison of two rasters — e.g. a DSM against a DTM,"
+" or two independent DEM sources — backed by leafmap's own `split_map()`."
+msgstr ""
+"Ziehbarer Seite-an-Seite-Vergleich zweier Raster – z. B. ein DSM gegen ein "
+"DTM oder zwei unabhängige DEM-Quellen – auf Basis von `split_map()` aus "
+"leafmap."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:57
+msgid ""
+"The interactive split view depends on `localtileserver` spinning up a local "
+"background HTTP server, which is known to fail in some restricted/sandboxed "
+"network environments (firewalls, some corporate VPNs) with a "
+"`ServerDownError`. When that happens, `add_split_comparison()` automatically"
+" falls back to a static side-by-side comparison that needs no server at all."
+msgstr ""
+"Die interaktive Split-Ansicht setzt voraus, dass `localtileserver` einen "
+"lokalen HTTP-Server im Hintergrund startet, was in manchen eingeschränkten "
+"Netzwerkumgebungen (Firewalls, einige Unternehmens-VPNs) bekanntermaßen mit "
+"einem `ServerDownError` fehlschlägt. In diesem Fall weicht "
+"`add_split_comparison()` automatisch auf einen statischen Seite-an-Seite-"
+"Vergleich aus, der ganz ohne Server auskommt."
+
+#: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:64
+msgid "Inspecting and saving"
+msgstr "Prüfen und Speichern"

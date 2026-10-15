@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,33 +23,39 @@ msgstr "Conceitos fundamentais"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:3
 msgid "A short tour of the ideas the rest of the documentation assumes."
-msgstr ""
+msgstr "Um breve tour pelas ideias que o restante da documentação pressupõe."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:5
 msgid "The big picture"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:20
 msgid "pygeofetch has three layers:"
-msgstr ""
+msgstr "O pygeofetch tem três camadas:"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:22
 msgid ""
 "**Data access.** `search()` queries providers; `download()` and `stream()` "
 "retrieve the data."
 msgstr ""
+"**Acesso a dados.** `search()` consulta os provedores; `download()` e "
+"`stream()` recuperam os dados."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:23
 msgid ""
 "**Processing.** Optical, SAR, InSAR and multi-sensor processing that works "
 "on the files you retrieved."
 msgstr ""
+"**Processamento.** Processamento óptico, SAR, InSAR e multissensor que "
+"trabalha sobre os arquivos que você recuperou."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:24
 msgid ""
 "**Orchestration.** YAML pipelines that chain search, download, process and "
 "export, optionally on a schedule."
 msgstr ""
+"**Orquestração.** Pipelines em YAML que encadeiam pesquisa, download, "
+"processamento e exportação, opcionalmente em um agendamento."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:26
 msgid "Providers"
@@ -61,38 +67,45 @@ msgid ""
 "`SearchQuery` into that source's API and returns results as `SatelliteData`."
 " Providers differ in what they serve and how:"
 msgstr ""
+"Um **provedor** é um adaptador para uma fonte de dados. Cada um traduz um "
+"`SearchQuery` para a API dessa fonte e retorna os resultados como "
+"`SatelliteData`. Os provedores diferem no que oferecem e em como:"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Property"
-msgstr ""
+msgstr "Propriedade"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Examples"
-msgstr ""
+msgstr "Exemplos"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**Needs credentials**"
-msgstr ""
+msgstr "**Precisa de credenciais**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "`copernicus`, `usgs`, `planet` need them; `planetary_computer`, `element84` "
 "do not."
 msgstr ""
+"`copernicus`, `usgs`, `planet` precisam; `planetary_computer`, `element84` "
+"não."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**STAC or not**"
-msgstr ""
+msgstr "**STAC ou não**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "STAC providers (`planetary_computer`, `element84`, `sentinel_hub`) share a "
 "data model. Others use their own APIs."
 msgstr ""
+"Os provedores STAC (`planetary_computer`, `element84`, `sentinel_hub`) "
+"compartilham um modelo de dados. Os outros usam suas próprias APIs."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**How data is packaged**"
-msgstr ""
+msgstr "**Como os dados são empacotados**"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
@@ -100,22 +113,25 @@ msgid ""
 "Optimized GeoTIFF per band (`planetary_computer`). Packaging decides whether"
 " you can [stream](../data-access/streaming.md)."
 msgstr ""
+"Um `.SAFE.zip` por cena (`copernicus`), um `.tar` (`usgs`), ou um Cloud-"
+"Optimized GeoTIFF por banda (`planetary_computer`). O empacotamento "
+"determina se você pode fazer [streaming](../data-access/streaming.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:37
 msgid "See [Providers](../data-access/providers.md) for the full list."
-msgstr ""
+msgstr "Veja [Provedores](../data-access/providers.md) para a lista completa."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:39
 msgid "The data model"
-msgstr ""
+msgstr "O modelo de dados"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Class"
-msgstr ""
+msgstr "Classe"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Role"
-msgstr ""
+msgstr "Função"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`SearchQuery`"
@@ -124,6 +140,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "What you want: area, dates, cloud cover, satellites, sorting."
 msgstr ""
+"O que você quer: área, datas, cobertura de nuvens, satélites, ordenação."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`SatelliteData`"
@@ -133,6 +150,8 @@ msgstr ""
 msgid ""
 "One scene: ID, provider, time, footprint, cloud cover, and its `assets`."
 msgstr ""
+"Uma cena: ID, provedor, data/hora, pegada, cobertura de nuvens e seus "
+"`assets`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`SatelliteAsset`"
@@ -142,6 +161,8 @@ msgstr ""
 msgid ""
 "One file of a scene (a band, a metadata file, an archive), with its `href`."
 msgstr ""
+"Um arquivo de uma cena (uma banda, um arquivo de metadados, um arquivo "
+"compactado), com seu `href`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`DownloadOptions`"
@@ -150,6 +171,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "How to download: parallelism, retries, bands, post-processing."
 msgstr ""
+"Como baixar: paralelismo, novas tentativas, bandas, pós-processamento."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`DownloadResult`"
@@ -157,17 +179,19 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "The outcome for one scene: status, output paths, errors."
-msgstr ""
+msgstr "O resultado de uma cena: status, caminhos de saída, erros."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:49
 msgid ""
 "All are Pydantic models in `pygeofetch.models`. See the [Python API "
 "reference](../reference/python-api.md)."
 msgstr ""
+"Todos são modelos Pydantic em `pygeofetch.models`. Veja a [Referência da API"
+" Python](../reference/python-api.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:51
 msgid "Conventions"
-msgstr ""
+msgstr "Convenções"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:53
 msgid ""
@@ -175,50 +199,62 @@ msgid ""
 " longitude first. The CLI takes the same order as "
 "`\"min_lon,min_lat,max_lon,max_lat\"`."
 msgstr ""
+"**Caixas delimitadoras** são `(min_lon, min_lat, max_lon, max_lat)` em "
+"EPSG:4326 — longitude primeiro. A CLI usa a mesma ordem, como "
+"`\"min_lon,min_lat,max_lon,max_lat\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:54
 msgid ""
 "**Dates** are `YYYY-MM-DD` on the CLI and `date`, `datetime` or ISO strings "
 "in Python."
 msgstr ""
+"**Datas** são `YYYY-MM-DD` na CLI e `date`, `datetime` ou strings ISO em "
+"Python."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:55
 msgid "**Cloud cover** is a percentage from 0 to 100."
-msgstr ""
+msgstr "**Cobertura de nuvens** é uma porcentagem de 0 a 100."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:56
 msgid ""
 "**Downloads land in provider sub-folders:** `<destination>/<provider>/...`. "
 "See [Downloading](../data-access/download.md#where-files-are-written)."
 msgstr ""
+"**Os downloads vão para subpastas do provedor:** "
+"`<destination>/<provider>/...`. Veja [Download](../data-"
+"access/download.md#where-files-are-written)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:57
 msgid ""
 "**Archives are not extracted automatically.** Use the `unzip` post-"
 "processing action."
 msgstr ""
+"**Os arquivos compactados não são extraídos automaticamente.** Use a ação de"
+" pós-processamento `unzip`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:59
 msgid "Whole scene, band subset, or AOI window"
-msgstr ""
+msgstr "Cena inteira, subconjunto de bandas ou janela da AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:61
 msgid ""
 "Optical scenes are large, and you usually need a small part of them. "
 "pygeofetch offers three levels of data reduction:"
 msgstr ""
+"As cenas ópticas são grandes e você geralmente precisa apenas de uma pequena"
+" parte delas. O pygeofetch oferece três níveis de redução de dados:"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Approach"
-msgstr ""
+msgstr "Abordagem"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Transfers"
-msgstr ""
+msgstr "Transfere"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Use when"
-msgstr ""
+msgstr "Use quando"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`download()`"
@@ -226,11 +262,12 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "The complete asset(s)"
-msgstr ""
+msgstr "Os assets completos"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "You need the original product, or the provider serves archives."
 msgstr ""
+"Você precisa do produto original, ou o provedor serve arquivos compactados."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`download(bands=[...])`"
@@ -238,11 +275,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Only the chosen band files"
-msgstr ""
+msgstr "Apenas os arquivos das bandas escolhidas"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "The provider serves one file per band."
-msgstr ""
+msgstr "O provedor serve um arquivo por banda."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "`stream(bbox=...)`"
@@ -250,124 +287,142 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Only the pixels under your AOI"
-msgstr ""
+msgstr "Apenas os pixels sob a sua AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "The provider serves Cloud-Optimized GeoTIFFs and you only need a small area."
 msgstr ""
+"O provedor serve Cloud-Optimized GeoTIFFs e você precisa apenas de uma área "
+"pequena."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:70
 msgid "Data formats you will meet"
-msgstr ""
+msgstr "Formatos de dados que você vai encontrar"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:72
 msgid ""
 "**GeoTIFF / COG.** Raster data. A *Cloud-Optimized* GeoTIFF is internally "
 "tiled so a client can fetch just part of it over HTTP."
 msgstr ""
+"**GeoTIFF / COG.** Dados raster. Um GeoTIFF *Cloud-Optimized* é organizado "
+"internamente em blocos, de modo que um cliente pode buscar apenas parte dele"
+" via HTTP."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:73
 msgid "**SAFE.** The Sentinel product folder, usually delivered zipped."
 msgstr ""
+"**SAFE.** A pasta de produto do Sentinel, geralmente entregue compactada."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:74
 msgid ""
 "**SLC and GRD.** Sentinel-1 *Single Look Complex* (phase preserved; needed "
 "for InSAR) and *Ground Range Detected* (amplitude only)."
 msgstr ""
+"**SLC e GRD.** *Single Look Complex* do Sentinel-1 (fase preservada; "
+"necessário para InSAR) e *Ground Range Detected* (apenas amplitude)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:75
 msgid ""
 "**STAC.** A standard JSON catalogue format for spatiotemporal assets, used "
 "by many providers."
 msgstr ""
+"**STAC.** Um formato padrão de catálogo em JSON para assets espaço-"
+"temporais, usado por muitos provedores."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:76
 msgid ""
 "**GeoParquet and Zarr.** Cloud-native vector and array formats, available "
 "through the `pygeofetch stream` conversion commands."
 msgstr ""
+"**GeoParquet e Zarr.** Formatos vetoriais e de arrays nativos da nuvem, "
+"disponíveis por meio dos comandos de conversão de `pygeofetch stream`."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:78
 msgid "Four things called \"pipeline\""
-msgstr ""
+msgstr "Quatro coisas chamadas de \"pipeline\""
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:80
 msgid "The word is used for four different features:"
-msgstr ""
+msgstr "A palavra é usada para quatro recursos diferentes:"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Feature"
-msgstr ""
+msgstr "Recurso"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "What it chains"
-msgstr ""
+msgstr "O que ele encadeia"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "Where"
-msgstr ""
+msgstr "Onde"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**YAML acquisition pipeline** (`pygeofetch pipeline run`)"
-msgstr ""
+msgstr "**Pipeline de aquisição em YAML** (`pygeofetch pipeline run`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "search, filter, download, process, export; can be scheduled"
 msgstr ""
+"pesquisa, filtragem, download, processamento, exportação; pode ser agendado"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "[Pipelines](../workflows/pipelines.md)"
-msgstr ""
+msgstr "[Pipelines](../workflows/pipelines.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**Fluent processing pipeline** (`client.pipeline(...)`)"
-msgstr ""
+msgstr "**Pipeline de processamento fluente** (`client.pipeline(...)`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "clip, reproject, index, COG on files you already have"
-msgstr ""
+msgstr "recorte, reprojeção, índice, COG em arquivos que você já tem"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**SAR pipelines** (`pygeofetch.sar.pipelines`)"
-msgstr ""
+msgstr "**Pipelines de SAR** (`pygeofetch.sar.pipelines`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid ""
 "calibrate, despeckle, flood or change detection on one sensor over several "
 "dates"
 msgstr ""
+"calibração, redução de speckle, detecção de inundação ou de mudanças em um "
+"sensor ao longo de várias datas"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "[SAR](../processing/sar-insar/sar.md)"
-msgstr ""
+msgstr "[SAR](../processing/sar-insar/sar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "**Multi-sensor pipelines** (`pygeofetch.multisensor`)"
-msgstr ""
+msgstr "**Pipelines multissensor** (`pygeofetch.multisensor`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "two different sensors combined"
-msgstr ""
+msgstr "dois sensores diferentes combinados"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:0
 msgid "[Multi-sensor pipelines](../processing/multisensor.md)"
-msgstr ""
+msgstr "[Pipelines multissensor](../processing/multisensor.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:89
 msgid "Where to go next"
-msgstr ""
+msgstr "Próximos passos"
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:91
 msgid "New to the tool: [Quick start](quickstart.md)."
-msgstr ""
+msgstr "Novo na ferramenta: [Início rápido](quickstart.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:92
 msgid "Want only your study area: [Streaming](../data-access/streaming.md)."
 msgstr ""
+"Quer apenas a sua área de estudo: [Streaming](../data-access/streaming.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/getting-started/concepts.md:93
 msgid ""
 "Doing deformation monitoring: [InSAR](../processing/sar-insar/insar.md)."
 msgstr ""
+"Fazendo monitoramento de deformação: [InSAR](../processing/sar-"
+"insar/insar.md)."

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,189 +29,193 @@ msgid ""
 " and voting, use GitHub Discussions on "
 "[EOCoreINT/pygeofetch](https://github.com/EOCoreINT/pygeofetch)."
 msgstr ""
+"本页列出由[已知问题](../reference/known-"
+"issues.md)衍生出的未完成工作。它是在文档审计期间整理的一份提议，**并非维护者的承诺**。如需讨论优先级和投票，请使用 "
+"[EOCoreINT/pygeofetch](https://github.com/EOCoreINT/pygeofetch) 上的 GitHub "
+"Discussions。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:10
 msgid "Correctness"
-msgstr ""
+msgstr "正确性"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Item"
-msgstr ""
+msgstr "条目"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Why"
-msgstr ""
+msgstr "原因"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Fix `client.sar.coherence` for complex input"
-msgstr ""
+msgstr "修复 `client.sar.coherence` 对复数输入的支持"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Currently raises `ValueError`; the standalone processor already works."
-msgstr ""
+msgstr "目前会抛出 `ValueError`；独立的处理器已经可以正常工作。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Wire in or remove the SAR backends (`_native`, `_sarxarray`, `_ost`)"
-msgstr ""
+msgstr "接入或移除 SAR 后端（`_native`、`_sarxarray`、`_ost`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "`SARProcessor(backend=...)` is documented in code but unreachable."
-msgstr ""
+msgstr "`SARProcessor(backend=...)` 在代码中有文档记录，但无法到达。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Implement `--on-provider-failure abort` and `retry`"
-msgstr ""
+msgstr "实现 `--on-provider-failure abort` 和 `retry`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "The flag is accepted and ignored."
-msgstr ""
+msgstr "该标志可被接受，但会被忽略。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Honour `extract_archives`"
-msgstr ""
+msgstr "遵从 `extract_archives`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "The option is declared and unused."
-msgstr ""
+msgstr "该选项已声明但未被使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Make checksum mismatches retry or fail"
-msgstr ""
+msgstr "使校验和不匹配时重试或失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Verification is advisory today."
-msgstr ""
+msgstr "目前验证只是参考性的。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:20
 msgid "Configuration and packaging"
-msgstr ""
+msgstr "配置与打包"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Apply the Settings layer at runtime"
-msgstr ""
+msgstr "在运行时应用 Settings 层"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid ""
 "Files and `PYGEOFETCH_*` variables currently change nothing but `config "
 "get`."
-msgstr ""
+msgstr "目前文件和 `PYGEOFETCH_*` 变量除了 `config get` 之外不会改变任何东西。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Read credentials from environment variables"
-msgstr ""
+msgstr "从环境变量读取凭据"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Needed for CI and containers."
-msgstr ""
+msgstr "CI 和容器需要这一点。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Declare `rich` and `shapely`"
-msgstr ""
+msgstr "声明 `rich` 和 `shapely`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "A clean install can fail on `--help`."
-msgstr ""
+msgstr "全新安装时 `--help` 可能失败。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Unify version strings"
-msgstr ""
+msgstr "统一版本字符串"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Three different values are in the source."
-msgstr ""
+msgstr "源码中有三个不同的值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Register `monitor`, remove `multisensor/_init.py`"
-msgstr ""
+msgstr "注册 `monitor`，移除 `multisensor/_init.py`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Dead or unreachable code."
-msgstr ""
+msgstr "死代码或无法到达的代码。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:30
 msgid "Providers and data access"
-msgstr ""
+msgstr "提供方与数据访问"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Remove or unregister `esa_scihub` and `google_earth_engine`"
-msgstr ""
+msgstr "移除或取消注册 `esa_scihub` 和 `google_earth_engine`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "They count as providers but cannot return data."
-msgstr ""
+msgstr "它们被计为提供方，但无法返回数据。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Apply `sort_by` for STAC providers"
-msgstr ""
+msgstr "为 STAC 提供方应用 `sort_by`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Currently ignored."
-msgstr ""
+msgstr "目前被忽略。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Cross-provider de-duplication"
-msgstr ""
+msgstr "跨提供方去重"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Dedup uses provider plus ID only."
-msgstr ""
+msgstr "去重仅使用提供方加 ID。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Merge `stac_compute` and `streaming`"
-msgstr ""
+msgstr "合并 `stac_compute` 和 `streaming`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Two overlapping implementations."
-msgstr ""
+msgstr "有两套功能重叠的实现。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Live integration tests for streaming"
-msgstr ""
+msgstr "针对流式读取的实时集成测试"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Verified only against a local range server."
-msgstr ""
+msgstr "仅针对本地范围请求服务器进行过验证。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:40
 msgid "Processing"
-msgstr ""
+msgstr "处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Absolute SAR radiometric calibration from product metadata"
-msgstr ""
+msgstr "根据产品元数据进行 SAR 绝对辐射定标"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "The current constant is suitable for relative comparison only."
-msgstr ""
+msgstr "当前的常数仅适用于相对比较。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Remaining `Affine * tuple` call sites"
-msgstr ""
+msgstr "剩余的 `Affine * tuple` 调用位置"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Deprecated arithmetic in four modules."
-msgstr ""
+msgstr "四个模块中使用了已弃用的运算。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Advanced topographic correction"
-msgstr ""
+msgstr "高级地形校正"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Cosine correction under-corrects on steep terrain."
-msgstr ""
+msgstr "余弦校正在陡峭地形上校正不足。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:48
 msgid "Documentation"
-msgstr ""
+msgstr "文档"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:50
 msgid "Keep the generated CLI reference in CI with `tools/check_docs.py`."
-msgstr ""
+msgstr "通过 `tools/check_docs.py` 在 CI 中保持生成的 CLI 参考与代码同步。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:51
 msgid "Add provider-specific tutorials once live access can be tested."
-msgstr ""
+msgstr "待可以测试实时访问后，补充针对各提供方的教程。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:53
 msgid "Completed work is in the [changelog](changelog.md)."
-msgstr ""
+msgstr "已完成的工作见[变更日志](changelog.md)。"

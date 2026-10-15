@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,14 +29,20 @@ msgid ""
 "issues](../reference/known-issues.md)), so no version numbers are attached. "
 "For commit-level history use the GitHub repository."
 msgstr ""
+"Un historique thématique des changements notables, compilé à partir de "
+"l'historique d'audit du projet. Ce n'est pas un journal version par version "
+": les entrées sont regroupées par domaine, et les chaînes de version du "
+"paquet sont incohérentes (voir [Problèmes connus](../reference/known-"
+"issues.md)), si bien qu'aucun numéro de version n'est indiqué. Pour "
+"l'historique au niveau des commits, utilisez le dépôt GitHub."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:8
 msgid "Data access"
-msgstr ""
+msgstr "Accès aux données"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:10
 msgid "**Added**"
-msgstr ""
+msgstr "**Ajouté**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:12
 msgid ""
@@ -45,6 +51,10 @@ msgid ""
 "(Copernicus `.zip`, USGS `.tar`) are refused. See [Streaming](../data-"
 "access/streaming.md)."
 msgstr ""
+"`PyGeoFetch.stream()` et `pygeofetch.streaming` : lisent uniquement les "
+"pixels situés sous une AOI à partir de GeoTIFF optimisés pour le cloud (COG)"
+" grâce à des requêtes HTTP par plages. Les archives (`.zip` Copernicus, "
+"`.tar` USGS) sont refusées. Voir [Streaming](../data-access/streaming.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:13
 msgid ""
@@ -54,6 +64,12 @@ msgid ""
 " through `validate_optical`. See [Optical validation](../data-"
 "access/optical-validation.md)."
 msgstr ""
+"Validation et contrôle préalable (preflight) des données optiques "
+"(`pygeofetch.validation`) : une porte de qualité avant téléchargement "
+"couvrant la couverture de l'AOI, la couverture nuageuse, les bandes "
+"requises, le niveau de traitement et les bornes temporelles, intégrée à "
+"`search()` et `download()` via `validate_optical`. Voir [Validation "
+"optique](../data-access/optical-validation.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:14
 msgid ""
@@ -61,22 +77,29 @@ msgid ""
 "manifest, and `prepare_insar_stack()`. See [Data organizer](../data-"
 "access/data-organizer.md)."
 msgstr ""
+"`DataOrganizer` : hiérarchies par date, orbite, satellite et niveau de "
+"traitement, un manifeste, et `prepare_insar_stack()`. Voir [Organisateur de "
+"données](../data-access/data-organizer.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:16
 msgid "**Providers rewritten against their real APIs**"
-msgstr ""
+msgstr "**Fournisseurs réécrits d'après leurs véritables API**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:18
 msgid ""
 "`airbus_oneatlas` (previously non-functional: fake authentication, fictional"
 " endpoint, no downloadable assets)."
 msgstr ""
+"`airbus_oneatlas` (auparavant non fonctionnel : fausse authentification, "
+"point d'accès fictif, aucun actif téléchargeable)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:19
 msgid ""
 "`noaa_big_data` (now lists public S3 objects instead of calling a fictional "
 "REST endpoint)."
 msgstr ""
+"`noaa_big_data` (liste désormais des objets S3 publics au lieu d'appeler un "
+"point d'accès REST fictif)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:20
 msgid ""
@@ -84,22 +107,29 @@ msgid ""
 "`alaska_satellite_facility`, `inpe_cbers`, `jaxa_earth`, `isro_bhuvan`, "
 "`earth_explorer_additional`, `geoserver_generic`."
 msgstr ""
+"`digitalglobe`, `maxar_gbdx` (GBDX a été arrêté en 2022), "
+"`alaska_satellite_facility`, `inpe_cbers`, `jaxa_earth`, `isro_bhuvan`, "
+"`earth_explorer_additional`, `geoserver_generic`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:21
 msgid ""
 "Targeted fixes in `nasa_earthdata`, `nasa_earthdata_cloud`, `planet` and "
 "`sentinel_hub`."
 msgstr ""
+"Corrections ciblées dans `nasa_earthdata`, `nasa_earthdata_cloud`, `planet` "
+"et `sentinel_hub`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:22
 msgid ""
 "`esa_scihub` and `google_earth_engine` now fail with an explanatory message "
 "instead of crashing on a missing method."
 msgstr ""
+"`esa_scihub` et `google_earth_engine` échouent désormais avec un message "
+"explicatif au lieu de planter sur une méthode manquante."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:24
 msgid "Reliability and security"
-msgstr ""
+msgstr "Fiabilité et sécurité"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:26
 msgid ""
@@ -107,12 +137,18 @@ msgid ""
 "failure counts accumulate. See [Error handling](../reference/error-"
 "handling.md#circuit-breaker)."
 msgstr ""
+"Le disjoncteur (circuit breaker) est désormais invoqué, et les instances de "
+"fournisseurs persistent afin que les compteurs d'échecs s'accumulent. Voir "
+"[Gestion des erreurs](../reference/error-handling.md#circuit-breaker)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:27
 msgid ""
 "Default credential storage uses Fernet encryption instead of base64, with "
 "automatic migration. See [Security](../reference/security.md)."
 msgstr ""
+"Le stockage des identifiants par défaut utilise le chiffrement Fernet au "
+"lieu de base64, avec migration automatique. Voir "
+"[Sécurité](../reference/security.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:28
 msgid ""
@@ -120,14 +156,18 @@ msgid ""
 "processing actions and transfer files to local disk, S3 or GCS with optional"
 " webhook notification. See [Pipelines](../workflows/pipelines.md)."
 msgstr ""
+"Les étapes `process` et `export` des pipelines, auparavant des ébauches, "
+"exécutent désormais des actions de post-traitement et transfèrent des "
+"fichiers vers le disque local, S3 ou GCS avec notification webhook "
+"facultative. Voir [Pipelines](../workflows/pipelines.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:30
 msgid "Processing"
-msgstr ""
+msgstr "Traitement"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:32
 msgid "**Optical**"
-msgstr ""
+msgstr "**Optique**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:34
 msgid ""
@@ -135,6 +175,10 @@ msgid ""
 "which was clipped to a constant by a normalized-difference range. See "
 "[Spectral indices](../processing/optical/spectral-indices.md)."
 msgstr ""
+"Six indices spectraux de géologie et d'exploration minérale, et une "
+"correction pour `RVI`, qui était écrêté à une constante par une plage de "
+"différence normalisée. Voir [Indices "
+"spectraux](../processing/optical/spectral-indices.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:35
 msgid ""
@@ -142,10 +186,14 @@ msgid ""
 "and coherence-weighted InSAR fusion. See [Optical offset "
 "tracking](../processing/sar-insar/optical-offset-tracking.md)."
 msgstr ""
+"Suivi de décalage de pixels optiques, déformation horizontale avec "
+"protection contre les valeurs aberrantes, et fusion InSAR pondérée par la "
+"cohérence. Voir [Suivi de décalage optique](../processing/sar-insar/optical-"
+"offset-tracking.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:37
 msgid "**SAR and InSAR**"
-msgstr ""
+msgstr "**SAR et InSAR**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:39
 msgid ""
@@ -154,6 +202,10 @@ msgid ""
 "defect remains in `client.sar`; see [Known issues](../reference/known-"
 "issues.md#sar-coherence-fails-on-complex-input)."
 msgstr ""
+"Cinq pipelines SAR standard dans `pygeofetch.sar.pipelines`, et une "
+"correction de `pygeofetch.sar.SARProcessor.coherence()` pour les entrées SLC"
+" complexes. Le même défaut subsiste dans `client.sar` ; voir [Problèmes "
+"connus](../reference/known-issues.md#sar-coherence-fails-on-complex-input)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:40
 msgid ""
@@ -161,10 +213,13 @@ msgid ""
 "alignment, and topographic-residual co-estimation in SBAS. See "
 "[InSAR](../processing/sar-insar/insar.md)."
 msgstr ""
+"Garde-fous InSAR avancés : masquage géométrique du repliement (layover) et "
+"des ombres, alignement personnalisé du MNT, et co-estimation des résidus "
+"topographiques dans le SBAS. Voir [InSAR](../processing/sar-insar/insar.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:42
 msgid "**Multi-sensor**"
-msgstr ""
+msgstr "**Multi-capteurs**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:44
 msgid ""
@@ -174,6 +229,12 @@ msgid ""
 " as `pygeofetch multisensor` commands. See [Multi-sensor "
 "pipelines](../processing/multisensor.md)."
 msgstr ""
+"Cinq pipelines combinant deux capteurs : InSAR avec déplacement optique, "
+"cartographie des inondations SAR avec optique, détection de changement "
+"optique corrigée du terrain, volume par différence de MNT (DEM-of-"
+"Difference), et classification NDVI avec cohérence. Également disponibles "
+"sous forme de commandes `pygeofetch multisensor`. Voir [Pipelines multi-"
+"capteurs](../processing/multisensor.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:45
 msgid ""
@@ -182,10 +243,15 @@ msgid ""
 " as nodata, and solar position checked against an independent reference "
 "(0.19 degrees zenith, 0.49 degrees azimuth)."
 msgstr ""
+"Corrections issues de l'audit : gestion du nodata optique et MNT, aire "
+"géodésique pour le volume sur grilles géographiques, paramètres de décalage "
+"de la ligne de base 04.00 de Sentinel-2, classe 255 comme nodata, et "
+"position solaire vérifiée par rapport à une référence indépendante (0,19 "
+"degré en zénith, 0,49 degré en azimut)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:47
 msgid "Packaging and quality"
-msgstr ""
+msgstr "Packaging et qualité"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:49
 msgid ""
@@ -193,32 +259,43 @@ msgid ""
 "never published (`whitebox`, `whiteboxgui`, `sidecar`, `contextily`, "
 "`opensartoolkit`)."
 msgstr ""
+"Correction de cinq versions épinglées dans `pyproject.toml` qui faisaient "
+"référence à des versions jamais publiées (`whitebox`, `whiteboxgui`, "
+"`sidecar`, `contextily`, `opensartoolkit`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:50
 msgid ""
 "Resolved seven `mypy` errors in `scheduler.py`, `authenticator.py` and "
 "`viz/plot.py`, including a removed `matplotlib.cm.get_cmap` call."
 msgstr ""
+"Résolution de sept erreurs `mypy` dans `scheduler.py`, `authenticator.py` et"
+" `viz/plot.py`, dont un appel supprimé à `matplotlib.cm.get_cmap`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:52
 msgid "Documentation"
-msgstr ""
+msgstr "Documentation"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:54
 msgid ""
 "Restructured into Getting started, Data access, Processing, Workflows, "
 "Visualization, Reference and Project, with redirects from the old URLs."
 msgstr ""
+"Restructuration en Premiers pas, Accès aux données, Traitement, Workflows, "
+"Visualisation, Référence et Projet, avec redirections depuis les anciennes "
+"URL."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:55
 msgid "Switched the theme to Furo and added grid-card navigation."
 msgstr ""
+"Passage du thème à Furo et ajout d'une navigation par cartes en grille."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:56
 msgid ""
 "The CLI command reference is now generated from the code "
 "(`tools/gen_cli_reference.py`)."
 msgstr ""
+"La référence des commandes CLI est désormais générée à partir du code "
+"(`tools/gen_cli_reference.py`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:57
 msgid ""
@@ -227,3 +304,8 @@ msgid ""
 "Settings layer is not applied at runtime; `extract_archives` is unused; "
 "downloads are nested under `<destination>/<provider>/`."
 msgstr ""
+"Correction d'affirmations qui ne correspondaient pas au code : les "
+"identifiants ne sont pas lus depuis les variables d'environnement ; "
+"`--resume` ne reprend pas les fichiers partiels ; la couche Settings n'est "
+"pas appliquée à l'exécution ; `extract_archives` est inutilisé ; les "
+"téléchargements sont imbriqués sous `<destination>/<provider>/`."

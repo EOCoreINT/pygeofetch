@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr "Sécurité"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:3
 msgid "Credential storage"
-msgstr ""
+msgstr "Stockage des identifiants"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:5
 msgid ""
@@ -31,6 +31,9 @@ msgid ""
 " the `auth_backend` argument of `PyGeoFetch()` (not by configuration; see "
 "[Configuration](configuration.md)):"
 msgstr ""
+"pygeofetch stocke les identifiants des fournisseurs avec l'un des deux "
+"backends, sélectionné par l'argument `auth_backend` de `PyGeoFetch()` (et "
+"non par la configuration ; voir [Configuration](configuration.md)) :"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`auth_backend`"
@@ -38,15 +41,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "Storage"
-msgstr ""
+msgstr "Stockage"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "Notes"
-msgstr ""
+msgstr "Notes"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`\"file\"` (**default**)"
-msgstr ""
+msgstr "`\"file\"` (**par défaut**)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`~/.pygeofetch/credentials.enc`"
@@ -59,6 +62,10 @@ msgid ""
 "use and stored separately in `~/.pygeofetch/credentials.key`. Both files are"
 " created with mode `0600`."
 msgstr ""
+"Les champs sensibles (`password`, `api_key`, `token`, `secret_key`, "
+"`client_secret`) sont chiffrés avec Fernet. La clé est générée à la première"
+" utilisation et stockée séparément dans `~/.pygeofetch/credentials.key`. Les"
+" deux fichiers sont créés avec le mode `0600`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`\"keyring\"`"
@@ -66,13 +73,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "The operating-system keyring"
-msgstr ""
+msgstr "Le trousseau du système d'exploitation"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid ""
 "macOS Keychain, Windows Credential Manager, or the Linux Secret Service, "
 "through the `keyring` package."
 msgstr ""
+"macOS Keychain, Windows Credential Manager ou le Linux Secret Service, via "
+"le paquet `keyring`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:14
 msgid ""
@@ -81,6 +90,10 @@ msgid ""
 "sitting next to the encrypted data. Anyone who can read both files in "
 "`~/.pygeofetch/` can decrypt the file backend."
 msgstr ""
+"Préférez `PyGeoFetch(auth_backend=\"keyring\")` lorsqu'un trousseau est "
+"disponible, car il confie le stockage au système d'exploitation au lieu d'un"
+" fichier de clé placé à côté des données chiffrées. Quiconque peut lire les "
+"deux fichiers de `~/.pygeofetch/` peut déchiffrer le backend fichier."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:18
 msgid ""
@@ -88,10 +101,14 @@ msgid ""
 "migrated on first use; the old `credentials.json` is left in place, unused, "
 "and can be deleted."
 msgstr ""
+"Les versions antérieures se contentaient d'encoder le backend fichier en "
+"base64. Les utilisateurs existants sont migrés à la première utilisation ; "
+"l'ancien `credentials.json` est laissé en place, inutilisé, et peut être "
+"supprimé."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:28
 msgid "Credentials and environment variables"
-msgstr ""
+msgstr "Identifiants et variables d'environnement"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:30
 msgid ""
@@ -99,10 +116,14 @@ msgid ""
 "container, read your own secrets and pass them to `add_credentials()`. See "
 "[Authentication](../data-access/authentication.md)."
 msgstr ""
+"Les identifiants ne sont **pas** chargés depuis les variables "
+"d'environnement. En CI ou dans un conteneur, lisez vos propres secrets et "
+"transmettez-les à `add_credentials()`. Voir [Authentification](../data-"
+"access/authentication.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:34
 msgid "Exporting credentials"
-msgstr ""
+msgstr "Exportation des identifiants"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:36
 msgid ""
@@ -110,28 +131,38 @@ msgid ""
 "backup. That file contains secrets in plain text. Store it securely and "
 "delete it when done."
 msgstr ""
+"`pygeofetch auth export` écrit les identifiants stockés dans un fichier JSON"
+" à des fins de sauvegarde. Ce fichier contient des secrets en clair. "
+"Conservez-le en lieu sûr et supprimez-le lorsque vous avez terminé."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:39
 msgid "Network security"
-msgstr ""
+msgstr "Sécurité réseau"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:41
 msgid ""
 "Provider connections use TLS through `httpx` or `requests`. No code path "
 "sets `verify=False`."
 msgstr ""
+"Les connexions aux fournisseurs utilisent TLS via `httpx` ou `requests`. "
+"Aucun chemin de code ne définit `verify=False`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:42
 msgid ""
 "Standard `HTTP_PROXY` and `HTTPS_PROXY` environment variables are honoured "
 "by the HTTP clients."
 msgstr ""
+"Les variables d'environnement standard `HTTP_PROXY` et `HTTPS_PROXY` sont "
+"prises en compte par les clients HTTP."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:43
 msgid ""
 "Provider requests have per-request timeouts (60 seconds by default for "
 "searches; configurable with `search run --timeout`)."
 msgstr ""
+"Les requêtes aux fournisseurs ont des délais d'expiration par requête (60 "
+"secondes par défaut pour les recherches ; configurable avec `search run "
+"--timeout`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:45
 msgid ""
@@ -139,10 +170,13 @@ msgid ""
 "not read by the search and download code. See "
 "[Configuration](configuration.md#what-controls-behaviour)."
 msgstr ""
+"Les entrées `security.verify_ssl` et `proxy.*` du modèle de paramètres ne "
+"sont pas lues par le code de recherche et de téléchargement. Voir "
+"[Configuration](configuration.md#what-controls-behaviour)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:48
 msgid "Data integrity"
-msgstr ""
+msgstr "Intégrité des données"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:50
 msgid ""
@@ -150,26 +184,36 @@ msgid ""
 " the provider supplied, when there is one. A mismatch is logged and recorded"
 " on the result. See [Error handling](error-handling.md#download-resilience)."
 msgstr ""
+"Avec `verify_checksum=True`, un fichier téléchargé est comparé à la somme de"
+" contrôle fournie par le fournisseur, lorsqu'il y en a une. Une différence "
+"est consignée dans les journaux et enregistrée dans le résultat. Voir "
+"[Gestion des erreurs](error-handling.md#download-resilience)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:51
 msgid ""
 "Files that fail a post-download validation (for example truncation) are "
 "retried."
 msgstr ""
+"Les fichiers qui échouent à une validation après téléchargement (par exemple"
+" une troncature) sont retentés."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:52
 msgid "Existing files are skipped, not overwritten, unless `overwrite=True`."
 msgstr ""
+"Les fichiers existants sont ignorés, et non écrasés, sauf si "
+"`overwrite=True`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:53
 msgid ""
 "Archive extraction (`unzip`) rejects paths that would escape the destination"
 " directory."
 msgstr ""
+"L'extraction d'archives (`unzip`) rejette les chemins qui sortiraient du "
+"répertoire de destination."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:55
 msgid "Reporting vulnerabilities"
-msgstr ""
+msgstr "Signaler des vulnérabilités"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:57
 msgid ""
@@ -177,3 +221,7 @@ msgid ""
 "repository's `SECURITY.md`, or `CONTRIBUTING.md` if there is no separate "
 "policy, for the disclosure contact."
 msgstr ""
+"N'ouvrez pas de tickets GitHub publics pour des vulnérabilités de sécurité. "
+"Consultez le fichier `SECURITY.md` du dépôt, ou `CONTRIBUTING.md` s'il "
+"n'existe pas de politique distincte, pour connaître le contact de "
+"divulgation."

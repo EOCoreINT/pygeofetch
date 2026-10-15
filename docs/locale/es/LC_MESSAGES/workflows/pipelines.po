@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,9 @@ msgid ""
 "this page covers the first two, clearly separated; the other two each have "
 "their own dedicated page."
 msgstr ""
+"**Cuatro cosas distintas comparten la palabra «pipeline» en este código "
+"base**: esta página cubre las dos primeras, claramente separadas; las otras "
+"dos tienen cada una su propia página dedicada."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:9
 msgid ""
@@ -34,6 +37,10 @@ msgid ""
 " `process` → `export`, run ad-hoc or on a cron schedule via the CLI. Built "
 "for *acquisition* workflows."
 msgstr ""
+"**Orquestación de pipelines YAML** (más abajo): `search` → `filter` → "
+"`download` → `process` → `export`, ejecutada de forma ad hoc o con una "
+"programación cron mediante la CLI. Pensada para flujos de trabajo de "
+"*adquisición*."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:12
 msgid ""
@@ -43,6 +50,11 @@ msgid ""
 "(`.clip().reproject().ndvi().cog().run(...)`). Built for *processing* "
 "workflows on files you already have."
 msgstr ""
+"**El pipeline de procesamiento fluido de Python** (`client.pipeline(...)`, "
+"más abajo en esta página): un constructor encadenable sobre operaciones de "
+"preprocesamiento/índices/posprocesamiento/SAR "
+"(`.clip().reproject().ndvi().cog().run(...)`). Pensado para flujos de "
+"*procesamiento* sobre archivos que ya se tienen."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:17
 msgid ""
@@ -55,6 +67,14 @@ msgid ""
 "Processing](../processing/sar-insar/sar.md#five-standard-sar-processing-"
 "pipelines)."
 msgstr ""
+"**Los cinco pipelines de procesamiento SAR** (`pygeofetch.sar.pipelines`): "
+"flujos de trabajo SAR estándar de extremo a extremo "
+"(`standard_grd_preprocessing_pipeline`, `flood_mapping_pipeline`, "
+"`change_detection_pipeline`, `coherence_disturbance_pipeline`, "
+"`bright_target_detection_pipeline`), cada uno de los cuales orquesta las "
+"operaciones atómicas de `SARProcessor` en una cadena de análisis con nombre "
+"a través de varias *fechas del mismo sensor*. Véase [Procesamiento "
+"SAR](../processing/sar-insar/sar.md#five-standard-sar-processing-pipelines)."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:25
 msgid ""
@@ -63,6 +83,11 @@ msgid ""
 "DEM+DEM, optical+SAR) to do something neither sensor alone reliably does. "
 "See [Multi-Sensor Pipelines](../processing/multisensor.md)."
 msgstr ""
+"**Los cinco pipelines multisensor** (`pygeofetch.multisensor`): combinan dos"
+" *tipos de sensor diferentes* (InSAR+óptico, SAR+óptico, DEM+óptico, "
+"DEM+DEM, óptico+SAR) para lograr algo que ninguno de los dos sensores por sí"
+" solo hace de forma fiable. Véase [Pipelines "
+"multisensor](../processing/multisensor.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:31
 msgid ""
@@ -70,6 +95,9 @@ msgid ""
 " own sensor-combination physics rather than general-purpose acquisition or "
 "file-processing chains."
 msgstr ""
+"Ni el 3 ni el 4 están documentados en esta página, ya que ambos son "
+"específicos de la física de su propia combinación de sensores y no de "
+"cadenas generales de adquisición o de procesamiento de archivos."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:35
 msgid ""
@@ -77,12 +105,18 @@ msgid ""
 "over many files in parallel\" that isn't any of the above — see \"Batch "
 "Processing\" at the bottom of this page."
 msgstr ""
+"Hay también una quinta opción, más sencilla, para «ejecutar esta misma "
+"cadena de procesamiento sobre muchos archivos en paralelo» que no es ninguna"
+" de las anteriores; véase «Procesamiento por lotes» al final de esta página."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:39
 msgid ""
 "Define recurring satellite data workflows in a single YAML file. Schedule on"
 " cron, run ad-hoc, validate before committing, watch live logs."
 msgstr ""
+"Defina flujos de trabajo recurrentes de datos satelitales en un único "
+"archivo YAML. Prográmelos con cron, ejecútelos de forma ad hoc, valídelos "
+"antes de confirmarlos y observe los registros en vivo."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:45
 msgid ""
@@ -91,10 +125,15 @@ msgid ""
 "`export` copies files to local disk, uploads to S3 (`s3://...`) or GCS "
 "(`gs://...`), and can POST a webhook notification on completion."
 msgstr ""
+"**Pasos `process` y `export`.** `process` reutiliza el ejecutor de acciones "
+"que hay detrás de `DownloadOptions.post_process` y del indicador `--post-"
+"process` de la CLI. `export` copia archivos al disco local, los sube a S3 "
+"(`s3://...`) o GCS (`gs://...`), y puede enviar por POST una notificación "
+"webhook al terminar."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:50
 msgid "Overview"
-msgstr ""
+msgstr "Descripción general"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:52
 msgid ""
@@ -105,6 +144,13 @@ msgid ""
 "the results. You can run it once, run it on a cron schedule, or hand it to a"
 " colleague, and it behaves the same way each time."
 msgstr ""
+"Cuando la misma secuencia de pasos se ejecuta repetidamente, por ejemplo "
+"cada semana o para cada escena nueva, es mejor dejarla escrita que "
+"teclearla. Un pipeline YAML describe toda la adquisición: el área y las "
+"fechas de búsqueda, los filtros que se aplican, qué descargar, los pasos de "
+"procesamiento que se ejecutan y dónde se exportan los resultados. Puede "
+"ejecutarlo una vez, ejecutarlo con una programación cron o entregárselo a un"
+" colega, y se comporta igual cada vez."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:54
 msgid ""
@@ -118,22 +164,32 @@ msgid ""
 "instead, and batch processing applies a function across many files in "
 "parallel."
 msgstr ""
+"Un archivo de pipeline tiene unas cuantas secciones con nombre. El paso de "
+"búsqueda indica qué buscar, el paso de filtrado recorta los resultados, el "
+"paso de descarga los obtiene, los pasos de procesamiento aplican acciones de"
+" posprocesamiento o índices, y el paso de exportación envía los archivos "
+"terminados al disco local, S3 o GCS con una notificación webhook opcional. "
+"Parta de una de las plantillas integradas, valide el archivo antes de "
+"ejecutarlo y ejecútelo con la CLI. Para trabajar con archivos que ya se "
+"tienen, el pipeline de procesamiento de Python permite encadenar operaciones"
+" en código, y el procesamiento por lotes aplica una función a muchos "
+"archivos en paralelo."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:56
 msgid "Pipeline steps"
-msgstr ""
+msgstr "Pasos del pipeline"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Step"
-msgstr ""
+msgstr "Paso"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Config keys"
-msgstr ""
+msgstr "Claves de configuración"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Status"
-msgstr ""
+msgstr "Estado"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`search`"
@@ -145,7 +201,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Functional"
-msgstr ""
+msgstr "Funcional"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`filter`"
@@ -159,6 +215,7 @@ msgstr ""
 msgid ""
 "Functional — `expression` is evaluated against each result's `data` object"
 msgstr ""
+"Funcional: `expression` se evalúa contra el objeto `data` de cada resultado"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`download`"
@@ -175,10 +232,12 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "a comma-separated action string, or a list of action strings/dicts"
 msgstr ""
+"una cadena de acciones separadas por comas, o una lista de "
+"cadenas/diccionarios de acciones"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Functional — reproject/COG/NDVI/clip/etc."
-msgstr ""
+msgstr "Funcional: reproyección/COG/NDVI/recorte/etc."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`export`"
@@ -186,15 +245,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "`destination` (local path, `s3://`, or `gs://`), `format`, `notify`"
-msgstr ""
+msgstr "`destination` (ruta local, `s3://` o `gs://`), `format`, `notify`"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:43
 msgid "Functional — file transfer + optional webhook"
-msgstr ""
+msgstr "Funcional: transferencia de archivos + webhook opcional"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:66
 msgid "Example pipeline YAML"
-msgstr ""
+msgstr "Ejemplo de pipeline YAML"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:100
 msgid ""
@@ -204,6 +263,11 @@ msgid ""
 "`download` step's output and writes its result forward for `export` to pick "
 "up."
 msgstr ""
+"`process` acepta la misma sintaxis que `DownloadOptions.post_process` / el "
+"indicador `--post-process` de la CLI: una cadena separada por comas, una "
+"lista de cadenas o una lista de diccionarios `{action: ..., params: {...}}`."
+" Lee de la salida del paso `download` y escribe su resultado hacia adelante "
+"para que `export` lo recoja."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:106
 msgid ""
@@ -215,10 +279,18 @@ msgid ""
 "small JSON summary (`{\"exported\": N, \"total\": M, \"destination\": ...}`)"
 " once the transfer completes."
 msgstr ""
+"El `destination` de `export` decide automáticamente el método de "
+"transferencia: `s3://bucket/prefix/` sube mediante `boto3`, "
+"`gs://bucket/prefix/` sube mediante `google-cloud-storage` (no es una "
+"dependencia predeterminada; instálela por separado si necesita exportar a "
+"GCS), y cualquier otro valor se trata como un directorio local. `notify` "
+"acepta una cadena `webhook:URL` (o una lista de ellas) y envía por POST un "
+"pequeño resumen JSON (`{\"exported\": N, \"total\": M, \"destination\": "
+"...}`) una vez completada la transferencia."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:115
 msgid "Pipeline CLI commands"
-msgstr ""
+msgstr "Comandos de la CLI de pipelines"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:148
 msgid ""
@@ -226,10 +298,13 @@ msgid ""
 "Task Scheduler on Windows. Run `pygeofetch pipeline list-scheduled` to "
 "confirm registration."
 msgstr ""
+"`pipeline schedule` usa el demonio cron del sistema en Linux/macOS y el "
+"Programador de tareas de Windows en Windows. Ejecute `pygeofetch pipeline "
+"list-scheduled` para confirmar el registro."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:154
 msgid "Python Processing Pipeline — `client.pipeline(...)`"
-msgstr ""
+msgstr "Pipeline de procesamiento de Python: `client.pipeline(...)`"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:156
 msgid ""
@@ -241,6 +316,13 @@ msgid ""
 "Processing](../processing/sar-insar/sar.md) — for processing files you "
 "already have, not for search/download orchestration."
 msgstr ""
+"Una capacidad distinta de la orquestación YAML anterior: un **constructor "
+"encadenable** sobre las operaciones de procesamiento documentadas en [Motor "
+"de preprocesamiento](../processing/optical/preprocessing.md), [Índices "
+"espectrales](../processing/optical/spectral-indices.md), "
+"[Posprocesamiento](../processing/optical/postprocessing.md) y [Procesamiento"
+" SAR](../processing/sar-insar/sar.md), para procesar archivos que ya se "
+"tienen, no para orquestar búsqueda/descarga."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:180
 msgid ""
@@ -249,30 +331,40 @@ msgid ""
 " executes every queued step in order and returns a `PipelineRunResult` with "
 "per-step status, output paths, and timing."
 msgstr ""
+"La salida de cada paso alimenta directamente al siguiente como entrada: una "
+"cadena, no llamadas independientes que casualmente se escriben en secuencia."
+" `.run(input=...)` ejecuta en orden todos los pasos en cola y devuelve un "
+"`PipelineRunResult` con el estado, las rutas de salida y los tiempos de cada"
+" paso."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:186
 msgid "Every chainable step"
-msgstr ""
+msgstr "Todos los pasos encadenables"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:188
 msgid ""
 "Nearly every operation documented elsewhere on this site is available as a "
 "pipeline step, grouped by where it's documented in full:"
 msgstr ""
+"Casi todas las operaciones documentadas en otras partes de este sitio están "
+"disponibles como paso de pipeline, agrupadas según dónde se documentan por "
+"completo:"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "Category"
-msgstr ""
+msgstr "Categoría"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "Steps"
-msgstr ""
+msgstr "Pasos"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
 "Preprocessing ([Preprocessing "
 "Engine](../processing/optical/preprocessing.md))"
 msgstr ""
+"Preprocesamiento ([Motor de "
+"preprocesamiento](../processing/optical/preprocessing.md))"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
@@ -285,6 +377,8 @@ msgid ""
 "Spectral indices ([Spectral Indices](../processing/optical/spectral-"
 "indices.md))"
 msgstr ""
+"Índices espectrales ([Índices espectrales](../processing/optical/spectral-"
+"indices.md))"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
@@ -296,6 +390,8 @@ msgstr ""
 msgid ""
 "Postprocessing ([Postprocessing](../processing/optical/postprocessing.md))"
 msgstr ""
+"Posprocesamiento "
+"([Posprocesamiento](../processing/optical/postprocessing.md))"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid ""
@@ -305,7 +401,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "SAR ([SAR Processing](../processing/sar-insar/sar.md))"
-msgstr ""
+msgstr "SAR ([Procesamiento SAR](../processing/sar-insar/sar.md))"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:146
 msgid "`despeckle`, `calibrate`, `flood_map`, `coherence`"
@@ -320,10 +416,16 @@ msgid ""
 "queuing layer over those same implementations, not a separate "
 "reimplementation."
 msgstr ""
+"Cada método de paso acepta exactamente los mismos argumentos con nombre que "
+"su método correspondiente de "
+"`client.preprocess`/`client.indices`/`client.post`/ `client.sar` documentado"
+" en esas páginas (`.clip(bbox=...)`, `.ndvi(red=..., nir=...)`, etc.), ya "
+"que el constructor de pipelines es una capa fina de puesta en cola sobre "
+"esas mismas implementaciones, no una reimplementación aparte."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:205
 msgid "From YAML"
-msgstr ""
+msgstr "Desde YAML"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:216
 msgid ""
@@ -335,6 +437,13 @@ msgid ""
 "'from_yaml'`. Use `ProcessingPipeline.from_yaml(path, engine=client)`, as "
 "shown above."
 msgstr ""
+"**El ejemplo de uso del docstring de la clase no funciona.** El docstring de"
+" `ProcessingPipeline` muestra "
+"`client.pipeline.from_yaml(\"ndvi_workflow.yaml\").run()`. `from_yaml` es un"
+" método de clase (classmethod) de `ProcessingPipeline`, mientras que "
+"`client.pipeline` es un método, por lo que esa llamada lanza "
+"`AttributeError: 'function' object has no attribute 'from_yaml'`. Use "
+"`ProcessingPipeline.from_yaml(path, engine=client)`, como se muestra arriba."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:224
 msgid ""
@@ -345,10 +454,16 @@ msgid ""
 "`ProcessingPipeline.from_yaml()` won't produce the steps you expect, and "
 "vice versa."
 msgstr ""
+"Este formato YAML (una cadena de pasos de procesamiento para un archivo) "
+"**no es el mismo formato YAML** que el del pipeline de adquisición al "
+"principio de esta página (`search`/`filter`/`download`/`process`/`export` "
+"para una tarea cron recurrente). No los mezcle: un archivo del estilo "
+"`weekly-sentinel2.yaml` pasado a `ProcessingPipeline.from_yaml()` no "
+"producirá los pasos esperados, y viceversa."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:234
 msgid "Batch Processing — `client.batch`"
-msgstr ""
+msgstr "Procesamiento por lotes: `client.batch`"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:236
 msgid ""
@@ -356,6 +471,10 @@ msgid ""
 " than either pipeline concept above when there's no need for scheduling or "
 "acquisition steps, just parallel fan-out over a file list."
 msgstr ""
+"Para «ejecutar la misma cadena de procesamiento sobre muchos archivos, en "
+"paralelo»: más sencillo que cualquiera de los dos conceptos de pipeline "
+"anteriores cuando no se necesita programación ni pasos de adquisición, solo "
+"una distribución paralela sobre una lista de archivos."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:254
 msgid ""
@@ -367,10 +486,18 @@ msgid ""
 "file aborts the whole batch or is skipped so the rest still complete — "
 "default `\"skip\"`."
 msgstr ""
+"`chain` es una lista ordenada de tuplas `(step_type, kwargs)` (los mismos "
+"nombres de paso que en el constructor de pipeline fluido anterior), "
+"aplicadas a cada archivo de entrada de forma independiente (no encadenadas "
+"*entre* archivos, sino encadenadas *dentro* de cada archivo). `on_error` "
+"(mediante `client.batch.process(..., on_error=\"skip\")`, no expuesto en el "
+"atajo `client.batch_process(...)`) controla si un archivo que falla aborta "
+"todo el lote o se omite para que el resto se complete; el valor "
+"predeterminado es `\"skip\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:262
 msgid "Arbitrary custom functions"
-msgstr ""
+msgstr "Funciones personalizadas arbitrarias"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/pipelines.md:272
 msgid ""
@@ -378,3 +505,6 @@ msgid ""
 "**kwargs) -> result` — across a file list in parallel, for processing steps "
 "that don't already exist as a named pipeline step."
 msgstr ""
+"`apply()` ejecuta cualquier función propia, `(input_path, output_dir, "
+"**kwargs) -> result`, sobre una lista de archivos en paralelo, para pasos de"
+" procesamiento que aún no existen como paso de pipeline con nombre."

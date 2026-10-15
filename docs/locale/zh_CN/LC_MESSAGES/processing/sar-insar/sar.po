@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,8 @@ msgid ""
 "Pipelines](../multisensor.md) — flood mapping, vegetation disturbance, and "
 "InSAR+optical fusion all live there."
 msgstr ""
+"想把 SAR 与*不同*类型的传感器（光学、DEM）结合，而不仅仅是多个日期的 SAR？请参见 "
+"[多传感器流程](../multisensor.md)——洪水制图、植被扰动以及 InSAR+光学融合都在那里。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:14
 msgid ""
@@ -36,10 +38,11 @@ msgid ""
 " them. These are from-scratch implementations, not wrappers around an "
 "external SAR toolkit."
 msgstr ""
+"斑点滤波、辐射定标、洪水制图、干涉相干性，以及构建于其上的五条标准端到端处理流程。这些都是从零开始的实现，而不是对外部 SAR 工具包的封装。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:19
 msgid "Two `SARProcessor` classes exist"
-msgstr ""
+msgstr "存在两个 `SARProcessor` 类"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:22
 msgid ""
@@ -50,10 +53,15 @@ msgid ""
 " for example, only the standalone class reads complex SLC input correctly "
 "for `coherence()`."
 msgstr ""
+"`client.sar`（来自 `PyGeoFetch()`）是 "
+"`pygeofetch.processing.sar.SARProcessor`。`from pygeofetch.sar import "
+"SARProcessor` "
+"则是另一个独立的类（`pygeofetch.sar.processor.SARProcessor`），方法相同，但有自己的实现。它们并不保持同步：例如，只有独立类才能在"
+" `coherence()` 中正确读取复数 SLC 输入。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:28
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:30
 msgid ""
@@ -66,6 +74,8 @@ msgid ""
 "Sentinel-1 style data: speckle filtering, radiometric calibration, flood "
 "mapping from backscatter, and interferometric coherence."
 msgstr ""
+"雷达影像的表现与光学影像不同。它由卫星自身发射的信号测量，因此在夜间和云层之下也能工作，并且响应的是地表粗糙度、湿度和结构，而不是颜色。它还带有斑点（speckle），这是一种颗粒状噪声，源于雷达回波叠加的方式，在解译影像之前必须先降低这种噪声。pygeofetch"
+" 中的 SAR 工具涵盖了 Sentinel-1 类数据的标准初始步骤：斑点滤波、辐射定标、基于后向散射的洪水制图以及干涉相干性。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:32
 msgid ""
@@ -78,12 +88,14 @@ msgid ""
 "pipelines further down chain these steps for common tasks, so you can run a "
 "whole analysis with one call and still inspect the intermediate files."
 msgstr ""
+"一个典型的洪水处理流程展示了各部分如何配合。先用 Lee "
+"等滤波器对影像去斑，转换为分贝，再应用阈值，将把雷达波反射离开传感器、因而呈暗色的平静开阔水面与陆地区分开来。如果你还有事件发生之前的影像，那么两个日期之间的变化检测比单一阈值更可靠，因为它会忽略永久呈暗色的地表。下文的五条标准流程把这些步骤串联起来以完成常见任务，因此你只需一次调用即可运行整个分析，同时仍可检查中间文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid ""
 "Synthetic SAR scene before and after Lee filtering, and the resulting flood "
 "mask"
-msgstr ""
+msgstr "Lee 滤波前后的合成 SAR 场景，以及得到的洪水掩膜"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:37
 msgid ""
@@ -93,37 +105,40 @@ msgid ""
 "scenes are noisier and less uniform, so choose the threshold by inspecting "
 "your own data."
 msgstr ""
+"<span class=\"gf-tag synthetic\">Synthetic</span> 使用 `client.sar` "
+"处理的模拟雷达场景。左：含斑点的原始后向散射。中：经 Lee 滤波后。右：由 -15 dB "
+"阈值得到的洪水掩膜。真实场景噪声更大、更不均匀，因此请通过检查你自己的数据来选择阈值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:40
 msgid "`client.sar`: the built-in processor"
-msgstr ""
+msgstr "`client.sar`：内置处理器"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:53
 msgid ""
 "All four methods read via a block-by-block fallback, so they work directly "
 "on tiled/COG/compressed GeoTIFFs without a full-scene decode crashing on "
 "large files."
-msgstr ""
+msgstr "四个方法都通过逐块读取的回退方式进行读取，因此可直接处理分块/COG/压缩的 GeoTIFF，不会因对大文件进行整景解码而崩溃。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:57
 msgid "Despeckling"
-msgstr ""
+msgstr "去斑"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Filter"
-msgstr ""
+msgstr "滤波器"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Real algorithm"
-msgstr ""
+msgstr "实际算法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"lee\"` (default)"
-msgstr ""
+msgstr "`\"lee\"`（默认）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Classic adaptive Lee filter — local mean/variance weighting"
-msgstr ""
+msgstr "经典自适应 Lee 滤波——基于局部均值/方差加权"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"enhanced_lee\"`"
@@ -131,7 +146,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Coefficient-of-variation-thresholded Lee, sharper edge preservation"
-msgstr ""
+msgstr "基于变异系数阈值的 Lee 滤波，边缘保持更锐利"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"frost\"`"
@@ -139,7 +154,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Exponentially-weighted local averaging, adaptive to local CV"
-msgstr ""
+msgstr "指数加权的局部平均，可自适应局部变异系数"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"gamma\"`"
@@ -147,7 +162,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Gamma-MAP-style adaptive filter"
-msgstr ""
+msgstr "Gamma-MAP 风格的自适应滤波器"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "`\"boxcar\"`"
@@ -155,7 +170,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:34
 msgid "Plain uniform-window averaging (fastest, least edge-preserving)"
-msgstr ""
+msgstr "简单的均匀窗口平均（最快，边缘保持能力最弱）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:71
 msgid ""
@@ -163,16 +178,18 @@ msgid ""
 "variance threshold — set it to the real number of looks in your input if "
 "known; the default of 1 is conservative (least aggressive smoothing)."
 msgstr ""
+"`window` 必须为奇数（默认 5）。`num_looks` 影响 Lee/Gamma "
+"噪声方差阈值——如果已知，请将其设为输入数据的真实视数；默认值 1 较为保守（平滑最不激进）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:76
 msgid "Radiometric calibration"
-msgstr ""
+msgstr "辐射定标"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:82
 msgid ""
 "Converts SAR digital numbers (DN) to backscatter coefficients: `sigma0 = DN²"
 " / A²`."
-msgstr ""
+msgstr "将 SAR 数字量化值（DN）转换为后向散射系数：`sigma0 = DN² / A²`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:87
 msgid ""
@@ -186,14 +203,19 @@ msgid ""
 "absolute, cross-scene radiometric work. That would need the Sentinel-1 "
 "calibration vectors and a terrain model."
 msgstr ""
+"**局限性。** 定标常数 `A` 固定为 `1.0`（恒等）。它不是从 Sentinel-1 标注 XML "
+"中读取的逐景定标查找表，而绝对辐射精度需要这样的查找表。`gamma0` 和 `beta0` 使用**固定的名义入射角**（38°），而不是来自 DEM"
+" "
+"的逐像元局部入射角。这对于单景内的*相对*比较是足够的（洪水检测和变化检测，下文每条流程都是这样使用它的）。但对于绝对的、跨场景的辐射处理则**不够**，那需要"
+" Sentinel-1 定标向量和地形模型。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:95
 msgid "Flood mapping"
-msgstr ""
+msgstr "洪水制图"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:104
 msgid "Two modes:"
-msgstr ""
+msgstr "两种模式："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:105
 msgid ""
@@ -201,42 +223,44 @@ msgid ""
 "flags water (open water is a near-specular reflector at typical incidence "
 "angles, so it returns very little energy to the sensor)."
 msgstr ""
+"**简单阈值**（无 `reference`）：后向散射低于 `threshold` dB "
+"的像元被标记为水体（在典型入射角下，开阔水面近似镜面反射体，因此返回给传感器的能量很少）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:108
 msgid ""
 "**Change detection** (`reference` given): compares pre/post-event "
 "backscatter, sensitivity `abs(threshold * 0.5)`."
-msgstr ""
+msgstr "**变化检测**（给定 `reference`）：比较事件前后的后向散射，灵敏度为 `abs(threshold * 0.5)`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:111
 msgid "`detect_direction` matters more than it might look:"
-msgstr ""
+msgstr "`detect_direction` 比看上去更重要："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Value"
-msgstr ""
+msgstr "取值"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Detects"
-msgstr ""
+msgstr "检测对象"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Why"
-msgstr ""
+msgstr "原因"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "`\"decrease\"` (default)"
-msgstr ""
+msgstr "`\"decrease\"`（默认）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Backscatter dropping"
-msgstr ""
+msgstr "后向散射下降"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid ""
 "The correct signature for **open water** — a newly-flooded field becomes a "
 "smooth, near-specular surface"
-msgstr ""
+msgstr "**开阔水面**的正确特征——新近被淹没的农田变成光滑的近镜面表面"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "`\"increase\"`"
@@ -244,14 +268,14 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Backscatter rising"
-msgstr ""
+msgstr "后向散射上升"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid ""
 "The correct signature for **flooded urban/built-up areas** — water at a "
 "building's base creates a double-bounce (ground-wall-sensor) reflection "
 "stronger than dry ground alone"
-msgstr ""
+msgstr "**被淹没的城市/建成区**的正确特征——建筑物基部的积水会产生二面角（地面—墙体—传感器）反射，比单纯的干燥地面更强"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "`\"both\"`"
@@ -259,18 +283,18 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid "Either direction"
-msgstr ""
+msgstr "任一方向"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:85
 msgid ""
 "The robust choice when an AOI mixes open water and dense urban flooding — a "
 "one-directional threshold **structurally cannot** detect the other pattern "
 "at all, not just detect it poorly"
-msgstr ""
+msgstr "当 AOI 中既有开阔水面又有密集城市内涝时，这是稳健的选择——单向阈值**在结构上完全无法**检测另一种模式，而不仅仅是检测效果差"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:119
 msgid "flood_map() alone is not a complete workflow"
-msgstr ""
+msgstr "仅有 flood_map() 并不是完整的工作流"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:122
 msgid ""
@@ -279,10 +303,12 @@ msgid ""
 "[`flood_mapping_pipeline`](#flood_mapping_pipeline) below, which handles the"
 " prerequisite chain for you."
 msgstr ""
+"直接对原始 DN 值调用 `flood_map()` 会得到较差且不可靠的结果——它的 dB 刻度阈值假定输入已经过定标。请参见下文的 "
+"[`flood_mapping_pipeline`](#flood_mapping_pipeline)，它会为你处理所需的前置步骤链。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:127
 msgid "Interferometric coherence"
-msgstr ""
+msgstr "干涉相干性"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:133
 msgid ""
@@ -292,10 +318,13 @@ msgid ""
 "acquisition dates; low coherence indicates change or temporal decorrelation "
 "(vegetation growth, surface disturbance, etc.)."
 msgstr ""
+"公式：`coherence = |<s1·conj(s2)>| / sqrt(<|s1|^2><|s2|^2>)`，取值范围 `[0, "
+"1]`。两个输入都必须是**已配准的复数 SLC** 栅格（`complex64` "
+"GeoTIFF）。高相干性表示两个采集日期之间地表保持稳定；低相干性表示发生了变化或时间去相干（植被生长、地表扰动等）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:140
 msgid "`client.sar.coherence()` fails on complex SLC input"
-msgstr ""
+msgstr "`client.sar.coherence()` 在复数 SLC 输入上会失败"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:143
 msgid ""
@@ -307,6 +336,11 @@ msgid ""
 "`rasterio` and works. Until `client.sar` is fixed, use the standalone class "
 "for coherence:"
 msgstr ""
+"在当前代码中，`client.sar.coherence()`（因此也包括 `pygeofetch sar "
+"coherence`）通过一个共享加载器读取复数波段，该加载器会将其转换为实数 `float32`，丢弃相位，随后以 `ValueError: "
+"cannot reshape array of size ... into shape ...` 失败。独立类 "
+"`pygeofetch.sar.SARProcessor` 上的同名方法则直接使用 `rasterio` 读取复数波段，可以正常工作。在 "
+"`client.sar` 修复之前，请使用独立类来计算相干性："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:155
 msgid ""
@@ -316,10 +350,14 @@ msgid ""
 "pipeline. See [Known issues](../../reference/known-issues.md#sar-coherence-"
 "fails-on-complex-input)."
 msgstr ""
+"相干性公式本身位于 "
+"`pygeofetch.utils.sar_math.estimate_interferometric_coherence`，由独立类和多传感器植被扰动流程共用。参见"
+" [已知问题](../../reference/known-issues.md#sar-coherence-fails-on-complex-"
+"input)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:160
 msgid "Five standard SAR processing pipelines"
-msgstr ""
+msgstr "五条标准 SAR 处理流程"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:162
 msgid ""
@@ -329,12 +367,15 @@ msgid ""
 "wrong (e.g. flood mapping on raw, uncalibrated DN gives poor results, a "
 "common mistake)."
 msgstr ""
+"`pygeofetch.sar.pipelines` "
+"将上述原子操作编排为五条广泛使用的端到端工作流——因为要记住并正确排列每种分析实际所需的前置步骤很容易出错（例如，对未经定标的原始 DN "
+"进行洪水制图会得到较差的结果，这是一个常见的错误）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:168
 msgid ""
 "Every pipeline takes a `pygeofetch.sar.SARProcessor` instance (the "
 "standalone class, not `client.sar`)."
-msgstr ""
+msgstr "每条流程都接受一个 `pygeofetch.sar.SARProcessor` 实例（即独立类，而不是 `client.sar`）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:184
 msgid ""
@@ -343,6 +384,9 @@ msgid ""
 "useful for inspecting exactly what each step produced), and `metadata` "
 "(pipeline-specific extras, like a change mask path or pixel counts)."
 msgstr ""
+"每条流程都返回一个 `PipelineResult`：`success`、`final_output`、`stages`（每个中间 "
+"`ProcessingResult`，而不仅仅是最终结果——便于精确检查每一步产生了什么），以及 "
+"`metadata`（流程特有的附加信息，如变化掩膜路径或像元计数）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:190
 msgid "`standard_grd_preprocessing_pipeline`"
@@ -358,6 +402,10 @@ msgid ""
 "additive once log-converted, which Lee/boxcar-style filters (designed for "
 "additive noise) handle better."
 msgstr ""
+"几乎所有 SAR 分析都以此开始的标准 Sentinel-1 GRD 处理链：先定标（DN → "
+"sigma0/gamma0/beta0），再去斑——顺序不能颠倒。对未经定标的原始 DN 去斑，会把后向散射与传感器原始数字量化值的缩放混在一起；而在 "
+"dB 空间中滤波（定标的默认设置）是标准做法，因为斑点噪声在取对数后更接近加性噪声，而 Lee/boxcar "
+"类滤波器（针对加性噪声设计）能更好地处理这种噪声。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:208
 msgid "`flood_mapping_pipeline`"
@@ -369,6 +417,8 @@ msgid ""
 "if doing change-based detection) before running `flood_map()` — enforcing "
 "the prerequisite chain rather than leaving it to the caller."
 msgstr ""
+"在运行 `flood_map()` "
+"之前，先对洪水事件影像（以及事件前参考影像，如果进行基于变化的检测）进行定标和去斑——强制执行前置步骤链，而不是留给调用者自己处理。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:223
 msgid "`change_detection_pipeline`"
@@ -382,13 +432,15 @@ msgid ""
 "log-ratio change metric reduces to a simple subtraction (`post_dB - pre_dB`)"
 " — standard math, not an approximation."
 msgstr ""
+"标准的双时相振幅变化检测：对两个日期都进行定标和去斑，然后标记后向散射变化超过 `change_threshold_db` "
+"的像元。由于两幅定标后的栅格都已处于 dB 单位，对数比变化度量就简化为一次减法（`post_dB - pre_dB`）——这是标准数学，而不是近似。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:232
 msgid ""
 "General-purpose beyond flood mapping: burn-scar mapping, deforestation and "
 "clear-cut detection, construction/urban change, and disaster damage "
 "assessment (collapsed structures show a sharp backscatter change)."
-msgstr ""
+msgstr "适用范围不限于洪水制图：火烧迹地制图、森林砍伐和皆伐检测、建设/城市变化，以及灾害损失评估（倒塌的建筑会表现出明显的后向散射变化）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:243
 msgid "`coherence_disturbance_pipeline`"
@@ -404,6 +456,9 @@ msgid ""
 "deforestation and selective logging (vegetation disturbance decorrelates "
 "radar phase almost immediately), and general surface disturbance monitoring."
 msgstr ""
+"计算两个已配准 SLC 采集之间的干涉相干性，然后将低相干像元标记为扰动掩膜。与上文的 `change_detection_pipeline` "
+"互补：那条流程需要 GRD（振幅）数据并检测后向散射幅度变化；这条流程需要 "
+"SLC（保留相位）数据并检测相位稳定性的丧失。常见用途：森林砍伐和选择性采伐（植被扰动几乎会立即使雷达相位去相干），以及一般性的地表扰动监测。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:260
 msgid "`bright_target_detection_pipeline`"
@@ -419,6 +474,8 @@ msgid ""
 "larger background window (excluding the guard region so a target's own "
 "bright halo doesn't inflate its own background estimate)."
 msgstr ""
+"标准的 CA-"
+"CFAR（单元平均恒虚警率）亮目标检测：先定标——但有意**不去斑**，因为斑点滤波会恰好抹平这条流程所要寻找的小而亮的目标——然后标记明显亮于其局部背景的像元，背景由保护窗口与更大背景窗口之间的环形像元估计（排除保护区域，这样目标自身的亮晕不会抬高它自己的背景估计）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:271
 msgid ""
@@ -428,10 +485,11 @@ msgid ""
 "equipment) — a real, complementary technique to optical detection for "
 "conditions optical can't cover: cloud cover and night-time passes."
 msgstr ""
+"常见用途：舰船检测（海上监视、非法捕捞监测），以及更广泛地说，在相对均匀的背景上任何小而具有强雷达反射性的物体（金属结构、车辆、设备）——对于光学无法覆盖的条件（云层覆盖和夜间过境），这是对光学检测真实且互补的技术。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:287
 msgid "The standalone `pygeofetch.sar.SARProcessor`"
-msgstr ""
+msgstr "独立的 `pygeofetch.sar.SARProcessor`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:298
 msgid ""
@@ -439,10 +497,12 @@ msgid ""
 "`calibrate`, `flood_map`, `coherence`) and is what the five pipelines above "
 "expect."
 msgstr ""
+"`SARProcessor` 具有与 `client.sar` "
+"相同的方法（`despeckle`、`calibrate`、`flood_map`、`coherence`），并且是上述五条流程所需要的类。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:301
 msgid "The `backend=` parameter is not implemented"
-msgstr ""
+msgstr "`backend=` 参数尚未实现"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/sar.md:304
 msgid ""
@@ -456,3 +516,10 @@ msgid ""
 "workflow are therefore not reachable through the public API. See [Known "
 "issues](../../reference/known-issues.md#sar-backends-are-not-wired-in)."
 msgstr ""
+"`pygeofetch.sar` 模块的文档字符串以及 `sar` 和 `ost` "
+"额外依赖项描述了一种可插拔后端：`SARProcessor(backend=\"sarxarray\")` 或 "
+"`SARProcessor(backend=\"ost\")`。在当前代码中，`SARProcessor` 没有 `__init__`，因此 "
+"`SARProcessor(backend=\"sarxarray\")` 会抛出 `TypeError: SARProcessor() takes "
+"no arguments`。辅助模块 `pygeofetch/sar/_native.py`、`_sarxarray.py` 和 `_ost.py` "
+"存在，但没有任何地方导入它们。因此，地形校正（`terrain_correct`）和 `sarxarray` 工作流无法通过公共 API 访问。参见 "
+"[已知问题](../../reference/known-issues.md#sar-backends-are-not-wired-in)。"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,10 +27,13 @@ msgid ""
 "selection and an optional post-processing chain. To avoid downloading whole "
 "scenes at all, see [Streaming](streaming.md)."
 msgstr ""
+"تنزيلات متوازية وقابلة للاستئناف مع إعادة المحاولة والتحقق من مجاميع التحقق "
+"واختيار النطاقات وسلسلة معالجة لاحقة اختيارية. لتجنّب تنزيل المشاهد كاملة "
+"أصلًا، راجع [البثّ](streaming.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:7
 msgid "Overview"
-msgstr ""
+msgstr "نظرة عامة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:9
 msgid ""
@@ -41,6 +44,11 @@ msgid ""
 "succeeded. Because the result list matches the input list, you can always "
 "tell which scenes arrived and which need another attempt."
 msgstr ""
+"التنزيل هو المرحلة التي تتحول فيها نتائج البحث إلى ملفات. تمرّر المشاهد التي"
+" اخترتها ومجلد وجهة، واختياريًا مجموعة من الخيارات، فيجلبها pygeofetch "
+"بالتوازي، ويعيد محاولة ما يفشل، ويستطيع استئناف العمل الذي انقطع، ويُبلغ "
+"بنتيجة لكل مشهد سواء نجح أم لا. ولأن قائمة النتائج تطابق قائمة المدخلات، "
+"يمكنك دائمًا معرفة المشاهد التي وصلت وتلك التي تحتاج إلى محاولة أخرى."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:11
 msgid ""
@@ -53,26 +61,36 @@ msgid ""
 "under the destination in a folder per provider, and archives are not "
 "unpacked unless you ask."
 msgstr ""
+"يمكن تصغير معظم التنزيلات كثيرًا بطلب ما تحتاج إليه فقط. فاختيار النطاقات، "
+"للمزوّدين الذين يقدّمون ملفًا لكل نطاق، يتجنّب نقل بقية المشهد، ويمكن لسلسلة"
+" المعالجة اللاحقة فك الضغط أو إعادة الإسقاط أو ضغط الملفات فور وصولها. وإذا "
+"كنت تحتاج إلى منطقة صغيرة فقط، فإن [البثّ](streaming.md) يقرأ تلك المنطقة "
+"فحسب ويتجاوز تنزيل الملفات كاملة. خطّط لبنية المجلدات على القرص: تُكتب "
+"الملفات تحت الوجهة في مجلد لكل مزوّد، ولا تُفك الأرشيفات ما لم تطلب ذلك."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:13
 msgid "Quick examples"
-msgstr ""
+msgstr "أمثلة سريعة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:33
 msgid ""
 "The full list of options is in the [command reference](../reference/cli-"
 "commands.md#download-run)."
 msgstr ""
+"القائمة الكاملة للخيارات في [مرجع الأوامر](../reference/cli-"
+"commands.md#download-run)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:35
 msgid "Where files are written"
-msgstr ""
+msgstr "أين تُكتب الملفات"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:37
 msgid ""
 "`download()` writes each scene into a **sub-folder named after its "
 "provider**, below the destination you give it:"
 msgstr ""
+"تكتب `download()` كل مشهد في **مجلد فرعي باسم مزوّده**، أسفل الوجهة التي "
+"تحدّدها:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:49
 msgid ""
@@ -80,30 +98,36 @@ msgid ""
 "`data/raw/sentinel2/<provider>/...`, never files directly in `sentinel2/`. "
 "Code that looks for downloads should search recursively:"
 msgstr ""
+"لذا فإن `client.download(results, destination=\"data/raw/sentinel2\")` ينتج "
+"`data/raw/sentinel2/<provider>/...`، ولا ينتج أبدًا ملفات مباشرة في "
+"`sentinel2/`. ينبغي للشيفرة التي تبحث عن التنزيلات أن تبحث بشكل تكراري:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:60
 msgid ""
 "The result objects carry the exact paths: `DownloadResult.output_path` and "
 "`DownloadResult.output_paths`. Use those when you have them."
 msgstr ""
+"تحمل كائنات النتائج المسارات الدقيقة: `DownloadResult.output_path` "
+"و`DownloadResult.output_paths`. استخدمها متى توفرت."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:63
 msgid "Archives"
-msgstr ""
+msgstr "الأرشيفات"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:65
 msgid ""
 "Providers package data differently, and pygeofetch downloads what the "
 "provider serves:"
 msgstr ""
+"يعبّئ المزوّدون البيانات بطرق مختلفة، وينزّل pygeofetch ما يقدّمه المزوّد:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "Provider"
-msgstr ""
+msgstr "المزوّد"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "Delivered as"
-msgstr ""
+msgstr "يُسلَّم على هيئة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`copernicus`"
@@ -111,7 +135,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One `.SAFE.zip` per Sentinel scene"
-msgstr ""
+msgstr "ملف `.SAFE.zip` واحد لكل مشهد Sentinel"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`usgs`"
@@ -119,7 +143,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One `.tar` per Landsat scene"
-msgstr ""
+msgstr "ملف `.tar` واحد لكل مشهد Landsat"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`planetary_computer`, `element84`"
@@ -127,7 +151,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One file per band"
-msgstr ""
+msgstr "ملف واحد لكل نطاق"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "`opentopography`"
@@ -135,7 +159,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:0
 msgid "One GeoTIFF clipped to your bounding box"
-msgstr ""
+msgstr "ملف GeoTIFF واحد مقصوص على مربعك الحدودي"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:74
 msgid ""
@@ -144,38 +168,49 @@ msgid ""
 "archive file and replaces the entries in `output_paths` with the extracted "
 "files:"
 msgstr ""
+"الأرشيفات **لا تُستخرج تلقائيًا**. أضف إجراء المعالجة اللاحقة `unzip`، الذي "
+"يستخرج أرشيفات `.zip` و`.tar` بجوار ملف الأرشيف ويستبدل المدخلات في "
+"`output_paths` بالملفات المستخرجة:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:90
 msgid ""
 "`DownloadOptions.extract_archives` exists as a field but is not read by any "
 "code, so setting it has no effect. Use the `unzip` action."
 msgstr ""
+"الحقل `DownloadOptions.extract_archives` موجود لكن لا تقرؤه أي شيفرة، لذا "
+"فإن ضبطه لا أثر له. استخدم الإجراء `unzip`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:94
 msgid "Resuming"
-msgstr ""
+msgstr "الاستئناف"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:96
 msgid ""
 "`--resume` is on by default. It means **skip scenes that are already "
 "complete**, not \"continue a partial file\":"
 msgstr ""
+"الخيار `--resume` مفعّل افتراضيًا. ومعناه **تخطَّ المشاهد المكتملة أصلًا**، "
+"وليس «أكمل ملفًا جزئيًا»:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:99
 msgid ""
 "Before downloading an item, pygeofetch checks whether a file already exists "
 "at the destination, and validates it."
 msgstr ""
+"قبل تنزيل عنصر، يتحقق pygeofetch مما إذا كان ملف موجودًا أصلًا في الوجهة، "
+"ويتحقق من صلاحيته."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:101
 msgid "A valid file is skipped and reported as complete."
-msgstr ""
+msgstr "يُتخطّى الملف الصالح ويُبلَّغ عنه على أنه مكتمل."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:102
 msgid ""
 "A missing, truncated or corrupt file is downloaded again **from the first "
 "byte**. HTTP range requests are not used."
 msgstr ""
+"يُنزَّل الملف المفقود أو المبتور أو التالف من جديد **من البايت الأول**. ولا "
+"تُستخدم طلبات نطاق HTTP."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:105
 msgid ""
@@ -183,32 +218,36 @@ msgid ""
 "re-fetching finished scenes. It does not save progress on a single large "
 "file that was cut off."
 msgstr ""
+"يتيح ذلك إعادة تشغيل الأمر نفسه بأمان بعد انقطاع دون إعادة جلب المشاهد "
+"المكتملة. لكنه لا يحفظ التقدم في ملف كبير واحد انقطع تنزيله."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:108
 msgid "Failure handling"
-msgstr ""
+msgstr "معالجة الإخفاقات"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:110
 msgid ""
 "Every item in the batch is always attempted. `--on-failure` controls what "
 "happens after:"
 msgstr ""
+"تتم دائمًا محاولة كل عنصر في الدفعة. ويتحكم `--on-failure` فيما يحدث بعد "
+"ذلك:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Value"
-msgstr ""
+msgstr "القيمة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Behaviour"
-msgstr ""
+msgstr "السلوك"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`skip` (default)"
-msgstr ""
+msgstr "`skip` (الافتراضي)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Continue and report failures in the summary."
-msgstr ""
+msgstr "المتابعة والإبلاغ عن الإخفاقات في الملخص."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`abort`"
@@ -219,6 +258,8 @@ msgid ""
 "After all items are attempted, exit with status 1 if any failed. Use it to "
 "fail a script or CI job."
 msgstr ""
+"بعد محاولة جميع العناصر، الخروج بالحالة 1 إذا فشل أي منها. استخدمه لإفشال "
+"سكربت أو مهمة CI."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`retry`"
@@ -229,32 +270,36 @@ msgid ""
 "Same as `skip`. Per-item retries with exponential backoff already happen "
 "through `--retry N`."
 msgstr ""
+"مثل `skip`. تحدث إعادة المحاولة لكل عنصر مع تراجع أُسّي أصلًا عبر `--retry "
+"N`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:118
 msgid "Band selection"
-msgstr ""
+msgstr "اختيار النطاقات"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:120
 msgid ""
 "Choosing bands before download is the largest saving for providers that "
 "serve one file per band. Sentinel-2 examples:"
 msgstr ""
+"اختيار النطاقات قبل التنزيل هو أكبر توفير للمزوّدين الذين يقدّمون ملفًا لكل "
+"نطاق. أمثلة Sentinel-2:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Bands"
-msgstr ""
+msgstr "النطاقات"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Purpose"
-msgstr ""
+msgstr "الغرض"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Resolution"
-msgstr ""
+msgstr "الدقة المكانية"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Approx. size per scene"
-msgstr ""
+msgstr "الحجم التقريبي لكل مشهد"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`B02,B03,B04`"
@@ -262,7 +307,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "RGB"
-msgstr ""
+msgstr "RGB"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "10 m"
@@ -278,7 +323,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "True-colour composite"
-msgstr ""
+msgstr "مركّب بالألوان الحقيقية"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "200 MB"
@@ -290,7 +335,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "NDVI inputs"
-msgstr ""
+msgstr "مدخلات NDVI"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "100 MB"
@@ -302,7 +347,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "RGB + NIR"
-msgstr ""
+msgstr "RGB + NIR"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`B11,B12`"
@@ -310,7 +355,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "SWIR (burn scars, soil moisture, mineral indices)"
-msgstr ""
+msgstr "SWIR (الندوب الناتجة عن الحرائق، ورطوبة التربة، ومؤشرات المعادن)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "20 m"
@@ -326,7 +371,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Scene classification (cloud mask)"
-msgstr ""
+msgstr "تصنيف المشهد (قناع السحب)"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "20 MB"
@@ -338,7 +383,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "All data bands"
-msgstr ""
+msgstr "جميع نطاقات البيانات"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "10/20/60 m"
@@ -355,28 +400,33 @@ msgid ""
 "warning and downloads **all** assets. [Streaming](streaming.md) treats the "
 "same situation as an error."
 msgstr ""
+"يقدّم Copernicus ملف zip، لذا فإن اختيار النطاقات لا يقلّل ما يُنقل هناك. "
+"إذا لم يطابق اسم نطاق أي شيء، تسجّل `download()` تحذيرًا وتنزّل **جميع** "
+"الأصول. أما [البثّ](streaming.md) فيعامل الحالة نفسها على أنها خطأ."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:137
 msgid "Post-processing actions"
-msgstr ""
+msgstr "إجراءات المعالجة اللاحقة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:139
 msgid ""
 "Actions run in order after each file is downloaded. Syntax is `name` or "
 "`name:argument`."
 msgstr ""
+"تعمل الإجراءات بالترتيب بعد تنزيل كل ملف. الصيغة هي `name` أو "
+"`name:argument`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Action"
-msgstr ""
+msgstr "الإجراء"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Syntax"
-msgstr ""
+msgstr "الصيغة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Description"
-msgstr ""
+msgstr "الوصف"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`unzip`"
@@ -384,7 +434,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Extract ZIP and TAR archives."
-msgstr ""
+msgstr "استخراج أرشيفات ZIP وTAR."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`reproject`"
@@ -396,7 +446,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Reproject to a target CRS."
-msgstr ""
+msgstr "إعادة الإسقاط إلى نظام إحداثيات مرجعي (CRS) هدف."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`compress`"
@@ -408,7 +458,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "GeoTIFF compression (`lzw`, `deflate`, `zstd`)."
-msgstr ""
+msgstr "ضغط GeoTIFF (`lzw` و`deflate` و`zstd`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`cog`"
@@ -416,7 +466,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Convert to Cloud-Optimized GeoTIFF."
-msgstr ""
+msgstr "التحويل إلى Cloud-Optimized GeoTIFF."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`clip`"
@@ -428,7 +478,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Clip to a polygon."
-msgstr ""
+msgstr "القص على مضلّع."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`resample`"
@@ -440,7 +490,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Resample to a resolution in metres."
-msgstr ""
+msgstr "إعادة التقطيع إلى دقة مكانية بالأمتار."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`merge`"
@@ -448,7 +498,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Mosaic overlapping scenes."
-msgstr ""
+msgstr "تجميع المشاهد المتداخلة في فسيفساء."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`ndvi`, `ndwi`, ..."
@@ -460,7 +510,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "Compute a single-date index from the downloaded bands."
-msgstr ""
+msgstr "حساب مؤشر لتاريخ واحد من النطاقات المنزَّلة."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid "`cloud_mask`"
@@ -469,7 +519,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:89
 msgid ""
 "Mask clouds using the downloaded `SCL` band. Include `SCL` in `--bands`."
-msgstr ""
+msgstr "إخفاء السحب باستخدام النطاق المنزَّل `SCL`. أدرج `SCL` في `--bands`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:153
 msgid ""
@@ -477,10 +527,13 @@ msgid ""
 "raises an error listing the supported ones. `dNBR` needs a before and an "
 "after scene, so it cannot run as a single-scene action."
 msgstr ""
+"تحتاج معظم الإجراءات إلى الإضافة `geo` (`rasterio`). يؤدي اسم إجراء غير "
+"معروف إلى إثارة خطأ يسرد الإجراءات المدعومة. يحتاج `dNBR` إلى مشهد قبل ومشهد"
+" بعد، لذا لا يمكن تشغيله كإجراء لمشهد واحد."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:157
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:192
 msgid ""
@@ -490,6 +543,10 @@ msgid ""
 "`retry_attempts`, `bandwidth_limit_mbps` as a float in Mbps, and "
 "`PostProcessAction` objects."
 msgstr ""
+"تحوّل واجهة سطر الأوامر صيغتها النصية (`--retry` و`--bandwidth-limit 10MB` "
+"و`--post-process \"reproject:EPSG:4326\"`) إلى هذه الحقول ذات الأنواع. أما "
+"إنشاء `DownloadOptions` مباشرةً فيتطلب الصيغ ذات الأنواع: `retry_attempts` "
+"و`bandwidth_limit_mbps` كعدد عشري بوحدة Mbps، وكائنات `PostProcessAction`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:197
 msgid ""
@@ -498,10 +555,13 @@ msgid ""
 "results. See [`DownloadResult`](../reference/python-api.md#downloadresult) "
 "for every field."
 msgstr ""
+"تكون القائمة المعادة دائمًا بالطول والترتيب نفسيهما كالمدخلات، بما في ذلك "
+"العناصر التي رفضها التحقق البصري، وتعود كنتائج فاشلة. راجع "
+"[`DownloadResult`](../reference/python-api.md#downloadresult) لكل الحقول."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:201
 msgid "Optical validation as a gate"
-msgstr ""
+msgstr "التحقق البصري كبوابة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/download.md:203
 msgid ""
@@ -509,3 +569,6 @@ msgid ""
 "required bands, processing level) before any bytes are transferred. Rejected"
 " items are not attempted. See [Optical validation](optical-validation.md)."
 msgstr ""
+"يشغّل `--validate-optical` فحوص ما قبل التنفيذ (نسبة السحب وتغطية AOI "
+"والنطاقات المطلوبة ومستوى المعالجة) قبل نقل أي بايت. العناصر المرفوضة لا "
+"تُحاوَل. راجع [التحقق البصري](optical-validation.md)."

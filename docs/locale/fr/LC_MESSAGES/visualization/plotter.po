@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,10 +26,12 @@ msgid ""
 "Static plotting for almost any raster output: indices, SAR intensity, "
 "classifications, comparisons, and 3D terrain."
 msgstr ""
+"Tracés statiques pour presque toute sortie raster : indices, intensité SAR, "
+"classifications, comparaisons et terrain 3D."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:10
 msgid "Overview"
-msgstr ""
+msgstr "Vue d'ensemble"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:12
 msgid ""
@@ -42,6 +44,15 @@ msgid ""
 "legend with class names or a diverging colour scale centred on zero for "
 "change maps."
 msgstr ""
+"Le tracé est la manière de vérifier qu'une analyse a produit ce que vous "
+"attendiez. Le plotter produit des figures statiques à partir des fichiers "
+"écrits par pygeofetch, afin que vous puissiez inspecter un indice, une "
+"classification, une image radar ou une comparaison avant/après sans quitter "
+"Python. `quicklook` est la voie la plus rapide : donnez-lui un raster et il "
+"choisit des couleurs et des limites adaptées, tandis que les tracés "
+"spécialisés ajoutent les éléments dont certaines sorties ont besoin, comme "
+"une légende avec les noms de classes ou une échelle de couleurs divergente "
+"centrée sur zéro pour les cartes de changement."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:14
 msgid ""
@@ -51,10 +62,16 @@ msgid ""
 " classes, as in the vegetation trend maps in the [case "
 "studies](../workflows/case-studies.md)."
 msgstr ""
+"Les figures peuvent être enregistrées en résolution de publication et "
+"utilisées directement dans des rapports. Choisissez la palette de couleurs "
+"en fonction de la signification des données : une échelle divergente pour le"
+" changement, une échelle séquentielle pour les quantités et une palette "
+"catégorielle pour les classes, comme dans les cartes de tendance de la "
+"végétation des [études de cas](../workflows/case-studies.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:16
 msgid "quicklook — one call for almost anything"
-msgstr ""
+msgstr "quicklook — un seul appel pour presque tout"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:28
 msgid ""
@@ -63,28 +80,35 @@ msgid ""
 "values within `[-1, 1]` → diverging index colormap; otherwise → continuous. "
 "All overridable via `mode=`."
 msgstr ""
+"`quicklook()` s'appuie sur des heuristiques de plage de valeurs, et non sur "
+"la détection du format : peu de valeurs distinctes → catégoriel ; plage en "
+"dB majoritairement négative → niveaux de gris SAR ; valeurs dans `[-1, 1]` →"
+" palette d'indice divergente ; sinon → continu. Tout est modifiable via "
+"`mode=`."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:33
 msgid "Purpose-built plots"
-msgstr ""
+msgstr "Tracés spécialisés"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:49
 msgid ""
 "`plot_raster()` and `plot_rgb()` accept in-memory numpy arrays directly — no"
 " round-trip through disk needed."
 msgstr ""
+"`plot_raster()` et `plot_rgb()` acceptent directement des tableaux numpy en "
+"mémoire — aucun aller-retour par le disque n'est nécessaire."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:52
 msgid "Other plot types"
-msgstr ""
+msgstr "Autres types de tracés"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "Method"
-msgstr ""
+msgstr "Méthode"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "Use"
-msgstr ""
+msgstr "Utiliser"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_raster()`"
@@ -92,7 +116,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "Single raster, any colormap"
-msgstr ""
+msgstr "Raster unique, palette de couleurs au choix"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_rgb()`"
@@ -100,7 +124,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "3-band composite"
-msgstr ""
+msgstr "Composite à 3 bandes"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_multi_panel_comparison()`"
@@ -108,7 +132,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "N-panel grid comparison"
-msgstr ""
+msgstr "Comparaison en grille de N panneaux"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_timeseries()`"
@@ -119,6 +143,8 @@ msgid ""
 "Line plot over dates — pairs directly with "
 "`TimeSeriesAnalyzer.zone_series()`"
 msgstr ""
+"Courbe en fonction des dates — s'associe directement à "
+"`TimeSeriesAnalyzer.zone_series()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_histogram()`"
@@ -126,7 +152,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "Value distribution"
-msgstr ""
+msgstr "Distribution des valeurs"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_terrain_summary()`"
@@ -137,6 +163,8 @@ msgid ""
 "2x2 terrain analysis figure (hillshade, elevation, slope, difference maps) —"
 " see below"
 msgstr ""
+"Figure d'analyse du terrain 2x2 (ombrage, altitude, pente, cartes de "
+"différence) — voir ci-dessous"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_3d_terrain()`"
@@ -145,6 +173,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "Fast, static hillshade-draped 3D surface, no extra dependency"
 msgstr ""
+"Surface 3D statique rapide drapée d'un ombrage, sans dépendance "
+"supplémentaire"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "`plot_3d_terrain_interactive()`"
@@ -153,14 +183,16 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:0
 msgid "Real interactive mesh (PyVista), rotate/zoom/pan in-browser"
 msgstr ""
+"Véritable maillage interactif (PyVista), rotation/zoom/déplacement dans le "
+"navigateur"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:65
 msgid "Terrain summary — a purpose-built 2x2 figure"
-msgstr ""
+msgstr "Synthèse du terrain — une figure 2x2 spécialisée"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:80
 msgid "Lays out a purpose-built figure:"
-msgstr ""
+msgstr "Compose une figure spécialisée :"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:87
 msgid ""
@@ -174,16 +206,28 @@ msgid ""
 "(degrees) controls the \"% steep terrain\" statistic shown alongside the "
 "slope panel."
 msgstr ""
+"Passez directement `hillshade`/`slope` si vous les avez déjà calculés via "
+"`terrain_derivatives()` de [Analyse du terrain (MNT / MNS / "
+"MNE)](../processing/optical/terrain.md) ; omettez l'un ou l'autre et cette "
+"méthode le génère à partir du MNT lui-même. `diffs` accepte une ou plusieurs"
+" paires `{label: raster}` — par exemple pour comparer deux sources de MNT "
+"différentes sur la même AOI — rendues avec une palette divergente "
+"(`vmin_diff`/`vmax_diff`, ±20 par défaut). `summit_points` superpose des "
+"marqueurs étiquetés aux coordonnées `(lon, lat)`. `steep_threshold` (en "
+"degrés) contrôle la statistique « % de terrain escarpé » affichée à côté du "
+"panneau de pente."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:97
 msgid "3D terrain"
-msgstr ""
+msgstr "Terrain 3D"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:110
 msgid ""
 "`plot_3d_terrain_interactive()` needs `pip install \"pyvista[jupyter]\"` — "
 "the `[jupyter]` extra specifically for HTML export."
 msgstr ""
+"`plot_3d_terrain_interactive()` nécessite `pip install \"pyvista[jupyter]\"`"
+" — l'extra `[jupyter]` étant requis spécifiquement pour l'export HTML."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/plotter.md:115
 msgid ""
@@ -192,3 +236,7 @@ msgid ""
 "confusingly \"empty\" plot with no explanation. Now raises a clear warning "
 "identifying the actual cause."
 msgstr ""
+"Les deux sont renforcées contre un mode de défaillance : un champ d'altitude"
+" quasi uniforme (par exemple une AOI qui chevauche à peine le relief) "
+"donnait auparavant un tracé plat, déroutant et « vide », sans explication. "
+"Elles émettent désormais un avertissement clair identifiant la cause réelle."

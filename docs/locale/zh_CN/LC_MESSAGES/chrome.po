@@ -59,3 +59,6 @@ msgstr "语言"
 
 msgid "Partly translated"
 msgstr "部分已翻译：未翻译的页面以英文显示。"
+
+msgid "Processing"
+msgstr "处理"

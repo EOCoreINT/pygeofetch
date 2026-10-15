@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,10 +27,14 @@ msgid ""
 "Test counts change with every commit, so this page does not quote one. Run "
 "the suite against your own checkout for the current result."
 msgstr ""
+"La suite de tests se trouve dans un répertoire plat `tests/` et s'exécute "
+"avec `pytest`. Le nombre de tests change à chaque commit, c'est pourquoi "
+"cette page n'en cite aucun. Exécutez la suite sur votre propre copie pour "
+"obtenir le résultat actuel."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:7
 msgid "Run the tests"
-msgstr ""
+msgstr "Exécuter les tests"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:20
 msgid ""
@@ -39,22 +43,27 @@ msgid ""
 " Without it they fail with `ModuleNotFoundError`, not with a real test "
 "failure. See [Installation](../getting-started/installation.md)."
 msgstr ""
+"Installez l'extra `test`, et non `dev,all`. Plusieurs tests (export S3, le "
+"fournisseur `noaa_big_data`) importent directement `boto3`, qui fait partie "
+"de `cloud`. Sans lui, ils échouent avec `ModuleNotFoundError`, et non avec "
+"un véritable échec de test. Voir [Installation](../getting-"
+"started/installation.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:26
 msgid "What is covered"
-msgstr ""
+msgstr "Ce qui est couvert"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "Area"
-msgstr ""
+msgstr "Domaine"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "Representative test files"
-msgstr ""
+msgstr "Fichiers de test représentatifs"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Models and utilities**"
-msgstr ""
+msgstr "**Modèles et utilitaires**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_models.py`, `test_utils.py`, `test_state.py`"
@@ -62,7 +71,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Providers**"
-msgstr ""
+msgstr "**Fournisseurs**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -73,10 +82,16 @@ msgid ""
 "`test_inpe_cbers.py`, `test_jaxa_earth.py`, `test_isro_bhuvan.py`, "
 "`test_noaa_big_data.py`, `test_opentopography_pointcloud_usgs.py`"
 msgstr ""
+"`test_providers.py`, `test_provider_geometry_audit.py`, "
+"`test_provider_scene_disambiguation.py`, et un fichier par fournisseur "
+"réécrit : `test_airbus_oneatlas.py`, `test_digitalglobe.py`, "
+"`test_maxar_gbdx.py`, `test_alaska_satellite_facility.py`, "
+"`test_inpe_cbers.py`, `test_jaxa_earth.py`, `test_isro_bhuvan.py`, "
+"`test_noaa_big_data.py`, `test_opentopography_pointcloud_usgs.py`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Provider regressions**"
-msgstr ""
+msgstr "**Régressions des fournisseurs**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -87,7 +102,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Authentication and security**"
-msgstr ""
+msgstr "**Authentification et sécurité**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_credential_encryption.py`"
@@ -95,7 +110,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Resilience**"
-msgstr ""
+msgstr "**Résilience**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_circuit_breaker_wiring.py`, `test_pipeline_process_export.py`"
@@ -103,7 +118,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Optical validation**"
-msgstr ""
+msgstr "**Validation optique**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -114,7 +129,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Spectral indices**"
-msgstr ""
+msgstr "**Indices spectraux**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_geology_indices_and_rvi_fix.py`"
@@ -122,7 +137,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**InSAR**"
-msgstr ""
+msgstr "**InSAR**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -135,7 +150,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Atmospheric correction**"
-msgstr ""
+msgstr "**Correction atmosphérique**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
@@ -145,7 +160,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**SAR pipelines**"
-msgstr ""
+msgstr "**Pipelines SAR**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_sar_pipelines.py`"
@@ -153,7 +168,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Optical offset tracking, strain and fusion**"
-msgstr ""
+msgstr "**Suivi du décalage optique, déformation et fusion**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_optical_offset_tracking.py`, `test_strain_and_fusion.py`"
@@ -161,17 +176,19 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Multi-sensor pipelines**"
-msgstr ""
+msgstr "**Pipelines multicapteurs**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid ""
 "`tests/multisensor/` (five pipeline suites, plus the audit regressions and "
 "terrain/packaging pins)"
 msgstr ""
+"`tests/multisensor/` (cinq suites de pipelines, plus les régressions d'audit"
+" et les verrouillages terrain/packaging)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Streaming**"
-msgstr ""
+msgstr "**Streaming**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_streaming.py`"
@@ -179,7 +196,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Data organisation**"
-msgstr ""
+msgstr "**Organisation des données**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_data_organizer.py`"
@@ -187,7 +204,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "**Visualization**"
-msgstr ""
+msgstr "**Visualisation**"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:19
 msgid "`test_viz_plot.py`"
@@ -195,7 +212,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:46
 msgid "Streaming tests"
-msgstr ""
+msgstr "Tests de streaming"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:48
 msgid ""
@@ -205,10 +222,15 @@ msgid ""
 "the same window, and that archives are refused. No test contacts a live "
 "provider."
 msgstr ""
+"`tests/test_streaming.py` lance un serveur HTTP local qui implémente les "
+"requêtes par plage et compte les octets servis. Les tests vérifient qu'une "
+"lecture d'AOI ne déplace qu'une petite fraction du fichier, que les valeurs "
+"des pixels sont égales à une lecture locale de la même fenêtre, et que les "
+"archives sont refusées. Aucun test ne contacte un fournisseur en direct."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:53
 msgid "Multi-sensor regression tests"
-msgstr ""
+msgstr "Tests de régression multicapteurs"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:55
 msgid ""
@@ -220,27 +242,43 @@ msgid ""
 "terrain test inverted the pipeline's own correction with the pipeline's own "
 "aspect function, so a sign error cancelled out and passed."
 msgstr ""
+"L'audit multicapteurs a ajouté des tests qui échouent sur l'ancien code et "
+"réussissent avec le correctif, par exemple une scène d'inondation avec "
+"nodata optique, un MNT avec un vide `-9999`, un volume sur une grille "
+"géographique comparé à une référence de surface géodésique, et une "
+"illumination dérivée indépendamment de `unit_normal . unit_sun`. Dériver la "
+"valeur attendue de manière indépendante est important : un ancien test de "
+"terrain inversait la propre correction du pipeline avec la propre fonction "
+"d'aspect du pipeline, de sorte qu'une erreur de signe s'annulait et que le "
+"test passait."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:62
 msgid "Writing tests"
-msgstr ""
+msgstr "Écrire des tests"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:64
 msgid "Put new tests in `tests/`, named `test_<area>.py`."
-msgstr ""
+msgstr "Placez les nouveaux tests dans `tests/`, nommés `test_<area>.py`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:65
 msgid ""
 "Test against a real behaviour, not only that a call returns. For numerical "
 "code, derive the expected value independently of the code under test."
 msgstr ""
+"Testez un comportement réel, et pas seulement qu'un appel renvoie quelque "
+"chose. Pour le code numérique, dérivez la valeur attendue indépendamment du "
+"code testé."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:66
 msgid "Do not depend on network access. Use a local server or mock for HTTP."
 msgstr ""
+"Ne dépendez pas de l'accès réseau. Utilisez un serveur local ou un mock pour"
+" HTTP."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/testing.md:67
 msgid ""
 "Skip, rather than fail, when an optional dependency is missing: "
 "`pytest.importorskip(\"rasterio\")`."
 msgstr ""
+"Ignorez (skip) le test, plutôt que de le faire échouer, lorsqu'une "
+"dépendance optionnelle est absente : `pytest.importorskip(\"rasterio\")`."

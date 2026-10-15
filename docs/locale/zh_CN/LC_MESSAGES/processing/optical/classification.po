@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,6 +30,10 @@ msgid ""
 "on its own, and **Random Forest/SVM** when you have labeled training samples"
 " and want a model that generalizes to the rest of the scene."
 msgstr ""
+"将多波段栅格转换为离散类别的地图 — "
+"土地覆盖、水体与陆地、作物类型，凡是光谱特征能够区分的任何内容。针对两种不同的真实情形，有两种不同的方法：当你没有带标签的样本、希望 "
+"pygeofetch 自行找出自然分组时，使用 **K-means**；当你有带标签的训练样本、希望得到一个能推广到场景其余部分的模型时，使用 "
+"**Random Forest/SVM**。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:11
 msgid ""
@@ -41,10 +45,14 @@ msgid ""
 "`client.post.zonal_stats()`, which already expected \"a classification "
 "raster\" as input."
 msgstr ""
+"这填补了 pygeofetch 其他各处一直存在的空白：每个光谱指数和处理工具都假定你会自带来自其他库的分类器。`client.classify` "
+"就是这个分类器，直接基于与 `client.indices` 和 `client.preprocess` 相同的栅格 I/O 约定构建 — "
+"其输出可立即用于 `client.post.vectorize()` 和 "
+"`client.post.zonal_stats()`，它们本来就期望“分类栅格”作为输入。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:19
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:21
 msgid ""
@@ -56,6 +64,9 @@ msgid ""
 "areas, Random Forest or a support vector machine learns the spectral "
 "signature of each class and applies it to the whole scene."
 msgstr ""
+"分类将多波段影像转换为类别地图，例如水体、森林、裸地和建成区。pygeofetch 提供两种适合不同起点的途径。如果你没有带标签的样本，K-means "
+"聚类会在光谱数据中找出自然分组，之后再由你决定每个分组代表什么。如果你确实有带标签的训练区域，Random Forest "
+"或支持向量机会学习每个类别的光谱特征，并将其应用到整个场景。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:23
 msgid ""
@@ -68,14 +79,17 @@ msgid ""
 "GeoTIFF files, so the class map can be clipped, vectorised and analysed with"
 " the other tools in the package."
 msgstr ""
+"初步尝试时，可以用较少的聚类数运行 "
+"K-means，并将结果与原始影像并排查看；这能很快表明你关心的类别在光谱上究竟是否可分。当你需要一幅可用于汇报的地图时，请使用监督分类途径：收集能涵盖每个类别内部多样性的训练样本，留出一部分用于测试，并在信任输出结果之前查看精度指标。两种途径读写的都是普通的"
+" GeoTIFF 文件，因此类别图可以用软件包中的其他工具进行裁剪、矢量化和分析。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:25
 msgid "Quick start"
-msgstr ""
+msgstr "快速入门"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:47
 msgid "Unsupervised: K-means"
-msgstr ""
+msgstr "无监督：K-means"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:58
 msgid ""
@@ -84,6 +98,8 @@ msgid ""
 " and K-means groups them into `n_clusters` clusters by spectral similarity "
 "alone."
 msgstr ""
+"每个输入波段都会被完整读取并堆叠为一个数组；每个像元成为 N 维光谱空间（N = 输入波段数）中的一个点，K-means 仅根据光谱相似性将它们划分为 "
+"`n_clusters` 个聚类。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:63
 msgid ""
@@ -93,6 +109,8 @@ msgid ""
 "it on a true-color composite) to figure out which cluster corresponds to "
 "which class, before using the result for anything downstream."
 msgstr ""
+"**聚类 ID 是任意的。** 聚类 `0` 本身没有任何固有含义——它并不会因为是第一个聚类就代表“水体”。运行 K-means "
+"之后，请先检查每个聚类的光谱特征（例如其平均 NDVI，或将其叠加到真彩色合成影像上），弄清楚每个聚类对应哪一类地物，然后再将结果用于任何下游处理。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:70
 msgid ""
@@ -101,14 +119,16 @@ msgid ""
 "that never form a coherent, spatially sensible region usually mean you've "
 "asked for more clusters than the data actually supports."
 msgstr ""
+"**选择 "
+"`n_clusters`**：先根据你对场景中不同土地覆盖类型数量的最佳判断设定初始值，然后查看结果——如果某些聚类始终无法形成连贯且空间上合理的区域，通常说明你要求的聚类数量超出了数据实际所能支撑的范围。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:76
 msgid "Supervised: Random Forest / SVM"
-msgstr ""
+msgstr "监督分类：随机森林 / SVM"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:78
 msgid "Real training data format"
-msgstr ""
+msgstr "真实的训练数据格式"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:80
 msgid ""
@@ -117,19 +137,21 @@ msgid ""
 "and polygon geometries work, and mean different things for how many pixels "
 "each label actually contributes:"
 msgstr ""
+"`training_data` 可以是 GeoPandas "
+"能够读取的任意矢量文件（GeoJSON、Shapefile、GeoPackage），其中有一个属性列存放类别标签。点和多边形几何都可以使用，但它们对每个标签实际贡献多少像元的含义不同："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:85
 msgid ""
 "**Points**: exactly one pixel sampled per point — the pixel the point falls "
 "inside."
-msgstr ""
+msgstr "**点**：每个点恰好采样一个像元——即该点所落入的那个像元。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:87
 msgid ""
 "**Polygons**: every pixel the polygon's footprint covers gets labeled — a "
 "single polygon over a large, homogeneous field can contribute thousands of "
 "training pixels from one drawn shape."
-msgstr ""
+msgstr "**多边形**：多边形覆盖范围内的每个像元都会被标注——一个覆盖大片均匀地块的多边形，仅凭一个绘制的形状就能贡献数千个训练像元。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:105
 msgid ""
@@ -139,6 +161,9 @@ msgid ""
 "you can check whether the model struggles on one class rather than trusting "
 "a single overall number."
 msgstr ""
+"**精度始终在留出的测试集上计算**，该测试集绝不用于训练。这不是一个可选参数。`result.metadata` 还包含完整的 "
+"`classification_report`（每个类别的精确率、召回率和 "
+"F1），因此你可以检查模型是否在某一类上表现不佳，而不是只相信单一的总体数字。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:110
 msgid ""
@@ -147,10 +172,12 @@ msgid ""
 "geometries don't actually overlap the raster's extent or CRS, not a subtle "
 "statistical warning to ignore."
 msgstr ""
+"**一个刻意的约束**：如果实际提取到的有效训练像元少于 10 个，训练会抛出明确的错误——这通常意味着训练几何与栅格的范围或 CRS "
+"实际上并不重叠，而不是可以忽略的细微统计警告。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:115
 msgid "Applying the trained model"
-msgstr ""
+msgstr "应用训练好的模型"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:124
 msgid ""
@@ -159,10 +186,13 @@ msgid ""
 "fails with a clear message naming the mismatch, rather than letting scikit-"
 "learn's own less specific shape error surface instead."
 msgstr ""
+"`inputs` 必须是与训练时相同的波段，且顺序一致——`predict()` "
+"会将波段数与已保存模型所期望的数量进行核对，若不一致则失败并给出指明不匹配之处的清晰信息，而不是让 scikit-learn "
+"自身不够具体的形状错误浮出水面。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:130
 msgid "Clipping the result to an AOI"
-msgstr ""
+msgstr "将结果裁剪到 AOI"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:132
 msgid ""
@@ -170,6 +200,9 @@ msgid ""
 "same handling as every method in [Spectral Indices](spectral-"
 "indices.md#clipping-the-result-to-an-aoi) and `Preprocessor.clip()`:"
 msgstr ""
+"`kmeans` 和 `predict` 都接受 `bbox`、`geometry` 和 `geometry_crs`——处理方式与 "
+"[光谱指数](spectral-indices.md#clipping-the-result-to-an-aoi) 中的每个方法以及 "
+"`Preprocessor.clip()` 相同："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:144
 msgid ""
@@ -177,20 +210,21 @@ msgid ""
 "before extracting samples if you need to restrict it, since clipping *after*"
 " training a model doesn't do anything meaningful."
 msgstr ""
+"`train()` 不提供裁剪选项——如果需要限制范围，请在提取样本之前先裁剪训练数据的范围，因为在训练模型*之后*再裁剪没有任何实际意义。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:148
 msgid "CLI reference"
-msgstr ""
+msgstr "CLI 参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:168
 msgid ""
 "Run `pygeofetch classify COMMAND --help` for the full option list of any "
 "individual command."
-msgstr ""
+msgstr "运行 `pygeofetch classify COMMAND --help` 可查看任一单独命令的完整选项列表。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:171
 msgid "Common pitfalls"
-msgstr ""
+msgstr "常见陷阱"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:173
 msgid ""
@@ -199,6 +233,8 @@ msgid ""
 "bands first (see [Preprocessing](preprocessing.md)) rather than pass them "
 "directly."
 msgstr ""
+"**波段分辨率或范围不一致。** 所有 `inputs` 必须已经共享相同的网格——相同的形状、相同的变换。请先对不一致的波段进行重投影/重采样（参见 "
+"[预处理](preprocessing.md)），而不要直接传入。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:177
 msgid ""
@@ -207,13 +243,15 @@ msgid ""
 "everywhere else — spread training samples across the actual range of "
 "conditions you expect the model to see."
 msgstr ""
+"**训练样本太少，或在空间上过于集中。** 如果用全部取自场景一角的 15 "
+"个点来训练模型，它会在其他所有地方自信地做出错误预测——请让训练样本覆盖你预期模型将会遇到的各种实际条件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:182
 msgid ""
 "**Treating K-means cluster IDs as meaningful class labels without "
 "checking.** Always inspect what each cluster actually represents before "
 "reporting results from it."
-msgstr ""
+msgstr "**未经检查就将 K-means 聚类 ID 当作有意义的类别标签。** 在报告基于聚类的结果之前，务必先检查每个聚类实际代表什么。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:185
 msgid ""
@@ -222,22 +260,25 @@ msgid ""
 "rare classes — check the per-class breakdown in `classification_report`, not"
 " just `test_accuracy`, before trusting a model on a imbalanced problem."
 msgstr ""
+"**训练数据中的类别不平衡。** 如果 90% "
+"的训练像元属于同一个类别，模型只需基本忽略稀有类别就能获得很高的总体精度——在不平衡问题上信任模型之前，请查看 "
+"`classification_report` 中每个类别的细分结果，而不仅仅是 `test_accuracy`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:191
 msgid "Full method reference"
-msgstr ""
+msgstr "完整方法参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Real purpose"
-msgstr ""
+msgstr "实际用途"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Needs training data?"
-msgstr ""
+msgstr "是否需要训练数据？"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "`kmeans(inputs, n_clusters=5, ...)`"
@@ -245,7 +286,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Unsupervised clustering"
-msgstr ""
+msgstr "无监督聚类"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "No"
@@ -257,11 +298,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Fit a supervised model"
-msgstr ""
+msgstr "拟合监督模型"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Yes"
-msgstr ""
+msgstr "是"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "`predict(inputs, model, ...)`"
@@ -269,11 +310,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "Apply a trained model"
-msgstr ""
+msgstr "应用训练好的模型"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:0
 msgid "No (uses a saved model)"
-msgstr ""
+msgstr "否（使用已保存的模型）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/classification.md:199
 msgid ""
@@ -284,3 +325,6 @@ msgid ""
 "limited to what fits in memory regardless, since scikit-learn's fit step "
 "needs the full training array at once."
 msgstr ""
+"**尚不支持**：对超出可用内存的栅格进行分块/内存安全处理——与 [光谱指数](spectral-indices.md) "
+"中的方法不同，`kmeans` 和 `predict` 目前都会将每个输入波段完整读入内存。无论如何，`train()` "
+"自身的训练样本提取本质上受限于内存所能容纳的大小，因为 scikit-learn 的拟合步骤需要一次性获得完整的训练数组。"

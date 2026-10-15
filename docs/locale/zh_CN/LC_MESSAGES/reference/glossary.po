@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,24 +26,27 @@ msgid ""
 "**AOI (area of interest).** The geographic region you care about, usually a "
 "bounding box `(min_lon, min_lat, max_lon, max_lat)` in EPSG:4326."
 msgstr ""
+"**AOI（感兴趣区域）。** 您关注的地理区域，通常是 EPSG:4326 下的边界框 `(min_lon, min_lat, max_lon, "
+"max_lat)`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:6
 msgid ""
 "**Asset.** One file belonging to a scene, such as a band, a thumbnail, "
 "metadata or an archive. Modelled by `SatelliteAsset`."
-msgstr ""
+msgstr "**资产（Asset）。** 属于某个场景的一个文件，例如波段、缩略图、元数据或归档文件。由 `SatelliteAsset` 建模。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:9
 msgid ""
 "**Baseline (processing baseline).** The version of the Sentinel-2 processing"
 " chain. From 04.00, L2A reflectance carries a +1000 digital-number offset."
 msgstr ""
+"**基线（处理基线）。** Sentinel-2 处理链的版本。从 04.00 起，L2A 反射率带有 +1000 的数字量化值（DN）偏移。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:12
 msgid ""
 "**Burst.** One of the sub-swaths-in-time of a Sentinel-1 TOPS acquisition. "
 "Burst-level synchronisation matters for InSAR stacks."
-msgstr ""
+msgstr "**突发（Burst）。** Sentinel-1 TOPS 采集中按时间划分的子条带之一。突发级同步对 InSAR 堆栈很重要。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:15
 msgid ""
@@ -51,6 +54,8 @@ msgid ""
 "failures and retries after a recovery timeout. See [Error handling](error-"
 "handling.md#circuit-breaker)."
 msgstr ""
+"**熔断器（Circuit breaker）。** 一种保护机制，在多次失败后停止调用某个提供商，并在恢复超时后重试。参见[错误处理](error-"
+"handling.md#circuit-breaker)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:18
 msgid ""
@@ -58,136 +63,144 @@ msgid ""
 "overviews, so a client can read part of it with HTTP range requests. See "
 "[Streaming](../data-access/streaming.md)."
 msgstr ""
+"**COG（云优化 GeoTIFF）。** 具有内部分块和概览的 GeoTIFF，客户端可以通过 HTTP "
+"范围请求读取其中一部分。参见[流式读取](../data-access/streaming.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:21
 msgid ""
 "**Coherence.** A 0 to 1 measure of phase similarity between two SAR "
 "acquisitions. Low coherence means the surface changed or decorrelated."
 msgstr ""
+"**相干性（Coherence）。** 衡量两次 SAR 采集之间相位相似程度的 0 到 1 的指标。相干性低意味着地表发生了变化或失相干。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:24
 msgid ""
 "**Cosine correction.** A simple topographic illumination correction that "
 "divides reflectance by the cosine of the solar incidence angle."
-msgstr ""
+msgstr "**余弦校正。** 一种简单的地形光照校正方法，将反射率除以太阳入射角的余弦值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:27
 msgid ""
 "**CFAR.** Constant false alarm rate, a thresholding method for detecting "
 "bright targets in SAR imagery."
-msgstr ""
+msgstr "**CFAR。** 恒虚警率，一种用于检测 SAR 影像中亮目标的阈值方法。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:30
 msgid "**DEM.** Digital elevation model."
-msgstr ""
+msgstr "**DEM。** 数字高程模型。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:32
 msgid ""
 "**DoD (DEM of Difference).** The subtraction of two DEMs, used to measure "
 "volume change."
-msgstr ""
+msgstr "**DoD（差分 DEM）。** 两个 DEM 相减，用于测量体积变化。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:34
 msgid ""
 "**DN (digital number).** The raw integer pixel value before scaling to "
 "reflectance."
-msgstr ""
+msgstr "**DN（数字量化值）。** 缩放为反射率之前的原始整数像元值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:36
 msgid ""
 "**GRD.** Ground Range Detected: Sentinel-1 amplitude imagery without phase."
-msgstr ""
+msgstr "**GRD。** 地距检测（Ground Range Detected）：不含相位的 Sentinel-1 幅度影像。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:38
 msgid ""
 "**InSAR.** Interferometric SAR: using the phase difference between two "
 "acquisitions to measure surface deformation."
-msgstr ""
+msgstr "**InSAR。** 干涉 SAR：利用两次采集之间的相位差来测量地表形变。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:41
 msgid "**Interferogram.** The phase difference image formed from two SLCs."
-msgstr ""
+msgstr "**干涉图（Interferogram）。** 由两幅 SLC 形成的相位差影像。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:43
 msgid ""
 "**L1C / L2A.** Sentinel-2 top-of-atmosphere (L1C) and surface reflectance "
 "(L2A) products."
-msgstr ""
+msgstr "**L1C / L2A。** Sentinel-2 的大气层顶（L1C）和地表反射率（L2A）产品。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:45
 msgid ""
 "**Landsat Collection 2.** USGS's reprocessed Landsat archive, delivered at "
 "Level-1 and Level-2."
 msgstr ""
+"**Landsat Collection 2。** USGS 重新处理的 Landsat 存档，以 Level-1 和 Level-2 提供。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:47
 msgid ""
 "**NDVI.** Normalized Difference Vegetation Index, `(NIR - Red) / (NIR + "
 "Red)`."
-msgstr ""
+msgstr "**NDVI。** 归一化植被指数，`(NIR - Red) / (NIR + Red)`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:49
 msgid ""
 "**Offset tracking.** Measuring displacement by cross-correlating image "
 "patches. Works on optical and SAR amplitude imagery."
-msgstr ""
+msgstr "**偏移追踪（Offset tracking）。** 通过对影像块做互相关来测量位移。适用于光学和 SAR 幅度影像。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:52
 msgid ""
 "**Post-processing action.** A step run after a download, such as `unzip`, "
 "clip, reproject or COG conversion."
-msgstr ""
+msgstr "**后处理操作。** 下载之后运行的一个步骤，例如 `unzip`、裁剪、重投影或 COG 转换。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:55
 msgid ""
 "**Provider.** An adapter for one data source. See [Providers](../data-"
 "access/providers.md)."
-msgstr ""
+msgstr "**提供商（Provider）。** 针对某一数据源的适配器。参见[提供商](../data-access/providers.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:57
 msgid ""
 "**SAFE.** The Sentinel product directory format, usually delivered as "
 "`.SAFE.zip`."
-msgstr ""
+msgstr "**SAFE。** Sentinel 产品目录格式，通常以 `.SAFE.zip` 形式交付。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:59
 msgid ""
 "**SAR.** Synthetic aperture radar, an active microwave sensor that images "
 "day and night through cloud."
-msgstr ""
+msgstr "**SAR。** 合成孔径雷达，一种主动式微波传感器，可昼夜穿透云层成像。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:62
 msgid ""
 "**SBAS.** Small BAseline Subset: a time-series InSAR method that combines "
 "many short-baseline interferograms."
-msgstr ""
+msgstr "**SBAS。** 小基线集（Small BAseline Subset）：一种组合多个短基线干涉图的时间序列 InSAR 方法。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:65
 msgid ""
 "**SLC.** Single Look Complex: SAR imagery that preserves phase, needed for "
 "InSAR."
-msgstr ""
+msgstr "**SLC。** 单视复数（Single Look Complex）：保留相位的 SAR 影像，InSAR 需要使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:67
 msgid ""
 "**STAC.** SpatioTemporal Asset Catalog: a standard JSON format for "
 "describing geospatial assets, used by many providers."
 msgstr ""
+"**STAC。** 时空资产目录（SpatioTemporal Asset Catalog）：用于描述地理空间资产的标准 JSON "
+"格式，被许多提供商使用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:70
 msgid ""
 "**Streaming.** Reading only the pixels you need from a remote file instead "
 "of downloading all of it."
-msgstr ""
+msgstr "**流式读取（Streaming）。** 仅从远程文件中读取所需的像元，而不是下载整个文件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:73
 msgid ""
 "**TOPS.** Terrain Observation by Progressive Scans, the Sentinel-1 wide-"
 "swath acquisition mode."
 msgstr ""
+"**TOPS。** 渐进扫描地形观测（Terrain Observation by Progressive Scans），Sentinel-1 "
+"的宽幅采集模式。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/glossary.md:75
 msgid ""
 "**Unwrapping.** Converting wrapped interferometric phase (modulo 2 pi) to "
 "continuous phase; pygeofetch uses `snaphu`."
-msgstr ""
+msgstr "**解缠（Unwrapping）。** 将缠绕的干涉相位（模 2 pi）转换为连续相位；pygeofetch 使用 `snaphu`。"

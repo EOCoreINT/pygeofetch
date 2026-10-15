@@ -59,3 +59,6 @@ msgstr "Idioma"
 
 msgid "Partly translated"
 msgstr "Traducción parcial: las páginas sin traducir se muestran en inglés."
+
+msgid "Processing"
+msgstr "Procesamiento"

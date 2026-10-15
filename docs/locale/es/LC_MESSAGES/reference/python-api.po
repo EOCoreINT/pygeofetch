@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,16 +25,20 @@ msgstr "Referencia de la API de Python"
 msgid ""
 "Use pygeofetch as a library in your own scripts, notebooks, or applications."
 msgstr ""
+"Use pygeofetch como biblioteca en sus propios scripts, cuadernos o "
+"aplicaciones."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:6
 msgid ""
 "The main entry point is the `PyGeoFetch` class. Data models live in "
 "`pygeofetch.models`."
 msgstr ""
+"El punto de entrada principal es la clase `PyGeoFetch`. Los modelos de datos"
+" están en `pygeofetch.models`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:13
 msgid "Overview"
-msgstr ""
+msgstr "Descripción general"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:15
 msgid ""
@@ -48,6 +52,16 @@ msgid ""
 "`client.preprocess`, `client.sar` and `client.post`, so that one import is "
 "enough for most workflows."
 msgstr ""
+"La API de Python se organiza en torno a un objeto, el cliente `PyGeoFetch`, "
+"y un pequeño conjunto de modelos. Usted describe una solicitud con "
+"`SearchQuery`, llama a `client.search()` para obtener una lista de escenas "
+"`SatelliteData`, y pasa esas escenas a `client.download()` o "
+"`client.stream()`. El comportamiento de la descarga se controla con "
+"`DownloadOptions`, y cada descarga devuelve un `DownloadResult` que registra"
+" el resultado. Las capacidades de procesamiento se exponen como espacios de "
+"nombres en el mismo cliente, por ejemplo `client.indices`, "
+"`client.preprocess`, `client.sar` y `client.post`, de modo que una sola "
+"importación basta para la mayoría de los flujos de trabajo."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:17
 msgid ""
@@ -57,10 +71,15 @@ msgid ""
 "below list the fields of each model, the methods of the client and the "
 "namespaces it carries."
 msgstr ""
+"Como los modelos son clases Pydantic, validan sus entradas y pueden "
+"convertirse a y desde diccionarios y JSON, lo que facilita almacenar una "
+"consulta, registrar un resultado o construir solicitudes a partir de la "
+"configuración. Las secciones siguientes enumeran los campos de cada modelo, "
+"los métodos del cliente y los espacios de nombres que incluye."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:19
 msgid "Full workflow example"
-msgstr ""
+msgstr "Ejemplo de flujo de trabajo completo"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:65
 msgid "`SearchQuery`"
@@ -73,18 +92,22 @@ msgid ""
 "restricted, which most providers reject or answer with very large result "
 "sets."
 msgstr ""
+"Describe qué buscar. Todos los campos son opcionales. Sin un área (`bbox`, "
+"`geometry` o `geometry_geojson`), la búsqueda no está restringida "
+"espacialmente, algo que la mayoría de los proveedores rechazan o responden "
+"con conjuntos de resultados muy grandes."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Field"
-msgstr ""
+msgstr "Campo"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bbox`"
@@ -100,6 +123,9 @@ msgid ""
 "`\"minlon,minlat,maxlon,maxlat\"` string, or a dict — all coerced to "
 "`BoundingBox`."
 msgstr ""
+"Acepta una tupla `(minlon, minlat, maxlon, maxlat)`, un `BoundingBox`, una "
+"cadena `\"minlon,minlat,maxlon,maxlat\"` o un diccionario; todos se "
+"convierten a `BoundingBox`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`geometry`"
@@ -111,7 +137,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "GeoJSON geometry dict. Alternative to `bbox`."
-msgstr ""
+msgstr "Diccionario de geometría GeoJSON. Alternativa a `bbox`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`start_date` / `end_date`"
@@ -123,7 +149,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Temporal filter."
-msgstr ""
+msgstr "Filtro temporal."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`cloud_cover_min` / `cloud_cover_max`"
@@ -135,7 +161,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "0–100. Default `0` / `100`."
-msgstr ""
+msgstr "0–100. Valor por defecto `0` / `100`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`satellites`"
@@ -155,7 +181,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Sensor/instrument names."
-msgstr ""
+msgstr "Nombres de sensores/instrumentos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`collections`"
@@ -163,7 +189,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Data collection identifiers."
-msgstr ""
+msgstr "Identificadores de colecciones de datos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`processing_levels`"
@@ -185,6 +211,7 @@ msgstr ""
 msgid ""
 "Spatial resolution in metres. **Not** `resolution_min`/`resolution_max`."
 msgstr ""
+"Resolución espacial en metros. **No** `resolution_min`/`resolution_max`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`product_type`"
@@ -216,7 +243,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "1–10000. Default 100."
-msgstr ""
+msgstr "1–10000. Valor por defecto 100."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`sort_by`"
@@ -241,6 +268,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `False`. **Not** a `sort_order: \"asc\"/\"desc\"` string."
 msgstr ""
+"Valor por defecto `False`. **No** es una cadena `sort_order: "
+"\"asc\"/\"desc\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`providers`"
@@ -248,7 +277,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Restrict search to specific providers."
-msgstr ""
+msgstr "Restringe la búsqueda a proveedores específicos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`cql2_filter`"
@@ -256,7 +285,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "CQL2 expression, STAC-capable providers only."
-msgstr ""
+msgstr "Expresión CQL2, solo para proveedores compatibles con STAC."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`on_provider_failure`"
@@ -272,7 +301,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Per-provider timeout in seconds. Default 60."
-msgstr ""
+msgstr "Tiempo de espera por proveedor en segundos. Por defecto 60."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`ids`"
@@ -280,7 +309,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Retrieve specific item IDs."
-msgstr ""
+msgstr "Recupera ID de elementos específicos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`geometry_geojson`"
@@ -288,7 +317,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "GeoJSON geometry dict (alternative to `bbox`)."
-msgstr ""
+msgstr "Diccionario de geometría GeoJSON (alternativa a `bbox`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`pass_direction`"
@@ -296,7 +325,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "SAR orbit pass, `\"ASCENDING\"` or `\"DESCENDING\"`."
-msgstr ""
+msgstr "Pasada de órbita SAR, `\"ASCENDING\"` o `\"DESCENDING\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`page` / `page_size`"
@@ -304,7 +333,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Pagination, default `1` / `100` (`page_size` 1-1000)."
-msgstr ""
+msgstr "Paginación, valor por defecto `1` / `100` (`page_size` 1-1000)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`provider_filters`"
@@ -316,7 +345,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Extra filters per provider, keyed by provider ID."
-msgstr ""
+msgstr "Filtros adicionales por proveedor, indexados por ID de proveedor."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:95
 msgid "`DownloadOptions`"
@@ -328,7 +357,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "1–32. Default 4."
-msgstr ""
+msgstr "1–32. Valor por defecto 4."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retry_attempts`"
@@ -336,7 +365,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "0–10. Default 3. **Not** `retry`."
-msgstr ""
+msgstr "0–10. Valor por defecto 3. **No** `retry`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retry_delay_seconds`"
@@ -344,11 +373,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default 1.0, doubles each attempt."
-msgstr ""
+msgstr "Valor por defecto 1.0, se duplica en cada intento."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Per-download timeout. Default 300."
-msgstr ""
+msgstr "Tiempo de espera por descarga. Valor por defecto 300."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`resume`"
@@ -356,7 +385,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `True`."
-msgstr ""
+msgstr "Valor por defecto `True`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`verify_checksum`"
@@ -364,7 +393,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `False`."
-msgstr ""
+msgstr "Valor por defecto `False`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`checksum_algorithm`"
@@ -376,7 +405,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `SHA256`."
-msgstr ""
+msgstr "Valor por defecto `SHA256`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`on_failure`"
@@ -391,6 +420,8 @@ msgid ""
 "Speed cap in **Mbps** (a float), not a `\"10MB\"` string. `None` = "
 "unlimited."
 msgstr ""
+"Límite de velocidad en **Mbps** (un número flotante), no una cadena "
+"`\"10MB\"`. `None` = sin límite."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`priority`"
@@ -398,7 +429,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Higher = higher priority."
-msgstr ""
+msgstr "Mayor valor = mayor prioridad."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bands`"
@@ -410,7 +441,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default: all data assets."
-msgstr ""
+msgstr "Valor por defecto: todos los recursos de datos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`post_process`"
@@ -425,6 +456,8 @@ msgid ""
 "**Must** be `PostProcessAction` objects — a plain string list raises a "
 "`ValidationError`. See below."
 msgstr ""
+"**Deben** ser objetos `PostProcessAction`: una lista de cadenas simples "
+"provoca un `ValidationError`. Véase más abajo."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`overwrite`"
@@ -432,7 +465,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `False` (skip existing)."
-msgstr ""
+msgstr "Valor por defecto `False` (omite los existentes)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`extract_archives`"
@@ -443,6 +476,8 @@ msgid ""
 "Not used by any code. Extract archives with the `unzip` [post-processing "
 "action](../data-access/download.md#archives)."
 msgstr ""
+"No lo utiliza ningún código. Extraiga los archivos comprimidos con la "
+"[acción de posprocesamiento](../data-access/download.md#archives) `unzip`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retry_strategy`"
@@ -450,7 +485,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `\"exponential_jitter\"`."
-msgstr ""
+msgstr "Valor por defecto `\"exponential_jitter\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`chunk_size_mb`"
@@ -458,7 +493,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `16.0`."
-msgstr ""
+msgstr "Valor por defecto `16.0`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`max_file_size_gb`"
@@ -466,7 +501,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Optional size cap."
-msgstr ""
+msgstr "Límite de tamaño opcional."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`flatten_directory`"
@@ -478,7 +513,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Default `\"original\"`."
-msgstr ""
+msgstr "Valor por defecto `\"original\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`notify_webhook` / `notify_email`"
@@ -486,11 +521,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Notification targets."
-msgstr ""
+msgstr "Destinos de notificación."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:120
 msgid "Constructing `post_process` correctly"
-msgstr ""
+msgstr "Cómo construir `post_process` correctamente"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:133
 msgid ""
@@ -498,6 +533,10 @@ msgid ""
 " into exactly this shape internally — it's only when constructing "
 "`DownloadOptions` directly in Python that raw strings don't work."
 msgstr ""
+"La forma de cadena `--post-process \"reproject:EPSG:4326,cog\"` de la CLI se"
+" analiza internamente exactamente con esta estructura; solo al construir "
+"`DownloadOptions` directamente en Python las cadenas sin procesar no "
+"funcionan."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:138
 msgid "`DownloadResult`"
@@ -508,6 +547,8 @@ msgid ""
 "Returned by `download()`, `download_from_file()` and `stream()`, one per "
 "input item and in input order."
 msgstr ""
+"Lo devuelven `download()`, `download_from_file()` y `stream()`, uno por cada"
+" elemento de entrada y en el mismo orden."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`status`"
@@ -528,7 +569,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "The `SatelliteData.id` this result is for."
-msgstr ""
+msgstr "El `SatelliteData.id` al que corresponde este resultado."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`provider`"
@@ -536,7 +577,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Provider ID."
-msgstr ""
+msgstr "ID del proveedor."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`output_path`"
@@ -548,7 +589,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "First output file."
-msgstr ""
+msgstr "Primer archivo de salida."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`output_paths`"
@@ -562,6 +603,8 @@ msgstr ""
 msgid ""
 "Every output file. After the `unzip` action these are the extracted files."
 msgstr ""
+"Todos los archivos de salida. Tras la acción `unzip` son los archivos "
+"extraídos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bytes_downloaded`"
@@ -572,6 +615,8 @@ msgid ""
 "Size of the files written. For streamed results this is the size on disk, "
 "not network traffic."
 msgstr ""
+"Tamaño de los archivos escritos. En los resultados transmitidos por "
+"streaming es el tamaño en disco, no el tráfico de red."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`duration_seconds`"
@@ -579,7 +624,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Wall-clock time."
-msgstr ""
+msgstr "Tiempo real transcurrido."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`error` / `error_type`"
@@ -589,6 +634,8 @@ msgstr ""
 msgid ""
 "Failure message and the exception class name or provider-specific code."
 msgstr ""
+"Mensaje de error y nombre de la clase de la excepción o código específico "
+"del proveedor."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`retries_used` / `attempt_number`"
@@ -596,7 +643,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Retry bookkeeping."
-msgstr ""
+msgstr "Registro de reintentos."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`checksum_verified`"
@@ -607,6 +654,8 @@ msgid ""
 "See [Error handling](error-handling.md#download-resilience) for what this "
 "does and does not guarantee."
 msgstr ""
+"Consulte [Gestión de errores](error-handling.md#download-resilience) para "
+"saber qué garantiza y qué no garantiza esto."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`post_process_completed`"
@@ -614,7 +663,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Post-processing steps that ran."
-msgstr ""
+msgstr "Pasos de posprocesamiento que se ejecutaron."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`from_cache`"
@@ -622,7 +671,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "The file already existed and was reused."
-msgstr ""
+msgstr "El archivo ya existía y se reutilizó."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`aoi_coverage`"
@@ -633,6 +682,8 @@ msgid ""
 "Streamed results only: fraction (0-1) of the AOI covered by the streamed "
 "raster."
 msgstr ""
+"Solo resultados transmitidos por streaming: fracción (0-1) del AOI cubierta "
+"por el ráster transmitido."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:158
 msgid "`SatelliteData`"
@@ -640,7 +691,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:160
 msgid "One scene returned by a search."
-msgstr ""
+msgstr "Una escena devuelta por una búsqueda."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`id`, `provider`"
@@ -648,7 +699,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Scene ID and the provider that returned it."
-msgstr ""
+msgstr "ID de la escena y proveedor que la devolvió."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`satellite`, `sensor`, `collection`"
@@ -656,7 +707,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Platform, instrument and collection."
-msgstr ""
+msgstr "Plataforma, instrumento y colección."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`datetime`, `start_datetime`, `end_datetime`"
@@ -668,7 +719,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Acquisition time or interval."
-msgstr ""
+msgstr "Hora o intervalo de adquisición."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`bbox`, `geometry`"
@@ -680,7 +731,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Footprint as a bounding box and as GeoJSON."
-msgstr ""
+msgstr "Huella como cuadro delimitador y como GeoJSON."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`cloud_cover`"
@@ -688,7 +739,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Percent."
-msgstr ""
+msgstr "Porcentaje."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`processing_level`, `data_format`"
@@ -696,11 +747,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "enums"
-msgstr ""
+msgstr "enums"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`UNKNOWN` when the provider does not say."
-msgstr ""
+msgstr "`UNKNOWN` cuando el proveedor no lo indica."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`assets`"
@@ -715,6 +766,9 @@ msgid ""
 "Downloadable files, keyed by asset name. Each asset has `href`, `title`, "
 "`media_type`, `roles`, `size_bytes`, `checksum_md5` and `checksum_sha256`."
 msgstr ""
+"Archivos descargables, indexados por nombre de recurso. Cada recurso tiene "
+"`href`, `title`, `media_type`, `roles`, `size_bytes`, `checksum_md5` y "
+"`checksum_sha256`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid ""
@@ -724,11 +778,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "various"
-msgstr ""
+msgstr "varios"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "SAR metadata."
-msgstr ""
+msgstr "Metadatos SAR."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`resolution_m`, `gsd_m`, `off_nadir_angle`"
@@ -736,7 +790,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Resolution and viewing geometry."
-msgstr ""
+msgstr "Resolución y geometría de observación."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`score`"
@@ -747,6 +801,8 @@ msgid ""
 "Relevance score assigned by the searcher. See [Searching](../data-"
 "access/search.md)."
 msgstr ""
+"Puntuación de relevancia asignada por el buscador. Véase [Búsqueda](../data-"
+"access/search.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`properties`, `links`, `stac_extensions`"
@@ -754,17 +810,19 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Raw provider metadata."
-msgstr ""
+msgstr "Metadatos sin procesar del proveedor."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:176
 msgid ""
 "`SatelliteData.from_stac_item()` and `to_stac_item()` convert to and from "
 "STAC items."
 msgstr ""
+"`SatelliteData.from_stac_item()` y `to_stac_item()` convierten desde y hacia"
+" elementos STAC."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:178
 msgid "`PyGeoFetch` methods"
-msgstr ""
+msgstr "Métodos de `PyGeoFetch`"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:180
 msgid ""
@@ -781,6 +839,20 @@ msgid ""
 " given. Neither parameter requires `shapely` to be installed unless "
 "validation is actually turned on — the import is lazy."
 msgstr ""
+"**`__init__(config_path=None, log_level=\"INFO\", log_json=False, "
+"cache_ttl=3600, max_search_workers=8, progress_callback=None, "
+"auth_backend=\"file\", validate_optical=False, "
+"optical_validation_config=None)`** `validate_optical` establece el valor por"
+" defecto a nivel de instancia para la validación previa de datos ópticos "
+"(véase [Validación y comprobación previa de datos ópticos](../data-"
+"access/optical-validation.md)), que se aplica automáticamente tanto en "
+"`search()` como en `download()` salvo que se anule en cada llamada. Por "
+"defecto es `False`: es totalmente opcional y el comportamiento existente no "
+"cambia a menos que se active explícitamente. `optical_validation_config` es "
+"el `OpticalValidationConfig` que se usa cuando está activado; si no se "
+"indica, toma los valores por defecto propios de `OpticalValidationConfig()`."
+" Ninguno de los dos parámetros requiere tener `shapely` instalado a menos "
+"que la validación se active realmente: la importación es diferida."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:191
 msgid ""
@@ -793,6 +865,14 @@ msgid ""
 "`OpticalPreflightValidator.run_preflight()` before being returned — the AOI "
 "is derived automatically from `query.bbox`/`query.geometry`."
 msgstr ""
+"**`search(query: SearchQuery, providers: list[str] | None = None, use_cache:"
+" bool = True, validate_optical: bool | None = None) -> "
+"list[SatelliteData]`** Búsqueda federada. Devuelve resultados deduplicados y"
+" puntuados. `validate_optical=None` (valor por defecto) recurre a la "
+"configuración a nivel de instancia de `__init__`; pase `True`/`False` para "
+"anular solo esta llamada. Cuando está activa, los resultados se filtran con "
+"`OpticalPreflightValidator.run_preflight()` antes de devolverse; el AOI se "
+"deriva automáticamente de `query.bbox`/`query.geometry`."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:199
 msgid ""
@@ -800,6 +880,9 @@ msgid ""
 "list[SatelliteData]`** Search and write results to a GeoJSON file in one "
 "call."
 msgstr ""
+"**`search_and_save(query, output: Path, providers=None) -> "
+"list[SatelliteData]`** Busca y escribe los resultados en un archivo GeoJSON "
+"en una sola llamada."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:202
 msgid ""
@@ -816,6 +899,19 @@ msgid ""
 "without it, AOI-dependent checks are skipped while every other check still "
 "runs."
 msgstr ""
+"**`download(data, destination: Path, options: DownloadOptions | None = None,"
+" item_done_callback=None, validate_optical: bool | None = None, aoi: Polygon"
+" | None = None) -> list[DownloadResult]`** Acepta un único `SatelliteData` o"
+" una lista. `validate_optical` funciona igual que en `search()`: es una "
+"compuerta independiente, útil para elementos que nunca pasaron por "
+"`search()` (por ejemplo, cargados mediante `download_from_file()`). Los "
+"elementos rechazados **nunca se intentan descargar**: en la posición "
+"original de ese elemento se coloca un `DownloadResult(status=FAILED, "
+"error=...)` sintetizado, de modo que la longitud y el orden de la lista "
+"devuelta siempre coinciden con `data`, sin importar cuántos elementos se "
+"hayan rechazado. `aoi` es opcional aquí (no hay consulta de la que "
+"derivarlo); sin él, se omiten las comprobaciones que dependen del AOI, "
+"mientras que el resto de comprobaciones se ejecutan igualmente."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:214
 msgid ""
@@ -823,6 +919,9 @@ msgid ""
 "options=None) -> list[DownloadResult]`** Load a GeoJSON results file (from "
 "`search_and_save`) and download it directly."
 msgstr ""
+"**`download_from_file(search_results_path: Path, destination: Path, "
+"options=None) -> list[DownloadResult]`** Carga un archivo de resultados "
+"GeoJSON (de `search_and_save`) y lo descarga directamente."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:217
 msgid ""
@@ -832,16 +931,26 @@ msgid ""
 "keyring (or Fernet-encrypted file fallback — see [Security "
 "Model](security.md)). Overrides matching env vars for the process."
 msgstr ""
+"**`add_credentials(provider: str, *, username=None, password=None, "
+"api_key=None, client_id=None, client_secret=None, token=None, "
+"access_key=None, secret_key=None, **kwargs) -> None`** Se almacenan en el "
+"llavero del sistema (o, como alternativa, en un archivo cifrado con Fernet; "
+"véase [Modelo de seguridad](security.md)). Anulan las variables de entorno "
+"equivalentes durante el proceso."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:221
 msgid "**`status() -> dict`** Registered providers, auth status, cache stats."
 msgstr ""
+"**`status() -> dict`** Proveedores registrados, estado de autenticación y "
+"estadísticas de la caché."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:224
 msgid ""
 "**`clear_cache() -> int`** Clears the in-memory search result cache; returns"
 " entries cleared."
 msgstr ""
+"**`clear_cache() -> int`** Vacía la caché de resultados de búsqueda en "
+"memoria; devuelve el número de entradas eliminadas."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:227
 msgid ""
@@ -852,6 +961,13 @@ msgid ""
 "providers that serve per-band COGs (`planetary_computer`, `element84`). See "
 "[Streaming](../data-access/streaming.md)."
 msgstr ""
+"**`stream(data, bbox, destination, bands=None, parallel=4, overwrite=False, "
+"bbox_crs=\"EPSG:4326\", block_size=1024) -> list[DownloadResult]`** Lee solo"
+" la ventana del AOI de cada banda desde GeoTIFF optimizados para la nube "
+"(COG) y escribe pequeños GeoTIFF locales, en lugar de descargar escenas "
+"completas. Compatible con los proveedores que sirven COG por banda "
+"(`planetary_computer`, `element84`). Véase [Streaming](../data-"
+"access/streaming.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:232
 msgid ""
@@ -859,6 +975,9 @@ msgid ""
 "orbit_type: str = \"precise\") -> str | None`** Downloads a Sentinel-1 "
 "precise/restituted orbit file, extracts the `.EOF` automatically."
 msgstr ""
+"**`fetch_orbit_file(product_name: str, output_dir: str = \"./orbits/\", "
+"orbit_type: str = \"precise\") -> str | None`** Descarga un archivo de "
+"órbita precisa/restituida de Sentinel-1 y extrae el `.EOF` automáticamente."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:235
 msgid ""
@@ -868,6 +987,12 @@ msgid ""
 "section for the full guide. Not related to the YAML acquisition-pipeline "
 "mechanism (`pygeofetch pipeline run`) despite the shared name."
 msgstr ""
+"**`pipeline(name: str) -> ProcessingPipeline`** Crea una cadena de "
+"procesamiento encadenable sobre un archivo; consulte la sección «Python "
+"Processing Pipeline» de [Pipelines y procesamiento por "
+"lotes](../workflows/pipelines.md) para la guía completa. No está relacionada"
+" con el mecanismo de pipeline de adquisición en YAML (`pygeofetch pipeline "
+"run`), a pesar del nombre compartido."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:241
 msgid ""
@@ -876,26 +1001,33 @@ msgid ""
 "parallel — shorthand for `client.batch.process(...)`. See [Pipelines & Batch"
 " Processing](../workflows/pipelines.md)'s \"Batch Processing\" section."
 msgstr ""
+"**`batch_process(inputs, chain, output_dir=\".\", parallel=2) -> "
+"list[ProcessingResult]`** Ejecuta la misma cadena de procesamiento sobre "
+"muchos archivos en paralelo; es un atajo de `client.batch.process(...)`. "
+"Consulte la sección «Batch Processing» de [Pipelines y procesamiento por "
+"lotes](../workflows/pipelines.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:246
 msgid "Client namespaces"
-msgstr ""
+msgstr "Espacios de nombres del cliente"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:248
 msgid "`PyGeoFetch` instances expose processing engines as attributes:"
 msgstr ""
+"Las instancias de `PyGeoFetch` exponen los motores de procesamiento como "
+"atributos:"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Attribute"
-msgstr ""
+msgstr "Atributo"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Class"
-msgstr ""
+msgstr "Clase"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "Documented in"
-msgstr ""
+msgstr "Documentado en"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.auth`"
@@ -907,7 +1039,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Authentication](../data-access/authentication.md)"
-msgstr ""
+msgstr "[Autenticación](../data-access/authentication.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.preprocess`"
@@ -922,6 +1054,8 @@ msgid ""
 "[Preprocessing](../processing/optical/preprocessing.md), "
 "[Terrain](../processing/optical/terrain.md)"
 msgstr ""
+"[Preprocesamiento](../processing/optical/preprocessing.md), "
+"[Terreno](../processing/optical/terrain.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.indices`"
@@ -933,7 +1067,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Spectral indices](../processing/optical/spectral-indices.md)"
-msgstr ""
+msgstr "[Índices espectrales](../processing/optical/spectral-indices.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.post`"
@@ -945,7 +1079,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Post-processing](../processing/optical/postprocessing.md)"
-msgstr ""
+msgstr "[Posprocesamiento](../processing/optical/postprocessing.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.sar`"
@@ -957,7 +1091,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[SAR](../processing/sar-insar/sar.md)"
-msgstr ""
+msgstr "[SAR](../processing/sar-insar/sar.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.classify`"
@@ -969,7 +1103,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Classification](../processing/optical/classification.md)"
-msgstr ""
+msgstr "[Clasificación](../processing/optical/classification.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "`client.batch`"
@@ -981,7 +1115,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:8
 msgid "[Pipelines](../workflows/pipelines.md)"
-msgstr ""
+msgstr "[Pipelines](../workflows/pipelines.md)"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:260
 msgid ""
@@ -990,6 +1124,10 @@ msgid ""
 "pipelines and the InSAR modules are standalone imports, not attributes of "
 "the client."
 msgstr ""
+"La extracción de Landsat (`pygeofetch.processor.LandsatExtractor`), las "
+"series temporales (`TimeSeriesAnalyzer`), el `SpectralIndex` independiente, "
+"los pipelines multisensor y los módulos InSAR son importaciones "
+"independientes, no atributos del cliente."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:266
 msgid ""
@@ -997,13 +1135,18 @@ msgid ""
 "`pygeofetch.providers.list_providers()` / `list_provider_info()` — see "
 "[Providers](../data-access/providers.md)."
 msgstr ""
+"`PyGeoFetch` **no** tiene un método `.providers()`. Liste los proveedores "
+"mediante `pygeofetch.providers.list_providers()` / `list_provider_info()`; "
+"véase [Proveedores](../data-access/providers.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:270
 msgid "Optical validation quick reference"
-msgstr ""
+msgstr "Referencia rápida de validación de datos ópticos"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/python-api.md:272
 msgid ""
 "See [Optical Data Validation & Preflight](../data-access/optical-"
 "validation.md) for the full guide."
 msgstr ""
+"Consulte [Validación y comprobación previa de datos ópticos](../data-"
+"access/optical-validation.md) para la guía completa."

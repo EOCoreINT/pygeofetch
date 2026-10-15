@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,14 +29,16 @@ msgid ""
 "issues](../reference/known-issues.md)), so no version numbers are attached. "
 "For commit-level history use the GitHub repository."
 msgstr ""
+"对重要变更的按主题整理的记录，根据项目的审计历史编写而成。它不是逐个版本的日志：条目按领域分组，而且软件包的版本字符串并不一致（参见[已知问题](../reference/known-"
+"issues.md)），因此未标注任何版本号。如需提交级别的历史，请查看 GitHub 仓库。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:8
 msgid "Data access"
-msgstr ""
+msgstr "数据获取"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:10
 msgid "**Added**"
-msgstr ""
+msgstr "**新增**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:12
 msgid ""
@@ -45,6 +47,9 @@ msgid ""
 "(Copernicus `.zip`, USGS `.tar`) are refused. See [Streaming](../data-"
 "access/streaming.md)."
 msgstr ""
+"`PyGeoFetch.stream()` 和 `pygeofetch.streaming`：使用 HTTP 范围请求，仅从云优化 GeoTIFF "
+"中读取位于 AOI 之下的像元。压缩包（Copernicus 的 `.zip`、USGS 的 `.tar`）会被拒绝。参见[流式读取](../data-"
+"access/streaming.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:13
 msgid ""
@@ -54,6 +59,9 @@ msgid ""
 " through `validate_optical`. See [Optical validation](../data-"
 "access/optical-validation.md)."
 msgstr ""
+"光学数据验证与预检（`pygeofetch.validation`）：下载前的质量关卡，涵盖 AOI 覆盖、云量、所需波段、处理级别和时间范围，通过 "
+"`validate_optical` 接入 `search()` 和 `download()`。参见[光学验证](../data-"
+"access/optical-validation.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:14
 msgid ""
@@ -61,22 +69,24 @@ msgid ""
 "manifest, and `prepare_insar_stack()`. See [Data organizer](../data-"
 "access/data-organizer.md)."
 msgstr ""
+"`DataOrganizer`：按日期、轨道、卫星和处理级别组织的层级结构、清单文件，以及 "
+"`prepare_insar_stack()`。参见[数据组织器](../data-access/data-organizer.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:16
 msgid "**Providers rewritten against their real APIs**"
-msgstr ""
+msgstr "**依据真实 API 重写的提供方**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:18
 msgid ""
 "`airbus_oneatlas` (previously non-functional: fake authentication, fictional"
 " endpoint, no downloadable assets)."
-msgstr ""
+msgstr "`airbus_oneatlas`（此前无法工作：伪造的认证、虚构的端点、没有可下载的资产）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:19
 msgid ""
 "`noaa_big_data` (now lists public S3 objects instead of calling a fictional "
 "REST endpoint)."
-msgstr ""
+msgstr "`noaa_big_data`（现在列出公共 S3 对象，而不是调用虚构的 REST 端点）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:20
 msgid ""
@@ -84,22 +94,25 @@ msgid ""
 "`alaska_satellite_facility`, `inpe_cbers`, `jaxa_earth`, `isro_bhuvan`, "
 "`earth_explorer_additional`, `geoserver_generic`."
 msgstr ""
+"`digitalglobe`、`maxar_gbdx`（GBDX 已于 2022 "
+"年关闭）、`alaska_satellite_facility`、`inpe_cbers`、`jaxa_earth`、`isro_bhuvan`、`earth_explorer_additional`、`geoserver_generic`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:21
 msgid ""
 "Targeted fixes in `nasa_earthdata`, `nasa_earthdata_cloud`, `planet` and "
 "`sentinel_hub`."
 msgstr ""
+"对 `nasa_earthdata`、`nasa_earthdata_cloud`、`planet` 和 `sentinel_hub` 的针对性修复。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:22
 msgid ""
 "`esa_scihub` and `google_earth_engine` now fail with an explanatory message "
 "instead of crashing on a missing method."
-msgstr ""
+msgstr "`esa_scihub` 和 `google_earth_engine` 现在会以说明性消息失败，而不是因缺少方法而崩溃。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:24
 msgid "Reliability and security"
-msgstr ""
+msgstr "可靠性与安全"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:26
 msgid ""
@@ -107,12 +120,15 @@ msgid ""
 "failure counts accumulate. See [Error handling](../reference/error-"
 "handling.md#circuit-breaker)."
 msgstr ""
+"现在会调用熔断器，并且提供方实例会持久保留，使失败计数得以累积。参见[错误处理](../reference/error-"
+"handling.md#circuit-breaker)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:27
 msgid ""
 "Default credential storage uses Fernet encryption instead of base64, with "
 "automatic migration. See [Security](../reference/security.md)."
 msgstr ""
+"默认的凭据存储使用 Fernet 加密而不是 base64，并支持自动迁移。参见[安全](../reference/security.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:28
 msgid ""
@@ -120,14 +136,16 @@ msgid ""
 "processing actions and transfer files to local disk, S3 or GCS with optional"
 " webhook notification. See [Pipelines](../workflows/pipelines.md)."
 msgstr ""
+"流水线的 `process` 和 `export` 步骤此前是桩实现，现在会运行后处理动作，并将文件传输到本地磁盘、S3 或 GCS，同时支持可选的 "
+"webhook 通知。参见[流水线](../workflows/pipelines.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:30
 msgid "Processing"
-msgstr ""
+msgstr "处理"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:32
 msgid "**Optical**"
-msgstr ""
+msgstr "**光学**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:34
 msgid ""
@@ -135,6 +153,8 @@ msgid ""
 "which was clipped to a constant by a normalized-difference range. See "
 "[Spectral indices](../processing/optical/spectral-indices.md)."
 msgstr ""
+"六个地质与矿产勘查光谱指数，并修复了 "
+"`RVI`，它此前被归一化差值范围截断为常数。参见[光谱指数](../processing/optical/spectral-indices.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:35
 msgid ""
@@ -142,10 +162,12 @@ msgid ""
 "and coherence-weighted InSAR fusion. See [Optical offset "
 "tracking](../processing/sar-insar/optical-offset-tracking.md)."
 msgstr ""
+"光学像元偏移跟踪、带离群值保护的水平应变，以及按相干性加权的 InSAR 融合。参见[光学偏移跟踪](../processing/sar-"
+"insar/optical-offset-tracking.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:37
 msgid "**SAR and InSAR**"
-msgstr ""
+msgstr "**SAR 与 InSAR**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:39
 msgid ""
@@ -154,6 +176,10 @@ msgid ""
 "defect remains in `client.sar`; see [Known issues](../reference/known-"
 "issues.md#sar-coherence-fails-on-complex-input)."
 msgstr ""
+"`pygeofetch.sar.pipelines` 中的五个标准 SAR 流水线，并修复了 "
+"`pygeofetch.sar.SARProcessor.coherence()` 对复数 SLC 输入的处理。`client.sar` "
+"中仍存在同样的缺陷；参见[已知问题](../reference/known-issues.md#sar-coherence-fails-on-"
+"complex-input)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:40
 msgid ""
@@ -161,10 +187,12 @@ msgid ""
 "alignment, and topographic-residual co-estimation in SBAS. See "
 "[InSAR](../processing/sar-insar/insar.md)."
 msgstr ""
+"InSAR 高级保护措施：几何叠掩与阴影掩膜、自定义 DEM 对齐，以及 SBAS 中的地形残差联合估计。参见 "
+"[InSAR](../processing/sar-insar/insar.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:42
 msgid "**Multi-sensor**"
-msgstr ""
+msgstr "**多传感器**"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:44
 msgid ""
@@ -174,6 +202,9 @@ msgid ""
 " as `pygeofetch multisensor` commands. See [Multi-sensor "
 "pipelines](../processing/multisensor.md)."
 msgstr ""
+"五个组合两种传感器的流水线：InSAR 与光学位移、SAR 与光学洪水制图、经地形校正的光学变化检测、DEM 差值体积，以及 NDVI "
+"与相干性分类。也可作为 `pygeofetch multisensor` "
+"命令使用。参见[多传感器流水线](../processing/multisensor.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:45
 msgid ""
@@ -182,10 +213,12 @@ msgid ""
 " as nodata, and solar position checked against an independent reference "
 "(0.19 degrees zenith, 0.49 degrees azimuth)."
 msgstr ""
+"审计修复：光学和 DEM 的无数据处理、地理网格上体积计算所用的大地测量面积、Sentinel-2 基线 04.00 的偏移参数、将类别 255 "
+"作为无数据，以及对照独立参考检验的太阳位置（天顶角 0.19 度，方位角 0.49 度）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:47
 msgid "Packaging and quality"
-msgstr ""
+msgstr "打包与质量"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:49
 msgid ""
@@ -193,32 +226,36 @@ msgid ""
 "never published (`whitebox`, `whiteboxgui`, `sidecar`, `contextily`, "
 "`opensartoolkit`)."
 msgstr ""
+"更正了 `pyproject.toml` "
+"中五个引用了从未发布版本的依赖固定（`whitebox`、`whiteboxgui`、`sidecar`、`contextily`、`opensartoolkit`）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:50
 msgid ""
 "Resolved seven `mypy` errors in `scheduler.py`, `authenticator.py` and "
 "`viz/plot.py`, including a removed `matplotlib.cm.get_cmap` call."
 msgstr ""
+"解决了 `scheduler.py`、`authenticator.py` 和 `viz/plot.py` 中的七个 `mypy` "
+"错误，其中包括对已被移除的 `matplotlib.cm.get_cmap` 的调用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:52
 msgid "Documentation"
-msgstr ""
+msgstr "文档"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:54
 msgid ""
 "Restructured into Getting started, Data access, Processing, Workflows, "
 "Visualization, Reference and Project, with redirects from the old URLs."
-msgstr ""
+msgstr "重新组织为入门指南、数据访问、处理、工作流、可视化、参考和项目，并为旧 URL 设置了重定向。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:55
 msgid "Switched the theme to Furo and added grid-card navigation."
-msgstr ""
+msgstr "将主题切换为 Furo，并添加了网格卡片式导航。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:56
 msgid ""
 "The CLI command reference is now generated from the code "
 "(`tools/gen_cli_reference.py`)."
-msgstr ""
+msgstr "CLI 命令参考现在由代码生成（`tools/gen_cli_reference.py`）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/changelog.md:57
 msgid ""
@@ -227,3 +264,5 @@ msgid ""
 "Settings layer is not applied at runtime; `extract_archives` is unused; "
 "downloads are nested under `<destination>/<provider>/`."
 msgstr ""
+"更正了与代码不符的说法：凭据不会从环境变量中读取；`--resume` 不会续传部分下载的文件；Settings "
+"层不会在运行时生效；`extract_archives` 未被使用；下载内容嵌套存放在 `<destination>/<provider>/` 之下。"

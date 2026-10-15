@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,16 +26,20 @@ msgid ""
 "Interactive maps built on `leafmap` — search footprints, rasters, vectors, "
 "and split comparisons."
 msgstr ""
+"Cartes interactives construites sur `leafmap` — emprises de recherche, "
+"rasters, vecteurs et comparaisons en écran partagé."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:16
 msgid ""
 "`add_raster()` needs `rioxarray` and `localtileserver` alongside `leafmap` —"
 " all three are declared in the `[viz]` extra."
 msgstr ""
+"`add_raster()` nécessite `rioxarray` et `localtileserver` en plus de "
+"`leafmap` — les trois sont déclarés dans l'extra `[viz]`."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:19
 msgid "Overview"
-msgstr ""
+msgstr "Vue d'ensemble"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:21
 msgid ""
@@ -46,6 +50,14 @@ msgid ""
 " and toggle layers, and a split-panel view places two layers side by side "
 "with a slider, which is the quickest way to compare before and after."
 msgstr ""
+"Le visualiseur de cartes sert à l'exploration. Avant de télécharger quoi que"
+" ce soit, vous pouvez dessiner sur une carte les emprises des résultats de "
+"votre recherche pour voir dans quelle mesure elles couvrent votre zone, et "
+"après traitement vous pouvez superposer des rasters et des vecteurs à un "
+"fond de carte pour les juger en contexte. Les cartes sont interactives : "
+"vous pouvez les déplacer, zoomer et activer ou désactiver des couches, et "
+"une vue en panneaux partagés place deux couches côte à côte avec un curseur,"
+" ce qui est le moyen le plus rapide de comparer l'avant et l'après."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:23
 msgid ""
@@ -53,10 +65,14 @@ msgid ""
 "HTML file that opens in any browser, so a result can be shared with someone "
 "who has no Python installed."
 msgstr ""
+"Les cartes sont construites dans un notebook ou un script et peuvent être "
+"enregistrées sous forme de fichier HTML autonome qui s'ouvre dans n'importe "
+"quel navigateur, de sorte qu'un résultat peut être partagé avec quelqu'un "
+"qui n'a pas Python installé."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:25
 msgid "Search result footprints — see before you download"
-msgstr ""
+msgstr "Emprises des résultats de recherche — voir avant de télécharger"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:36
 msgid ""
@@ -65,16 +81,25 @@ msgid ""
 "against any provider's results. See [Providers](../data-access/providers.md)"
 " for which providers return precise footprint geometry today."
 msgstr ""
+"Utilise la géométrie fournie par le fournisseur pour chaque résultat "
+"lorsqu'elle est disponible, et bascule automatiquement sur un rectangle "
+"englobant lorsqu'elle ne l'est pas — appel sûr sur les résultats de "
+"n'importe quel fournisseur. Voir [Fournisseurs](../data-access/providers.md)"
+" pour savoir quels fournisseurs renvoient aujourd'hui une géométrie "
+"d'emprise précise."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:42
 msgid "Split-panel comparison"
-msgstr ""
+msgstr "Comparaison en panneaux partagés"
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:44
 msgid ""
 "Draggable side-by-side comparison of two rasters — e.g. a DSM against a DTM,"
 " or two independent DEM sources — backed by leafmap's own `split_map()`."
 msgstr ""
+"Comparaison côte à côte avec curseur déplaçable de deux rasters — par "
+"exemple un MNS face à un MNE, ou deux sources de MNT indépendantes — "
+"s'appuyant sur le propre `split_map()` de leafmap."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:57
 msgid ""
@@ -84,7 +109,13 @@ msgid ""
 "`ServerDownError`. When that happens, `add_split_comparison()` automatically"
 " falls back to a static side-by-side comparison that needs no server at all."
 msgstr ""
+"La vue partagée interactive dépend de `localtileserver`, qui lance un "
+"serveur HTTP local en arrière-plan, ce qui est connu pour échouer dans "
+"certains environnements réseau restreints ou en bac à sable (pare-feu, "
+"certains VPN d'entreprise) avec une `ServerDownError`. Dans ce cas, "
+"`add_split_comparison()` bascule automatiquement sur une comparaison "
+"statique côte à côte qui ne nécessite aucun serveur."
 
 #: ../../home/claude/work/docs_audit/docs_out/visualization/mapviewer.md:64
 msgid "Inspecting and saving"
-msgstr ""
+msgstr "Inspection et enregistrement"

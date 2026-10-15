@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,189 +29,201 @@ msgid ""
 " and voting, use GitHub Discussions on "
 "[EOCoreINT/pygeofetch](https://github.com/EOCoreINT/pygeofetch)."
 msgstr ""
+"Esta página lista o trabalho em aberto que decorre dos [problemas "
+"conhecidos](../reference/known-issues.md). É uma proposta compilada durante "
+"a auditoria da documentação, **não um compromisso dos mantenedores**. Para "
+"prioridades e votação, use o GitHub Discussions em "
+"[EOCoreINT/pygeofetch](https://github.com/EOCoreINT/pygeofetch)."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:10
 msgid "Correctness"
-msgstr ""
+msgstr "Correção"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Item"
-msgstr ""
+msgstr "Item"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Why"
-msgstr ""
+msgstr "Por quê"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Fix `client.sar.coherence` for complex input"
-msgstr ""
+msgstr "Corrigir `client.sar.coherence` para entrada complexa"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Currently raises `ValueError`; the standalone processor already works."
-msgstr ""
+msgstr "Atualmente gera `ValueError`; o processador independente já funciona."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Wire in or remove the SAR backends (`_native`, `_sarxarray`, `_ost`)"
-msgstr ""
+msgstr "Conectar ou remover os backends SAR (`_native`, `_sarxarray`, `_ost`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "`SARProcessor(backend=...)` is documented in code but unreachable."
 msgstr ""
+"`SARProcessor(backend=...)` está documentado no código, mas é inalcançável."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Implement `--on-provider-failure abort` and `retry`"
-msgstr ""
+msgstr "Implementar `--on-provider-failure abort` e `retry`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "The flag is accepted and ignored."
-msgstr ""
+msgstr "A flag é aceita e ignorada."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Honour `extract_archives`"
-msgstr ""
+msgstr "Respeitar `extract_archives`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "The option is declared and unused."
-msgstr ""
+msgstr "A opção é declarada e não é usada."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Make checksum mismatches retry or fail"
-msgstr ""
+msgstr "Fazer com que divergências de checksum causem nova tentativa ou falha"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Verification is advisory today."
-msgstr ""
+msgstr "Hoje a verificação é apenas informativa."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:20
 msgid "Configuration and packaging"
-msgstr ""
+msgstr "Configuração e empacotamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Apply the Settings layer at runtime"
-msgstr ""
+msgstr "Aplicar a camada de Settings em tempo de execução"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid ""
 "Files and `PYGEOFETCH_*` variables currently change nothing but `config "
 "get`."
 msgstr ""
+"Arquivos e variáveis `PYGEOFETCH_*` atualmente não alteram nada além de "
+"`config get`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Read credentials from environment variables"
-msgstr ""
+msgstr "Ler credenciais de variáveis de ambiente"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Needed for CI and containers."
-msgstr ""
+msgstr "Necessário para CI e contêineres."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Declare `rich` and `shapely`"
-msgstr ""
+msgstr "Declarar `rich` e `shapely`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "A clean install can fail on `--help`."
-msgstr ""
+msgstr "Uma instalação limpa pode falhar em `--help`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Unify version strings"
-msgstr ""
+msgstr "Unificar as strings de versão"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Three different values are in the source."
-msgstr ""
+msgstr "Há três valores diferentes no código-fonte."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Register `monitor`, remove `multisensor/_init.py`"
-msgstr ""
+msgstr "Registrar `monitor`, remover `multisensor/_init.py`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Dead or unreachable code."
-msgstr ""
+msgstr "Código morto ou inalcançável."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:30
 msgid "Providers and data access"
-msgstr ""
+msgstr "Provedores e acesso a dados"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Remove or unregister `esa_scihub` and `google_earth_engine`"
 msgstr ""
+"Remover ou cancelar o registro de `esa_scihub` e `google_earth_engine`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "They count as providers but cannot return data."
-msgstr ""
+msgstr "Eles contam como provedores, mas não conseguem retornar dados."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Apply `sort_by` for STAC providers"
-msgstr ""
+msgstr "Aplicar `sort_by` para provedores STAC"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Currently ignored."
-msgstr ""
+msgstr "Atualmente ignorado."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Cross-provider de-duplication"
-msgstr ""
+msgstr "Desduplicação entre provedores"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Dedup uses provider plus ID only."
-msgstr ""
+msgstr "A desduplicação usa apenas provedor mais ID."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Merge `stac_compute` and `streaming`"
-msgstr ""
+msgstr "Unificar `stac_compute` e `streaming`"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Two overlapping implementations."
-msgstr ""
+msgstr "Duas implementações sobrepostas."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Live integration tests for streaming"
-msgstr ""
+msgstr "Testes de integração ao vivo para streaming"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Verified only against a local range server."
-msgstr ""
+msgstr "Verificado apenas contra um servidor de ranges local."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:40
 msgid "Processing"
-msgstr ""
+msgstr "Processamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Absolute SAR radiometric calibration from product metadata"
 msgstr ""
+"Calibração radiométrica SAR absoluta a partir dos metadados do produto"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "The current constant is suitable for relative comparison only."
-msgstr ""
+msgstr "A constante atual é adequada apenas para comparação relativa."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Remaining `Affine * tuple` call sites"
-msgstr ""
+msgstr "Pontos de chamada `Affine * tuple` restantes"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Deprecated arithmetic in four modules."
-msgstr ""
+msgstr "Aritmética obsoleta em quatro módulos."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Advanced topographic correction"
-msgstr ""
+msgstr "Correção topográfica avançada"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:3
 msgid "Cosine correction under-corrects on steep terrain."
-msgstr ""
+msgstr "A correção por cosseno subcorrige em terreno íngreme."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:48
 msgid "Documentation"
-msgstr ""
+msgstr "Documentação"
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:50
 msgid "Keep the generated CLI reference in CI with `tools/check_docs.py`."
-msgstr ""
+msgstr "Manter a referência da CLI gerada no CI com `tools/check_docs.py`."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:51
 msgid "Add provider-specific tutorials once live access can be tested."
 msgstr ""
+"Adicionar tutoriais específicos de cada provedor quando o acesso ao vivo "
+"puder ser testado."
 
 #: ../../home/claude/work/docs_audit/docs_out/project/roadmap.md:53
 msgid "Completed work is in the [changelog](changelog.md)."
-msgstr ""
+msgstr "O trabalho concluído está no [changelog](changelog.md)."

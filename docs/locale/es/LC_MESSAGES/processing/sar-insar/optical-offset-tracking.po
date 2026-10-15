@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,11 @@ msgid ""
 "ground texture physically moved between two dates — the same idea as "
 "tracking a fingerprint pattern sliding across two photos."
 msgstr ""
+"`pygeofetch.optical.offset_tracking` mide el desplazamiento del terreno a "
+"partir de imágenes ópticas corrientes (Sentinel-2, Landsat) siguiendo cómo "
+"se movieron físicamente los fragmentos de textura del terreno entre dos "
+"fechas: la misma idea que seguir un patrón de huella dactilar que se desliza"
+" entre dos fotos."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:9
 msgid ""
@@ -36,10 +41,14 @@ msgid ""
 "Fusion](../multisensor.md#1-insar--optical-displacement-fusion) in [Multi-"
 "Sensor Pipelines](../multisensor.md)."
 msgstr ""
+"Para el pipeline formalizado y reutilizable que fusiona esto con InSAR (en "
+"lugar de los pasos manuales de abajo), consulta [Fusión de desplazamiento "
+"InSAR + óptico](../multisensor.md#1-insar--optical-displacement-fusion) en "
+"[Pipelines multisensor](../multisensor.md)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:15
 msgid "Overview"
-msgstr ""
+msgstr "Descripción general"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:17
 msgid ""
@@ -53,6 +62,16 @@ msgid ""
 "sensitivity: displacements smaller than a fraction of a pixel are hard to "
 "measure."
 msgstr ""
+"El seguimiento de desplazamiento óptico mide cuánto se movió la superficie "
+"del terreno entre dos fechas siguiendo la textura. Las imágenes se dividen "
+"en pequeños fragmentos y, para cada uno, el software encuentra dónde se "
+"halla el mismo patrón en la imagen posterior. El desplazamiento de ese "
+"patrón es el movimiento. A diferencia de la interferometría, no depende de "
+"la fase, por lo que sigue funcionando cuando el movimiento es grande o la "
+"superficie se ha decorrelacionado, por ejemplo en deslizamientos, glaciares,"
+" subsidencia minera y rupturas sísmicas, a costa de una menor sensibilidad: "
+"los desplazamientos inferiores a una fracción de píxel son difíciles de "
+"medir."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:19
 msgid ""
@@ -65,10 +84,19 @@ msgid ""
 "both available, the fusion function selects the more reliable source for "
 "each pixel, using coherence to decide."
 msgstr ""
+"En la práctica eliges dos imágenes de la misma zona adquiridas con "
+"iluminación similar, ejecutas el cálculo de desplazamientos para obtener "
+"ráster de desplazamiento este-oeste y norte-sur, y luego derivas de ellos la"
+" deformación si necesitas ver dónde se estira o se comprime la superficie. "
+"Los desplazamientos contienen coincidencias espurias, por lo que la "
+"protección frente a valores atípicos descrita más abajo no es opcional, y "
+"los resultados deben comprobarse visualmente. Cuando se dispone tanto de "
+"InSAR como de seguimiento óptico, la función de fusión selecciona la fuente "
+"más fiable para cada píxel, usando la coherencia para decidir."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:21
 msgid "Why this exists alongside InSAR"
-msgstr ""
+msgstr "Por qué existe junto a InSAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:23
 msgid ""
@@ -80,6 +108,13 @@ msgid ""
 "noise, and InSAR returns nothing for that pixel. Not an imprecise number: no"
 " measurement at all."
 msgstr ""
+"[InSAR](insar.md) es mucho más preciso (milímetros, no metros), pero tiene "
+"un límite fundamental: necesita que la superficie del terreno se mantenga "
+"*coherente* entre las dos pasadas de radar. Si la superficie cambió "
+"demasiado entre fechas (un panel minero excavado, un deslizamiento, una gran"
+" ruptura sísmica, una obra arrasada con excavadora), la señal de fase del "
+"radar se decorrela hasta convertirse en ruido e InSAR no devuelve nada para "
+"ese píxel. No un número impreciso: ninguna medición en absoluto."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:31
 msgid ""
@@ -89,6 +124,12 @@ msgid ""
 "where InSAR structurally cannot: on large, chaotic, or fast displacement, "
 "because it doesn't depend on phase coherence at all."
 msgstr ""
+"El seguimiento de desplazamiento óptico es el compromiso opuesto. Es más "
+"grueso (típicamente de submétrico a unos pocos metros de precisión, según el"
+" tamaño de píxel y la textura de la escena) y solo mide el movimiento "
+"*horizontal*, pero funciona precisamente donde InSAR estructuralmente no "
+"puede: ante desplazamientos grandes, caóticos o rápidos, porque no depende "
+"en absoluto de la coherencia de fase."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:38
 msgid ""
@@ -99,10 +140,17 @@ msgid ""
 "same area and dates, covered **83.7%**. Neither number is a target or an "
 "assumption — both came from an actual, executed run."
 msgstr ""
+"Esto no es una justificación hipotética. Ejecutar exactamente este pipeline "
+"sobre un sitio minero (Bu'ertai, Mongolia Interior, un sitio que la "
+"literatura publicada ya confirma que derrota al InSAR convencional) produjo "
+"una cobertura InSAR real de solo el **0.1 %** de la escena procesada. El "
+"seguimiento de desplazamiento óptico, sobre la misma área y fechas, cubrió "
+"el **83.7 %**. Ninguna de las dos cifras es un objetivo ni una suposición: "
+"ambas provienen de una ejecución real."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:46
 msgid "The pipeline"
-msgstr ""
+msgstr "El pipeline"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:77
 msgid "`prepare_optical_pair`"
@@ -117,6 +165,13 @@ msgid ""
 "water (NDWI threshold) so the correlator doesn't lock onto a moving cloud or"
 " a textureless water surface instead of stationary ground."
 msgstr ""
+"Alinea la imagen secundaria con la cuadrícula exacta de la imagen de "
+"referencia mediante `rasterio.warp.reproject`: cualquier discrepancia de "
+"CRS, resolución o extensión entre las dos fechas se resuelve aquí, siempre "
+"hacia la cuadrícula de la referencia, nunca al revés. Opcionalmente "
+"enmascara nubes (clases SCL de Sentinel-2) y agua (umbral NDWI) para que el "
+"correlador no se enganche a una nube en movimiento o a una superficie de "
+"agua sin textura en lugar de al terreno estacionario."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:87
 msgid "`compute_pixel_offsets`"
@@ -131,18 +186,26 @@ msgid ""
 "correlation and SNR-based reliability engine InSAR's own offset-tracking "
 "capability uses — not a second, independent implementation."
 msgstr ""
+"Divide en teselas el motor NCC (correlación cruzada normalizada) ya "
+"verificado de [`pygeofetch.insar.offset_tracking.OffsetTracker`](insar.md) a"
+" lo largo de todo el par de imágenes y luego convierte los desplazamientos "
+"en píxeles resultantes a distancias reales en metros sobre el terreno usando"
+" `pixel_size_m`. Esto reutiliza exactamente el mismo motor de correlación "
+"subpíxel y fiabilidad basada en SNR que usa la propia capacidad de "
+"seguimiento de desplazamiento de InSAR, no una segunda implementación "
+"independiente."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:97
 msgid "Returns an `OpticalOffsetResult` with:"
-msgstr ""
+msgstr "Devuelve un `OpticalOffsetResult` con:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Field"
-msgstr ""
+msgstr "Campo"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Meaning"
-msgstr ""
+msgstr "Significado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`dx`, `dy`"
@@ -150,7 +213,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "East/North displacement per window, metres"
-msgstr ""
+msgstr "Desplazamiento este/norte por ventana, en metros"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`snr`"
@@ -160,6 +223,8 @@ msgstr ""
 msgid ""
 "Primary-peak-to-secondary-peak ratio — the correlation confidence signal"
 msgstr ""
+"Razón entre el pico primario y el pico secundario: la señal de confianza de "
+"la correlación"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`reliable`"
@@ -167,7 +232,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Boolean mask: `snr >= snr_threshold`"
-msgstr ""
+msgstr "Máscara booleana: `snr >= snr_threshold`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`window_centers_row`, `window_centers_col`"
@@ -175,11 +240,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Real pixel coordinates each measurement corresponds to"
-msgstr ""
+msgstr "Coordenadas reales de píxel a las que corresponde cada medición"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:106
 msgid "SNR alone is not a sufficient reliability test"
-msgstr ""
+msgstr "El SNR por sí solo no es una prueba de fiabilidad suficiente"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:109
 msgid ""
@@ -190,10 +255,17 @@ msgid ""
 "catch. See `compute_horizontal_strain` below for the direct consequence of "
 "trusting this without further filtering, and the fix."
 msgstr ""
+"En una ejecución sobre imágenes de Bu'ertai, un pequeño número de ventanas "
+"superó el filtro de fiabilidad `snr >= 3.0` con un desplazamiento de "
+"**226.27 metros**: un único par de píxeles de Sentinel-2 que nunca debería "
+"moverse más de unos pocos metros entre dos fechas, lo que revela un enganche"
+" espurio del correlador que el SNR por sí solo no detectó. Consulta "
+"`compute_horizontal_strain` más abajo para ver la consecuencia directa de "
+"confiar en esto sin filtrado adicional, y la solución."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:117
 msgid "Strain: turning displacement into a risk metric"
-msgstr ""
+msgstr "Deformación: convertir el desplazamiento en una métrica de riesgo"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:131
 msgid ""
@@ -203,10 +275,17 @@ msgid ""
 "geotechnical signal (ground stretching or compressing locally), rather than "
 "a map that still needs manual interpretation."
 msgstr ""
+"`compute_horizontal_strain` calcula los tensores de deformación normal "
+"(`exx`, `eyy`) y la deformación cortante (`exy`) a partir del campo de "
+"desplazamiento mediante diferencias finitas centrales, convirtiendo el "
+"desplazamiento bruto en una señal geotécnica directa y accionable (el "
+"terreno se estira o se comprime localmente), en lugar de un mapa que aún "
+"necesita interpretación manual."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:137
 msgid "The outlier problem this function exists to prevent"
 msgstr ""
+"El problema de los valores atípicos que esta función existe para evitar"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:139
 msgid ""
@@ -215,6 +294,10 @@ msgid ""
 "locally enormous, physically impossible strain gradient at every neighboring"
 " pixel the finite-difference stencil touches."
 msgstr ""
+"La deformación es una *derivada espacial* del desplazamiento. Un único valor"
+" de desplazamiento espurio no solo corrompe su propio píxel: produce un "
+"gradiente de deformación localmente enorme y físicamente imposible en cada "
+"píxel vecino que toca el patrón de diferencias finitas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:144
 msgid ""
@@ -229,10 +312,22 @@ msgid ""
 " physically plausible range — this is a permanent regression test, not just "
 "a docstring claim."
 msgstr ""
+"Esto no es una función defensiva añadida por si acaso. Ejecutar un cálculo "
+"de deformación ingenuo, de manual, sobre el campo de desplazamiento sin "
+"filtrar de Bu'ertai (el que contiene el valor atípico de 226.27 m mencionado"
+" arriba) produjo una **deformación máxima de 6,169,938 microdeformaciones, "
+"es decir, un 617 % de deformación**, físicamente imposible para la "
+"deformación del terreno (significaría que el terreno se estiró literalmente "
+"más de siete veces su longitud original). Reproducir ese mismo escenario de "
+"forma sintética confirma que el cálculo ingenuo produce un artefacto "
+"comparable de varios cientos por ciento, y que la protección frente a "
+"valores atípicos de `compute_horizontal_strain` lo devuelve a un rango "
+"físicamente plausible; esta es una prueba de regresión permanente, no solo "
+"una afirmación de docstring."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:156
 msgid "Two independent, safeguards are applied, both opt-out-able:"
-msgstr ""
+msgstr "Se aplican dos salvaguardas independientes, ambas desactivables:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:158
 msgid ""
@@ -240,6 +335,10 @@ msgid ""
 "pixels are excluded before any gradient is computed, so an unreliable "
 "neighbor can't corrupt a reliable pixel's strain value."
 msgstr ""
+"**`reliable`**: pasa directamente `OpticalOffsetResult.reliable`. Los "
+"píxeles poco fiables se excluyen antes de calcular cualquier gradiente, de "
+"modo que un vecino poco fiable no pueda corromper el valor de deformación de"
+" un píxel fiable."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:162
 msgid ""
@@ -251,6 +350,14 @@ msgid ""
 "naive calculation exactly — not recommended on unfiltered field data, for "
 "the reason above."
 msgstr ""
+"**`mad_outlier_threshold`**: un filtro estadístico robusto (desviación "
+"absoluta mediana) aplicado específicamente a la magnitud del desplazamiento,"
+" porque la deformación es mucho más sensible a un único valor extremo que el"
+" propio mapa de desplazamiento. Un desplazamiento que esta función considera"
+" \"fiable\" a efectos de informe aún puede quedar excluido aquí a efectos de"
+" deformación. Establécelo en `None` para reproducir exactamente un cálculo "
+"ingenuo; no se recomienda con datos de campo sin filtrar, por la razón "
+"anterior."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:171
 msgid ""
@@ -260,20 +367,27 @@ msgid ""
 "advance rate) — often more defensible in a real report than a purely "
 "statistical cutoff alone."
 msgstr ""
+"También puedes pasar `max_plausible_displacement_m`: un techo absoluto "
+"ligado a tus propias expectativas físicas sobre el fenómeno monitoreado (un "
+"deslizamiento cosísmico máximo creíble conocido, una tasa máxima plausible "
+"de avance minero diario), a menudo más defendible en un informe real que un "
+"corte puramente estadístico por sí solo."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:177
 msgid "Fusing InSAR and optical"
-msgstr ""
+msgstr "Fusionar InSAR y óptico"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:191
 msgid ""
 "`fuse_insar_optical` is a coherence-weighted *source selection*, not an "
 "average."
 msgstr ""
+"`fuse_insar_optical` es una *selección de fuente* ponderada por coherencia, "
+"no un promedio."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:194
 msgid "Do not average InSAR and optical displacement"
-msgstr ""
+msgstr "No promedies el desplazamiento InSAR y el óptico"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:197
 msgid ""
@@ -284,30 +398,48 @@ msgid ""
 "quantity. Averaging a vertical value with a horizontal-magnitude value "
 "produces a number with no physical meaning."
 msgstr ""
+"InSAR mide la fase en la línea de visión, convertida en una estimación de "
+"desplazamiento *vertical* bajo la suposición de movimiento horizontal "
+"pequeño. El seguimiento de desplazamiento óptico mide directamente el "
+"desplazamiento *horizontal* 2D. Son componentes vectoriales físicamente "
+"distintas, no dos estimaciones ruidosas de la misma cantidad escalar. "
+"Promediar un valor vertical con una magnitud horizontal produce un número "
+"sin significado físico."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:205
 msgid ""
 "Instead, `fuse_insar_optical` uses the InSAR coherence map itself as the "
 "per-pixel decision signal:"
 msgstr ""
+"En su lugar, `fuse_insar_optical` usa el propio mapa de coherencia InSAR "
+"como señal de decisión por píxel:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:208
 msgid ""
 "**Coherence > 0.6** (configurable via `coherence_high`): trust InSAR fully —"
 " precise, and coherence confirms the phase signal is real."
 msgstr ""
+"**Coherencia > 0.6** (configurable mediante `coherence_high`): confía "
+"plenamente en InSAR: es preciso, y la coherencia confirma que la señal de "
+"fase es real."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:210
 msgid ""
 "**Coherence < 0.4** (`coherence_low`): trust optical fully — InSAR has "
 "nothing usable here regardless of what number it happens to output."
 msgstr ""
+"**Coherencia < 0.4** (`coherence_low`): confía plenamente en el óptico: "
+"InSAR no tiene nada utilizable aquí, sea cual sea el número que acabe "
+"devolviendo."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:213
 msgid ""
 "**Between**: a linear blend of *how much each technique's information is "
 "trusted*, not a numeric average of two different physical quantities."
 msgstr ""
+"**Entre ambos**: una mezcla lineal de *cuánta confianza se otorga a la "
+"información de cada técnica*, no un promedio numérico de dos magnitudes "
+"físicas distintas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:217
 msgid ""
@@ -315,6 +447,9 @@ msgid ""
 "0=optical-dominant) so you always know, per pixel, which technique actually "
 "produced the number you're looking at."
 msgstr ""
+"El resultado incluye `reliability_source` (2=dominado por InSAR, "
+"1=transición, 0=dominado por óptico) para que siempre sepas, por píxel, qué "
+"técnica produjo realmente el número que estás viendo."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:221
 msgid ""
@@ -323,10 +458,15 @@ msgid ""
 "optical-dominant pixels for that scene — this is correct behavior given poor"
 " InSAR coherence, not a result to \"fix\" toward a more even split."
 msgstr ""
+"Confirmado con el valor de coherencia observado en Bu'ertai (media 0.313, "
+"muy por debajo del valor predeterminado de `coherence_low`): la función "
+"devuelve correctamente un 100 % de píxeles dominados por óptico para esa "
+"escena; este es el comportamiento correcto dada la mala coherencia InSAR, no"
+" un resultado que haya que \"corregir\" hacia un reparto más equilibrado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:227
 msgid "limitations"
-msgstr ""
+msgstr "limitaciones"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:229
 msgid ""
@@ -335,6 +475,11 @@ msgid ""
 "`prepare_optical_pair`'s parameters — the correlator will happily produce a "
 "confident-looking, wrong answer if fed a poorly-masked pair."
 msgstr ""
+"La calibración radiométrica/geométrica de los ráster de entrada (selección "
+"de bandas, exactitud del enmascarado de nubes) es responsabilidad de quien "
+"llama, mediante los parámetros de `prepare_optical_pair`: el correlador "
+"producirá gustosamente una respuesta de apariencia confiable pero errónea si"
+" se le suministra un par mal enmascarado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:233
 msgid ""
@@ -342,6 +487,10 @@ msgid ""
 "physical judgment — always sanity-check displacement magnitudes against "
 "what's physically plausible for your specific site and time window."
 msgstr ""
+"El filtro de valores atípicos MAD es una salvaguarda estadística, no un "
+"sustituto del criterio físico: comprueba siempre las magnitudes de "
+"desplazamiento frente a lo que es físicamente plausible para tu sitio y "
+"ventana temporal específicos."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:237
 msgid ""
@@ -351,3 +500,9 @@ msgid ""
 " pixel size. Passing the wrong one silently produces a strain value scaled "
 "by the wrong distance."
 msgstr ""
+"`pixel_size_m` para `compute_horizontal_strain` es la distancia sobre el "
+"terreno entre muestras adyacentes de la *cuadrícula de seguimiento de "
+"desplazamiento* (el `step_size` de `compute_pixel_offsets`, convertido a "
+"metros), no el tamaño de píxel original de la imagen. Pasar el equivocado "
+"produce silenciosamente un valor de deformación escalado por la distancia "
+"incorrecta."

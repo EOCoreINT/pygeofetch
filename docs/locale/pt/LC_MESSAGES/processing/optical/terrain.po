@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,10 +30,16 @@ msgid ""
 "Engine](preprocessing.md), just documented separately since terrain analysis"
 " is a coherent topic of its own)."
 msgstr ""
+"Análise hidrológica e de forma do terreno em qualquer DEM — cada método "
+"verificado individualmente contra um caso analítico conhecido ou fisicamente"
+" realista, e não apenas executado uma vez e avaliado a olho. Todos os seis "
+"métodos ficam em `client.preprocess` (a mesma classe `Preprocessor` do "
+"[Motor de Pré-processamento](preprocessing.md), apenas documentada "
+"separadamente porque a análise de terreno é um tema coerente por si só)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:20
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:22
 msgid ""
@@ -44,6 +50,13 @@ msgid ""
 "flood-susceptibility screening, landslide and erosion studies, site "
 "selection and the illumination corrections used in optical processing."
 msgstr ""
+"Um modelo digital de elevação contém mais informação do que a altura. A "
+"análise de terreno extrai dele a forma do relevo: quão inclinada é cada "
+"célula, para onde ela está voltada, se ela se curva para dentro ou para "
+"fora, onde a água se acumularia e onde os cursos d'água se formariam. Essas "
+"camadas derivadas são a base da triagem de suscetibilidade a inundações, de "
+"estudos de deslizamentos e erosão, da seleção de locais e das correções de "
+"iluminação usadas no processamento óptico."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:24
 msgid ""
@@ -54,10 +67,17 @@ msgid ""
 "likely to behave on it, and depression and drainage extraction identify "
 "enclosed basins and channels."
 msgstr ""
+"Os métodos seguem um mesmo padrão. Forneça um DEM, opcionalmente recorte-o "
+"para a sua área, e cada função retorna um raster da grandeza derivada que "
+"você pode visualizar, limiarizar ou combinar com outras camadas. "
+"Declividade, aspecto e sombreamento (hillshade) descrevem a superfície, o "
+"índice de umidade e a curvatura descrevem como a água provavelmente se "
+"comporta sobre ela, e a extração de depressões e de drenagem identifica "
+"bacias fechadas e canais."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:26
 msgid "`terrain_derivatives()` — slope, aspect, hillshade"
-msgstr ""
+msgstr "`terrain_derivatives()` — declividade, aspecto, sombreamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:32
 msgid ""
@@ -69,10 +89,18 @@ msgid ""
 "`azimuth`/`altitude` control the simulated sun position for hillshade "
 "(defaults: 315° = NW, 45° altitude — the standard cartographic convention)."
 msgstr ""
+"Análise de terreno padrão baseada em gradiente pelo método de Horn, "
+"calculando as três saídas a partir de uma única leitura do DEM. Trata "
+"corretamente **DEMs geográficos (lat/lon)**, convertendo o tamanho do pixel "
+"de graus para metros na latitude real do raster antes de calcular a "
+"declividade — uma fonte comum e fácil de passar despercebida de valores de "
+"declividade errados quando o tamanho do pixel em graus é usado diretamente. "
+"`azimuth`/`altitude` controlam a posição simulada do sol para o sombreamento"
+" (padrões: 315° = NW, altitude de 45° — a convenção cartográfica padrão)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:41
 msgid "`topographic_wetness_index()` — flood susceptibility"
-msgstr ""
+msgstr "`topographic_wetness_index()` — suscetibilidade a inundações"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:47
 msgid ""
@@ -83,6 +111,13 @@ msgid ""
 "surface water accumulates and standing floodwater is most likely to persist."
 " Low TWI marks steep or ridge terrain where water drains away quickly."
 msgstr ""
+"`TWI = ln(specific catchment area / tan(slope))` — um índice hidrológico "
+"real e padrão (Beven & Kirkby, 1979) usado no mapeamento de suscetibilidade "
+"a inundações e de umidade do solo, não um substituto aproximado. Um TWI alto"
+" marca áreas planas e baixas com uma grande área de contribuição a montante "
+"— exatamente onde a água superficial se acumula e onde é mais provável que a"
+" água empoçada persista. Um TWI baixo marca terrenos íngremes ou de cristas,"
+" onde a água escoa rapidamente."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:55
 msgid ""
@@ -91,10 +126,14 @@ msgid ""
 "Accumulation, and TauDEM use — computed directly rather than depending on an"
 " external hydrology library."
 msgstr ""
+"Usa um algoritmo de direção de fluxo e acumulação de fluxo D8 (O'Callaghan &"
+" Mark, 1984) — o mesmo método do `r.watershed` do GRASS GIS, do Flow "
+"Accumulation do ArcGIS e do TauDEM — calculado diretamente, sem depender de "
+"uma biblioteca de hidrologia externa."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:60
 msgid "`curvature()` — convergence vs. divergence"
-msgstr ""
+msgstr "`curvature()` — convergência vs. divergência"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:66
 msgid ""
@@ -103,6 +142,10 @@ msgid ""
 "to collect; negative values mark convex (dome/ridge-shaped) terrain, where "
 "water diverges and drains away."
 msgstr ""
+"Curvatura geral (laplaciana) da superfície: `∇²z = d²z/dx² + d²z/dy²`. "
+"Valores positivos marcam terreno côncavo (em forma de bacia), onde a água "
+"converge e tende a se acumular; valores negativos marcam terreno convexo (em"
+" forma de domo/crista), onde a água diverge e escoa."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:73
 msgid ""
@@ -112,10 +155,15 @@ msgid ""
 "decomposition if your analysis specifically needs profile vs. plan curvature"
 " separated."
 msgstr ""
+"Esta é a curvatura geral/média simplificada, não a decomposição completa em "
+"curvatura de perfil/planta (Zevenbergen & Thorne, 1987) — suficiente para "
+"identificar zonas de convergência/divergência, mas não um substituto dessa "
+"decomposição mais fina se a sua análise exigir especificamente curvatura de "
+"perfil e de planta separadas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:79
 msgid "`terrain_ruggedness_index()` — micro-topographic complexity"
-msgstr ""
+msgstr "`terrain_ruggedness_index()` — complexidade microtopográfica"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:85
 msgid ""
@@ -123,10 +171,14 @@ msgid ""
 "between each cell and its 8 neighbours. High TRI marks complex, "
 "heterogeneous micro-topography; low TRI marks smooth, uniform terrain."
 msgstr ""
+"O TRI de Riley et al. (1999): a raiz da soma dos quadrados das diferenças de"
+" elevação entre cada célula e suas 8 vizinhas. Um TRI alto marca "
+"microtopografia complexa e heterogênea; um TRI baixo marca terreno liso e "
+"uniforme."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:90
 msgid "`identify_depressions()` — physically enclosed basins"
-msgstr ""
+msgstr "`identify_depressions()` — bacias fisicamente fechadas"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:96
 msgid ""
@@ -138,10 +190,17 @@ msgid ""
 "flagging every tiny numerical dip; output is depression depth in metres, `0`"
 " where there's no depression."
 msgstr ""
+"Identifica depressões fechadas (bacias locais sem saída em declive) por "
+"reconstrução morfológica (preencher e subtrair) — locais onde a água "
+"empoçada fisicamente não tem para onde escoar, distintos das zonas de "
+"convergência de fluxo do TWI (que ainda têm uma saída, apenas com uma grande"
+" área de contribuição). `min_depth_m` filtra ruídos/artefatos submétricos em"
+" vez de sinalizar cada pequena oscilação numérica; a saída é a profundidade "
+"da depressão em metros, `0` onde não há depressão."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:104
 msgid "`extract_drainage_network()` — stream channels"
-msgstr ""
+msgstr "`extract_drainage_network()` — canais de drenagem"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:110
 msgid ""
@@ -154,22 +213,30 @@ msgid ""
 "automatic threshold that adapts to the DEM's actual resolution and catchment"
 " size rather than a fixed, arbitrary cutoff."
 msgstr ""
+"Extrai uma rede de drenagem/cursos d'água por limiarização da acumulação de "
+"fluxo D8 (o mesmo algoritmo que `topographic_wetness_index()` usa) — células"
+" por onde drena área a montante suficiente para representar um canal, e não "
+"escoamento superficial difuso. `accumulation_threshold` é o número mínimo de"
+" células a montante necessário para ser classificada como canal; quando "
+"deixado como `None` (padrão), usa o percentil 99 da acumulação de fluxo na "
+"AOI — um limiar automático que se adapta à resolução real do DEM e ao "
+"tamanho da bacia, em vez de um corte fixo e arbitrário."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:120
 msgid "Verification basis"
-msgstr ""
+msgstr "Base de verificação"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Basis"
-msgstr ""
+msgstr "Base"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Verified against"
-msgstr ""
+msgstr "Verificado contra"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "`terrain_derivatives()`"
@@ -177,11 +244,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Horn-method gradient"
-msgstr ""
+msgstr "Gradiente pelo método de Horn"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Known cone geometry — recovered slope exact"
-msgstr ""
+msgstr "Geometria de cone conhecida — declividade recuperada exatamente"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "`topographic_wetness_index()`"
@@ -189,13 +256,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Beven & Kirkby 1979, D8 flow accumulation"
-msgstr ""
+msgstr "Beven & Kirkby 1979, acumulação de fluxo D8"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid ""
 "Sloped-plane flow accumulation exact; V-valley floor correctly ranked wetter"
 " than steep sides"
 msgstr ""
+"Acumulação de fluxo em plano inclinado exata; fundo de vale em V "
+"corretamente classificado como mais úmido que as encostas íngremes"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "`curvature()`"
@@ -203,11 +272,12 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Laplacian (∇²z)"
-msgstr ""
+msgstr "Laplaciano (∇²z)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Known paraboloid bowl — constant analytical curvature recovered"
 msgstr ""
+"Bacia parabolóide conhecida — curvatura analítica constante recuperada"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "`terrain_ruggedness_index()`"
@@ -215,11 +285,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Riley et al. 1999"
-msgstr ""
+msgstr "Riley et al. 1999"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Flat surface → exact 0; checkerboard → large, correct value"
 msgstr ""
+"Superfície plana → exatamente 0; tabuleiro de xadrez → valor grande e "
+"correto"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "`identify_depressions()`"
@@ -227,11 +299,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Morphological reconstruction (fill-then-diff)"
-msgstr ""
+msgstr "Reconstrução morfológica (preencher e subtrair)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "Known synthetic 20m basin — exact depth recovered"
-msgstr ""
+msgstr "Bacia sintética conhecida de 20 m — profundidade exata recuperada"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "`extract_drainage_network()`"
@@ -239,12 +311,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid "D8 flow accumulation, thresholded"
-msgstr ""
+msgstr "Acumulação de fluxo D8, com limiar"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:71
 msgid ""
 "V-valley test — channel correctly concentrated at the true valley floor"
 msgstr ""
+"Teste de vale em V — canal corretamente concentrado no fundo real do vale"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/terrain.md:133
 msgid ""
@@ -255,3 +328,10 @@ msgid ""
 "current open-data providers. This isn't worked around by fabricating a DTM "
 "that doesn't exist — it's an stated limitation."
 msgstr ""
+"Produtos abertos de elevação (SRTM, Copernicus DEM) são modelos de "
+"superfície, não DTMs limpos de terreno nu — em terrenos florestados ou "
+"vegetados, parte da altura do dossel está embutida na elevação do \"solo\". "
+"Um Modelo de Altura do Dossel (Canopy Height Model) precisa de um DTM de "
+"terreno nu, normalmente obtido por LiDAR, que não está disponível pelos "
+"provedores de dados abertos atuais do pygeofetch. Isso não é contornado "
+"fabricando um DTM que não existe — é uma limitação declarada."

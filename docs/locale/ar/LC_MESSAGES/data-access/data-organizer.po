@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,10 +29,14 @@ msgid ""
 "hierarchy, plus a manifest mapping the structure back to the underlying "
 "scene metadata."
 msgstr ""
+"مجلد مسطّح يضم عشرات المشاهد المنزَّلة عبر تواريخ ومدارات ومستشعرات مختلفة "
+"لا يصلح للعمل اللاحق في InSAR أو في المعالجة البصرية متعددة التواريخ. تحوّل "
+"`pygeofetch.core.data_organizer.DataOrganizer` ذلك إلى تسلسل هرمي منظّم، مع "
+"ملف بيان (manifest) يربط البنية ببيانات المشاهد الوصفية الأصلية."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:9
 msgid "Overview"
-msgstr ""
+msgstr "نظرة عامة"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:11
 msgid ""
@@ -45,6 +49,12 @@ msgid ""
 " files into a folder hierarchy that you choose, for example by satellite and"
 " then by date."
 msgstr ""
+"يمتلئ مجلد التنزيل بسرعة: تنتهي مشاهد من عدة أقمار صناعية وتواريخ ومدارات "
+"جنبًا إلى جنب، بأسماء وفق اصطلاح كل مزوّد. وهذا مزعج لأي سير عمل يحتاج إلى "
+"تجميع المشاهد حسب التاريخ أو المدار، وعقبة حقيقية أمام قياس التداخل، حيث لا "
+"يمكن إقران إلا المشاهد التي تشترك في المسار وتتزامن زمنيًا. تأخذ "
+"`DataOrganizer` المشاهد ونتائج تنزيلها وترتّب الملفات في تسلسل مجلدات تختاره"
+" أنت، مثلًا حسب القمر الصناعي ثم حسب التاريخ."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:13
 msgid ""
@@ -57,14 +67,21 @@ msgid ""
 "`prepare_insar_stack()` goes one step further and groups burst-synchronised "
 "SLC scenes into stacks that are ready for the interferometry modules."
 msgstr ""
+"تستخدمها بعد التنزيل. أعطِها قائمة المشاهد مع نتائجها، وحدّد لها كيفية "
+"التجميع ومكان الإخراج، فتنسخ الملفات إلى التسلسل الهرمي (أو تربطها أو تنقلها"
+" إن اخترت ذلك) وتكتب ملف بيان. ملف البيان سجل JSON يربط كل ملف ببيانات "
+"المشهد الوصفية التي جاء منها، بحيث تجد الخطوات اللاحقة بصمة المشهد أو تاريخه"
+" أو مداره دون إعادة البحث. وفي أعمال الرادار تذهب `prepare_insar_stack()` "
+"خطوة أبعد فتجمّع مشاهد SLC المتزامنة في الرشقات (bursts) في حزم جاهزة لوحدات"
+" قياس التداخل."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:15
 msgid "Basic usage"
-msgstr ""
+msgstr "الاستخدام الأساسي"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:31
 msgid "With `group_by=[\"satellite\", \"date\"]`, this produces:"
-msgstr ""
+msgstr "مع `group_by=[\"satellite\", \"date\"]`، ينتج ما يلي:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:44
 msgid "Configuration"
@@ -75,18 +92,19 @@ msgid ""
 "`OrganizerConfig` controls the grouping hierarchy and how files are placed "
 "into it:"
 msgstr ""
+"تتحكم `OrganizerConfig` في التسلسل الهرمي للتجميع وفي كيفية وضع الملفات فيه:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Field"
-msgstr ""
+msgstr "الحقل"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Default"
-msgstr ""
+msgstr "الافتراضي"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Meaning"
-msgstr ""
+msgstr "المعنى"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "`group_by`"
@@ -102,6 +120,9 @@ msgid ""
 "`\"processing_level\"` — applied in order, so `[\"satellite\", \"date\"]` "
 "nests date folders inside satellite folders."
 msgstr ""
+"قائمة مرتّبة من `\"date\"` و`\"orbit\"` و`\"satellite\"` "
+"و`\"processing_level\"` — تُطبَّق بالترتيب، لذا فإن `[\"satellite\", "
+"\"date\"]` تضع مجلدات التاريخ داخل مجلدات القمر الصناعي."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "`file_operation`"
@@ -125,11 +146,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:0
 msgid "Written to the root of `output_dir` after organizing."
-msgstr ""
+msgstr "يُكتب في جذر `output_dir` بعد التنظيم."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:55
 msgid "Copy is the default for a reason"
-msgstr ""
+msgstr "النسخ هو الافتراضي لسبب وجيه"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:58
 msgid ""
@@ -141,20 +162,28 @@ msgid ""
 "duplicating large scenes on disk while keeping the original flat layout "
 "intact too."
 msgstr ""
+"القيمة الافتراضية لـ `file_operation` هي `\"copy\"` وليست `\"move\"` — وقد "
+"تحققنا مباشرةً من أن الملف المنزَّل الأصلي يبقى بعد استدعاء `organize()`. إن"
+" خطأً في التجميع يحذف أيضًا نسختك الوحيدة من مشهد منزَّل سيكون نمط فشل "
+"خطيرًا لا يمكن التعافي منه. اختر `\"move\"` صراحةً بعد أن تثق بإعداد التجميع"
+" لديك، أو استخدم `\"symlink\"` لتجنّب تكرار المشاهد الكبيرة على القرص مع "
+"إبقاء البنية المسطّحة الأصلية سليمة أيضًا."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:66
 msgid ""
 "`organize()` is also idempotent — running it twice on the same input doesn't"
 " re-copy, error, or double-count."
 msgstr ""
+"كما أن `organize()` متساوية القوة (idempotent) — فتشغيلها مرتين على المدخلات"
+" نفسها لا يعيد النسخ ولا يسبب خطأً ولا يحتسب العناصر مرتين."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:69
 msgid "The manifest"
-msgstr ""
+msgstr "ملف البيان"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:71
 msgid "`manifest.json` maps every organized scene back to its metadata:"
-msgstr ""
+msgstr "يربط `manifest.json` كل مشهد منظَّم ببياناته الوصفية:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:94
 msgid ""
@@ -164,10 +193,14 @@ msgid ""
 "`skipped_failed_download` (the download itself failed) are both real, "
 "separate counts — inspect them if `report.grouped` is lower than you expect."
 msgstr ""
+"تُبلغ `OrganizeReport` (التي تعيدها `organize()`) أيضًا بما *تعذّر* تنظيمه "
+"بدلًا من إسقاطه بصمت: `skipped_no_output` (تنزيل ناجح دون مسار ملف مرفق) "
+"و`skipped_failed_download` (فشل التنزيل نفسه) عدّادان حقيقيان ومنفصلان — "
+"افحصهما إذا كان `report.grouped` أقل مما تتوقع."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:101
 msgid "Preparing an InSAR stack"
-msgstr ""
+msgstr "إعداد حزمة InSAR"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:115
 msgid ""
@@ -175,6 +208,9 @@ msgid ""
 "flags orphaned scenes (no `relative_orbit` metadata at all, so they can't be"
 " placed in any track)."
 msgstr ""
+"تجمّع `prepare_insar_stack()` مشاهد SLC المنزَّلة حسب المسار/المدار النسبي "
+"وتُعلِم بالمشاهد اليتيمة (التي لا تحمل بيانات `relative_orbit` على الإطلاق، "
+"فلا يمكن وضعها في أي مسار)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:119
 msgid ""
@@ -185,10 +221,16 @@ msgid ""
 "implementation of that check. `report.ready_paths` then only includes the "
 "dates that actually pass burst-sync classification."
 msgstr ""
+"عندما تزوّدها بملفات المدارات ونقطة أرضية، تذهب أبعد من ذلك: فهي تعيد "
+"استخدام "
+"[`pygeofetch.insar.stack_selection.select_burst_synchronized_dates`](../processing/sar-"
+"insar/insar.md) — أي تصنيف توقيت الرشقات المتحقَّق منه أصلًا والذي يستخدمه "
+"خط معالجة InSAR نفسه — بدلًا من تنفيذ ثانٍ مستقل لهذا الفحص. عندئذٍ لا يتضمن"
+" `report.ready_paths` إلا التواريخ التي تجتاز فعلًا تصنيف تزامن الرشقات."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:126
 msgid "Behaviour without orbit files"
-msgstr ""
+msgstr "السلوك دون ملفات المدارات"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/data-organizer.md:129
 msgid ""
@@ -199,3 +241,8 @@ msgid ""
 "sync-compatible ones. Check `burst_sync_checked` before treating the stack "
 "as ready for coregistration."
 msgstr ""
+"دون ملفات المدارات لا يمكن فحص توافق تزامن الرشقات، لأن ملفات المدارات خطوة "
+"تنزيل منفصلة. تظل `prepare_insar_stack()` تعيد تجميع المسارات والتواريخ، لكن"
+" `report.burst_sync_checked` تكون `False` ويتضمن `report.ready_paths` كل "
+"التواريخ، لا المتوافقة مع تزامن الرشقات فقط. افحص `burst_sync_checked` قبل "
+"أن تعدّ الحزمة جاهزة للتسجيل المشترك (coregistration)."

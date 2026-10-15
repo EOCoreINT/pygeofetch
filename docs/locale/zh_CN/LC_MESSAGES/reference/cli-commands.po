@@ -1,0 +1,3341 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Samuel Appiah Kubi
+# This file is distributed under the same license as the pygeofetch package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: pygeofetch 2.6.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:3
+msgid "Command reference"
+msgstr "命令参考"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:5
+msgid ""
+"Every command and option in the installed CLI. For worked examples see "
+"[Command-line guide](cli.md)."
+msgstr "已安装 CLI 中的所有命令和选项。工作示例请参阅[命令行指南](cli.md)。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:12
+msgid "`auth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:14
+msgid "Manage provider credentials."
+msgstr "管理提供商凭据。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Command"
+msgstr "命令"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Purpose"
+msgstr "用途"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth add`](#auth-add)"
+msgstr "[`auth add`](#auth-add)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:27
+msgid "Add credentials for PROVIDER."
+msgstr "为 PROVIDER 添加凭据。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth login`](#auth-login)"
+msgstr "[`auth login`](#auth-login)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:56
+msgid "Interactive login for PROVIDER (prompts for all required fields)."
+msgstr "为 PROVIDER 交互式登录（提示输入所有必填字段）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth list`](#auth-list)"
+msgstr "[`auth list`](#auth-list)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:73
+msgid "List all stored provider credentials."
+msgstr "列出所有已存储的提供商凭据。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth test`](#auth-test)"
+msgstr "[`auth test`](#auth-test)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:85
+msgid "Test stored credentials for PROVIDER by attempting authentication."
+msgstr "通过尝试认证来测试 PROVIDER 的已存储凭据。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth remove`](#auth-remove)"
+msgstr "[`auth remove`](#auth-remove)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:102
+msgid "Remove stored credentials for PROVIDER."
+msgstr "删除 PROVIDER 的已存储凭据。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`auth export`](#auth-export)"
+msgstr "[`auth export`](#auth-export)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:123
+msgid "Export stored credentials to a JSON file for backup."
+msgstr "将已存储的凭据导出为 JSON 文件以便备份。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:25
+msgid "`auth add`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Argument"
+msgstr "参数"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PROVIDER`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "required"
+msgstr "必填"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Option"
+msgstr "选项"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Type"
+msgstr "类型"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Default"
+msgstr "默认值"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Description"
+msgstr "说明"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--username`, `-u`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "text"
+msgstr "文本"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Username or email."
+msgstr "用户名或电子邮件。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--password`, `-p`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Password (prompted if omitted)."
+msgstr "密码（省略时会提示输入）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--api-key`, `-k`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "API key (alternative to username/password)."
+msgstr "API 密钥（可替代用户名/密码）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--client-id`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "OAuth2 client ID."
+msgstr "OAuth2 客户端 ID。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--client-secret`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "OAuth2 client secret."
+msgstr "OAuth2 客户端密钥。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--token`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Bearer token."
+msgstr "Bearer 令牌。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--store`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: keyring, file"
+msgstr "可选值：keyring, file"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`keyring`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Credential storage backend."
+msgstr "凭据存储后端。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:54
+msgid "`auth login`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:71
+msgid "`auth list`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--json`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "flag"
+msgstr "标志"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output as JSON."
+msgstr "以 JSON 格式输出。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:83
+msgid "`auth test`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:100
+msgid "`auth remove`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--yes`, `-y`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Skip confirmation prompt."
+msgstr "跳过确认提示。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:121
+msgid "`auth export`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--provider`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Export only this provider (default: all)."
+msgstr "仅导出此提供商（默认：全部）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output`, `-o`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`credentials_backup.json`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output file path."
+msgstr "输出文件路径。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:143
+msgid "`providers`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:145
+msgid "Browse and inspect the provider registry."
+msgstr "浏览和查看提供商注册表。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`providers list`](#providers-list)"
+msgstr "[`providers list`](#providers-list)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:155
+msgid "List available providers with optional filtering."
+msgstr "列出可用的提供商，可选择性过滤。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`providers info`](#providers-info)"
+msgstr "[`providers info`](#providers-info)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:179
+msgid "Show detailed information about a specific provider."
+msgstr "显示特定提供商的详细信息。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`providers search`](#providers-search)"
+msgstr "[`providers search`](#providers-search)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:201
+msgid "Search providers by name, satellite, or description."
+msgstr "按名称、卫星或描述搜索提供商。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:153
+msgid "`providers list`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--auth`, `--no-auth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Filter by auth requirement."
+msgstr "按认证要求过滤。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--capabilities`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated capabilities: sar,optical,sub-meter,stac,direct-s3"
+msgstr "以逗号分隔的能力：sar,optical,sub-meter,stac,direct-s3"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--region`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Filter by region (e.g. 'global', 'europe')."
+msgstr "按区域过滤（例如 'global'、'europe'）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--satellite`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Filter by satellite name substring."
+msgstr "按卫星名称子串过滤。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:177
+msgid "`providers info`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PROVIDER_ID`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:199
+msgid "`providers search`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`TERM`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:215
+msgid "`search`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:217
+msgid "Federated search across providers."
+msgstr "跨提供商的联合搜索。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`search run`](#search-run)"
+msgstr "[`search run`](#search-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:225
+msgid "Search for satellite imagery across one or more providers."
+msgstr "在一个或多个提供商中搜索卫星影像。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:223
+msgid "`search run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bbox`, `-b`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Bounding box \"minx,miny,maxx,maxy\"."
+msgstr "边界框 \"minx,miny,maxx,maxy\"。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry-file`, `-g`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "path"
+msgstr "路径"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "GeoJSON file with search AOI (alternative to --bbox)."
+msgstr "包含搜索 AOI 的 GeoJSON 文件（可替代 --bbox）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--start-date`, `-s`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Start date YYYY-MM-DD."
+msgstr "开始日期 YYYY-MM-DD。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--end-date`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "End date YYYY-MM-DD."
+msgstr "结束日期 YYYY-MM-DD。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cloud-cover`, `-c`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0-100`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Cloud cover range \"min-max\" e.g. 0-20."
+msgstr "云量范围 \"min-max\"，例如 0-20。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resolution`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Resolution range in metres \"min-max\" e.g. 10-30."
+msgstr "分辨率范围（米）\"min-max\"，例如 10-30。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--processing-level`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Processing level e.g. L2A."
+msgstr "处理级别，例如 L2A。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--providers`, `-p`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated provider IDs e.g. usgs,copernicus,planetary_computer."
+msgstr "以逗号分隔的提供商 ID，例如 usgs,copernicus,planetary_computer。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--satellites`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated satellite names e.g. Sentinel-2,Landsat-8."
+msgstr "以逗号分隔的卫星名称，例如 Sentinel-2,Landsat-8。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--product-type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"SAR product type e.g. GRD, SLC, GRD-COG. Currently only meaningfully filters"
+" Copernicus (OData-based, not STAC) — STAC providers like "
+"planetary_computer/element84 offer only pre-processed Sentinel-1 RTC via "
+"their collection mapping, not raw GRD/SLC, so this has no effect there "
+"regardless of value."
+msgstr ""
+"SAR 产品类型，例如 GRD、SLC、GRD-COG。目前仅对 Copernicus（基于 OData，而非 STAC）有实际过滤作用 — "
+"planetary_computer/element84 等 STAC 提供商通过其集合映射只提供预处理的 Sentinel-1 RTC，而不提供原始 "
+"GRD/SLC，因此无论取何值，这里都不起作用。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--polarisation`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"SAR polarisation e.g. VV, VH, HH, HV. Same Copernicus-only caveat as "
+"--product-type."
+msgstr "SAR 极化方式，例如 VV、VH、HH、HV。与 --product-type 的限制相同，仅适用于 Copernicus。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-results`, `-n`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "integer"
+msgstr "整数"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`100`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sort-by`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: datetime, cloud_cover, score, satellite"
+msgstr "可选值：datetime, cloud_cover, score, satellite"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`datetime`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Sort field."
+msgstr "排序字段。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sort-order`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: asc, desc"
+msgstr "可选值：asc, desc"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`desc`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cql2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "CQL2 filter expression."
+msgstr "CQL2 过滤表达式。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Save results to this file."
+msgstr "将结果保存到此文件。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--format`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: table, json, stac, geojson, geoparquet, csv, ids"
+msgstr "可选值：table, json, stac, geojson, geoparquet, csv, ids"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`table`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output format."
+msgstr "输出格式。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--on-provider-failure`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: skip, abort, retry"
+msgstr "可选值：skip, abort, retry"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`skip`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "How to handle provider failures."
+msgstr "如何处理提供商失败。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--timeout`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`60`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Per-provider timeout in seconds."
+msgstr "每个提供商的超时时间（秒）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--no-cache`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Bypass result cache."
+msgstr "绕过结果缓存。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--validate-optical`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Run optical preflight validation (AOI coverage, cloud cover, required bands,"
+" processing level, temporal bounds) on results before returning them. Not "
+"appropriate for SAR/InSAR searches -- the default required bands are optical"
+" band names."
+msgstr ""
+"在返回结果之前，对结果运行光学预检验证（AOI 覆盖率、云量、所需波段、处理级别、时间范围）。不适用于 SAR/InSAR 搜索 -- "
+"默认的所需波段是光学波段名称。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-max-cloud-cover`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "float"
+msgstr "浮点数"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Override the max cloud cover threshold used by --validate-optical (default "
+"20.0)."
+msgstr "覆盖 --validate-optical 使用的最大云量阈值（默认 20.0）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-min-coverage`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Override the min AOI coverage ratio used by --validate-optical, 0-1 (default"
+" 0.8)."
+msgstr "覆盖 --validate-optical 使用的最小 AOI 覆盖率，0-1（默认 0.8）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-required-bands`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Comma-separated required bands for --validate-optical (default "
+"B02,B03,B04,B08,SCL)."
+msgstr "--validate-optical 所需波段，以逗号分隔（默认 B02,B03,B04,B08,SCL）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:282
+msgid "`download`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:284
+msgid "Download scenes and inspect download history."
+msgstr "下载场景并查看下载历史。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`download run`](#download-run)"
+msgstr "[`download run`](#download-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:294
+msgid ""
+"Download satellite data products from a search results file or scene IDs."
+msgstr "根据搜索结果文件或场景 ID 下载卫星数据产品。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`download status`](#download-status)"
+msgstr "[`download status`](#download-status)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:348
+msgid "Show downloaded files in OUTPUT_DIR."
+msgstr "显示 OUTPUT_DIR 中已下载的文件。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`download history`](#download-history)"
+msgstr "[`download history`](#download-history)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:364
+msgid "Show download history."
+msgstr "显示下载历史。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:292
+msgid "`download run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--from-search`, `-f`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "GeoJSON results file from `search run --output`."
+msgstr "来自 `search run --output` 的 GeoJSON 结果文件。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--scene-ids`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated scene IDs to download."
+msgstr "要下载的场景 ID，以逗号分隔。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`./pygeofetch_data`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output directory."
+msgstr "输出目录。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--parallel`, `-p`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Parallel download workers."
+msgstr "并行下载工作线程数。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--retry`, `-r`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`3`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Retry attempts per file."
+msgstr "每个文件的重试次数。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--retry-delay`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`5.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Base retry delay seconds (exponential backoff)."
+msgstr "基础重试延迟秒数（指数退避）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--verify-checksum`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "SHA256 checksum verification after download."
+msgstr "下载后进行 SHA256 校验和验证。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resume`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Resume interrupted downloads (default on)."
+msgstr "恢复中断的下载（默认开启）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bandwidth-limit`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Max bandwidth e.g. 10MB, 5MB (0=unlimited)."
+msgstr "最大带宽，例如 10MB、5MB（0=不限速）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--priority`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: high, normal, low"
+msgstr "可选值：high, normal, low"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`normal`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Download priority."
+msgstr "下载优先级。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--notify`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Notifications: webhook:URL or email:ADDRESS (repeatable)."
+msgstr "通知：webhook:URL 或 email:ADDRESS（可重复使用）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-process`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Post-process chain e.g. \"unzip,reproject:EPSG:4326,compress:lzw\"."
+msgstr "后处理链，例如 \"unzip,reproject:EPSG:4326,compress:lzw\"。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--on-failure`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "How to handle individual file failures."
+msgstr "如何处理单个文件的失败。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-items`, `-n`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Limit number of items to download."
+msgstr "限制要下载的条目数量。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--overwrite`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Overwrite existing files."
+msgstr "覆盖已存在的文件。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bands`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Comma-separated band names to download e.g. \"B02,B03,B04\" (default: all "
+"data assets)."
+msgstr "要下载的波段名称，以逗号分隔，例如 \"B02,B03,B04\"（默认：所有数据资产）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output results summary as JSON."
+msgstr "以 JSON 格式输出结果摘要。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Run optical preflight validation as a final gate before downloading (AOI "
+"coverage, cloud cover, required bands, processing level, temporal bounds). "
+"Items that fail are never attempted -- a failed result explaining why is "
+"returned in their place, same position, so output length always matches "
+"input."
+msgstr ""
+"在下载之前运行光学预检验证，作为最终关卡（AOI 覆盖率、云量、所需波段、处理级别、时间范围）。未通过的条目绝不会被尝试下载 -- "
+"会在其原位置返回一个说明原因的失败结果，因此输出长度始终与输入一致。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:346
+msgid "`download status`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`OUTPUT_DIR`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:362
+msgid "`download history`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--limit`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`20`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--status`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: success, failed, active"
+msgstr "可选值：success, failed, active"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:376
+msgid "`cache`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:378
+msgid "Manage the search-result cache."
+msgstr "管理搜索结果缓存。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache stats`](#cache-stats)"
+msgstr "[`cache stats`](#cache-stats)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:390
+msgid "Show cache statistics: size, entry count, location, TTL."
+msgstr "显示缓存统计信息：大小、条目数、位置、TTL。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache clear`](#cache-clear)"
+msgstr "[`cache clear`](#cache-clear)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:402
+msgid "Delete cache entries with optional filters."
+msgstr "删除缓存条目，可选择性过滤。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache ttl`](#cache-ttl)"
+msgstr "[`cache ttl`](#cache-ttl)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:424
+msgid "Show or set cache TTL. Usage: ttl show | ttl set SECONDS"
+msgstr "显示或设置缓存 TTL。用法：ttl show | ttl set SECONDS"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache location`](#cache-location)"
+msgstr "[`cache location`](#cache-location)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:437
+msgid "Show the cache directory path."
+msgstr "显示缓存目录路径。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`cache prune`](#cache-prune)"
+msgstr "[`cache prune`](#cache-prune)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:445
+msgid "Remove oldest cache entries to stay under max-size."
+msgstr "删除最旧的缓存条目，使缓存保持在 max-size 以下。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:388
+msgid "`cache stats`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:400
+msgid "`cache clear`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clear only entries for this provider."
+msgstr "仅清除此提供商的条目。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--older-than`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clear entries older than (e.g. 7d, 24h)."
+msgstr "清除早于指定时间的条目（例如 7d、24h）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dry-run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Show what would be removed without deleting."
+msgstr "显示将被删除的内容，但不实际删除。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--yes`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Confirm the action without prompting."
+msgstr "无需提示直接确认该操作。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:422
+msgid "`cache ttl`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`ACTION`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`SECONDS`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "optional"
+msgstr "可选"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:435
+msgid "`cache location`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:443
+msgid "`cache prune`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1GB`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Prune oldest entries until cache is below this size (e.g. 500MB, 2GB)."
+msgstr "删除最旧的条目，直到缓存低于此大小（例如 500MB、2GB）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:455
+msgid "`pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:457
+msgid "YAML acquisition pipelines: run, validate and schedule."
+msgstr "YAML 采集流水线：运行、验证和调度。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline run`](#pipeline-run)"
+msgstr "[`pipeline run`](#pipeline-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:472
+msgid "Run a pipeline from a YAML definition file."
+msgstr "根据 YAML 定义文件运行流水线。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline validate`](#pipeline-validate)"
+msgstr "[`pipeline validate`](#pipeline-validate)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:488
+msgid "Validate a pipeline YAML file without executing it."
+msgstr "验证流水线 YAML 文件而不执行它。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline schedule`](#pipeline-schedule)"
+msgstr "[`pipeline schedule`](#pipeline-schedule)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:500
+msgid "Schedule a pipeline for recurring execution (saves to config)."
+msgstr "调度流水线以重复执行（保存到配置中）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline list-scheduled`](#pipeline-list-scheduled)"
+msgstr "[`pipeline list-scheduled`](#pipeline-list-scheduled)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:517
+msgid "List all scheduled pipelines."
+msgstr "列出所有已调度的流水线。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline unschedule`](#pipeline-unschedule)"
+msgstr "[`pipeline unschedule`](#pipeline-unschedule)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:529
+msgid "Remove a pipeline from the schedule."
+msgstr "从调度中移除一个流水线。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline logs`](#pipeline-logs)"
+msgstr "[`pipeline logs`](#pipeline-logs)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:541
+msgid "Show execution logs for a pipeline."
+msgstr "显示流水线的执行日志。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline history`](#pipeline-history)"
+msgstr "[`pipeline history`](#pipeline-history)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:558
+msgid "Show pipeline execution history."
+msgstr "显示流水线的执行历史。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`pipeline retry`](#pipeline-retry)"
+msgstr "[`pipeline retry`](#pipeline-retry)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:571
+msgid "Retry a failed pipeline run by its run ID."
+msgstr "按运行 ID 重试失败的流水线运行。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:470
+msgid "`pipeline run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PIPELINE_FILE`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--step`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Run only this step name."
+msgstr "仅运行此名称的步骤。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:486
+msgid "`pipeline validate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:498
+msgid "`pipeline schedule`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--name`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Override pipeline name."
+msgstr "覆盖流水线名称。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cron`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Override cron schedule expression."
+msgstr "覆盖 cron 调度表达式。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:515
+msgid "`pipeline list-scheduled`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:527
+msgid "`pipeline unschedule`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`NAME`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:539
+msgid "`pipeline logs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--tail`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`50`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Show last N lines."
+msgstr "显示最后 N 行。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--follow`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Follow log output (streaming)."
+msgstr "持续跟踪日志输出（流式）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:556
+msgid "`pipeline history`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:569
+msgid "`pipeline retry`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`RUN_ID`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:581
+msgid "`proc-pipeline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:583
+msgid "YAML processing-chain pipelines for files you already have."
+msgstr "面向已有文件的 YAML 处理链流水线。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`proc-pipeline run`](#proc-pipeline-run)"
+msgstr "[`proc-pipeline run`](#proc-pipeline-run)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:593
+msgid "Run a processing pipeline defined in YAML."
+msgstr "运行以 YAML 定义的处理流水线。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`proc-pipeline validate`](#proc-pipeline-validate)"
+msgstr "[`proc-pipeline validate`](#proc-pipeline-validate)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:611
+msgid "Validate a processing pipeline YAML without running it."
+msgstr "校验处理流水线 YAML，但不运行。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`proc-pipeline template`](#proc-pipeline-template)"
+msgstr "[`proc-pipeline template`](#proc-pipeline-template)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:623
+msgid "Generate a starter YAML pipeline template."
+msgstr "生成入门级 YAML 流水线模板。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:591
+msgid "`proc-pipeline run`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`YAML_FILE`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--input`, `-i`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Starting input file."
+msgstr "起始输入文件。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-dir`, `-o`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`./pipeline_out`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output summary as JSON."
+msgstr "以 JSON 格式输出摘要。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:609
+msgid "`proc-pipeline validate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:621
+msgid "`proc-pipeline template`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`TEMPLATE_NAME`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:637
+msgid "`preprocess`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:639
+msgid "Clip, reproject, mask, correct and mosaic rasters."
+msgstr "对栅格进行裁剪、重投影、掩膜、校正和镶嵌。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess clip`](#preprocess-clip)"
+msgstr "[`preprocess clip`](#preprocess-clip)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:657
+msgid "Clip raster to bounding box or polygon geometry."
+msgstr "按边界框或多边形几何裁剪栅格。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess reproject`](#preprocess-reproject)"
+msgstr "[`preprocess reproject`](#preprocess-reproject)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:676
+msgid "Reproject raster to a new CRS (e.g. EPSG:4326, EPSG:32618)."
+msgstr "将栅格重投影到新的 CRS（例如 EPSG:4326、EPSG:32618）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess resample`](#preprocess-resample)"
+msgstr "[`preprocess resample`](#preprocess-resample)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:695
+msgid "Resample raster to different spatial resolution."
+msgstr "将栅格重采样到不同的空间分辨率。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess cloud-mask`](#preprocess-cloud-mask)"
+msgstr "[`preprocess cloud-mask`](#preprocess-cloud-mask)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:714
+msgid "Apply cloud masking to set cloud pixels to NoData."
+msgstr "应用云掩膜，将云像元设为 NoData。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess cloud-fill`](#preprocess-cloud-fill)"
+msgstr "[`preprocess cloud-fill`](#preprocess-cloud-fill)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:732
+msgid "Fill cloud gaps using a time series of auxiliary scenes."
+msgstr "使用辅助场景的时间序列填补云覆盖造成的空缺。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess atmos`](#preprocess-atmos)"
+msgstr "[`preprocess atmos`](#preprocess-atmos)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:750
+msgid "Atmospheric correction (DOS1, DOS2, Sen2Cor, FLAASH, 6S, iCOR)."
+msgstr "大气校正（DOS1、DOS2、Sen2Cor、FLAASH、6S、iCOR）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess topo-correct`](#preprocess-topo-correct)"
+msgstr "[`preprocess topo-correct`](#preprocess-topo-correct)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:767
+msgid "Topographic correction using a DEM (cosine, Minnaert, C-correction)."
+msgstr "使用 DEM 进行地形校正（余弦、Minnaert、C 校正）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess pansharpen`](#preprocess-pansharpen)"
+msgstr "[`preprocess pansharpen`](#preprocess-pansharpen)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:785
+msgid "Pan-sharpen multispectral using panchromatic band."
+msgstr "使用全色波段对多光谱影像进行全色锐化。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess mosaic`](#preprocess-mosaic)"
+msgstr "[`preprocess mosaic`](#preprocess-mosaic)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:803
+msgid "Merge multiple rasters into a seamless mosaic."
+msgstr "将多个栅格合并为无缝镶嵌图。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess composite`](#preprocess-composite)"
+msgstr "[`preprocess composite`](#preprocess-composite)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:820
+msgid "Create multi-temporal composite (median, mean, max, min, best-pixel)."
+msgstr "创建多时相合成影像（中值、均值、最大值、最小值、最佳像元）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`preprocess tile`](#preprocess-tile)"
+msgstr "[`preprocess tile`](#preprocess-tile)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:837
+msgid "Split large raster into overlapping tiles for AI inference."
+msgstr "将大型栅格切分为带重叠的瓦片，用于 AI 推理。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:655
+msgid "`preprocess clip`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "\"minx,miny,maxx,maxy\""
+msgstr "\"minx,miny,maxx,maxy\""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry`, `-g`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--all-touched`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:674
+msgid "`preprocess reproject`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--crs`, `-c`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`EPSG:4326`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resampling`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: nearest, bilinear, cubic, lanczos, average"
+msgstr "可选值：nearest、bilinear、cubic、lanczos、average"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`bilinear`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--resolution`, `-r`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:693
+msgid "`preprocess resample`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Target resolution in CRS units."
+msgstr "目标分辨率，单位为 CRS 单位。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--scale`, `-s`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Scale factor (0.5=half, 2.0=double)."
+msgstr "缩放因子（0.5=一半，2.0=两倍）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--method`, `-m`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:712
+msgid "`preprocess cloud-mask`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: scl, fmask, threshold, ndsi"
+msgstr "可选值：scl、fmask、threshold、ndsi"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`scl`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--scl-band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:730
+msgid "`preprocess cloud-fill`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`TIME_SERIES`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: interpolate, nearest"
+msgstr "可选值：interpolate、nearest"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`interpolate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:748
+msgid "`preprocess atmos`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: dos1, dos2, sen2cor, flaash, 6s, icor"
+msgstr "可选值：dos1、dos2、sen2cor、flaash、6s、icor"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`dos1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:765
+msgid "`preprocess topo-correct`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`DEM`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: cosine, minnaert, c_correction"
+msgstr "可选值：cosine、minnaert、c_correction"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`cosine`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:783
+msgid "`preprocess pansharpen`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`PAN`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`MS`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: brovey, ihs, gram_schmidt, simple_mean"
+msgstr "可选值：brovey、ihs、gram_schmidt、simple_mean"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`brovey`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:801
+msgid "`preprocess mosaic`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUTS`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: first, last, min, max"
+msgstr "可选值：first、last、min、max"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`first`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:818
+msgid "`preprocess composite`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: median, mean, max, min, best_pixel"
+msgstr "可选值：median、mean、max、min、best_pixel"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`median`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:835
+msgid "`preprocess tile`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--tile-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`512`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--overlap`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`64`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--min-coverage`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:854
+msgid "`index`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:856
+msgid "Spectral indices and band arithmetic."
+msgstr "光谱指数与波段运算。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndvi`](#index-ndvi)"
+msgstr "[`index ndvi`](#index-ndvi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:881
+msgid ""
+"NDVI — Normalized Difference Vegetation Index. Range: -1 to +1. Vegetation >"
+" 0.3."
+msgstr "NDVI — 归一化差值植被指数。范围：-1 到 +1。植被 > 0.3。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndre`](#index-ndre)"
+msgstr "[`index ndre`](#index-ndre)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:906
+msgid "NDRE — Normalized Difference Red Edge Index. Range: -1 to +1."
+msgstr "NDRE — 归一化差值红边指数。范围：-1 到 +1。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index evi`](#index-evi)"
+msgstr "[`index evi`](#index-evi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:932
+msgid ""
+"EVI — Enhanced Vegetation Index. Better than NDVI in high-biomass areas."
+msgstr "EVI — 增强型植被指数。在高生物量区域优于 NDVI。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index savi`](#index-savi)"
+msgstr "[`index savi`](#index-savi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:957
+msgid ""
+"SAVI — Soil Adjusted Vegetation Index. Reduces soil brightness influence."
+msgstr "SAVI — 土壤调节植被指数。减少土壤亮度的影响。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndwi`](#index-ndwi)"
+msgstr "[`index ndwi`](#index-ndwi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:982
+msgid "NDWI — Normalized Difference Water Index. Water > 0."
+msgstr "NDWI — 归一化差值水体指数。水体 > 0。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index mndwi`](#index-mndwi)"
+msgstr "[`index mndwi`](#index-mndwi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1006
+msgid "MNDWI — Modified NDWI. Better separation of water from built-up areas."
+msgstr "MNDWI — 改进的 NDWI。能更好地区分水体与建成区。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndbi`](#index-ndbi)"
+msgstr "[`index ndbi`](#index-ndbi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1030
+msgid "NDBI — Normalized Difference Built-up Index. Urban > 0."
+msgstr "NDBI — 归一化差值建筑指数。城市 > 0。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndsi`](#index-ndsi)"
+msgstr "[`index ndsi`](#index-ndsi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1054
+msgid "NDSI — Snow Index. Snow > 0.4."
+msgstr "NDSI — 积雪指数。积雪 > 0.4。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index ndmi`](#index-ndmi)"
+msgstr "[`index ndmi`](#index-ndmi)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1078
+msgid "NDMI — Moisture Index. Sensitive to canopy water content."
+msgstr "NDMI — 湿度指数。对冠层含水量敏感。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index nbr`](#index-nbr)"
+msgstr "[`index nbr`](#index-nbr)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1102
+msgid "NBR — Normalized Burn Ratio. Use dNBR for burn severity."
+msgstr "NBR — 归一化燃烧比。使用 dNBR 评估火烧严重程度。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index dnbr`](#index-dnbr)"
+msgstr "[`index dnbr`](#index-dnbr)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1126
+msgid ""
+"dNBR — Differenced Burn Ratio. Range: >0.66 high severity, <-0.25 regrowth."
+msgstr "dNBR — 差分燃烧比。范围：>0.66 为高严重度，<-0.25 为植被再生。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index tct`](#index-tct)"
+msgstr "[`index tct`](#index-tct)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1142
+msgid ""
+"Tasseled Cap Transformation — Brightness, Greenness, Wetness (3-band "
+"output)."
+msgstr "缨帽变换 — 亮度、绿度、湿度（3 波段输出）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index pca`](#index-pca)"
+msgstr "[`index pca`](#index-pca)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1161
+msgid ""
+"PCA — Principal Component Analysis. Reduces dimensionality of multi-band "
+"data."
+msgstr "PCA — 主成分分析。降低多波段数据的维度。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index texture`](#index-texture)"
+msgstr "[`index texture`](#index-texture)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1178
+msgid ""
+"GLCM Texture — contrast, homogeneity, energy, correlation, dissimilarity, "
+"ASM."
+msgstr "GLCM 纹理 — 对比度、同质性、能量、相关性、相异性、ASM。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index lst`](#index-lst)"
+msgstr "[`index lst`](#index-lst)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1196
+msgid ""
+"Land Surface Temperature from thermal band. Output: Band1=Kelvin, "
+"Band2=Celsius."
+msgstr "基于热红外波段的地表温度。输出：Band1=开尔文，Band2=摄氏度。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index albedo`](#index-albedo)"
+msgstr "[`index albedo`](#index-albedo)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1214
+msgid "Surface albedo from narrowband to broadband conversion (Liang 2001)."
+msgstr "通过窄波段到宽波段转换得到的地表反照率（Liang 2001）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index band-math`](#index-band-math)"
+msgstr "[`index band-math`](#index-band-math)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1231
+msgid "Arbitrary band arithmetic. Example: --expr '(B[1]-B[0])/(B[1]+B[0])'."
+msgstr "任意波段运算。示例：--expr '(B[1]-B[0])/(B[1]+B[0])'。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`index stack`](#index-stack)"
+msgstr "[`index stack`](#index-stack)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1253
+msgid "Stack single-band rasters into a multi-band GeoTIFF."
+msgstr "将单波段栅格堆叠为多波段 GeoTIFF。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:879
+msgid "`index ndvi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--red`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Red band (e.g. B04.tif)"
+msgstr "红光波段（例如 B04.tif）"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "NIR band (e.g. B08.tif)"
+msgstr "近红外波段（例如 B08.tif）"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--chunked`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Process in memory-safe tiles for large rasters (e.g. drone orthomosaics) "
+"that exceed available RAM or the 4GB GeoTIFF limit."
+msgstr "以内存安全的瓦片方式处理超出可用内存或 4GB GeoTIFF 限制的大型栅格（例如无人机正射镶嵌图）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1024`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Tile edge length in pixels when --chunked is set."
+msgstr "设置 --chunked 时的瓦片边长（像素）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry-crs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "CRS of --bbox/--geometry coordinates."
+msgstr "--bbox/--geometry 坐标所用的 CRS。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--geometry`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clip the result to a GeoJSON file's geometry instead of a bbox."
+msgstr "使用 GeoJSON 文件的几何而非边界框来裁剪结果。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bbox`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Clip the result to minx,miny,maxx,maxy (comma-separated)."
+msgstr "将结果裁剪到 minx,miny,maxx,maxy（以逗号分隔）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:904
+msgid "`index ndre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--rededge`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Red edge band"
+msgstr "红边波段"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "NIR band"
+msgstr "近红外波段"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Process in memory-safe tiles for large rasters that exceed available RAM or "
+"the 4GB GeoTIFF limit."
+msgstr "以内存安全的瓦片方式处理超出可用内存或 4GB GeoTIFF 限制的大型栅格。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:930
+msgid "`index evi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--blue`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Process in memory-safe tiles for large rasters."
+msgstr "以内存安全的瓦片方式处理大型栅格。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:955
+msgid "`index savi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--soil-l`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.5`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:980
+msgid "`index ndwi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--green`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1004
+msgid "`index mndwi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--swir1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1028
+msgid "`index ndbi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1052
+msgid "`index ndsi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1076
+msgid "`index ndmi`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1100
+msgid "`index nbr`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--swir2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1124
+msgid "`index dnbr`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre-nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre-swir2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-swir2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1140
+msgid "`index tct`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sensor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: sentinel2, landsat8"
+msgstr "可选值：sentinel2、landsat8"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`sentinel2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1159
+msgid "`index pca`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--components`, `-n`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1176
+msgid "`index texture`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--window`, `-w`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`5`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--features`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`contrast,homogeneity,energy,correlation`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated GLCM features."
+msgstr "以逗号分隔的 GLCM 特征。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1194
+msgid "`index lst`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`THERMAL`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--emissivity`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.97`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: landsat8, landsat9, modis"
+msgstr "可选值：landsat8、landsat9、modis"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`landsat8`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1212
+msgid "`index albedo`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1229
+msgid "`index band-math`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--expr`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Python expression. Bands as B[0], B[1], ..."
+msgstr "Python 表达式。波段表示为 B[0]、B[1]、..."
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1251
+msgid "`index stack`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1267
+msgid "`classify`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1269
+msgid "Unsupervised and supervised classification."
+msgstr "非监督与监督分类。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`classify kmeans`](#classify-kmeans)"
+msgstr "[`classify kmeans`](#classify-kmeans)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1279
+msgid "Unsupervised K-means clustering. No training data needed."
+msgstr "非监督 K-means 聚类。无需训练数据。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`classify train`](#classify-train)"
+msgstr "[`classify train`](#classify-train)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1301
+msgid "Train a supervised classifier from labeled vector training samples."
+msgstr "基于带标签的矢量训练样本训练监督分类器。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`classify predict`](#classify-predict)"
+msgstr "[`classify predict`](#classify-predict)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1327
+msgid ""
+"Apply a trained model to a real raster stack, producing a classification "
+"map."
+msgstr "将训练好的模型应用于真实的栅格堆栈，生成分类图。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1277
+msgid "`classify kmeans`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--clusters`, `-k`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Number of clusters."
+msgstr "聚类数量。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--random-state`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`42`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1299
+msgid "`classify train`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--training-data`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Vector file (GeoJSON/Shapefile) with labeled training geometries."
+msgstr "包含带标签训练几何的矢量文件（GeoJSON/Shapefile）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--class-field`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Attribute column holding the real class label."
+msgstr "保存真实类别标签的属性列。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-model`, `-o`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Where to save the trained model."
+msgstr "训练模型的保存位置。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--model-type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: random_forest, svm"
+msgstr "可选值：random_forest、svm"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`random_forest`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--n-estimators`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Random Forest tree count."
+msgstr "随机森林的树数量。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--test-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Fraction of samples held out for real accuracy reporting."
+msgstr "留出用于真实精度报告的样本比例。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1325
+msgid "`classify predict`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--model`, `-m`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "A model trained via 'classify train'."
+msgstr "通过 'classify train' 训练的模型。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1346
+msgid "`post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1348
+msgid "Vector and raster post-processing."
+msgstr "矢量与栅格后处理。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post vectorize`](#post-vectorize)"
+msgstr "[`post vectorize`](#post-vectorize)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1367
+msgid "Convert raster to vector polygons (polygonize)."
+msgstr "将栅格转换为矢量多边形（多边形化）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post smooth`](#post-smooth)"
+msgstr "[`post smooth`](#post-smooth)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1387
+msgid ""
+"Smooth/simplify vector geometries (Douglas-Peucker or buffer-unbuffer)."
+msgstr "平滑/简化矢量几何（Douglas-Peucker 或先缓冲后反缓冲）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post regularize`](#post-regularize)"
+msgstr "[`post regularize`](#post-regularize)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1405
+msgid "Regularize (orthogonalize) building footprints or polygons."
+msgstr "规整（正交化）建筑物轮廓或多边形。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post zonal-stats`](#post-zonal-stats)"
+msgstr "[`post zonal-stats`](#post-zonal-stats)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1421
+msgid "Compute zonal statistics for each polygon zone."
+msgstr "为每个多边形分区计算分区统计。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post buffer`](#post-buffer)"
+msgstr "[`post buffer`](#post-buffer)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1440
+msgid "Add buffer around vector geometries."
+msgstr "为矢量几何添加缓冲区。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post centroids`](#post-centroids)"
+msgstr "[`post centroids`](#post-centroids)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1458
+msgid "Extract centroid points from polygons."
+msgstr "从多边形中提取质心点。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post geometry-metrics`](#post-geometry-metrics)"
+msgstr "[`post geometry-metrics`](#post-geometry-metrics)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1474
+msgid "Add area, perimeter, and compactness columns to vector file."
+msgstr "为矢量文件添加面积、周长和紧致度列。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post compress`](#post-compress)"
+msgstr "[`post compress`](#post-compress)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1490
+msgid "Apply lossless compression to a GeoTIFF."
+msgstr "对 GeoTIFF 应用无损压缩。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post cog`](#post-cog)"
+msgstr "[`post cog`](#post-cog)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1507
+msgid ""
+"Convert to Cloud Optimized GeoTIFF (COG) with internal tiling and overviews."
+msgstr "转换为带内部分块和概览的云优化 GeoTIFF（COG）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post overlay`](#post-overlay)"
+msgstr "[`post overlay`](#post-overlay)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1525
+msgid "Real polygon overlay between two vector layers."
+msgstr "在两个矢量图层之间进行真实的多边形叠加。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post dissolve`](#post-dissolve)"
+msgstr "[`post dissolve`](#post-dissolve)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1547
+msgid ""
+"Merge polygons sharing the same attribute value into single geometries."
+msgstr "将属性值相同的多边形合并为单一几何。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`post spatial-join`](#post-spatial-join)"
+msgstr "[`post spatial-join`](#post-spatial-join)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1569
+msgid ""
+"Attach attributes from one vector layer to another by real spatial "
+"relationship."
+msgstr "按真实的空间关系，将一个矢量图层的属性附加到另一个图层。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1365
+msgid "`post vectorize`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--band`, `-b`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--threshold`, `-t`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Binary threshold before vectorizing."
+msgstr "矢量化之前的二值阈值。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--format`, `-f`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: geojson, gpkg, shp"
+msgstr "可选值：geojson、gpkg、shp"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`geojson`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--min-area`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Minimum polygon area to keep (CRS units²)."
+msgstr "保留的最小多边形面积（CRS 单位²）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1385
+msgid "`post smooth`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--tolerance`, `-t`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: simplify, buffer"
+msgstr "可选值：simplify、buffer"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`simplify`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1403
+msgid "`post regularize`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1419
+msgid "`post zonal-stats`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`RASTER`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`ZONES`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output CSV path."
+msgstr "输出 CSV 路径。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--stats`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`count,mean,median,min,max,std`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated statistics to compute."
+msgstr "要计算的统计量，以逗号分隔。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1438
+msgid "`post buffer`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--distance`, `-d`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cap-style`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: round, flat, square"
+msgstr "可选值：round、flat、square"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`round`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1456
+msgid "`post centroids`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1472
+msgid "`post geometry-metrics`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1488
+msgid "`post compress`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: lzw, deflate, zstd, packbits"
+msgstr "可选值：lzw、deflate、zstd、packbits"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`lzw`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1505
+msgid "`post cog`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--compress`, `-c`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: deflate, lzw, zstd, none"
+msgstr "可选值：deflate、lzw、zstd、none"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`deflate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--blocksize`, `-b`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1523
+msgid "`post overlay`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`LEFT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`RIGHT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--how`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"one of: intersection, union, difference, symmetric_difference, identity"
+msgstr "可选值：intersection、union、difference、symmetric_difference、identity"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`intersection`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1545
+msgid "`post dissolve`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--by`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Attribute column to group by before dissolving."
+msgstr "融合前用于分组的属性列。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--aggfunc`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "How to aggregate other columns within each group."
+msgstr "如何聚合每个分组内的其他列。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1567
+msgid "`post spatial-join`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: inner, left, right"
+msgstr "可选值：inner、left、right"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`inner`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--predicate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: intersects, contains, within, touches, crosses, overlaps"
+msgstr "可选值：intersects、contains、within、touches、crosses、overlaps"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`intersects`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1590
+msgid "`sar`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1592
+msgid "SAR despeckling, calibration, flood mapping and coherence."
+msgstr "SAR 去斑、定标、洪水制图与相干性。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar despeckle`](#sar-despeckle)"
+msgstr "[`sar despeckle`](#sar-despeckle)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1603
+msgid "SAR speckle filtering (Lee, Enhanced Lee, Frost, Gamma MAP, Boxcar)."
+msgstr "SAR 斑点滤波（Lee、Enhanced Lee、Frost、Gamma MAP、Boxcar）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar calibrate`](#sar-calibrate)"
+msgstr "[`sar calibrate`](#sar-calibrate)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1622
+msgid ""
+"Radiometric calibration: DN → sigma0/gamma0/beta0 backscatter coefficient."
+msgstr "辐射定标：DN → sigma0/gamma0/beta0 后向散射系数。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar flood-map`](#sar-flood-map)"
+msgstr "[`sar flood-map`](#sar-flood-map)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1640
+msgid "Flood mapping from SAR backscatter (simple threshold or change-based)."
+msgstr "基于 SAR 后向散射的洪水制图（简单阈值法或变化检测法）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`sar coherence`](#sar-coherence)"
+msgstr "[`sar coherence`](#sar-coherence)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1658
+msgid "Interferometric coherence between two co-registered SAR images."
+msgstr "两幅已配准 SAR 影像之间的干涉相干性。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1601
+msgid "`sar despeckle`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--filter`, `-f`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: lee, enhanced_lee, frost, gamma, boxcar"
+msgstr "可选值：lee、enhanced_lee、frost、gamma、boxcar"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`lee`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--looks`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1620
+msgid "`sar calibrate`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-type`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: sigma0, gamma0, beta0"
+msgstr "可选值：sigma0、gamma0、beta0"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`sigma0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--db`, `--linear`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`True`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1638
+msgid "`sar flood-map`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`-15.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Backscatter threshold below which pixels = water (dB)."
+msgstr "后向散射阈值，低于该值的像元视为水体（dB）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--reference`, `-r`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Pre-event reference image for change-based detection."
+msgstr "用于变化检测的事件前参考影像。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1656
+msgid "`sar coherence`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`IMAGE1`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`IMAGE2`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`7`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1674
+msgid "`optical`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1676
+msgid "Optical pixel-offset tracking."
+msgstr "光学像元偏移跟踪。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`optical offset-track`](#optical-offset-track)"
+msgstr "[`optical offset-track`](#optical-offset-track)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Measure 2D ground displacement between two optical scenes via"
+msgstr "通过影像相关测量两幅光学场景之间的二维地表位移，"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1682
+msgid "`optical offset-track`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1684
+msgid ""
+"Measure 2D ground displacement between two optical scenes via image "
+"correlation."
+msgstr "通过影像相关测量两幅光学场景之间的二维地表位移。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--ref`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Reference-date raster."
+msgstr "参考日期栅格。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sec`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Secondary-date raster."
+msgstr "次级日期栅格。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output GeoTIFF (dx/dy/snr, 3 bands)."
+msgstr "输出 GeoTIFF（dx/dy/snr，3 个波段）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "1-based band index to correlate."
+msgstr "用于相关的波段索引（从 1 开始）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--window-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Search window size, pixels."
+msgstr "搜索窗口大小，单位为像素。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--step-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`16`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Spacing between window centers, pixels."
+msgstr "窗口中心之间的间距，单位为像素。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--chip-size`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Reference template size, pixels. Default: window-size // 2."
+msgstr "参考模板大小，单位为像素。默认值：window-size // 2。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--snr-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`3.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Minimum SNR to mark a window reliable."
+msgstr "将窗口标记为可靠所需的最小 SNR。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--cloud-mask`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real Sentinel-2 SCL raster, already aligned to --ref."
+msgstr "真实的 Sentinel-2 SCL 栅格，已与 --ref 对齐。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--water-mask-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Mask pixels where NDWI exceeds this value (needs --green-band/--nir-band)."
+msgstr "掩膜 NDWI 超过该值的像元（需要 --green-band/--nir-band）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--green-band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "1-based green band index, for --water-mask-threshold."
+msgstr "绿光波段索引（从 1 开始），用于 --water-mask-threshold。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir-band`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "1-based NIR band index, for --water-mask-threshold."
+msgstr "近红外波段索引（从 1 开始），用于 --water-mask-threshold。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1720
+msgid "`multisensor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1722
+msgid "Multi-sensor pipelines."
+msgstr "多传感器流水线。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"[`multisensor insar-optical-fusion`](#multisensor-insar-optical-fusion)"
+msgstr ""
+"[`multisensor insar-optical-fusion`](#multisensor-insar-optical-fusion)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1734
+msgid "Fuse InSAR displacement with optical pixel offset tracking."
+msgstr "将 InSAR 位移与光学像元偏移跟踪融合。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`multisensor flood-map`](#multisensor-flood-map)"
+msgstr "[`multisensor flood-map`](#multisensor-flood-map)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1756
+msgid "Fuse SAR and optical NDWI for flood/water extent mapping."
+msgstr "融合 SAR 与光学 NDWI 以绘制洪水/水体范围。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`multisensor terrain-change`](#multisensor-terrain-change)"
+msgstr "[`multisensor terrain-change`](#multisensor-terrain-change)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Terrain-corrected optical change detection (removes real"
+msgstr "经地形校正的光学变化检测（消除真实的"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`multisensor dem-diff`](#multisensor-dem-diff)"
+msgstr "[`multisensor dem-diff`](#multisensor-dem-diff)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1796
+msgid "DEM-of-Difference volumetric change analysis."
+msgstr "DEM 差值（DoD）体积变化分析。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"[`multisensor vegetation-disturbance`](#multisensor-vegetation-disturbance)"
+msgstr ""
+"[`multisensor vegetation-disturbance`](#multisensor-vegetation-disturbance)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Classify visible canopy loss vs. real sub-canopy ground"
+msgstr "区分可见冠层损失与真实的冠层下地面"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1732
+msgid "`multisensor insar-optical-fusion`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--insar-velocity`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--insar-coherence`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-ref`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-sec`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-dir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-low`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.4`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-high`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.6`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1754
+msgid "`multisensor flood-map`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sar`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-green`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--optical-nir`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sar-reference`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--sar-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--ndwi-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--fusion-mode`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: cloud_aware, union, intersection"
+msgstr "可选值：cloud_aware、union、intersection"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`cloud_aware`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1774
+msgid "`multisensor terrain-change`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1776
+msgid ""
+"Terrain-corrected optical change detection (removes real illumination "
+"artifacts using each date's own solar position)."
+msgstr "经地形校正的光学变化检测（利用各日期自身的太阳位置消除真实的光照伪影）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dem`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--pre-datetime`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real UTC ISO datetime, e.g. 2024-01-15T10:30:00"
+msgstr "真实的 UTC ISO 日期时间，例如 2024-01-15T10:30:00"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--post-datetime`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real UTC ISO datetime"
+msgstr "真实的 UTC ISO 日期时间"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--lat`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--lon`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--change-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1794
+msgid "`multisensor dem-diff`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dem-old`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--dem-new`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--old-rmse`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real vertical RMSE of the old DEM, metres."
+msgstr "旧 DEM 的真实垂直 RMSE，单位为米。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--new-rmse`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Real vertical RMSE of the new DEM, metres."
+msgstr "新 DEM 的真实垂直 RMSE，单位为米。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--confidence-t`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`1.96`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1811
+msgid "`multisensor vegetation-disturbance`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1813
+msgid ""
+"Classify visible canopy loss vs. real sub-canopy ground disturbance, from "
+"optical NDVI + SAR coherence."
+msgstr "基于光学 NDVI 与 SAR 相干性，区分可见冠层损失与真实的冠层下地面扰动。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--red-pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir-pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--red-post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--nir-post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--slc-pre`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--slc-post`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--ndvi-drop-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.15`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-threshold`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0.3`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--coherence-window`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1832
+msgid "`stream`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1834
+msgid "Windowed COG reads and cloud-native format conversion."
+msgstr "窗口化 COG 读取与云原生格式转换。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream cog-window`](#stream-cog-window)"
+msgstr "[`stream cog-window`](#stream-cog-window)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1846
+msgid ""
+"Read a real, spatial window from a remote COG without downloading the whole "
+"file."
+msgstr "从远程 COG 读取真实的空间窗口，无需下载整个文件。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream to-geoparquet`](#stream-to-geoparquet)"
+msgstr "[`stream to-geoparquet`](#stream-to-geoparquet)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1871
+msgid "Convert any real vector file to GeoParquet."
+msgstr "将任意真实的矢量文件转换为 GeoParquet。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream to-zarr`](#stream-to-zarr)"
+msgstr "[`stream to-zarr`](#stream-to-zarr)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1891
+msgid "Convert a real GeoTIFF to a chunked Zarr store."
+msgstr "将真实的 GeoTIFF 转换为分块 Zarr 存储。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream zarr-to-tif`](#stream-zarr-to-tif)"
+msgstr "[`stream zarr-to-tif`](#stream-zarr-to-tif)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1913
+msgid ""
+"Convert a real Zarr store (written with real geo metadata) back to GeoTIFF."
+msgstr "将真实的 Zarr 存储（含真实地理元数据）转换回 GeoTIFF。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`stream chunked-process`](#stream-chunked-process)"
+msgstr "[`stream chunked-process`](#stream-chunked-process)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1933
+msgid "Process a large raster in real, memory-safe, overlap-aware tiles."
+msgstr "以真实的、内存安全的、感知重叠的瓦片处理大型栅格。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1844
+msgid "`stream cog-window`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`URL`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "min_lon,min_lat,max_lon,max_lat"
+msgstr "min_lon,min_lat,max_lon,max_lat"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--bbox-crs`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated 1-based band indices. Default: all real bands."
+msgstr "以逗号分隔的波段索引（从 1 开始）。默认值：所有真实波段。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output GeoTIFF path for the real, windowed result."
+msgstr "真实窗口化结果的输出 GeoTIFF 路径。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--no-range-check`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Skip the real, honest pre-flight range-request support check."
+msgstr "跳过真实、可靠的范围请求支持预检。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1869
+msgid "`stream to-geoparquet`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT_VECTOR`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1889
+msgid "`stream to-zarr`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT_RASTER`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Output .zarr store directory."
+msgstr "输出 .zarr 存储目录。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--chunks`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Comma-separated chunk shape, e.g. 512,512. Default: real, automatic."
+msgstr "以逗号分隔的分块形状，例如 512,512。默认值：真实的自动设置。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--compressor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: zstd, lz4, gzip, zlib, none"
+msgstr "可选值：zstd、lz4、gzip、zlib、none"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`zstd`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1911
+msgid "`stream zarr-to-tif`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`INPUT_ZARR`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1931
+msgid "`stream chunked-process`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--expression`, `-e`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Python expression over tile arrays, e.g. \"(B[1]-B[0])/(B[1]+B[0]+1e-6)\" "
+"for pixel-independent math, or \"uniform_filter(B[0], size=3)\" for a real "
+"neighborhood filter."
+msgstr ""
+"作用于瓦片数组的 Python 表达式，例如 \"(B[1]-B[0])/(B[1]+B[0]+1e-6)\" 用于逐像元独立运算，或 "
+"\"uniform_filter(B[0], size=3)\" 用于真实的邻域滤波。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`0`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Real pixel margin for neighborhood operations -- 0 for pixel-independent "
+"math."
+msgstr "邻域运算的真实像素边距 -- 逐像元独立运算时为 0。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--output-format`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "one of: cog, zarr"
+msgstr "可选值：cog、zarr"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`cog`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1970
+msgid "`config`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1972
+msgid "Read and modify configuration."
+msgstr "读取并修改配置。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config show`](#config-show)"
+msgstr "[`config show`](#config-show)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1984
+msgid "Show the effective configuration (all layers merged)."
+msgstr "显示生效的配置（合并所有层级）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config get`](#config-get)"
+msgstr "[`config get`](#config-get)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1996
+msgid "Get a single configuration value by dotted KEY path."
+msgstr "按点分隔的 KEY 路径获取单个配置值。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config set`](#config-set)"
+msgstr "[`config set`](#config-set)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2013
+msgid "Set a configuration value in the user config file."
+msgstr "在用户配置文件中设置配置值。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config path`](#config-path)"
+msgstr "[`config path`](#config-path)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2035
+msgid "Show the location of configuration files."
+msgstr "显示配置文件的位置。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "[`config reset`](#config-reset)"
+msgstr "[`config reset`](#config-reset)"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2043
+msgid "Remove the user configuration file, restoring defaults."
+msgstr "删除用户配置文件，恢复默认值。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1982
+msgid "`config show`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:1994
+msgid "`config get`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`KEY`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2011
+msgid "`config set`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`VALUE`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2033
+msgid "`config path`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2041
+msgid "`config reset`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2053
+msgid "Top-level commands"
+msgstr "顶层命令"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2055
+msgid "`status`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2057
+msgid ""
+"Show full system status: providers, cache, downloads, pipelines, version."
+msgstr "显示完整的系统状态：提供商、缓存、下载、流水线、版本。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2072
+msgid "`doctor`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2074
+msgid "Diagnose the PyGeoFetch installation and connectivity."
+msgstr "诊断 PyGeoFetch 的安装与连接情况。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2085
+msgid "`version`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2087
+msgid "Show version information."
+msgstr "显示版本信息。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2097
+msgid "`geocode`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2099
+msgid "Look up a place name and get its coordinates and bounding box."
+msgstr "查询地名并获取其坐标和边界框。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`QUERY`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "Max results to return."
+msgstr "返回的最大结果数。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2119
+msgid "`reverse-geocode`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2121
+msgid "Look up the real place name at a coordinate."
+msgstr "查询某个坐标处的真实地名。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`LAT`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`LON`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2136
+msgid "`assess-feasibility`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2138
+msgid "Assess InSAR feasibility for an AOI before downloading anything."
+msgstr "在下载任何数据之前，评估某个 AOI 的 InSAR 可行性。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--start-date`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--end-date`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--max-temporal-baseline`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`72`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`--deep-check`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid ""
+"Also run real, live burst-sync screening on the best track (costs real "
+"network calls)."
+msgstr "同时对最佳轨道运行真实的实时 burst 同步筛查（会产生真实的网络请求）。"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2160
+msgid "`--install-completion`"
+msgstr ""
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:2162
+msgid ""
+"Install shell tab completion. Usage: --install-completion bash|zsh|fish"
+msgstr "安装 shell 制表符补全。用法：--install-completion bash|zsh|fish"
+
+#: ../../home/claude/work/docs_audit/docs_out/reference/cli-commands.md:7
+msgid "`SHELL`"
+msgstr ""

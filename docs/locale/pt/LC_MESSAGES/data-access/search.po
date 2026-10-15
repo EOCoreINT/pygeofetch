@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,10 +26,12 @@ msgid ""
 "Federated search across multiple providers simultaneously. Results are "
 "deduplicated, scored, and returned sorted."
 msgstr ""
+"Busca federada em vários provedores simultaneamente. Os resultados são "
+"desduplicados, pontuados e retornados ordenados."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:6
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:8
 msgid ""
@@ -42,6 +44,14 @@ msgid ""
 "list of `SatelliteData` records that all look the same, whatever their "
 "origin."
 msgstr ""
+"Uma busca começa com uma descrição do que você procura, não com um provedor "
+"específico. Você dá ao pygeofetch uma área (uma caixa delimitadora ou uma "
+"geometria GeoJSON), um intervalo de datas e os filtros relevantes, como "
+"cobertura máxima de nuvens, satélite, nível de processamento ou resolução, e"
+" indica os provedores a consultar. A mesma descrição é traduzida para a API "
+"própria de cada provedor, as consultas são executadas em paralelo e as "
+"respostas são mescladas em uma única lista de registros `SatelliteData` que "
+"têm todos o mesmo formato, seja qual for a origem."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:10
 msgid ""
@@ -55,6 +65,17 @@ msgid ""
 "lifetime set by `cache_ttl`, so repeating a query while you refine "
 "downstream steps does not cost another round trip."
 msgstr ""
+"Na prática, uma sessão de busca tem três movimentos. Comece de forma ampla, "
+"com uma lista curta de provedores e um limite generoso de cobertura de "
+"nuvens, para ver quantas cenas existem e de quais satélites vêm. Restrinja a"
+" consulta quando souber o que está disponível, apertando as datas ou a "
+"cobertura de nuvens até que a lista tenha um tamanho sobre o qual você "
+"consiga raciocinar. Depois salve o resultado, seja como um arquivo GeoJSON "
+"pela linha de comando ou como a lista retornada por `client.search()` em "
+"Python, e passe-o para a etapa de download ou de streaming. Os resultados "
+"ficam em cache durante o tempo definido por `cache_ttl`, de modo que repetir"
+" uma consulta enquanto você refina as etapas seguintes não custa outra ida "
+"ao servidor."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:12
 msgid ""
@@ -67,10 +88,19 @@ msgid ""
 "describe each filter and output format, and [Downloading](download.md) and "
 "[Streaming](streaming.md) explain what to do with the results."
 msgstr ""
+"Dois comportamentos são úteis de conhecer antes de confiar na busca em um "
+"script. Um provedor que expira ou falha é registrado no log e deixado de "
+"fora em vez de interromper a busca, portanto uma lista vazia pode significar"
+" que todos os provedores falharam, e o log diz quais. E os resultados são "
+"desduplicados por provedor e identificador de cena, de modo que a mesma cena"
+" física oferecida por dois provedores aparece duas vezes; escolha o provedor"
+" de sua preferência para o download. As seções abaixo descrevem cada filtro "
+"e formato de saída, e [Download](download.md) e [Streaming](streaming.md) "
+"explicam o que fazer com os resultados."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:14
 msgid "What \"federated search\" actually does"
-msgstr ""
+msgstr "O que a \"busca federada\" realmente faz"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:16
 msgid ""
@@ -78,6 +108,9 @@ msgid ""
 "concatenate the results\" — three steps happen after the raw per-provider "
 "results come back:"
 msgstr ""
+"Buscar em vários provedores não é apenas \"chamar cada um e concatenar os "
+"resultados\" — três etapas acontecem depois que os resultados brutos de cada"
+" provedor voltam:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:20
 msgid ""
@@ -85,34 +118,43 @@ msgid ""
 " a slow or unresponsive provider doesn't block the others; see `--on-"
 "provider-failure` below for what happens if one errors out entirely."
 msgstr ""
+"**A busca por provedor é executada em paralelo** (`max_search_workers`, "
+"padrão 8) — um provedor lento ou sem resposta não bloqueia os demais; veja "
+"`--on-provider-failure` abaixo para saber o que acontece se um deles falhar "
+"por completo."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:24
 msgid ""
 "**Deduplication** — removes exact duplicates, keyed on "
 "`f\"{provider}:{scene_id}\"`."
 msgstr ""
+"**Desduplicação** — remove duplicatas exatas, usando como chave "
+"`f\"{provider}:{scene_id}\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:26
 msgid ""
 "**Scoring** — every result gets a `0.0`-`1.0` relevance score, used for the "
 "default sort order. The formula, verified against source:"
 msgstr ""
+"**Pontuação** — cada resultado recebe uma pontuação de relevância de `0.0` a"
+" `1.0`, usada para a ordenação padrão. A fórmula, verificada no código-"
+"fonte:"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Factor"
-msgstr ""
+msgstr "Fator"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Weight"
-msgstr ""
+msgstr "Peso"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "How it's computed"
-msgstr ""
+msgstr "Como é calculado"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Cloud cover"
-msgstr ""
+msgstr "Cobertura de nuvens"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "40%"
@@ -121,10 +163,12 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "`(100 - cloud_cover) / 100 * 0.4` — lower cloud cover scores higher"
 msgstr ""
+"`(100 - cloud_cover) / 100 * 0.4` — menor cobertura de nuvens pontua mais "
+"alto"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Recency"
-msgstr ""
+msgstr "Recência"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "up to 30%"
@@ -135,36 +179,40 @@ msgid ""
 "Linearly decays to 0 over 1 year old; a scene from today scores the full "
 "0.3, a scene older than a year contributes 0"
 msgstr ""
+"Decai linearmente até 0 em 1 ano; uma cena de hoje pontua os 0.3 completos, "
+"uma cena com mais de um ano contribui com 0"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Processing level"
-msgstr ""
+msgstr "Nível de processamento"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "10% flat bonus"
-msgstr ""
+msgstr "Bônus fixo de 10%"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid ""
 "Applied if the scene is L2/L2A/L2SP/analysis-ready — not scaled, just added "
 "or not"
 msgstr ""
+"Aplicado se a cena for L2/L2A/L2SP/pronta para análise — não é escalonado, "
+"apenas somado ou não"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "*(baseline)*"
-msgstr ""
+msgstr "*(linha de base)*"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "50%→60% blended with cloud score"
-msgstr ""
+msgstr "50%→60% combinado com a pontuação de nuvens"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:0
 msgid "Every result starts at a neutral 0.5 baseline"
-msgstr ""
+msgstr "Todo resultado começa com uma linha de base neutra de 0.5"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:37
 msgid "Deduplication is only provider+ID based"
-msgstr ""
+msgstr "A desduplicação é baseada apenas em provedor + ID"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:39
 msgid ""
@@ -175,10 +223,17 @@ msgid ""
 "footprint and datetime. When searching overlapping STAC catalogues, de-"
 "duplicate on your own key, such as the Sentinel-2 granule ID."
 msgstr ""
+"**Limitação.** A desduplicação baseia-se somente no provedor e no ID. Se "
+"dois provedores *diferentes* indexam a mesma cena (por exemplo, `aws_earth` "
+"e `planetary_computer` carregam ambos o mesmo tile Sentinel-2), você recebe "
+"**as duas cópias**. Não há correspondência entre provedores por ID de "
+"aquisição ou por footprint e data/hora. Ao buscar em catálogos STAC "
+"sobrepostos, desduplique com sua própria chave, como o ID do grânulo "
+"Sentinel-2."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Scoring uses three factors"
-msgstr ""
+msgstr "A pontuação usa três fatores"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:47
 msgid ""
@@ -188,27 +243,33 @@ msgid ""
 "available separately as a hard filter through [optical validation](optical-"
 "validation.md) (`check_aoi_coverage`), not as a scoring input."
 msgstr ""
+"A docstring da função de pontuação lista um quarto fator, cobertura espacial"
+" (peso 0.2), mas a implementação não o aplica. A pontuação usa apenas "
+"cobertura de nuvens, recência e nível de processamento, como mostrado acima."
+" A cobertura da AOI está disponível separadamente como filtro rígido por "
+"meio da [validação óptica](optical-validation.md) (`check_aoi_coverage`), e "
+"não como entrada da pontuação."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:53
 msgid "CLI examples"
-msgstr ""
+msgstr "Exemplos de CLI"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:94
 msgid "Search flags"
-msgstr ""
+msgstr "Flags de busca"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Flag"
-msgstr ""
+msgstr "Flag"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--bbox`"
@@ -216,13 +277,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "string"
-msgstr ""
+msgstr "string"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid ""
 "`\"minlon,minlat,maxlon,maxlat\"`. Longitude first. Alternative to "
 "`--geometry-file`."
 msgstr ""
+"`\"minlon,minlat,maxlon,maxlat\"`. Longitude primeiro. Alternativa a "
+"`--geometry-file`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--geometry-file`"
@@ -230,11 +293,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "path"
-msgstr ""
+msgstr "caminho"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "GeoJSON file with a search AOI polygon; extracts bbox automatically."
 msgstr ""
+"Arquivo GeoJSON com um polígono de AOI para a busca; extrai a bbox "
+"automaticamente."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--start-date` / `--end-date`"
@@ -242,11 +307,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "date"
-msgstr ""
+msgstr "data"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`YYYY-MM-DD`. `--end-date` defaults to today if omitted."
-msgstr ""
+msgstr "`YYYY-MM-DD`. `--end-date` assume a data de hoje se omitido."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--cloud-cover`"
@@ -254,11 +319,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "range"
-msgstr ""
+msgstr "intervalo"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`min-max` percent, e.g. `0-20`."
-msgstr ""
+msgstr "`min-max` em porcentagem, p. ex. `0-20`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--resolution`"
@@ -266,7 +331,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`min-max` metres, e.g. `10-30`."
-msgstr ""
+msgstr "`min-max` em metros, p. ex. `10-30`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--providers`"
@@ -274,11 +339,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "list"
-msgstr ""
+msgstr "lista"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Comma-separated provider IDs."
-msgstr ""
+msgstr "IDs de provedores separados por vírgula."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--satellites`"
@@ -287,6 +352,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Comma-separated satellite names, e.g. `Sentinel-2,Landsat-8`."
 msgstr ""
+"Nomes de satélites separados por vírgula, p. ex. `Sentinel-2,Landsat-8`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--processing-level`"
@@ -302,11 +368,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "int"
-msgstr ""
+msgstr "int"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Default 100."
-msgstr ""
+msgstr "Padrão 100."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--sort-by`"
@@ -314,11 +380,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "choice"
-msgstr ""
+msgstr "escolha"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`datetime`, `cloud_cover`, `score`, `satellite`. Default `datetime`."
-msgstr ""
+msgstr "`datetime`, `cloud_cover`, `score`, `satellite`. Padrão `datetime`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--sort-order`"
@@ -326,7 +392,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`asc` or `desc`. Default `desc`."
-msgstr ""
+msgstr "`asc` ou `desc`. Padrão `desc`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--cql2`"
@@ -334,7 +400,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "CQL2 filter expression, sent as CQL2-JSON to STAC APIs."
-msgstr ""
+msgstr "Expressão de filtro CQL2, enviada como CQL2-JSON para APIs STAC."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--output`"
@@ -344,6 +410,8 @@ msgstr ""
 msgid ""
 "Save results to this file — needed before `download run --from-search`."
 msgstr ""
+"Salva os resultados neste arquivo — necessário antes de `download run "
+"--from-search`."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--format`"
@@ -361,6 +429,7 @@ msgstr ""
 msgid ""
 "`skip`, `abort`, `retry`. **Only `skip` is real** — see the note below."
 msgstr ""
+"`skip`, `abort`, `retry`. **Somente `skip` é real** — veja a nota abaixo."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--timeout`"
@@ -368,7 +437,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Per-provider timeout in seconds. Default 60."
-msgstr ""
+msgstr "Timeout por provedor em segundos. Padrão 60."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--no-cache`"
@@ -376,11 +445,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "flag"
-msgstr ""
+msgstr "flag"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "Bypass the in-memory result cache."
-msgstr ""
+msgstr "Ignora o cache de resultados em memória."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--validate-optical`"
@@ -393,6 +462,11 @@ msgid ""
 "See [Optical Data Validation & Preflight](optical-validation.md). Not "
 "appropriate for SAR/InSAR searches."
 msgstr ""
+"Executa a validação óptica preliminar nos resultados antes de retorná-los "
+"(cobertura da AOI, cobertura de nuvens, bandas necessárias, nível de "
+"processamento, limites temporais). Veja [Validação de dados ópticos e "
+"verificação preliminar](optical-validation.md). Não apropriado para buscas "
+"SAR/InSAR."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--optical-max-cloud-cover`"
@@ -400,13 +474,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "float"
-msgstr ""
+msgstr "float"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid ""
 "Override the max cloud cover threshold used by `--validate-optical` (default"
 " 20.0)."
 msgstr ""
+"Substitui o limite máximo de cobertura de nuvens usado por `--validate-"
+"optical` (padrão 20.0)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--optical-min-coverage`"
@@ -417,6 +493,8 @@ msgid ""
 "Override the min AOI coverage ratio used by `--validate-optical`, 0-1 "
 "(default 0.8)."
 msgstr ""
+"Substitui a razão mínima de cobertura da AOI usada por `--validate-optical`,"
+" 0-1 (padrão 0.8)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:45
 msgid "`--optical-required-bands`"
@@ -427,6 +505,8 @@ msgid ""
 "Comma-separated required bands for `--validate-optical` (default "
 "`B02,B03,B04,B08,SCL`)."
 msgstr ""
+"Bandas necessárias separadas por vírgula para `--validate-optical` (padrão "
+"`B02,B03,B04,B08,SCL`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:122
 msgid ""
@@ -437,14 +517,20 @@ msgid ""
 " are returned. To abort when a provider fails, or to retry it, implement "
 "that in your calling code."
 msgstr ""
+"**`--on-provider-failure` não tem efeito.** `abort` e `retry` são aceitos "
+"pela CLI e armazenados em `SearchQuery`, mas `FederatedSearcher.search()` "
+"não lê o campo. Todos os provedores sempre são executados em paralelo. Um "
+"provedor que expira ou gera uma exceção é registrado no log e excluído, e os"
+" resultados dos demais são retornados. Para abortar quando um provedor "
+"falha, ou para tentá-lo novamente, implemente isso no seu código chamador."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:128
 msgid "Output formats"
-msgstr ""
+msgstr "Formatos de saída"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`table`"
@@ -453,6 +539,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Pretty terminal table (default) — ID, date, cloud%, score, satellite"
 msgstr ""
+"Tabela formatada para terminal (padrão) — ID, data, nuvens%, pontuação, "
+"satélite"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`json`"
@@ -460,7 +548,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Full JSON array, all fields — good for scripting"
-msgstr ""
+msgstr "Array JSON completo, todos os campos — bom para scripts"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`stac`"
@@ -468,7 +556,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "STAC 1.0 `ItemCollection`, compatible with `pystac-client`"
-msgstr ""
+msgstr "`ItemCollection` STAC 1.0, compatível com `pystac-client`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`geojson`"
@@ -476,7 +564,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`FeatureCollection` — open in QGIS, ArcGIS, Leaflet"
-msgstr ""
+msgstr "`FeatureCollection` — abra no QGIS, ArcGIS, Leaflet"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`geoparquet`"
@@ -485,6 +573,8 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "GeoParquet file (requires geopandas) — best for large result sets"
 msgstr ""
+"Arquivo GeoParquet (requer geopandas) — o melhor para conjuntos grandes de "
+"resultados"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`csv`"
@@ -492,7 +582,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "id, provider, satellite, datetime, cloud_cover, bbox"
-msgstr ""
+msgstr "id, provider, satellite, datetime, cloud_cover, bbox"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "`ids`"
@@ -500,24 +590,28 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:120
 msgid "Scene IDs only, one per line — good for shell scripting"
-msgstr ""
+msgstr "Somente IDs de cenas, um por linha — bom para scripts de shell"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:140
 msgid "CQL2 filter examples"
-msgstr ""
+msgstr "Exemplos de filtros CQL2"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:150
 msgid ""
 "CQL2 is supported by STAC-native providers: Planetary Computer, Element84, "
 "AWS Earth."
 msgstr ""
+"CQL2 é suportado por provedores nativos de STAC: Planetary Computer, "
+"Element84, AWS Earth."
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:153
 msgid "Python API"
-msgstr ""
+msgstr "Python"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/search.md:178
 msgid ""
 "Full `SearchQuery` field reference: [Python API "
 "Reference](../reference/python-api.md)."
 msgstr ""
+"Referência completa dos campos de `SearchQuery`: [Referência da API "
+"Python](../reference/python-api.md)."

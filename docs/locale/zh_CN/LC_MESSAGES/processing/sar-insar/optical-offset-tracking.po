@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,8 @@ msgid ""
 "ground texture physically moved between two dates — the same idea as "
 "tracking a fingerprint pattern sliding across two photos."
 msgstr ""
+"`pygeofetch.optical.offset_tracking` "
+"通过跟踪地面纹理块在两个日期之间的实际移动，从普通光学影像（Sentinel-2、Landsat）中测量地表位移——其思路与追踪指纹图案在两张照片中的滑动相同。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:9
 msgid ""
@@ -36,10 +38,12 @@ msgid ""
 "Fusion](../multisensor.md#1-insar--optical-displacement-fusion) in [Multi-"
 "Sensor Pipelines](../multisensor.md)."
 msgstr ""
+"关于将其与 InSAR 融合的、形式化且可复用的流程（而不是下面的手动步骤），请参见 [多传感器流程](../multisensor.md) 中的 "
+"[InSAR + 光学位移融合](../multisensor.md#1-insar--optical-displacement-fusion)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:15
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:17
 msgid ""
@@ -53,6 +57,7 @@ msgid ""
 "sensitivity: displacements smaller than a fraction of a pixel are hard to "
 "measure."
 msgstr ""
+"光学偏移跟踪通过跟踪纹理来测量地表在两个日期之间移动了多远。影像被划分为小块，软件会为每个块在较晚的影像中找到相同图案所在的位置。该图案的移位量就是位移。与干涉测量不同，它不依赖相位，因此在移动量很大或地表已经去相干时仍然有效，例如滑坡、冰川、矿区沉陷和地震破裂，代价是灵敏度较低：小于一个像元的零头的位移很难测量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:19
 msgid ""
@@ -65,10 +70,12 @@ msgid ""
 "both available, the fusion function selects the more reliable source for "
 "each pixel, using coherence to decide."
 msgstr ""
+"实际操作中，你需要选择同一区域在相似光照条件下获取的两幅影像，运行偏移计算以得到东西向和南北向位移栅格，然后在需要查看地表在哪里被拉伸或压缩时，据此推导应变。偏移中含有虚假匹配，因此下文所述的离群值保护并非可选项，结果也应通过目视检查。如果"
+" InSAR 和光学跟踪都可用，融合函数会利用相干性逐像元选择更可靠的数据源。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:21
 msgid "Why this exists alongside InSAR"
-msgstr ""
+msgstr "为什么在 InSAR 之外还需要它"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:23
 msgid ""
@@ -80,6 +87,9 @@ msgid ""
 "noise, and InSAR returns nothing for that pixel. Not an imprecise number: no"
 " measurement at all."
 msgstr ""
+"[InSAR](insar.md) "
+"的精度要高得多（毫米级，而不是米级）——但它有一个根本性的限制：它要求地表在两次雷达过境之间保持*相干*。如果地表在两个日期之间变化太大——被开挖的采煤工作面、滑坡、大地震破裂、被推土机平整的施工场地——雷达相位信号就会去相干成噪声，InSAR"
+" 对该像元什么也返回不了。不是一个不精确的数值：而是根本没有测量结果。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:31
 msgid ""
@@ -89,6 +99,8 @@ msgid ""
 "where InSAR structurally cannot: on large, chaotic, or fast displacement, "
 "because it doesn't depend on phase coherence at all."
 msgstr ""
+"光学偏移跟踪是相反的取舍。它更粗略（精度通常为亚米到数米，取决于像元大小和场景纹理），并且只能测量*水平*运动——但它恰好在 InSAR "
+"在结构上无法工作的地方有效：对于大范围、混乱或快速的位移，因为它完全不依赖相位相干性。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:38
 msgid ""
@@ -99,10 +111,13 @@ msgid ""
 "same area and dates, covered **83.7%**. Neither number is a target or an "
 "assumption — both came from an actual, executed run."
 msgstr ""
+"这并非假想的理由。针对一处矿区（内蒙古布尔台——已发表的文献已经证实该地点会使传统 InSAR 失效）运行这条完全相同的流程，所处理场景的真实 "
+"InSAR 覆盖率仅为 **0.1%**。在相同区域和日期上，光学偏移跟踪的覆盖率为 "
+"**83.7%**。这两个数字都不是目标或假设——都来自一次实际执行的运行。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:46
 msgid "The pipeline"
-msgstr ""
+msgstr "流程"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:77
 msgid "`prepare_optical_pair`"
@@ -117,6 +132,9 @@ msgid ""
 "water (NDWI threshold) so the correlator doesn't lock onto a moving cloud or"
 " a textureless water surface instead of stationary ground."
 msgstr ""
+"通过 `rasterio.warp.reproject` 将次影像对齐到参考影像的精确网格上——两个日期之间任何 "
+"CRS、分辨率或范围的不一致都在这里解决，始终对齐到参考影像的网格，绝不反过来。可选地屏蔽云（Sentinel-2 SCL 类别）和水体（NDWI "
+"阈值），以免相关器锁定在移动的云或缺乏纹理的水面上，而不是静止的地面上。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:87
 msgid "`compute_pixel_offsets`"
@@ -131,18 +149,21 @@ msgid ""
 "correlation and SNR-based reliability engine InSAR's own offset-tracking "
 "capability uses — not a second, independent implementation."
 msgstr ""
+"在整个影像对上分块运行 [`pygeofetch.insar.offset_tracking.OffsetTracker`](insar.md) "
+"中已验证的 NCC（归一化互相关）引擎，然后使用 `pixel_size_m` 将得到的像元偏移转换为真实的地面距离（米）。这复用了 InSAR "
+"自身偏移跟踪功能所使用的完全相同的亚像元相关和基于 SNR 的可靠性引擎——而不是第二套独立的实现。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:97
 msgid "Returns an `OpticalOffsetResult` with:"
-msgstr ""
+msgstr "返回一个 `OpticalOffsetResult`，其中包含："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Field"
-msgstr ""
+msgstr "字段"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Meaning"
-msgstr ""
+msgstr "含义"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`dx`, `dy`"
@@ -150,7 +171,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "East/North displacement per window, metres"
-msgstr ""
+msgstr "每个窗口的东/北向位移，单位为米"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`snr`"
@@ -159,7 +180,7 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid ""
 "Primary-peak-to-secondary-peak ratio — the correlation confidence signal"
-msgstr ""
+msgstr "主峰与次峰之比——相关置信度信号"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`reliable`"
@@ -167,7 +188,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Boolean mask: `snr >= snr_threshold`"
-msgstr ""
+msgstr "布尔掩膜：`snr >= snr_threshold`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "`window_centers_row`, `window_centers_col`"
@@ -175,11 +196,11 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:8
 msgid "Real pixel coordinates each measurement corresponds to"
-msgstr ""
+msgstr "每个测量值对应的真实像元坐标"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:106
 msgid "SNR alone is not a sufficient reliability test"
-msgstr ""
+msgstr "仅凭 SNR 并不足以作为可靠性检验"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:109
 msgid ""
@@ -190,10 +211,14 @@ msgid ""
 "catch. See `compute_horizontal_strain` below for the direct consequence of "
 "trusting this without further filtering, and the fix."
 msgstr ""
+"在对布尔台影像的一次运行中，少数窗口以 **226.27 米**的位移通过了 `snr >= 3.0` 可靠性过滤——对于一个 Sentinel-2 "
+"像元对而言，两个日期之间的移动本不应超过几米，这表明出现了 SNR "
+"本身未能捕捉到的虚假相关器锁定。若不经进一步过滤就信任这些结果会造成什么直接后果以及修复方法，请参见下文的 "
+"`compute_horizontal_strain`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:117
 msgid "Strain: turning displacement into a risk metric"
-msgstr ""
+msgstr "应变：将位移转化为风险指标"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:131
 msgid ""
@@ -203,10 +228,12 @@ msgid ""
 "geotechnical signal (ground stretching or compressing locally), rather than "
 "a map that still needs manual interpretation."
 msgstr ""
+"`compute_horizontal_strain` "
+"通过中心有限差分，根据位移场计算正应变张量（`exx`、`eyy`）和剪应变（`exy`）——将原始位移转化为直接、可操作的岩土工程信号（地面局部被拉伸或压缩），而不是仍需人工解释的地图。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:137
 msgid "The outlier problem this function exists to prevent"
-msgstr ""
+msgstr "此函数旨在防止的离群值问题"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:139
 msgid ""
@@ -215,6 +242,7 @@ msgid ""
 "locally enormous, physically impossible strain gradient at every neighboring"
 " pixel the finite-difference stencil touches."
 msgstr ""
+"应变是位移的*空间导数*。单个虚假位移值不仅会破坏它自己所在的像元——还会在有限差分模板触及的每个相邻像元上产生局部巨大的、物理上不可能的应变梯度。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:144
 msgid ""
@@ -229,10 +257,15 @@ msgid ""
 " physically plausible range — this is a permanent regression test, not just "
 "a docstring claim."
 msgstr ""
+"这并不是为以防万一而添加的防御性功能。对未经过滤的布尔台位移场（即包含上述 226.27 "
+"米离群值的那一个）运行朴素的教科书式应变计算，得到的**峰值应变为 6,169,938 微应变——617% "
+"应变**，这对地面形变来说在物理上是不可能的（这意味着地面实际被拉伸到了原长的七倍多）。用合成数据重现这一完全相同的场景，证实朴素计算会产生量级相当的、三位数百分比的伪影，而"
+" `compute_horizontal_strain` "
+"的离群值保护能将其拉回到物理上合理的范围——这是一个永久的回归测试，而不仅仅是文档字符串中的声明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:156
 msgid "Two independent, safeguards are applied, both opt-out-able:"
-msgstr ""
+msgstr "应用了两道相互独立的保护措施，且都可以关闭："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:158
 msgid ""
@@ -240,6 +273,8 @@ msgid ""
 "pixels are excluded before any gradient is computed, so an unreliable "
 "neighbor can't corrupt a reliable pixel's strain value."
 msgstr ""
+"**`reliable`**——直接传入 "
+"`OpticalOffsetResult.reliable`。在计算任何梯度之前，不可靠的像元会被排除，因此不可靠的邻居无法破坏可靠像元的应变值。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:162
 msgid ""
@@ -251,6 +286,8 @@ msgid ""
 "naive calculation exactly — not recommended on unfiltered field data, for "
 "the reason above."
 msgstr ""
+"**`mad_outlier_threshold`**——一种稳健的统计过滤器（中位数绝对偏差），专门应用于位移幅值，因为应变对单个极端值的敏感程度远高于原始位移图。一个在报告中被此函数视为“可靠”的位移，在计算应变时仍可能在这里被排除。设为"
+" `None` 可精确重现朴素计算——由于上述原因，不建议对未过滤的实测场数据这样做。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:171
 msgid ""
@@ -260,20 +297,22 @@ msgid ""
 "advance rate) — often more defensible in a real report than a purely "
 "statistical cutoff alone."
 msgstr ""
+"你还可以传入 "
+"`max_plausible_displacement_m`——一个与你自己对所监测现象的物理预期相关联的绝对上限（已知的最大可信同震滑移量、最大合理的每日采矿推进速率）——在实际报告中，这通常比单纯的统计截断更站得住脚。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:177
 msgid "Fusing InSAR and optical"
-msgstr ""
+msgstr "融合 InSAR 与光学"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:191
 msgid ""
 "`fuse_insar_optical` is a coherence-weighted *source selection*, not an "
 "average."
-msgstr ""
+msgstr "`fuse_insar_optical` 是基于相干性加权的*数据源选择*，而不是平均。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:194
 msgid "Do not average InSAR and optical displacement"
-msgstr ""
+msgstr "不要对 InSAR 与光学位移取平均"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:197
 msgid ""
@@ -284,30 +323,33 @@ msgid ""
 "quantity. Averaging a vertical value with a horizontal-magnitude value "
 "produces a number with no physical meaning."
 msgstr ""
+"InSAR "
+"测量的是视线向相位，在水平运动很小的假设下被转换为*垂直*位移估计。光学偏移跟踪直接测量二维*水平*位移。它们是物理上不同的矢量分量，而不是同一标量的两个含噪估计。把垂直值与水平幅值取平均，得到的数字没有任何物理意义。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:205
 msgid ""
 "Instead, `fuse_insar_optical` uses the InSAR coherence map itself as the "
 "per-pixel decision signal:"
-msgstr ""
+msgstr "相反，`fuse_insar_optical` 使用 InSAR 相干性图本身作为逐像元的决策信号："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:208
 msgid ""
 "**Coherence > 0.6** (configurable via `coherence_high`): trust InSAR fully —"
 " precise, and coherence confirms the phase signal is real."
 msgstr ""
+"**相干性 > 0.6**（可通过 `coherence_high` 配置）：完全信任 InSAR——精度高，并且相干性证实相位信号是真实的。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:210
 msgid ""
 "**Coherence < 0.4** (`coherence_low`): trust optical fully — InSAR has "
 "nothing usable here regardless of what number it happens to output."
-msgstr ""
+msgstr "**相干性 < 0.4**（`coherence_low`）：完全信任光学——无论 InSAR 碰巧输出什么数值，这里都没有可用的内容。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:213
 msgid ""
 "**Between**: a linear blend of *how much each technique's information is "
 "trusted*, not a numeric average of two different physical quantities."
-msgstr ""
+msgstr "**介于两者之间**：对*每种技术所提供信息的信任程度*进行线性混合，而不是对两个不同物理量取数值平均。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:217
 msgid ""
@@ -315,6 +357,8 @@ msgid ""
 "0=optical-dominant) so you always know, per pixel, which technique actually "
 "produced the number you're looking at."
 msgstr ""
+"结果包含 `reliability_source`（2=InSAR "
+"主导，1=过渡，0=光学主导），因此你始终可以逐像元知道你所看到的数值究竟由哪种技术产生。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:221
 msgid ""
@@ -323,10 +367,12 @@ msgid ""
 "optical-dominant pixels for that scene — this is correct behavior given poor"
 " InSAR coherence, not a result to \"fix\" toward a more even split."
 msgstr ""
+"已对照观测到的布尔台相干性值（平均 0.313，远低于默认的 `coherence_low`）进行确认：该函数对该场景正确地返回了 100% "
+"光学主导的像元——这是在 InSAR 相干性较差情况下的正确行为，而不是需要向更均衡比例“修正”的结果。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:227
 msgid "limitations"
-msgstr ""
+msgstr "局限性"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:229
 msgid ""
@@ -335,13 +381,15 @@ msgid ""
 "`prepare_optical_pair`'s parameters — the correlator will happily produce a "
 "confident-looking, wrong answer if fed a poorly-masked pair."
 msgstr ""
+"输入栅格的辐射/几何校准（波段选择、云掩膜的准确性）由调用者通过 `prepare_optical_pair` "
+"的参数负责——如果输入的影像对掩膜不佳，相关器会很乐意给出看似自信却错误的答案。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:233
 msgid ""
 "The MAD outlier filter is a statistical safeguard, not a substitute for "
 "physical judgment — always sanity-check displacement magnitudes against "
 "what's physically plausible for your specific site and time window."
-msgstr ""
+msgstr "MAD 离群值过滤器是一种统计保护措施，而不能替代物理判断——请务必对照你的具体地点和时间窗口在物理上的合理范围，检查位移幅值是否合理。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/sar-insar/optical-offset-tracking.md:237
 msgid ""
@@ -351,3 +399,6 @@ msgid ""
 " pixel size. Passing the wrong one silently produces a strain value scaled "
 "by the wrong distance."
 msgstr ""
+"`compute_horizontal_strain` 的 `pixel_size_m` 是相邻*偏移跟踪网格*采样点之间的地面距离（即来自 "
+"`compute_pixel_offsets` 的 "
+"`step_size`，换算为米）——而不是原始影像的像元大小。传错会在无提示的情况下产生按错误距离缩放的应变值。"

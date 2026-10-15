@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,10 +26,12 @@ msgid ""
 "Not wired into `PyGeoFetch` (there's no `client.landsat`) — always a "
 "standalone import, unlike `client.indices`/`client.sar`."
 msgstr ""
+"Não integrado ao `PyGeoFetch` (não existe `client.landsat`) — sempre uma "
+"importação independente, ao contrário de `client.indices`/`client.sar`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:16
 msgid "Overview"
-msgstr ""
+msgstr "Visão geral"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:18
 msgid ""
@@ -41,6 +43,14 @@ msgid ""
 "use object with correctly named bands, scale factors applied and, if you ask"
 " for it, clouds and shadows masked."
 msgstr ""
+"O Landsat tem o mais longo registro óptico contínuo disponível, mas seus "
+"produtos exigem manuseio cuidadoso: os números das bandas diferem entre "
+"gerações de sensores, os valores de reflectância e temperatura são "
+"armazenados como inteiros escalados, e a informação de qualidade vem "
+"empacotada em uma máscara de bits. `LandsatExtractor` recebe uma cena "
+"Landsat baixada e retorna um objeto pronto para uso, com bandas corretamente"
+" nomeadas, fatores de escala aplicados e, se você pedir, nuvens e sombras "
+"mascaradas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:20
 msgid ""
@@ -51,10 +61,16 @@ msgid ""
 "the same index code can be run over decades of imagery, which is what makes "
 "Landsat suitable for long time series."
 msgstr ""
+"Normalmente você o usa logo após um download do USGS. Passe o resultado do "
+"download, receba um objeto de cena e peça as bandas pelo nome, por exemplo "
+"vermelho e infravermelho próximo, em vez de lembrar qual arquivo numerado "
+"contém qual banda no Landsat 5, 7, 8 ou 9. Como a saída é consistente entre "
+"sensores, o mesmo código de índices pode ser executado sobre décadas de "
+"imagens, o que torna o Landsat adequado para séries temporais longas."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:22
 msgid "Two easy-to-get-wrong things this handles"
-msgstr ""
+msgstr "Duas coisas fáceis de errar que isto resolve"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:24
 msgid ""
@@ -63,6 +79,11 @@ msgid ""
 "NIR on TM/ETM+. Sensor is auto-detected from the filename "
 "(`_detect_sensor()`) and the correct map applied."
 msgstr ""
+"**O mapeamento de bandas difere por sensor.** OLI (Landsat 8/9) e TM/ETM+ "
+"(4/5/7) usam números de banda diferentes para o mesmo comprimento de onda — "
+"`SR_B4` é o vermelho no OLI e o NIR no TM/ETM+. O sensor é detectado "
+"automaticamente a partir do nome do arquivo (`_detect_sensor()`) e o mapa "
+"correto é aplicado."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:28
 msgid ""
@@ -74,10 +95,18 @@ msgid ""
 " and uses those files directly, skipping tar extraction entirely — the same "
 "call works regardless of which delivery style the provider used."
 msgstr ""
+"**O formato de entrega difere por provedor.** Nem todo provedor entrega um "
+"único arquivo compactado — o Planetary Computer baixa cada banda como um "
+"arquivo de asset separado (`SR_B4.TIF`, `SR_B5.TIF`, `QA_PIXEL.TIF`, ...) em"
+" vez de um pacote `.tar`, de modo que `DownloadResult.output_paths` contém "
+"muitos arquivos, não um. `process_scene()` detecta isso automaticamente "
+"(`_resolve_individual_files()`) e usa esses arquivos diretamente, pulando "
+"totalmente a extração do tar — a mesma chamada funciona independentemente do"
+" estilo de entrega usado pelo provedor."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:37
 msgid "`process_scene()` — the full chain"
-msgstr ""
+msgstr "`process_scene()` — a cadeia completa"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:45
 msgid ""
@@ -92,24 +121,37 @@ msgid ""
 "change detection). `mask_clouds` overrides the instance-level setting for "
 "just this call."
 msgstr ""
+"A cadeia completa em uma única chamada: extrair pacote → escalar bandas → "
+"mascarar nuvens → retornar. `source` aceita um `DownloadResult` (preferível "
+"— usa `.output_path`/`.output_paths` diretamente) ou um caminho direto para "
+"um pacote `.tar`. `bands` tem como padrão "
+"`[\"blue\",\"green\",\"red\",\"nir\",\"swir1\",\"swir2\"]` — passe menos "
+"bandas para um processamento mais rápido quando precisar apenas de, por "
+"exemplo, `[\"red\",\"nir\"]` para o NDVI. `label` define um namespace para a"
+" subpasta de extração ao processar várias cenas no mesmo `output_dir` (por "
+"exemplo, `label=\"before\"` / `label=\"after\"` para detecção de mudanças). "
+"`mask_clouds` substitui a configuração em nível de instância apenas para "
+"esta chamada."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:56
 msgid "Individual building-block methods"
-msgstr ""
+msgstr "Métodos individuais (blocos de construção)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:58
 msgid ""
 "`process_scene()` is a convenience wrapper — each step is also independently"
 " callable:"
 msgstr ""
+"`process_scene()` é um wrapper de conveniência — cada etapa também pode ser "
+"chamada de forma independente:"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "What it does"
-msgstr ""
+msgstr "O que faz"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`extract_bundle(tar_path, output_dir)`"
@@ -120,6 +162,8 @@ msgid ""
 "Extract every band + QA GeoTIFF from a Landsat C2L2 `.tar` bundle. Returns "
 "`{member_filename: extracted_path}`."
 msgstr ""
+"Extrai todas as bandas + o GeoTIFF de QA de um pacote `.tar` Landsat C2L2. "
+"Retorna `{member_filename: extracted_path}`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`load_scaled_band(path)`"
@@ -132,6 +176,11 @@ msgid ""
 "temperature `ST_B*`). Fill pixels (`DN=0`, the Collection 2 fill value) "
 "become NaN. Returns `(scaled_array, rasterio_profile)`."
 msgstr ""
+"Carrega uma banda e aplica o **fator de escala + deslocamento (offset) "
+"oficial do USGS** correto, selecionado automaticamente pelo tipo de banda "
+"(reflectância de superfície `SR_B*` vs. temperatura de superfície `ST_B*`). "
+"Pixels de preenchimento (`DN=0`, o valor de preenchimento da Collection 2) "
+"tornam-se NaN. Retorna `(scaled_array, rasterio_profile)`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`cloud_mask(qa_pixel_path, shape=None)`"
@@ -145,6 +194,11 @@ msgid ""
 "Guide, Table 6-2/6-3 — the same bit positions apply across the full Landsat "
 "4-9 Collection 2 `QA_PIXEL` spec."
 msgstr ""
+"Decodifica os bit flags de `QA_PIXEL` da Landsat Collection 2 em uma máscara"
+" de nuvem/sombra (`True` = mascarado). Verifica os bits 1 (Dilated Cloud), 3"
+" (Cloud) e 4 (Cloud Shadow) conforme o Landsat 8-9 C2 Level-2 Science "
+"Product Guide oficial, Tabela 6-2/6-3 — as mesmas posições de bits valem "
+"para toda a especificação `QA_PIXEL` da Collection 2 do Landsat 4-9."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "`find_band(extracted_files, band_suffix)`"
@@ -153,14 +207,16 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:0
 msgid "Look up an extracted file by band suffix, e.g. `\"SR_B4\"` or `\"QA_PIXEL\"`."
 msgstr ""
+"Localiza um arquivo extraído pelo sufixo da banda, por exemplo `\"SR_B4\"` "
+"ou `\"QA_PIXEL\"`."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:80
 msgid "`LandsatScene` — the returned object"
-msgstr ""
+msgstr "`LandsatScene` — o objeto retornado"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:88
 msgid "Verification basis"
-msgstr ""
+msgstr "Base de verificação"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/landsat.md:90
 msgid ""
@@ -168,3 +224,7 @@ msgid ""
 "0.313 reflectance; DN 44947 → 302.6 K. Cloud masking decodes `QA_PIXEL` bits"
 " per the official Science Product Guide, not an approximated threshold."
 msgstr ""
+"Escalonamento radiométrico verificado contra os próprios exemplos resolvidos"
+" do USGS: DN 18639 → reflectância 0,313; DN 44947 → 302,6 K. A máscara de "
+"nuvens decodifica os bits de `QA_PIXEL` conforme o Science Product Guide "
+"oficial, não um limiar aproximado."

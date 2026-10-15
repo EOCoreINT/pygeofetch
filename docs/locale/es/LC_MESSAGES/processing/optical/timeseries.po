@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,10 +28,15 @@ msgid ""
 "pixel trend fitting, zonal time series extraction, and anomaly detection. "
 "Not wired into `PyGeoFetch` — always a standalone import."
 msgstr ""
+"`TimeSeriesAnalyzer` es el vínculo entre \"N fechas de bandas descargadas\" "
+"y el análisis de series temporales propiamente dicho: cálculo automatizado "
+"de índices por fecha, ajuste de tendencias por píxel, extracción de series "
+"temporales zonales y detección de anomalías. No está integrado en "
+"`PyGeoFetch`: siempre es una importación independiente."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:27
 msgid "Overview"
-msgstr ""
+msgstr "Descripción general"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:29
 msgid ""
@@ -43,6 +48,14 @@ msgid ""
 "dates can be compared pixel by pixel, and then offers trend fitting, zonal "
 "series and anomaly detection on the stack."
 msgstr ""
+"Una sola imagen muestra un instante; una serie muestra el cambio. El "
+"analizador de series temporales convierte un conjunto de ráster fechados en "
+"una pila y responde a las preguntas habituales sobre ella: con qué rapidez "
+"cambia cada píxel, cómo se comporta un campo o un distrito a lo largo del "
+"tiempo y qué fechas se desvían de lo normal. Calcula el índice elegido para "
+"cada fecha, alinea las cuadrículas para que las fechas puedan compararse "
+"píxel a píxel y luego ofrece ajuste de tendencias, series zonales y "
+"detección de anomalías sobre la pila."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:31
 msgid ""
@@ -53,6 +66,13 @@ msgid ""
 "shown in the [Obuasi case study](../../workflows/case-studies.md), with the "
 "slope of each pixel in index units per year."
 msgstr ""
+"Planifica las entradas antes de ejecutarlo. Usa la misma estación cada año "
+"cuando quieras comparar años, de modo que el ciclo anual natural no ahogue "
+"la señal, y mantén el mismo sensor y nivel de procesamiento siempre que sea "
+"posible. El mapa de tendencias que produce el analizador tiene la misma "
+"forma que la tendencia de vegetación mostrada en el [estudio de caso de "
+"Obuasi](../../workflows/case-studies.md), con la pendiente de cada píxel en "
+"unidades de índice por año."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:33
 msgid "`build_index_stack()`"
@@ -65,6 +85,11 @@ msgid ""
 "indices.md) for how that differs from `client.indices`) and stacks the "
 "results into a single `(time, H, W)` array with georeferencing preserved."
 msgstr ""
+"Calcula el índice configurado para cada fecha (internamente mediante la "
+"clase independiente `SpectralIndex`; consulta [Índices "
+"espectrales](spectral-indices.md) para ver en qué se diferencia de "
+"`client.indices`) y apila los resultados en un único arreglo `(time, H, W)` "
+"conservando la georreferenciación."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:44
 msgid ""
@@ -73,6 +98,10 @@ msgid ""
 "have per-date index rasters and just want them stacked with the profile "
 "preserved for later zonal use."
 msgstr ""
+"**`date_bands`**: `{date_string: {band_name: path}}` normalmente o, si "
+"`precomputed=True`, `{date_string: single_raster_path}` cuando ya tienes "
+"ráster de índice por fecha y solo quieres apilarlos conservando el perfil "
+"para un uso zonal posterior."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:48
 msgid ""
@@ -85,12 +114,24 @@ msgid ""
 "clipping even though they cover nearly the same area. Set `False` to restore"
 " strict behavior (raise on any mismatch)."
 msgstr ""
+"**`align_grids`** (valor predeterminado `True`): si el ráster de una fecha "
+"no comparte la cuadrícula de la primera fecha (distinta forma, "
+"transformación o CRS), lo reproyecta automáticamente a la cuadrícula de la "
+"primera fecha en lugar de lanzar un error. Es un caso habitual: distintas "
+"adquisiciones de la misma AOI pueden provenir de huellas de escena "
+"diferentes (límites de teselas, trayectorias orbitales), especialmente en "
+"AOI alargadas o irregulares, y acabar con cuadrículas de píxeles ligeramente"
+" distintas tras el recorte aunque cubran casi la misma área. Establécelo en "
+"`False` para restaurar el comportamiento estricto (lanzar un error ante "
+"cualquier discrepancia)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:58
 msgid ""
 "Returns an `IndexTimeStack` — sorted by date, with the building blocks the "
 "rest of this page's methods operate on."
 msgstr ""
+"Devuelve un `IndexTimeStack`, ordenado por fecha, con los bloques de "
+"construcción sobre los que operan el resto de los métodos de esta página."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:61
 msgid "`IndexTimeStack`"
@@ -105,18 +146,24 @@ msgid ""
 "full georeferencing, so it isn't a substitute when you need the "
 "CRS/transform downstream (e.g. for `zonal_timeseries()`)."
 msgstr ""
+"`as_xarray()` conserva el CRS y la transformación como atributos (y una "
+"coordenada temporal de tipo fecha de pandas); la utilidad relacionada "
+"`pygeofetch.processor.stacker.BandStacker.time_stack()` produce una pila "
+"xarray de aspecto similar pero solo conserva `attrs.source_files`, no la "
+"georreferenciación completa, por lo que no es un sustituto cuando necesitas "
+"el CRS/la transformación más adelante (p. ej., para `zonal_timeseries()`)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:80
 msgid "Analysis methods"
-msgstr ""
+msgstr "Métodos de análisis"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "What it does"
-msgstr ""
+msgstr "Qué hace"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`trend(stack)`"
@@ -127,6 +174,8 @@ msgid ""
 "Vectorized per-pixel least-squares slope-per-year — not a slow per-pixel "
 "Python loop"
 msgstr ""
+"Pendiente por año de mínimos cuadrados vectorizada por píxel, no un lento "
+"bucle de Python por píxel"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`zonal_timeseries(stack, zones_path)`"
@@ -137,6 +186,8 @@ msgid ""
 "Per-zone value at every date as a tidy DataFrame (needs `geopandas` — `pip "
 "install \"pygeofetch[geo]\"`)"
 msgstr ""
+"Valor por zona en cada fecha como un DataFrame ordenado (requiere "
+"`geopandas`: `pip install \"pygeofetch[geo]\"`)"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`zone_series(stack, zones_path, zone_id)`"
@@ -147,6 +198,8 @@ msgid ""
 "Single-zone convenience wrapper, shaped exactly for "
 "`Plotter.plot_timeseries()`"
 msgstr ""
+"Envoltorio de conveniencia para una sola zona, con la forma exacta que "
+"necesita `Plotter.plot_timeseries()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`anomaly(stack, baseline)`"
@@ -155,31 +208,42 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "Per-pixel z-score of a target date vs. a baseline period's mean/std"
 msgstr ""
+"Puntuación z por píxel de una fecha objetivo respecto a la media/desviación "
+"estándar de un periodo base"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:97
 msgid "Verification basis"
-msgstr ""
+msgstr "Base de verificación"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:99
 msgid ""
 "Verified against synthetic data carrying a known ground-truth trend (a "
 "declining region vs. a stable region):"
 msgstr ""
+"Verificado con datos sintéticos que contienen una tendencia real conocida "
+"(una región en declive frente a una región estable):"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:102
 msgid ""
 "`trend()` correctly distinguished −0.158 NDVI/yr (declining) from 0.000 "
 "(stable)."
 msgstr ""
+"`trend()` distinguió correctamente −0.158 NDVI/año (en declive) de 0.000 "
+"(estable)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:104
 msgid ""
 "`zonal_timeseries()` correctly tracked 0.429→0.111 (declining) vs. "
 "0.429→0.409 (stable)."
 msgstr ""
+"`zonal_timeseries()` siguió correctamente 0.429→0.111 (en declive) frente a "
+"0.429→0.409 (estable)."
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:106
 msgid ""
 "`anomaly()` correctly flagged a −10.3 z-score in the declining region, and "
 "safely returns NaN — not a garbage value — when baseline variance is zero."
 msgstr ""
+"`anomaly()` señaló correctamente una puntuación z de −10.3 en la región en "
+"declive y devuelve de forma segura NaN, no un valor basura, cuando la "
+"varianza de la línea base es cero."

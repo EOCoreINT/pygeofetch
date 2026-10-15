@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,7 +57,7 @@ msgstr "Projekt"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:1
 msgid "pygeofetch"
-msgstr ""
+msgstr "pygeofetch"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:3
 msgid ""
@@ -86,6 +86,15 @@ msgid ""
 " model, so the code that follows does not care whether a scene came from "
 "Copernicus, USGS, Microsoft Planetary Computer or a commercial vendor."
 msgstr ""
+"Erdbeobachtungsdaten sind auf Dutzende von Archiven verteilt, jedes mit "
+"eigener Suchschnittstelle, eigenem Authentifizierungsverfahren, eigenem "
+"Dateilayout und eigenen Ratenbegrenzungen. pygeofetch legt eine einheitliche"
+" Schicht darüber. Sie beschreiben einmal, was Sie möchten, als Gebiet, "
+"Zeitraum und einige Filter, und dieselbe Abfrage läuft gegen beliebige "
+"Kombinationen von Anbietern. Die Ergebnisse kommen in einem einzigen "
+"Datenmodell zurück, sodass es dem nachfolgenden Code egal ist, ob eine Szene"
+" von Copernicus, USGS, Microsoft Planetary Computer oder einem kommerziellen"
+" Anbieter stammt."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:21
 msgid ""
@@ -97,6 +106,15 @@ msgid ""
 "leaves ordinary GeoTIFF files that the processing modules, or any other GIS "
 "tool, can read."
 msgstr ""
+"Danach entscheiden Sie, wie viele Daten bewegt werden. Wenn Sie die "
+"Originalprodukte benötigen, laufen Downloads parallel mit "
+"Wiederholungsversuchen, Wiederaufnahme und optionalem Prüfsummenvergleich. "
+"Wenn Sie nur ein Untersuchungsgebiet brauchen, liest Streaming "
+"ausschließlich die Pixel innerhalb Ihrer Bounding Box aus Cloud-Optimized "
+"GeoTIFFs, wodurch sich ein Kanal von mehreren hundert Megabyte auf wenige "
+"Megabyte verkleinern kann. Beide Wege hinterlassen gewöhnliche GeoTIFF-"
+"Dateien, die die Verarbeitungsmodule oder jedes andere GIS-Werkzeug lesen "
+"können."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:23
 msgid ""
@@ -108,6 +126,15 @@ msgid ""
 "Everything is available from Python and from the `pygeofetch` command line, "
 "and repeatable work can be written as YAML pipelines and run on a schedule."
 msgstr ""
+"Die Verarbeitungsschicht deckt die gängigen Analysen in einem Paket ab: "
+"Spektralindizes und Klassifikation für optische Bilddaten, Speckle-"
+"Filterung, Kalibrierung und Überflutungskartierung für Radar, eine reine "
+"Python-Interferometriekette bis hin zu SBAS-Zeitreihen sowie Pipelines, die "
+"zwei Sensoren kombinieren, etwa Radar mit optischen Bilddaten für "
+"Überflutungsausdehnung oder Vegetationsstörungen. Alles steht in Python und "
+"über die `pygeofetch`-Kommandozeile zur Verfügung, und wiederholbare "
+"Arbeiten lassen sich als YAML-Pipelines schreiben und zeitgesteuert "
+"ausführen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:26
 msgid ""
@@ -116,6 +143,11 @@ msgid ""
 "page lists behaviours that differ from what you might expect, and every "
 "feature page says what it was tested against."
 msgstr ""
+"pygeofetch befindet sich in aktiver Entwicklung, und die Dokumentation gibt "
+"an, was verifiziert wurde und was nicht. Die Seite [Bekannte "
+"Probleme](reference/known-issues.md) listet Verhalten auf, das von Ihren "
+"Erwartungen abweichen kann, und jede Funktionsseite nennt, wogegen sie "
+"getestet wurde."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:29
 msgid "A first analysis in three steps"
@@ -127,6 +159,9 @@ msgid ""
 "steps with explanations, and the [case studies](workflows/case-studies.md) "
 "show complete analyses with their results."
 msgstr ""
+"Die [Schnellstart](getting-started/quickstart.md)-Anleitung führt mit "
+"Erklärungen durch dieselben Schritte, und die [Fallstudien](workflows/case-"
+"studies.md) zeigen vollständige Analysen mit ihren Ergebnissen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:48
 msgid "Get started"
@@ -149,38 +184,47 @@ msgid ""
 "Federated search across providers, authenticated downloads, resume, "
 "checksums and caching."
 msgstr ""
+"Föderierte Suche über Anbieter hinweg, authentifizierte Downloads, "
+"Wiederaufnahme, Prüfsummen und Caching."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:62
 msgid "Analyse an area without downloading scenes"
-msgstr ""
+msgstr "Ein Gebiet analysieren, ohne Szenen herunterzuladen"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:66
 msgid ""
 "Read only your area of interest from Cloud-Optimized GeoTIFFs over HTTP "
 "range requests."
 msgstr ""
+"Nur Ihr Interessengebiet aus Cloud-Optimized GeoTIFFs über HTTP-Range-"
+"Requests lesen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:73
 msgid ""
 "Spectral indices, classification, terrain, Landsat extraction and time "
 "series."
 msgstr ""
+"Spektralindizes, Klassifikation, Gelände, Landsat-Extraktion und Zeitreihen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:80
 msgid ""
 "Despeckling, calibration, flood mapping and a pure-Python InSAR chain "
 "through to SBAS."
 msgstr ""
+"Speckle-Reduktion, Kalibrierung, Überflutungskartierung und eine reine "
+"Python-InSAR-Kette bis hin zu SBAS."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:83
 msgid "Multi-sensor pipelines"
-msgstr ""
+msgstr "Multisensor-Pipelines"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:87
 msgid ""
 "Flood mapping, DEM differencing, vegetation disturbance, terrain-corrected "
 "change and InSAR-optical fusion."
 msgstr ""
+"Überflutungskartierung, DEM-Differenzbildung, Vegetationsstörungen, "
+"geländekorrigierte Änderungsanalyse und InSAR-Optik-Fusion."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:90
 msgid "Command-line reference"
@@ -188,7 +232,7 @@ msgstr "Referenz der Befehlszeile"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:94
 msgid "Every command and option, generated from the installed package."
-msgstr ""
+msgstr "Jeder Befehl und jede Option, aus dem installierten Paket generiert."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:97
 msgid "Python API reference"
@@ -207,6 +251,8 @@ msgid ""
 "Documented limitations and behaviours that differ from what you might "
 "expect."
 msgstr ""
+"Dokumentierte Einschränkungen und Verhaltensweisen, die von Ihren "
+"Erwartungen abweichen können."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:112
 msgid "Who it is for"
@@ -217,17 +263,23 @@ msgid ""
 "**Researchers** who need data from several archives without learning each "
 "provider's API."
 msgstr ""
+"**Forschende**, die Daten aus mehreren Archiven benötigen, ohne die API "
+"jedes Anbieters zu erlernen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:115
 msgid ""
 "**Engineers** who run acquisition and processing unattended, on a schedule."
 msgstr ""
+"**Ingenieurinnen und Ingenieure**, die Datenbeschaffung und Verarbeitung "
+"unbeaufsichtigt und zeitgesteuert ausführen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:116
 msgid ""
 "**Teams** that want open, scriptable Earth observation tooling without a "
 "commercial platform."
 msgstr ""
+"**Teams**, die offene, skriptfähige Werkzeuge für die Erdbeobachtung ohne "
+"kommerzielle Plattform wünschen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:118
 msgid "How the documentation is organised"
@@ -243,61 +295,72 @@ msgstr "Verwenden für"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Getting started**"
-msgstr ""
+msgstr "**Erste Schritte**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid ""
 "Install pygeofetch, run a first workflow, understand the core concepts."
 msgstr ""
+"pygeofetch zu installieren, einen ersten Workflow auszuführen und die "
+"Kernkonzepte zu verstehen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Data access**"
-msgstr ""
+msgstr "**Datenzugriff**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid ""
 "Authenticate, search, download or stream, validate optical quality, and "
 "organise files."
 msgstr ""
+"Sich zu authentifizieren, zu suchen, herunterzuladen oder zu streamen, die "
+"optische Qualität zu validieren und Dateien zu organisieren."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Processing**"
-msgstr ""
+msgstr "**Verarbeitung**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid ""
 "Compute indices, classify, correct terrain, process SAR and InSAR, and "
 "combine sensors."
 msgstr ""
+"Indizes zu berechnen, zu klassifizieren, das Gelände zu korrigieren, SAR und"
+" InSAR zu verarbeiten und Sensoren zu kombinieren."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Workflows**"
-msgstr ""
+msgstr "**Workflows**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Chain steps into YAML pipelines and follow end-to-end examples."
 msgstr ""
+"Schritte zu YAML-Pipelines zu verketten und Beispiele von Anfang bis Ende "
+"nachzuvollziehen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Visualization**"
-msgstr ""
+msgstr "**Visualisierung**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Plot results and browse footprints on a map."
 msgstr ""
+"Ergebnisse darzustellen und Footprints auf einer Karte zu durchsuchen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Reference**"
-msgstr ""
+msgstr "**Referenz**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Look up exact commands, parameters, settings, errors and known issues."
 msgstr ""
+"Exakte Befehle, Parameter, Einstellungen, Fehler und bekannte Probleme "
+"nachzuschlagen."
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "**Project**"
-msgstr ""
+msgstr "**Projekt**"
 
 #: ../../home/claude/work/docs_audit/docs_out/index.md:104
 msgid "Contribute, read the changelog and see what is planned."
-msgstr ""
+msgstr "Beizutragen, das Changelog zu lesen und zu sehen, was geplant ist."

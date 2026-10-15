@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,10 +28,13 @@ msgid ""
 "pixel trend fitting, zonal time series extraction, and anomaly detection. "
 "Not wired into `PyGeoFetch` — always a standalone import."
 msgstr ""
+"`TimeSeriesAnalyzer` 是“N "
+"个日期的已下载波段”与实际时间序列分析之间的桥梁：自动逐日期计算指数、逐像元趋势拟合、分区时间序列提取和异常检测。它没有接入 "
+"`PyGeoFetch`——始终需要作为独立模块导入。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:27
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:29
 msgid ""
@@ -43,6 +46,7 @@ msgid ""
 "dates can be compared pixel by pixel, and then offers trend fitting, zonal "
 "series and anomaly detection on the stack."
 msgstr ""
+"单幅影像展示的是某一时刻；时间序列展示的则是变化。时间序列分析器把一组带日期的栅格转换为堆栈，并回答有关它的常见问题：每个像元变化有多快，某块农田或某个行政区随时间表现如何，以及哪些日期偏离了正常状态。它会为每个日期计算所选指数，对齐网格以便逐像元比较各日期，然后对堆栈提供趋势拟合、分区序列和异常检测功能。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:31
 msgid ""
@@ -53,6 +57,9 @@ msgid ""
 "shown in the [Obuasi case study](../../workflows/case-studies.md), with the "
 "slope of each pixel in index units per year."
 msgstr ""
+"运行之前请先规划好输入。如果要比较不同年份，请每年使用同一季节，这样自然的年周期就不会淹没信号，并尽可能保持相同的传感器和处理级别。分析器生成的趋势图与"
+" [Obuasi 案例研究](../../workflows/case-studies.md) "
+"中展示的植被趋势形式相同，每个像元的斜率以每年的指数单位表示。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:33
 msgid "`build_index_stack()`"
@@ -65,6 +72,8 @@ msgid ""
 "indices.md) for how that differs from `client.indices`) and stacks the "
 "results into a single `(time, H, W)` array with georeferencing preserved."
 msgstr ""
+"为每个日期计算所配置的指数（内部通过独立的 `SpectralIndex` 类完成——它与 `client.indices` 的区别参见 "
+"[光谱指数](spectral-indices.md)），并将结果堆叠为一个 `(time, H, W)` 数组，同时保留地理配准信息。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:44
 msgid ""
@@ -73,6 +82,9 @@ msgid ""
 "have per-date index rasters and just want them stacked with the profile "
 "preserved for later zonal use."
 msgstr ""
+"**`date_bands`**：通常为 `{date_string: {band_name: path}}`；或者，如果 "
+"`precomputed=True`，则为 `{date_string: "
+"single_raster_path}`——适用于你已有逐日期的指数栅格、只想将它们堆叠起来并保留 profile 以便后续做分区分析的情况。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:48
 msgid ""
@@ -85,12 +97,16 @@ msgid ""
 "clipping even though they cover nearly the same area. Set `False` to restore"
 " strict behavior (raise on any mismatch)."
 msgstr ""
+"**`align_grids`**（默认 `True`）：如果某个日期的栅格与第一个日期的网格不一致（形状、变换或 CRS "
+"不同），会自动将其重投影到第一个日期的网格上，而不是抛出错误。这是很常见的情况：同一 AOI "
+"的不同次采集可能来自不同的场景覆盖范围（图幅边界、轨道轨迹），尤其是对于细长或不规则的 AOI，裁剪后即使覆盖的区域几乎相同，像元网格也会略有差异。设为"
+" `False` 可恢复严格行为（任何不一致都会抛出错误）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:58
 msgid ""
 "Returns an `IndexTimeStack` — sorted by date, with the building blocks the "
 "rest of this page's methods operate on."
-msgstr ""
+msgstr "返回一个 `IndexTimeStack`——按日期排序，并带有本页其余方法所操作的基础构件。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:61
 msgid "`IndexTimeStack`"
@@ -105,18 +121,22 @@ msgid ""
 "full georeferencing, so it isn't a substitute when you need the "
 "CRS/transform downstream (e.g. for `zonal_timeseries()`)."
 msgstr ""
+"`as_xarray()` 会将 CRS 和变换保留为 attrs（以及 pandas 日期时间的时间坐标）——相关的 "
+"`pygeofetch.processor.stacker.BandStacker.time_stack()` 工具会生成外观相似的 xarray "
+"堆栈，但只保留 `attrs.source_files`，而不保留完整的地理配准信息，因此当下游需要 CRS/变换时（例如用于 "
+"`zonal_timeseries()`），它不能作为替代。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:80
 msgid "Analysis methods"
-msgstr ""
+msgstr "分析方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "What it does"
-msgstr ""
+msgstr "功能说明"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`trend(stack)`"
@@ -126,7 +146,7 @@ msgstr ""
 msgid ""
 "Vectorized per-pixel least-squares slope-per-year — not a slow per-pixel "
 "Python loop"
-msgstr ""
+msgstr "向量化的逐像元最小二乘年斜率——并非缓慢的逐像元 Python 循环"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`zonal_timeseries(stack, zones_path)`"
@@ -137,6 +157,8 @@ msgid ""
 "Per-zone value at every date as a tidy DataFrame (needs `geopandas` — `pip "
 "install \"pygeofetch[geo]\"`)"
 msgstr ""
+"以整洁的 DataFrame 形式给出每个分区在每个日期的取值（需要 `geopandas`——`pip install "
+"\"pygeofetch[geo]\"`）"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`zone_series(stack, zones_path, zone_id)`"
@@ -146,7 +168,7 @@ msgstr ""
 msgid ""
 "Single-zone convenience wrapper, shaped exactly for "
 "`Plotter.plot_timeseries()`"
-msgstr ""
+msgstr "单分区便捷封装，其形状恰好适配 `Plotter.plot_timeseries()`"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "`anomaly(stack, baseline)`"
@@ -154,32 +176,32 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:0
 msgid "Per-pixel z-score of a target date vs. a baseline period's mean/std"
-msgstr ""
+msgstr "目标日期相对于基线期均值/标准差的逐像元 z 分数"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:97
 msgid "Verification basis"
-msgstr ""
+msgstr "验证依据"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:99
 msgid ""
 "Verified against synthetic data carrying a known ground-truth trend (a "
 "declining region vs. a stable region):"
-msgstr ""
+msgstr "已使用带有已知真实趋势的合成数据（衰退区域与稳定区域）进行验证："
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:102
 msgid ""
 "`trend()` correctly distinguished −0.158 NDVI/yr (declining) from 0.000 "
 "(stable)."
-msgstr ""
+msgstr "`trend()` 正确区分了 −0.158 NDVI/年（衰退）与 0.000（稳定）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:104
 msgid ""
 "`zonal_timeseries()` correctly tracked 0.429→0.111 (declining) vs. "
 "0.429→0.409 (stable)."
-msgstr ""
+msgstr "`zonal_timeseries()` 正确追踪到 0.429→0.111（衰退）与 0.429→0.409（稳定）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/processing/optical/timeseries.md:106
 msgid ""
 "`anomaly()` correctly flagged a −10.3 z-score in the declining region, and "
 "safely returns NaN — not a garbage value — when baseline variance is zero."
-msgstr ""
+msgstr "`anomaly()` 正确标出衰退区域中 −10.3 的 z 分数，并且在基线方差为零时安全地返回 NaN——而不是无意义的数值。"

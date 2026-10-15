@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,8 @@ msgid ""
 "when they come from an analysis run on real satellite data, or **Synthetic**"
 " when they were generated from simulated scenes to illustrate a function."
 msgstr ""
+"这些案例研究展示了 pygeofetch "
+"如何用于解决真实问题，从第一次搜索到一张可供解读的地图。每个案例都会列出做了什么、结果显示了什么，以及结果没有显示什么。图件标注为**真实**时，表示来自对真实卫星数据运行的分析；标注为**合成**时，表示由模拟场景生成，用于说明某项功能。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:6
 msgid ""
@@ -38,11 +40,12 @@ msgid ""
 "relying on them. The processing steps were verified on the figures' "
 "underlying data or on synthetic scenes, as stated in each section."
 msgstr ""
+"编写本文档时，代码示例中的搜索和下载调用并未针对实际的提供方执行。在依赖它们之前，请对照你自己的账户核对提供方名称、集合标识符和凭据。处理步骤已在图件所依据的底层数据或合成场景上验证，具体见各节说明。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:9
 msgid ""
 "Vegetation trend in the Obuasi Municipal District, Ghana (2018 to 2024)"
-msgstr ""
+msgstr "加纳奥布阿西市区的植被趋势（2018 年至 2024 年）"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:11
 msgid ""
@@ -51,6 +54,8 @@ msgid ""
 "Region, so land cover is changing for several reasons at once: mining, "
 "settlement, farming and regrowth."
 msgstr ""
+"**问题。** "
+"该区的植被是在恢复、保持稳定还是在退化？退化发生在哪里？奥布阿西位于阿散蒂地区的金矿带，因此土地覆盖同时因多种原因而变化：采矿、聚落、农耕和植被再生。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:13
 msgid ""
@@ -62,12 +67,15 @@ msgid ""
 "shown on the map. The slopes were then grouped into four classes: strong "
 "decline, moderate decline, stable and increasing."
 msgstr ""
+"**方法。** 使用 USGS Landsat 数据，为 2018 年至 2024 年的每一年构建一幅旱季 NDVI "
+"合成影像。比较旱季可以消除大部分绿度的季节性波动，剩下的主要是多年的变化信号。对每个像元，在七个年度值上估计线性趋势，其斜率（单位为每年的 NDVI "
+"变化量）即为地图上所示的趋势度量。随后将斜率分为四个类别：显著下降、中度下降、稳定和增加。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:15
 msgid ""
 "Map of per-pixel NDVI trend for Obuasi from 2018 to 2024, red for decline "
 "and blue for increase"
-msgstr ""
+msgstr "2018 年至 2024 年奥布阿西逐像元 NDVI 趋势图，红色表示下降，蓝色表示增加"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:18
 msgid ""
@@ -76,6 +84,8 @@ msgid ""
 "increasing greenness, in NDVI units per year. White areas inside the "
 "district are masked pixels. Click the image to enlarge."
 msgstr ""
+"<span class=\"gf-tag real\">真实</span> 基于旱季合成影像得到的 2018 年至 2024 年逐像元 NDVI "
+"趋势。红色表示绿度下降，蓝色表示绿度增加，单位为每年的 NDVI 变化量。区内的白色区域为被掩膜的像元。点击图像可放大。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:21
 msgid ""
@@ -86,12 +96,14 @@ msgid ""
 "water bodies, where NDVI is low and unstable from year to year, and they "
 "should be ignored when reading the map."
 msgstr ""
+"斜率图是信息量最大的视图，因为它保留了变化的幅度。最强且范围最广的下降出现在该区西缘，约位于西经 1.70 "
+"度以西，而中部接近于零。颜色很深的蓝色块并不是植被增加：它们是水体，那里的 NDVI 较低且逐年不稳定，解读地图时应当忽略。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:23
 msgid ""
 "Classified map of vegetation trend with four classes: strong decline, "
 "moderate decline, stable and increasing"
-msgstr ""
+msgstr "植被趋势分类图，分为四类：显著下降、中度下降、稳定和增加"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:26
 msgid ""
@@ -100,6 +112,8 @@ msgid ""
 " 22.8 percent moderate), 57.5 percent is stable, and 10.5 percent is "
 "increasing. Percentages exclude masked pixels."
 msgstr ""
+"<span class=\"gf-tag real\">真实</span> 同一趋势按四个类别分类的结果。该区约 32% 呈现下降（显著下降 "
+"9.2%，中度下降 22.8%），57.5% 保持稳定，10.5% 为增加。百分比不包含被掩膜的像元。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:29
 msgid ""
@@ -108,6 +122,8 @@ msgid ""
 "the original script: the scene selection is left to you, and the trend is a "
 "simple least-squares fit that you can replace with a robust method."
 msgstr ""
+"**如何复现该工作流。** 搜索、下载和指数计算步骤使用 "
+"pygeofetch。下面的代码是对该工作流的示意性草稿，而不是原始脚本：影像的选择由你自行决定，趋势则采用简单的最小二乘拟合，你可以将其替换为稳健方法。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:64
 msgid ""
@@ -118,16 +134,18 @@ msgid ""
 "separate them. Treat the classes as a screening layer that shows where to "
 "look next."
 msgstr ""
+"**应当从中得出什么，不应得出什么。** "
+"趋势图告诉你植被绿度在哪里发生了变化，而不是为什么变化。下降可能是为采矿或农耕而清除植被、作物类型的改变、干旱胁迫，或是合成影像日期的变化，只有实地知识或更高分辨率的影像才能把它们区分开。请把这些类别当作筛查图层，用来指示接下来该去哪里查看。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:66
 msgid ""
 "*Source: the Obuasi trend maps and the percentages above are taken from the "
 "project's own analysis, as published in the repository README.*"
-msgstr ""
+msgstr "*来源：奥布阿西趋势图及上述百分比取自项目自身的分析，已发布于仓库的 README。*"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:68
 msgid "Mexico City subsidence with InSAR (Iztapalapa, 2016 to 2017)"
-msgstr ""
+msgstr "利用 InSAR 研究墨西哥城沉降（伊斯塔帕拉帕，2016 年至 2017 年）"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:70
 msgid ""
@@ -139,6 +157,10 @@ msgid ""
 " the same area with far less data: Sentinel-1 track 147, descending, from "
 "July 2016 to September 2017."
 msgstr ""
+"**问题。** 纯 Python "
+"的干涉测量链能否在一个沉降已有充分记录的地方恢复出地面沉降的符号和大致量级？伊斯塔帕拉帕位于墨西哥城的古湖床上，是地面下沉最快的地区之一，已发表的研究基于数年的"
+" Sentinel-1 数据，报告的峰值接近每年 -39 cm。该项目在同一地区用少得多的数据测试了 pygeofetch：Sentinel-1 第 "
+"147 轨道，降轨，时间为 2016 年 7 月至 2017 年 9 月。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:72
 msgid ""
@@ -149,12 +171,15 @@ msgid ""
 "groups, and the largest group of 10 dates gave vertical velocities between "
 "about -35.5 and -2.9 cm per year (2nd to 98th percentile)."
 msgstr ""
+"**该处理链做了什么。** 它搜索了相同几何的影像，在下载前用预检关卡对其进行筛选，生成了 78 "
+"幅干涉图，对其进行解缠，并用小基线方法将可靠的结果合并。经过可靠性过滤后，58 个日期被分成 17 个连通组，其中最大的一组包含 10 "
+"个日期，给出的垂直速度介于约 -35.5 与 -2.9 cm 每年之间（第 2 至第 98 百分位）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:74
 msgid ""
 "SBAS results for Mexico City: velocity at reliable pixels, uncertainty, "
 "reliable-pixel mask and displacement time series"
-msgstr ""
+msgstr "墨西哥城的 SBAS 结果：可靠像元处的速度、不确定性、可靠像元掩膜和位移时间序列"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:77
 msgid ""
@@ -164,6 +189,9 @@ msgid ""
 "wrapped and unwrapped phase, is in the [worked example](../processing/sar-"
 "insar/insar-mexico-city-tutorial.md#results-of-the-reference-run)."
 msgstr ""
+"<span class=\"gf-tag real\">真实</span> 墨西哥城这次运行的 SBAS "
+"输出。只有位于可靠像元掩膜内（左下，白色）的像元才带有速度值（左上）。从影像覆盖范围到缠绕相位和解缠相位的全部图件，见[完整示例](../processing/sar-"
+"insar/insar-mexico-city-tutorial.md#results-of-the-reference-run)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:80
 msgid ""
@@ -175,10 +203,13 @@ msgid ""
 "above: there the same chain reported that it could not recover the signal at"
 " all, and that honest failure is as useful as a success."
 msgstr ""
+"**它显示了什么，没有显示什么。** 符号和大致量级与已发表的结果一致，这正是该项目想要检验的。但只有约 0.2% "
+"的像元可用，网络很脆弱，结果也未经验证，因此它只是对工作流的演示，而不是可以依赖的测量。请与上文的 Bu'ertai "
+"对比：在那里，同一条处理链报告说它根本无法恢复出信号，而这种诚实的失败与成功同样有用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:82
 msgid "Bu'ertai Mine, China: when conventional InSAR fails"
-msgstr ""
+msgstr "中国补连塔煤矿：常规 InSAR 失效之时"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:84
 msgid ""
@@ -186,7 +217,7 @@ msgid ""
 "mine? The Bu'ertai Mine in the Shendong Coalfield is a published case where "
 "underground extraction causes large displacement that is concentrated in a "
 "small area."
-msgstr ""
+msgstr "**问题。** 干涉测量能否测量一座在产煤矿的沉降？神东矿区的补连塔煤矿是一个已发表的案例，井下开采造成了集中在一小片区域内的大幅位移。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:86
 msgid ""
@@ -201,12 +232,16 @@ msgid ""
 "pixels. Where the surface moves more than that within one revisit, the phase"
 " cannot be unwrapped."
 msgstr ""
+"**发生了什么。** 该案例研究在真实的 Sentinel-1 数据上运行了完整的处理链：同轨影像选择、针对突发同步和基线的预检、干涉图生成以及 "
+"SBAS 网络。有几个干涉像对返回的可靠覆盖为零，最终网络仅覆盖感兴趣区约 0.1% 的面积。原因是物理性的。在 Sentinel-1 "
+"的波长下，一个干涉条纹对应约 28 mm 的视线向运动，而只有当相邻像元之间的相位变化小于半个条纹（约 14 "
+"mm）时，相位才能被可靠地解缠。当地表在一个重访周期内的移动超过这一幅度时，相位就无法解缠。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:88
 msgid ""
 "Coherence image between two Sentinel-1 acquisitions over Bu'ertai, mostly "
 "low values with a few brighter patches"
-msgstr ""
+msgstr "Bu'ertai 上空两次 Sentinel-1 采集之间的相干性图像，大部分为低值，仅有少数较亮的斑块"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:91
 msgid ""
@@ -216,6 +251,8 @@ msgid ""
 "measurement. The few brighter patches are stable surfaces such as built-up "
 "areas and bare ground."
 msgstr ""
+"<span class=\"gf-tag real\">真实</span> 2023-04-22 与 2023-06-21 两次 Sentinel-1 "
+"采集之间的干涉相干性。场景的大部分区域相干性约在 0.2 到 0.4 之间，对于可靠的相位测量来说过低。少数较亮的斑块是稳定的地表，例如建成区和裸地。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:94
 msgid ""
@@ -228,10 +265,14 @@ msgid ""
 "mexico-city-tutorial.md) above shows the opposite case, a smooth subsidence "
 "bowl that InSAR handles well."
 msgstr ""
+"这正是如实报告失败而不是将其隐藏的价值所在。pygeofetch 的[光学偏移跟踪](../processing/sar-insar/optical-"
+"offset-tracking.md)通过成对的光学影像测量位移，在那里大幅运动仍然可以测量；[InSAR "
+"与光学融合](../processing/multisensor.md)流水线则在各数据源可靠的地方使用各自的数据。上文的[墨西哥城完整示例](../processing/sar-"
+"insar/insar-mexico-city-tutorial.md)展示了相反的情形，即 InSAR 能够很好处理的平滑沉降盆地。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:96
 msgid "Demonstration: indices and radar flood mapping on synthetic scenes"
-msgstr ""
+msgstr "演示：在合成场景上进行指数计算和雷达洪水制图"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:98
 msgid ""
@@ -240,12 +281,14 @@ msgid ""
 " show what each function takes in and returns. They are not measurements of "
 "any real place."
 msgstr ""
+"下面两幅图由 `tools/gen_figures.py` 基于模拟场景生成，使用的是 pygeofetch 自己的 `client.indices` "
+"和 `client.sar` 代码。它们展示的是每个函数接受什么输入、返回什么输出，并不是对任何真实地点的测量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:100
 msgid ""
 "False-colour synthetic scene with NDVI and NDWI maps showing forest, fields,"
 " a river and a built-up block"
-msgstr ""
+msgstr "带有 NDVI 和 NDWI 图的假彩色合成场景，显示森林、农田、一条河流和一片建成区"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:103
 msgid ""
@@ -253,12 +296,14 @@ msgid ""
 " forest, fields, a river and a built-up block. NDVI separates vegetation "
 "from water and buildings, and NDWI highlights the river."
 msgstr ""
+"<span class=\"gf-tag synthetic\">合成</span> 一幅包含森林、农田、一条河流和一片建成区的模拟景观。NDVI "
+"将植被与水体和建筑区分开，NDWI 则突出显示河流。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:106
 msgid ""
 "Raw SAR backscatter with speckle, the same scene after a Lee filter, and a "
 "flood mask at minus 15 decibels"
-msgstr ""
+msgstr "带有斑点噪声的原始 SAR 后向散射、经过 Lee 滤波后的同一场景，以及阈值为负 15 分贝的洪水掩膜"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:109
 msgid ""
@@ -266,6 +311,8 @@ msgid ""
 "radar scene with two flooded areas. The Lee filter suppresses speckle while "
 "keeping edges, and a threshold at -15 dB then maps the water."
 msgstr ""
+"<span class=\"gf-tag synthetic\">合成</span> 一幅含有两处淹没区域的模拟四视雷达场景。Lee "
+"滤波在保留边缘的同时抑制斑点噪声，随后以 -15 dB 为阈值即可划出水体。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:112
 msgid ""
@@ -273,28 +320,33 @@ msgid ""
 "threshold: on the raw image a single threshold would label many scattered "
 "pixels, while after filtering the flooded areas stand out as solid regions."
 msgstr ""
+"真实雷达图像中的斑点噪声，正是要在任何阈值处理之前先进行滤波的原因：在原始图像上，单一阈值会标出许多零散的像元，而经过滤波之后，淹没区域则呈现为连成一片的实心区域。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:114
 msgid "Monitoring artisanal mining expansion"
-msgstr ""
+msgstr "监测手工采矿的扩张"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:116
 msgid ""
 "**Goal.** Detect new bare ground and disturbed vegetation around a "
 "concession over time."
-msgstr ""
+msgstr "**目标。** 检测特许经营区周边随时间出现的新裸地和受扰动的植被。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:118
 msgid ""
 "**Find scenes.** Search Sentinel-2 L2A with low cloud cover over a fixed "
 "AOI, for each season. See [Searching](../data-access/search.md)."
 msgstr ""
+"**查找影像。** 针对固定的 AOI，按每个季节搜索低云量的 Sentinel-2 L2A。参见[搜索](../data-"
+"access/search.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:119
 msgid ""
 "**Get only the AOI.** Use [`stream()`](../data-access/streaming.md) with a "
 "Planetary Computer or Element84 source so you do not download full tiles."
 msgstr ""
+"**只获取 AOI。** 配合 Planetary Computer 或 Element84 数据源使用 [`stream()`](../data-"
+"access/streaming.md)，这样就无需下载完整的影像块。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:120
 msgid ""
@@ -302,6 +354,9 @@ msgid ""
 "`optical_offset=-1000` and `optical_scale=10000` where the pipeline asks for"
 " it. See [Multi-sensor pipelines](../processing/multisensor.md)."
 msgstr ""
+"**校正偏移。** 对于基线为 04.00 或更高版本的 Sentinel-2 L2A，在流水线要求的位置设置 "
+"`optical_offset=-1000` 和 "
+"`optical_scale=10000`。参见[多传感器流水线](../processing/multisensor.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:121
 msgid ""
@@ -309,29 +364,31 @@ msgid ""
 "exposed ground. See [Spectral indices](../processing/optical/spectral-"
 "indices.md)."
 msgstr ""
+"**计算指数。** 用 NDVI 反映植被损失，用裸土指数反映裸露地表。参见[光谱指数](../processing/optical/spectral-"
+"indices.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:122
 msgid ""
 "**Add radar.** Use the NDVI plus SAR coherence pipeline to separate cloud-"
 "affected gaps from real disturbance, since coherence is unaffected by cloud."
-msgstr ""
+msgstr "**加入雷达。** 使用 NDVI 加 SAR 相干性流水线，把受云影响造成的空缺与真实的扰动区分开，因为相干性不受云的影响。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:123
 msgid ""
 "**Map and report.** Use [Visualization](../visualization/plotter.md) to "
 "produce maps and change summaries."
-msgstr ""
+msgstr "**制图与报告。** 使用[可视化](../visualization/plotter.md)生成地图和变化摘要。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:125
 msgid ""
 "Mining detection from spectral change is an indicator, not evidence of "
 "activity. Field validation is needed before drawing conclusions about "
 "specific locations."
-msgstr ""
+msgstr "基于光谱变化的采矿检测只是一种指示，而不是活动的证据。在对具体地点下结论之前，需要进行实地验证。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:127
 msgid "Mineral exploration screening"
-msgstr ""
+msgstr "矿产勘查筛查"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:129
 msgid ""
@@ -346,10 +403,13 @@ msgid ""
 "do not identify mineralogy. Treat the result as a ranking of places to "
 "visit."
 msgstr ""
+"**目标。** 突出显示蚀变带，供后续野外工作参考。下载许可区的 Sentinel-2 或 Landsat "
+"影像（[Landsat](../processing/optical/landsat.md)），根据[光谱指数](../processing/optical/spectral-"
+"indices.md)计算地质指数（氧化铁、黏土、亚铁矿物及类似指数），使用来自已知矿点的训练区，通过[分类](../processing/optical/classification.md)进行分类，并通过[地形](../processing/optical/terrain.md)加入地形背景。光谱指数用于筛查，不能确定矿物学成分。请将结果视为值得前往查看的地点排序。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:131
 msgid "Drought and vegetation time series"
-msgstr ""
+msgstr "干旱与植被时间序列"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:133
 msgid ""
@@ -361,10 +421,13 @@ msgid ""
 "pipeline](pipelines.md) can run the acquisition on a schedule so new scenes "
 "arrive automatically."
 msgstr ""
+"**目标。** 追踪某个地区数年间的季节性植被状况。定义 AOI 和按月的日期循环，每月搜索并流式读取或下载一景低云影像，逐景计算 "
+"NDVI，并用[时间序列](../processing/optical/timeseries.md)进行堆叠，再将每个月与其多年均值比较以发现异常。[YAML"
+" 流水线](pipelines.md)可以按计划运行数据获取，从而自动获得新影像。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:135
 msgid "Flood extent after a storm"
-msgstr ""
+msgstr "风暴后的洪水范围"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:137
 msgid ""
@@ -375,10 +438,13 @@ msgid ""
 "([Multi-sensor pipelines](../processing/multisensor.md)). Export the flood "
 "mask and compute the affected area."
 msgstr ""
+"**目标。** 快速绘制洪水范围，包括云层之下的区域。搜索事件前后的 Sentinel-1 GRD（[SAR](../processing/sar-"
+"insar/sar.md)），运行洪水制图 SAR 流水线以获得仅基于雷达的范围，如果存在无云的光学数据，则使用 SAR "
+"加光学洪水流水线对其进行细化（[多传感器流水线](../processing/multisensor.md)）。导出洪水掩膜并计算受影响面积。"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:139
 msgid "Ground deformation with InSAR"
-msgstr ""
+msgstr "利用 InSAR 研究地面形变"
 
 #: ../../home/claude/work/docs_audit/docs_out/workflows/case-studies.md:141
 msgid ""
@@ -389,3 +455,7 @@ msgid ""
 "[streaming](../data-access/streaming.md) does not apply and you must "
 "download full products."
 msgstr ""
+"**目标。** 测量沉降或边坡运动。请按照 [InSAR 墨西哥城教程](../processing/sar-insar/insar-mexico-"
+"city-tutorial.md)中的完整示例操作，然后参阅 [InSAR](../processing/sar-insar/insar.md) 了解 "
+"SBAS 和预检。Copernicus 以 zip 压缩包的形式提供 SLC，因此[流式读取](../data-"
+"access/streaming.md)不适用，你必须下载完整产品。"

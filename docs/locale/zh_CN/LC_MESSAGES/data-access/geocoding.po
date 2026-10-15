@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,8 @@ msgid ""
 "in pygeofetch assumes you already have numeric coordinates; this is the one "
 "piece that gets you there from a name."
 msgstr ""
+"将地名转换为坐标，或将坐标转换为地名，无需在开始之前就手头已有边界框或经纬度。pygeofetch "
+"中的其他所有功能都假定您已经拥有数值坐标，而这一部分正是帮助您从地名获得坐标的环节。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:9
 msgid ""
@@ -38,10 +40,13 @@ msgid ""
 "responses and server-side quirks are untested. Test it in your own "
 "environment before depending on it in production."
 msgstr ""
+"**尚未针对在线服务进行验证。**解析逻辑（字段名称和 `boundingbox` 的顺序）已对照 [Nominatim 的 API "
+"文档](https://nominatim.org/release-docs/latest/api/Output/)进行检查。尚未执行过真实的 HTTP"
+" 往返，因此网络行为、速率限制响应和服务端的特殊情况均未经测试。在生产环境中依赖它之前，请先在您自己的环境中进行测试。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:17
 msgid "Overview"
-msgstr ""
+msgstr "概览"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:19
 msgid ""
@@ -52,6 +57,8 @@ msgid ""
 "point, a ready-to-use bounding box and the full display name of the place "
 "that was found."
 msgstr ""
+"几乎每个 pygeofetch 调用都需要数值：以经纬度表示的边界框，或 GeoJSON "
+"几何。对于只有名称的常见情形，地理编码就是这座桥梁。您传入一个地点，例如城镇、区县或地标，它会返回一个或多个匹配项，每个匹配项都包含其中心点、可直接使用的边界框以及所找到地点的完整显示名称。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:21
 msgid ""
@@ -63,10 +70,12 @@ msgid ""
 " usage limits, geocode once and keep the bounding box instead of calling it "
 "repeatedly inside a loop."
 msgstr ""
+"典型用法是分析的第一行。对研究区域进行地理编码，读取显示名称以确认服务理解的正是您所指的地点，从结果中取出边界框并直接交给 "
+"`SearchQuery`。反向地理编码则相反，适合在报告中为某个坐标添加标注。由于该服务是有使用限制的公共服务，请只编码一次并保留边界框，而不要在循环中反复调用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:23
 msgid "Why Nominatim specifically"
-msgstr ""
+msgstr "为何特别选择 Nominatim"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:25
 msgid ""
@@ -76,14 +85,17 @@ msgid ""
 "free requests to 1/second; this is enforced automatically, not left for you "
 "to violate accidentally."
 msgstr ""
+"使用 [Nominatim](https://nominatim.openstreetmap.org)（OpenStreetMap "
+"的免费地理编码服务），因为它不需要 API 密钥，这与 pygeofetch 的其他无需账号的提供方保持一致。实际的使用政策将免费请求限制为每秒 1 "
+"次；该限制会被自动强制执行，不会让您在无意中违反。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:31
 msgid "Quick start"
-msgstr ""
+msgstr "快速入门"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:46
 msgid "Forward geocoding — name to coordinates"
-msgstr ""
+msgstr "正向地理编码：名称到坐标"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:52
 msgid ""
@@ -91,14 +103,16 @@ msgid ""
 "ambiguous query like a common place name) — empty list if nothing matched, "
 "never an exception for \"not found.\" Each result has:"
 msgstr ""
+"返回一个字典列表，每个匹配项一个（对于像常见地名这样含义模糊的查询，Nominatim "
+"可能返回多个）；若没有匹配则返回空列表，“未找到”绝不会引发异常。每个结果包含："
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Key"
-msgstr ""
+msgstr "键"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Real content"
-msgstr ""
+msgstr "实际内容"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`lat`, `lon`"
@@ -106,7 +120,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Real WGS84 coordinates of the match's center point"
-msgstr ""
+msgstr "匹配项中心点的真实 WGS84 坐标"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`bbox`"
@@ -116,7 +130,7 @@ msgstr ""
 msgid ""
 "`(min_lon, min_lat, max_lon, max_lat)` — ready to pass directly to "
 "`SearchQuery`"
-msgstr ""
+msgstr "`(min_lon, min_lat, max_lon, max_lat)`，可直接传给 `SearchQuery`"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`display_name`"
@@ -126,7 +140,7 @@ msgstr ""
 msgid ""
 "The full matched place name — check this to confirm the geocoder understood "
 "your query correctly, especially for ambiguous names"
-msgstr ""
+msgstr "匹配到的完整地名，请据此确认地理编码器正确理解了您的查询，对含义模糊的名称尤其如此"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`place_type`"
@@ -134,7 +148,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Nominatim's own classification (`city`, `building`, `natural`, etc.)"
-msgstr ""
+msgstr "Nominatim 自身的分类（`city`、`building`、`natural` 等）"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:64
 msgid ""
@@ -142,25 +156,27 @@ msgid ""
 "query — \"Springfield\" alone will match *a* Springfield, not necessarily "
 "the one you meant."
 msgstr ""
+"对于含义模糊的查询，在信任结果之前**务必检查 `display_name`**：单独输入“Springfield”会匹配到*某一个* "
+"Springfield，而不一定是您所指的那个。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:68
 msgid "Reverse geocoding — coordinates to name"
-msgstr ""
+msgstr "反向地理编码：坐标到名称"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:77
 msgid ""
 "Returns `None` if nothing is found at that point (open ocean, for instance) "
 "— check for this before accessing the result, rather than assume every "
 "coordinate resolves to a place."
-msgstr ""
+msgstr "如果在该点没有找到任何内容（例如在开阔海域），则返回 `None`，请在访问结果之前检查这一点，而不要假定每个坐标都能解析为一个地点。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:81
 msgid "CLI reference"
-msgstr ""
+msgstr "CLI 参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:90
 msgid "Common pitfalls"
-msgstr ""
+msgstr "常见陷阱"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:92
 msgid ""
@@ -168,6 +184,8 @@ msgid ""
 "`display_name`.** Common city/street names exist in many countries — always "
 "look at what actually matched, not just its coordinates."
 msgstr ""
+"**对含义模糊的名称，不检查 `display_name` "
+"就信任第一个结果。**常见的城市/街道名称在许多国家都存在，请务必查看实际匹配的内容，而不只是它的坐标。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:95
 msgid ""
@@ -177,6 +195,8 @@ msgid ""
 "violate the shared usage policy — Nominatim can and does rate-limit or block"
 " abusive traffic."
 msgstr ""
+"**在紧凑的循环中进行地理编码而不间隔请求。**在单个进程内，内置的 1 秒限流会自动处理这一点，但同时运行多个并行进程访问 Nominatim "
+"仍可能违反共享的使用政策，Nominatim 完全可能并且确实会对滥用流量进行限速或封禁。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:100
 msgid ""
@@ -184,6 +204,8 @@ msgid ""
 "polar regions, or other areas with no OSM data return `None` — a valid "
 "outcome, not a bug."
 msgstr ""
+"**假定 `reverse_geocode` 总会返回内容。**水域、极地或其他没有 OSM 数据的区域上的点会返回 "
+"`None`，这是合法的结果，而不是缺陷。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:103
 msgid ""
@@ -192,18 +214,20 @@ msgid ""
 " this project's own testing — wrap calls in your own error handling until "
 "you've confirmed actual runtime behavior in your environment."
 msgstr ""
+"**不处理网络故障。**解析逻辑已对照 Nominatim "
+"的官方文档验证，但本项目自己的测试中尚未发出过真实请求，在您确认了自己环境中的实际运行时行为之前，请使用您自己的错误处理来包装这些调用。"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:109
 msgid "Full function reference"
-msgstr ""
+msgstr "完整函数参考"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Function"
-msgstr ""
+msgstr "函数"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Real purpose"
-msgstr ""
+msgstr "实际用途"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`geocode(query, limit=1, timeout=10.0)`"
@@ -211,7 +235,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Place name → coordinates + bbox"
-msgstr ""
+msgstr "地名 → 坐标 + 边界框"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "`reverse_geocode(lat, lon, timeout=10.0)`"
@@ -219,7 +243,7 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:8
 msgid "Coordinates → place name"
-msgstr ""
+msgstr "坐标 → 地名"
 
 #: ../../home/claude/work/docs_audit/docs_out/data-access/geocoding.md:116
 msgid ""
@@ -227,3 +251,5 @@ msgid ""
 "the main `PyGeoFetch` client object (e.g. there is no `client.geocode(...)`)"
 " — import them directly as shown above."
 msgstr ""
+"两者都位于 `pygeofetch.utils.geocoding` 中，目前并未附加到主 `PyGeoFetch` 客户端对象上（例如没有 "
+"`client.geocode(...)`），请按上文所示直接导入它们。"

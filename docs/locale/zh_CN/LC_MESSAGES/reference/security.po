@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pygeofetch 2.6.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 18:27+0200\n"
+"POT-Creation-Date: 2026-10-15 19:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr "安全"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:3
 msgid "Credential storage"
-msgstr ""
+msgstr "凭据存储"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:5
 msgid ""
@@ -31,6 +31,8 @@ msgid ""
 " the `auth_backend` argument of `PyGeoFetch()` (not by configuration; see "
 "[Configuration](configuration.md)):"
 msgstr ""
+"pygeofetch 使用两种后端之一存储提供商凭据，由 `PyGeoFetch()` 的 `auth_backend` "
+"参数选择（而非通过配置；参见[配置](configuration.md)）："
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`auth_backend`"
@@ -38,15 +40,15 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "Storage"
-msgstr ""
+msgstr "存储"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "Notes"
-msgstr ""
+msgstr "备注"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`\"file\"` (**default**)"
-msgstr ""
+msgstr "`\"file\"`（**默认**）"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`~/.pygeofetch/credentials.enc`"
@@ -59,6 +61,8 @@ msgid ""
 "use and stored separately in `~/.pygeofetch/credentials.key`. Both files are"
 " created with mode `0600`."
 msgstr ""
+"敏感字段（`password`、`api_key`、`token`、`secret_key`、`client_secret`）使用 Fernet "
+"加密。密钥在首次使用时生成，并单独存储在 `~/.pygeofetch/credentials.key` 中。两个文件均以 `0600` 权限创建。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "`\"keyring\"`"
@@ -66,13 +70,13 @@ msgstr ""
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid "The operating-system keyring"
-msgstr ""
+msgstr "操作系统密钥环"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:0
 msgid ""
 "macOS Keychain, Windows Credential Manager, or the Linux Secret Service, "
 "through the `keyring` package."
-msgstr ""
+msgstr "macOS 钥匙串、Windows 凭据管理器或 Linux Secret Service，通过 `keyring` 包访问。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:14
 msgid ""
@@ -81,6 +85,9 @@ msgid ""
 "sitting next to the encrypted data. Anyone who can read both files in "
 "`~/.pygeofetch/` can decrypt the file backend."
 msgstr ""
+"如果有可用的密钥环，请优先使用 "
+"`PyGeoFetch(auth_backend=\"keyring\")`，因为它将存储交给操作系统，而不是把密钥文件放在加密数据旁边。任何能读取 "
+"`~/.pygeofetch/` 中两个文件的人都可以解密文件后端。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:18
 msgid ""
@@ -88,10 +95,11 @@ msgid ""
 "migrated on first use; the old `credentials.json` is left in place, unused, "
 "and can be deleted."
 msgstr ""
+"早期版本仅对文件后端做 base64 编码。现有用户会在首次使用时迁移；旧的 `credentials.json` 会保留在原处且不再使用，可以删除。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:28
 msgid "Credentials and environment variables"
-msgstr ""
+msgstr "凭据与环境变量"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:30
 msgid ""
@@ -99,10 +107,12 @@ msgid ""
 "container, read your own secrets and pass them to `add_credentials()`. See "
 "[Authentication](../data-access/authentication.md)."
 msgstr ""
+"凭据**不会**从环境变量中加载。在 CI 或容器中，请自行读取密钥并传递给 `add_credentials()`。参见[身份验证](../data-"
+"access/authentication.md)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:34
 msgid "Exporting credentials"
-msgstr ""
+msgstr "导出凭据"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:36
 msgid ""
@@ -110,28 +120,29 @@ msgid ""
 "backup. That file contains secrets in plain text. Store it securely and "
 "delete it when done."
 msgstr ""
+"`pygeofetch auth export` 会将已存储的凭据写入 JSON 文件以便备份。该文件以明文包含机密信息。请妥善保管，并在用完后删除。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:39
 msgid "Network security"
-msgstr ""
+msgstr "网络安全"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:41
 msgid ""
 "Provider connections use TLS through `httpx` or `requests`. No code path "
 "sets `verify=False`."
-msgstr ""
+msgstr "提供商连接通过 `httpx` 或 `requests` 使用 TLS。没有任何代码路径设置 `verify=False`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:42
 msgid ""
 "Standard `HTTP_PROXY` and `HTTPS_PROXY` environment variables are honoured "
 "by the HTTP clients."
-msgstr ""
+msgstr "HTTP 客户端会遵循标准的 `HTTP_PROXY` 和 `HTTPS_PROXY` 环境变量。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:43
 msgid ""
 "Provider requests have per-request timeouts (60 seconds by default for "
 "searches; configurable with `search run --timeout`)."
-msgstr ""
+msgstr "提供商请求具有单次请求超时（搜索默认为 60 秒；可通过 `search run --timeout` 配置）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:45
 msgid ""
@@ -139,10 +150,12 @@ msgid ""
 "not read by the search and download code. See "
 "[Configuration](configuration.md#what-controls-behaviour)."
 msgstr ""
+"设置模型中的 `security.verify_ssl` 和 `proxy.*` "
+"条目不会被搜索和下载代码读取。参见[配置](configuration.md#what-controls-behaviour)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:48
 msgid "Data integrity"
-msgstr ""
+msgstr "数据完整性"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:50
 msgid ""
@@ -150,26 +163,29 @@ msgid ""
 " the provider supplied, when there is one. A mismatch is logged and recorded"
 " on the result. See [Error handling](error-handling.md#download-resilience)."
 msgstr ""
+"当 `verify_checksum=True` "
+"时，下载的文件会与提供商提供的校验和（如果有）进行比对。不匹配的情况会被记录并写入结果。参见[错误处理](error-"
+"handling.md#download-resilience)。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:51
 msgid ""
 "Files that fail a post-download validation (for example truncation) are "
 "retried."
-msgstr ""
+msgstr "未通过下载后验证（例如文件被截断）的文件会被重试。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:52
 msgid "Existing files are skipped, not overwritten, unless `overwrite=True`."
-msgstr ""
+msgstr "已存在的文件会被跳过而不是覆盖，除非设置 `overwrite=True`。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:53
 msgid ""
 "Archive extraction (`unzip`) rejects paths that would escape the destination"
 " directory."
-msgstr ""
+msgstr "归档文件解压（`unzip`）会拒绝会跳出目标目录的路径。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:55
 msgid "Reporting vulnerabilities"
-msgstr ""
+msgstr "报告漏洞"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/security.md:57
 msgid ""
@@ -177,3 +193,5 @@ msgid ""
 "repository's `SECURITY.md`, or `CONTRIBUTING.md` if there is no separate "
 "policy, for the disclosure contact."
 msgstr ""
+"请勿针对安全漏洞创建公开的 GitHub issue。披露联系方式请参阅仓库中的 `SECURITY.md`，如果没有单独的策略，则参阅 "
+"`CONTRIBUTING.md`。"
