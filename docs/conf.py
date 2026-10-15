@@ -144,5 +144,26 @@ def setup(app):
     def _ctx(app, pagename, templatename, context, doctree):
         context["gf_t"] = lambda s: _chrome.get(s, s)
     app.connect("html-page-context", _ctx)
+
+    # A plain `sphinx-build` (e.g. the default Read the Docs build) produces English at the
+    # site root and then builds every other language into <outdir>/<lang>/ so the language
+    # switcher works without any custom CI. Set DOCS_SUBBUILD=1 to skip (used internally).
+    def _all_langs(app, exc):
+        import subprocess, sys, tempfile
+        if exc or app.builder.name != "html" or language != "en":
+            return
+        if _os.environ.get("DOCS_SUBBUILD") or _os.environ.get("DOCS_SKIP_OTHER_LANGS"):
+            return
+        for code, _label in LANGUAGES:
+            if code == "en":
+                continue
+            env = dict(_os.environ, DOCS_LANG=code, DOCS_SUBBUILD="1")
+            with tempfile.TemporaryDirectory() as dt:
+                r = subprocess.run([sys.executable, "-m", "sphinx", "-b", "html", "-q", "-d", dt,
+                                    "-D", "language=" + code, str(app.srcdir),
+                                    _os.path.join(str(app.outdir), code)], env=env)
+            if r.returncode:
+                print("WARNING: language build failed:", code)
+    app.connect("build-finished", _all_langs)
 html_context["gf_partial"] = language not in ("en",)
 html_context["gf_rtl"] = language in ("ar",)

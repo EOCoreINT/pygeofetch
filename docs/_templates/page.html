@@ -27,7 +27,7 @@
       <button class="gf-icon gf-lang-btn" aria-haspopup="true" aria-label="{{ gf_t('Language') }}" type="button"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-3a15.6 15.6 0 0 0-1.4-3.6A8 8 0 0 1 18.9 8ZM12 4c.8 1.2 1.5 2.5 1.9 4h-3.8c.4-1.5 1.1-2.8 1.9-4ZM4.3 14a8.200 8.200 0 0 1 0-4h3.4a16 16 0 0 0 0 4Zm.8 2h3a15.600 15.600 0 0 0 1.400 3.600A8 8 0 0 1 5.100 16Zm3-8h-3a8 8 0 0 1 4.400-3.600C8.900 5.600 8.400 6.800 8.100 8ZM12 20c-.8-1.200-1.500-2.500-1.900-4h3.800c-.4 1.500-1.100 2.800-1.900 4Zm2.300-6H9.700a14.500 14.500 0 0 1 0-4h4.600a14.500 14.500 0 0 1 0 4Zm.2 5.600c.6-1.100 1.100-2.300 1.400-3.600h3a8 8 0 0 1-4.400 3.600ZM16.300 14a16 16 0 0 0 0-4h3.400a8.200 8.200 0 0 1 0 4Z"/></svg></button>
       <ul class="gf-lang-menu" role="menu">
         {%- for code, label in languages %}
-        <li><a role="menuitem" lang="{{ code|replace('_','-') }}" {% if code == current_language %}class="current" aria-current="true"{% endif %} href="{{ '../' * (pagename.count('/') + 1) }}{{ code }}/{{ pagename }}.html" data-lang="{{ code }}">{{ label }}</a></li>
+        <li><a role="menuitem" lang="{{ code|replace('_','-') }}" {% if code == current_language %}class="current" aria-current="true"{% endif %} href="{{ '../' * (pagename.count('/') + (1 if current_language != 'en' else 0)) }}{{ (code + '/') if code != 'en' else '' }}{{ pagename }}.html" data-lang="{{ code }}">{{ label }}</a></li>
         {%- endfor %}
       </ul>
     </div>
