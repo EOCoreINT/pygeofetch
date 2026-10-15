@@ -81,6 +81,7 @@ html_static_path = (
     else []
 )
 html_css_files = ["custom.css"] if html_static_path else []
+html_js_files = ["gf.js"] if html_static_path else []
 
 html_title = "pygeofetch"
 
