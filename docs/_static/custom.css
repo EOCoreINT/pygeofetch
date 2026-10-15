@@ -1,6 +1,47 @@
-/* Wider content column and tidier tables. */
-.page { max-width: 90em; }
-.content { max-width: 62em; }
-article table.docutils { width: 100%; display: table; }
-article table.docutils td, article table.docutils th { vertical-align: top; }
+/* Fonts: Inter for text, JetBrains Mono for code. Falls back to system fonts offline. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+html { font-size: 100%; }
+body {
+  --font-stack: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-stack--headings: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-stack--monospace: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  /* Slightly smaller type than Furo's default. */
+  --font-size--normal: 93%;
+  --font-size--small: 84%;
+  --font-size--small--2: 78%;
+  --font-size--small--3: 72%;
+  --font-size--small--4: 60%;
+  --code-font-size: 80%;
+  --admonition-font-size: 84%;
+}
+
+body { font-size: 0.93rem; font-feature-settings: "cv11", "ss01"; -webkit-font-smoothing: antialiased; line-height: 1.62; }
+h1, h2, h3, h4 { font-weight: 650; letter-spacing: -0.015em; }
+h1 { font-size: 1.9em; }
+h2 { font-size: 1.45em; }
+h3 { font-size: 1.15em; }
+
+/* Wider page: lift Furo's fixed content width and let it use the screen. */
+.page { max-width: none; }
+.content { width: auto; max-width: 100rem; padding: 0 3em; }
+.main { flex: 1 1 auto; }
+@media (max-width: 82em) { .content { padding: 0 1.5em; } }
+
+/* Tables and code */
+article table.docutils { width: 100%; display: table; font-size: 0.93em; }
+article table.docutils td, article table.docutils th { vertical-align: top; padding: 0.45em 0.7em; }
+div[class*="highlight"] pre { line-height: 1.5; }
+code.literal { padding: 0.1em 0.3em; }
 .sd-card { box-shadow: none; border: 1px solid var(--color-background-border); }
+
+/* Fixed-width side columns; the content column takes the remaining width. */
+@media (min-width: 67em) {
+  .sidebar-drawer { width: 17rem; flex: none; }
+  .sidebar-container { width: 17rem; }
+}
+@media (min-width: 82em) {
+  .toc-drawer { width: 16rem; flex: none; }
+  .toc-sticky { width: 16rem; }
+}
+.main { min-width: 0; }

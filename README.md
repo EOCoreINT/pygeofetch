@@ -229,11 +229,7 @@ If you use PyGeoFetch in your research or operational work, please cite it using
   title        = {PyGeoFetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing},
   year         = {2026},
   publisher    = {Zenodo},
-<<<<<<< HEAD
   version      = {2.6.3.0.1},
-=======
-  version      = {2.6.2.1},
->>>>>>> 1ab02bef79e16ad1866ba6e7145314e9000686b4
   doi          = {10.5281/zenodo.22087230},
   url          = {https://doi.org/10.5281/zenodo.22087230}
 }
