@@ -290,6 +290,7 @@ class AWSEarthProvider(AbstractBaseProvider):
         )
 
     def get_capabilities(self) -> ProviderCapabilities:
+        
         return ProviderCapabilities(
             provider_id="aws_earth",
             name="AWS Earth Search",

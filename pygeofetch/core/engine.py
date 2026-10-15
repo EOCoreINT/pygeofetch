@@ -488,6 +488,50 @@ class PyGeoFetch:
             data, Path(destination), options, item_done_callback=item_done_callback
         )
 
+    def stream(
+        self,
+        data: SatelliteData | list[SatelliteData],
+        bbox: Any,
+        destination: Path,
+        bands: list[str] | None = None,
+        parallel: int = 4,
+        overwrite: bool = False,
+        bbox_crs: str = "EPSG:4326",
+        block_size: int = 1024,
+    ) -> list[DownloadResult]:
+        """
+        Fetch only the AOI window of each scene's bands, not the whole scene.
+
+        Counterpart of :meth:`download` for Cloud-Optimized GeoTIFF
+        providers (``planetary_computer``, ``element84``). Output goes to
+        ``<destination>/<provider>/<scene>_<band>.tif`` (same nesting as
+        :meth:`download`), and each file covers just the AOI. Archive-only
+        providers (Copernicus OData ``.zip``, USGS M2M ``.tar``) cannot be
+        streamed and come back as FAILED results with an explanatory error.
+
+        Args:
+            data: One or more search results.
+            bbox: ``(minx, miny, maxx, maxy)`` in ``bbox_crs`` (default
+                WGS84), or a shapely geometry / GeoDataFrame.
+            destination: Output directory.
+            bands: Band names/aliases to stream (e.g. ``["B04", "B08"]``);
+                a request matching nothing is an error, not "all bands".
+            parallel: Scenes streamed concurrently.
+            overwrite: Re-stream files that already exist.
+            block_size: Rows/cols copied per block (bounds peak memory).
+
+        Returns:
+            One :class:`DownloadResult` per input, same order.
+        """
+        from pygeofetch.streaming import stream_many
+
+        if isinstance(data, SatelliteData):
+            data = [data]
+        return stream_many(
+            data, bbox, Path(destination), bands, parallel=parallel,
+            overwrite=overwrite, bbox_crs=bbox_crs, block_size=block_size,
+        )
+
     def _download_with_optical_preflight(
         self,
         data: list[SatelliteData],

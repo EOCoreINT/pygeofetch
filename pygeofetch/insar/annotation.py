@@ -39,6 +39,26 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, List, Optional, Union
 
+
+def _display_name(safe_zip_path: Any) -> str:
+    """
+    Real, safe display name for logging -- works for both a real,
+    local path (the original, existing case) and a real, remote
+    file-like object (e.g. `_RangeRequestFile` from
+    `stac_compute.lightweight_prefetch`, which supports real HTTP
+    range-request-backed reads without a full download). Fixes a
+    real, confirmed bug: the original code called `Path(safe_zip_path).name`
+    unconditionally, which raises a real TypeError for any file-like
+    object that isn't a str/PathLike -- meaning `parse_burst_info()`
+    and `parse_slc_geometry()` could never actually be used with a
+    real, remote, non-downloaded stream despite `zipfile.ZipFile()`
+    itself supporting file-like objects natively.
+    """
+    if isinstance(safe_zip_path, (str, Path)):
+        return Path(safe_zip_path).name
+    name = getattr(safe_zip_path, "name", None)
+    return Path(str(name)).name if name else "<remote-stream>"
+
 logger = logging.getLogger("pygeofetch.insar.annotation")
 
 SPEED_OF_LIGHT = 299792458.0
@@ -278,7 +298,7 @@ def parse_slc_geometry(
             burst_azimuth_times, lines_per_burst = _parse_swath_timing(root)
             burst_note = " (linear timing fallback)"
             logger.debug(
-                f"Burst timing fallback triggered for {Path(safe_zip_path).name}: {e}"
+                f"Burst timing fallback triggered for {_display_name(safe_zip_path)}: {e}"
             )
 
         # 3. Instantiate cleanly
@@ -295,7 +315,7 @@ def parse_slc_geometry(
 
         logger.info(
             "Parsed real SLC geometry from %s: %d x %d, starting %s%s",
-            Path(safe_zip_path).name,
+            _display_name(safe_zip_path),
             geometry.n_lines,
             geometry.n_columns,
             geometry.first_line_time,
@@ -361,7 +381,7 @@ def parse_chirp_bandwidth(
         bandwidth_hz = abs(ramp_rate_hz_per_s * pulse_length_s)
         logger.info(
             "Parsed real chirp bandwidth from %s: %.2f MHz",
-            Path(safe_zip_path).name,
+            _display_name(safe_zip_path),
             bandwidth_hz / 1e6,
         )
         return bandwidth_hz
@@ -517,7 +537,7 @@ def parse_burst_info(
         logger.info(
             "Parsed real burst metadata from %s: %d bursts, %d lines/burst, "
             "%d samples/burst",
-            Path(safe_zip_path).name,
+            _display_name(safe_zip_path),
             len(bursts),
             lines_per_burst,
             samples_per_burst,

@@ -31,6 +31,32 @@ from pygeofetch.sar.pipelines import PipelineResult
 logger = logging.getLogger("pygeofetch.multisensor.dem_differencing")
 
 
+def _pixel_areas_m2(crs, transform, shape):
+    """Ground area of each pixel in square metres.
+
+    Returns a float for projected CRSs (honouring the CRS's linear unit) or
+    an ``(H, 1)`` column for geographic CRSs, where pixel area shrinks with
+    latitude. ``abs(a * e)`` alone is only valid for metre-based grids: on a
+    degree-based DEM (SRTM / Copernicus DEM from OpenTopography arrive in
+    EPSG:4326) it gives ~1e-9 "m^2" and every volume collapses toward zero.
+    """
+    import numpy as np
+
+    h, _w = shape
+    if crs is not None and crs.is_geographic:
+        lat = np.radians(transform.f + (np.arange(h) + 0.5) * transform.e)
+        m_lat = 111132.92 - 559.82 * np.cos(2 * lat) + 1.175 * np.cos(4 * lat)
+        m_lon = 111412.84 * np.cos(lat) - 93.5 * np.cos(3 * lat) + 0.118 * np.cos(5 * lat)
+        return ((abs(transform.a) * m_lon) * (abs(transform.e) * m_lat))[:, None]
+    factor = 1.0
+    if crs is not None:
+        try:
+            factor = float(crs.linear_units_factor[1])
+        except Exception:
+            factor = 1.0
+    return abs(transform.a * transform.e) * factor * factor
+
+
 def dem_differencing_pipeline(
     dem_old_path: "str | Path",
     dem_new_path: "str | Path",
@@ -78,6 +104,13 @@ def dem_differencing_pipeline(
         computed only from pixels that passed the real LoD threshold,
         not the raw, unfiltered difference.
 
+    Notes
+    -----
+    Volumes use each pixel's true ground area: projected grids use the CRS's
+    linear unit, geographic (degree) grids use the WGS84 metres-per-degree at
+    each row's latitude. Elevation is assumed to be in metres. ``pct_significant``
+    is over valid (finite-difference) pixels, not the whole raster.
+
     Raises
     ------
     ValueError
@@ -104,7 +137,7 @@ def dem_differencing_pipeline(
         old_shape = (src.height, src.width)
         old_nodata = src.nodata
         profile = src.profile.copy()
-        pixel_area_m2 = abs(src.transform.a * src.transform.e)
+        pixel_areas_m2 = _pixel_areas_m2(src.crs, src.transform, (src.height, src.width))
 
     with rasterio.open(dem_new_path) as src:
         new_transform = src.transform
@@ -118,6 +151,12 @@ def dem_differencing_pipeline(
             and new_crs == old_crs
         ):
             dem_new = src.read(1).astype("float64")
+            # Same-grid path: honour the new DEM's nodata too. (The reproject
+            # path below already did; this one used to read the sentinel --
+            # e.g. -9999 or SRTM's -32768 -- as a real elevation, producing
+            # kilometre-deep "erosion" wherever the new DEM had voids.)
+            if new_nodata is not None:
+                dem_new = np.where(dem_new == new_nodata, np.nan, dem_new)
         else:
             logger.info(
                 "dem_differencing_pipeline: real grid mismatch (old=%s new=%s) "
@@ -165,13 +204,13 @@ def dem_differencing_pipeline(
     # real LoD threshold -- not the raw, unfiltered difference, which
     # would include real DEM noise as if it were real change.
     significant_diff = np.where(significant, diff, 0.0)
-    erosion_volume_m3 = float(
-        -significant_diff[significant_diff < 0].sum() * pixel_area_m2
-    )
-    deposition_volume_m3 = float(
-        significant_diff[significant_diff > 0].sum() * pixel_area_m2
-    )
+    volume_m3 = significant_diff * pixel_areas_m2  # broadcasts (H,1) areas on geographic grids
+    erosion_volume_m3 = float(-volume_m3[volume_m3 < 0].sum())
+    deposition_volume_m3 = float(volume_m3[volume_m3 > 0].sum())
     net_volume_change_m3 = deposition_volume_m3 - erosion_volume_m3
+    pixel_area_m2 = float(np.mean(pixel_areas_m2))
+    valid = np.isfinite(diff)
+    n_valid = int(valid.sum())
 
     n_significant = int(significant.sum())
     logger.info(
@@ -179,7 +218,7 @@ def dem_differencing_pipeline(
         "erosion=%.1f m^3, deposition=%.1f m^3, net=%.1f m^3",
         lod,
         n_significant,
-        significant.size,
+        n_valid,
         erosion_volume_m3,
         deposition_volume_m3,
         net_volume_change_m3,
@@ -192,7 +231,8 @@ def dem_differencing_pipeline(
             "level_of_detection_m": round(float(lod), 4),
             "significant_change_mask_path": mask_path,
             "n_significant_pixels": n_significant,
-            "pct_significant": round(100 * n_significant / significant.size, 2),
+            "n_valid_pixels": n_valid,
+            "pct_significant": round(100 * n_significant / max(n_valid, 1), 2),
             "pixel_area_m2": pixel_area_m2,
             "erosion_volume_m3": round(erosion_volume_m3, 2),
             "deposition_volume_m3": round(deposition_volume_m3, 2),

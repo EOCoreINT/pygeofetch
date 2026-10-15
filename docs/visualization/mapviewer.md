@@ -27,10 +27,10 @@ mv.add_search_results(results)   # real footprints, real hover info
 mv.show()                         # in Jupyter — or mv.save("results.html") elsewhere
 ```
 
-Uses each result's real, provider-supplied geometry when available,
+Uses each result's provider-supplied geometry when available,
 and falls back automatically to a bounding-box rectangle when it
 isn't — safe to call against any provider's results. See
-[Providers](../core-features/providers.md) for which providers return precise
+[Providers](../data-access/providers.md) for which providers return precise
 footprint geometry today.
 
 ## Split-panel comparison
@@ -49,7 +49,7 @@ mv.add_split_comparison(
 :::{note}
 
 The interactive split view depends on `localtileserver` spinning up a
-real local background HTTP server, which is known to fail in some
+local background HTTP server, which is known to fail in some
 restricted/sandboxed network environments (firewalls, some corporate
 VPNs) with a `ServerDownError`. When that happens,
 `add_split_comparison()` automatically falls back to a static

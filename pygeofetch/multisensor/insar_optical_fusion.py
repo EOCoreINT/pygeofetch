@@ -55,10 +55,13 @@ def _build_offset_grid_transform(
     """
     from rasterio.transform import Affine
 
-    x0, y0 = reference_transform * (
-        int(window_centers_col[0]),
-        int(window_centers_row[0]),
-    )
+    # Explicit affine arithmetic instead of `Transform * (col, row)`: the `*`
+    # operator on an Affine is deprecated (use `@`) and is slated for removal
+    # in a future affine release.
+    _col0, _row0 = int(window_centers_col[0]), int(window_centers_row[0])
+    t = reference_transform
+    x0 = t.a * _col0 + t.b * _row0 + t.c
+    y0 = t.d * _col0 + t.e * _row0 + t.f
     step_col = (
         int(window_centers_col[1]) - int(window_centers_col[0])
         if len(window_centers_col) > 1
@@ -72,9 +75,11 @@ def _build_offset_grid_transform(
     grid_pixel_size_x = step_col * reference_transform.a
     grid_pixel_size_y = step_row * (-reference_transform.e)
 
-    return Affine.translation(
-        x0 - grid_pixel_size_x / 2, y0 + grid_pixel_size_y / 2
-    ) * Affine.scale(grid_pixel_size_x, -grid_pixel_size_y)
+    # == Affine.translation(tx, ty) * Affine.scale(sx, -sy), written out.
+    return Affine(
+        grid_pixel_size_x, 0.0, x0 - grid_pixel_size_x / 2,
+        0.0, -grid_pixel_size_y, y0 + grid_pixel_size_y / 2,
+    )
 
 
 def insar_optical_displacement_pipeline(

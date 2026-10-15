@@ -140,6 +140,39 @@ def _cosine_topographic_correction(
     return image * np.cos(zenith_rad) / cos_i_safe
 
 
+def _pixel_size_m(src):
+    """Ground pixel size (x, y) in metres for a raster, honouring CRS units.
+
+    Geographic (degree) grids are converted at the raster's centre latitude;
+    projected grids use their linear unit (metres, US feet, ...). Using
+    ``abs(transform.a)`` blindly treats degrees as metres and yields slopes
+    near 90 degrees everywhere.
+    """
+    import math
+
+    t, crs = src.transform, src.crs
+    if crs is not None and crs.is_geographic:
+        lat = math.radians((src.bounds.top + src.bounds.bottom) / 2.0)
+        return abs(t.a) * 111320.0 * math.cos(lat), abs(t.e) * 110574.0
+    factor = 1.0
+    if crs is not None:
+        try:
+            factor = float(crs.linear_units_factor[1])
+        except Exception:
+            factor = 1.0
+    return abs(t.a) * factor, abs(t.e) * factor
+
+
+def _read_masked(src):
+    """Band 1 as float64 with declared nodata and non-finite values -> NaN."""
+    import numpy as np
+
+    arr = src.read(1).astype("float64")
+    if src.nodata is not None and np.isfinite(src.nodata):
+        arr = np.where(arr == src.nodata, np.nan, arr)
+    return np.where(np.isfinite(arr), arr, np.nan)
+
+
 def terrain_corrected_change_pipeline(
     optical_pre_path: "str | Path",
     optical_post_path: "str | Path",
@@ -161,8 +194,14 @@ def terrain_corrected_change_pipeline(
     Parameters
     ----------
     optical_pre_path, optical_post_path : str or Path
-        Real, single-band optical rasters (e.g. NDVI, or a raw
-        reflectance band), same real grid, same real units.
+        Single-band optical **reflectance** rasters (e.g. red or NIR),
+        same grid, same units. Do not pass a ratio index such as NDVI:
+        the cosine correction models how illumination scales radiance, and
+        applying it to an index (which already cancels most of that
+        scaling) is not physically meaningful -- correct the bands, then
+        compute the index. Nodata (declared value or non-finite) is
+        excluded from the change map, as are pixels whose slope cannot be
+        computed because the DEM is nodata there.
     dem_path : str or Path
         Real DEM, same real grid as the optical rasters.
     pre_datetime, post_datetime : datetime
@@ -200,12 +239,12 @@ def terrain_corrected_change_pipeline(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     with rasterio.open(optical_pre_path) as src:
-        pre = src.read(1).astype("float64")
+        pre = _read_masked(src)
         profile = src.profile.copy()
-        pixel_size = abs(src.transform.a)
+        px_x_m, px_y_m = _pixel_size_m(src)
         shape = (src.height, src.width)
     with rasterio.open(optical_post_path) as src:
-        post = src.read(1).astype("float64")
+        post = _read_masked(src)
         if (src.height, src.width) != shape:
             return PipelineResult(
                 success=False,
@@ -215,7 +254,7 @@ def terrain_corrected_change_pipeline(
                 ),
             )
     with rasterio.open(dem_path) as src:
-        dem = src.read(1).astype("float64")
+        dem = _read_masked(src)
         if (src.height, src.width) != shape:
             return PipelineResult(
                 success=False,
@@ -227,7 +266,7 @@ def terrain_corrected_change_pipeline(
                 ),
             )
 
-    slope_deg, aspect_deg = slope_aspect_degrees(dem, pixel_size)
+    slope_deg, aspect_deg = slope_aspect_degrees(dem, px_x_m, px_y_m)
 
     zenith_pre, azimuth_pre = solar_position(pre_datetime, latitude, longitude)
     zenith_post, azimuth_post = solar_position(post_datetime, latitude, longitude)
@@ -240,12 +279,14 @@ def terrain_corrected_change_pipeline(
     )
 
     change = post_corrected - pre_corrected
-    change_mask = (np.abs(change) > change_threshold).astype("uint8")
+    valid = np.isfinite(change)
+    change_mask = np.where(valid & (np.abs(np.nan_to_num(change)) > change_threshold), 1, 0).astype("uint8")
+    change_mask[~valid] = 255  # unusable: optical nodata or no slope from the DEM
 
     change_path = output_dir / "terrain_corrected_change.tif"
     mask_path = output_dir / "terrain_corrected_change_mask.tif"
     out_profile = dict(profile)
-    out_profile.update(dtype="float32", count=1, nodata=None)
+    out_profile.update(dtype="float32", count=1, nodata=float("nan"))
     with rasterio.open(change_path, "w", **out_profile) as dst:
         dst.write(change.astype("float32"), 1)
     mask_profile = dict(profile)
@@ -253,7 +294,8 @@ def terrain_corrected_change_pipeline(
     with rasterio.open(mask_path, "w", **mask_profile) as dst:
         dst.write(change_mask, 1)
 
-    n_changed = int(change_mask.sum())
+    n_valid = int(valid.sum())
+    n_changed = int((change_mask == 1).sum())
     logger.info(
         "terrain_corrected_change_pipeline: solar zenith/azimuth pre=(%.1f,%.1f) "
         "post=(%.1f,%.1f), %d/%d pixels flagged changed",
@@ -262,7 +304,7 @@ def terrain_corrected_change_pipeline(
         zenith_post,
         azimuth_post,
         n_changed,
-        change_mask.size,
+        n_valid,
     )
 
     return PipelineResult(
@@ -272,7 +314,9 @@ def terrain_corrected_change_pipeline(
             "change_mask_path": mask_path,
             "change_threshold": change_threshold,
             "n_changed_pixels": n_changed,
-            "pct_changed": round(100 * n_changed / change_mask.size, 2),
+            "n_valid_pixels": n_valid,
+            "n_invalid_pixels": int(change_mask.size - n_valid),
+            "pct_changed": round(100 * n_changed / max(n_valid, 1), 2),
             "solar_position_pre": {
                 "zenith_deg": zenith_pre,
                 "azimuth_deg": azimuth_pre,

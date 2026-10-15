@@ -1392,10 +1392,17 @@ class Preprocessor:
         slope_rad = np.arctan(np.sqrt(dzdx**2 + dzdy**2))
         slope_deg = np.degrees(slope_rad).astype(np.float32)
 
+        # Downhill compass bearing (clockwise from north): east component is
+        # -dz/dx, north component is +dz/drow (rows increase southward).
+        # atan2(east, north) is already a compass bearing; the old code
+        # converted it a second time ((450 - deg) % 360), which returned
+        # wrong aspects for every direction and made hillshade blind to
+        # east/west slope direction.
         aspect_rad = np.arctan2(-dzdx, dzdy)
-        aspect_deg = ((450 - np.degrees(aspect_rad)) % 360).astype(np.float32)
+        aspect_deg = (np.degrees(aspect_rad) % 360).astype(np.float32)
 
-        azimuth_rad = np.radians(360 - azimuth + 90)
+        # Sun azimuth is a compass bearing too, so compare like with like.
+        azimuth_rad = np.radians(azimuth)
         zenith_rad = np.radians(90 - altitude)
         hillshade = np.cos(zenith_rad) * np.cos(slope_rad) + np.sin(
             zenith_rad

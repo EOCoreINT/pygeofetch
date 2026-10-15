@@ -2,15 +2,12 @@
 
 :::{note}
 
-**Not independently verified this pass:** the package archive audited
-for this documentation contains only the Python package source, not
-the repository root — so a `Dockerfile`, `docker-compose.yml`, or
-published Docker Hub / GHCR images could not be confirmed to exist
-from here. Confirm the image pulls successfully
-(`docker pull pygeofetch/pygeofetch:latest`) before relying on it for
-CI/CD; if it doesn't exist yet, build from source below.
+**Image availability is not guaranteed by the Python package.** The `Dockerfile`,
+`docker-compose.yml` and published images live in the repository, not in the PyPI package.
+Confirm that `docker pull pygeofetch/pygeofetch:latest` succeeds before relying on it in CI/CD.
+If it does not, build from source as shown below.
 :::
-## Quick start (if the published image exists)
+## Quick start with the published image
 
 ```bash
 docker pull pygeofetch/pygeofetch:latest
@@ -55,30 +52,11 @@ services:
 
 :::{danger}
 
-**Real, verified correction**: an earlier version of this page showed
-`PYGEOFETCH_PLANET_API_KEY`/`PYGEOFETCH_COPERNICUS_USERNAME`/
-`PYGEOFETCH_COPERNICUS_PASSWORD` as environment variables the
-container would pick up automatically for credentials. That
-mechanism does not exist anywhere in pygeofetch's source — verified
-by searching the entire codebase for any credential-related
-environment-variable reading. `PYGEOFETCH_GENERAL__LOG_LEVEL` and
-`PYGEOFETCH_DOWNLOAD__PARALLEL` above **are** real (pygeofetch's
-general settings genuinely use `pydantic-settings` with
-`env_prefix="PYGEOFETCH_"` and `__`-delimited nesting for config
-values like log level or parallelism) — it's specifically
-per-provider *credentials* that have no environment-variable path.
-
-**The real, working pattern is the `~/.pygeofetch` volume mount
-already shown above**, in the Quick Start section: run
-`pygeofetch auth add planet --api-key ...` / `auth add copernicus
---username ... --password ...` once on the host (or in a one-time
-setup job), so the real, Fernet-encrypted credentials file already
-exists at `~/.pygeofetch/credentials.enc` before the container ever
-starts — the container then just needs that directory mounted, no
-credential-loading logic of its own. If you specifically need to
-inject secrets from your CI system's own secret store rather than a
-mounted host directory, do it explicitly in a short setup step before
-your real command, e.g. as the container's entrypoint:
+**Credentials are not read from environment variables** such as `PYGEOFETCH_PLANET_API_KEY`,
+`PYGEOFETCH_COPERNICUS_USERNAME` or `PYGEOFETCH_COPERNICUS_PASSWORD`. No such mechanism exists.
+The general settings variables above (`PYGEOFETCH_GENERAL__LOG_LEVEL` and similar) are read by
+`Settings`, which only the `config` commands use (see [Configuration](configuration.md)). Supply
+credentials by mounting `~/.pygeofetch` or by calling `add_credentials()` at start-up.
 :::
 
 ```bash

@@ -301,6 +301,14 @@ class AbstractBaseProvider(abc.ABC):
             )
             raise ProviderError(msg)
 
+    def sign_href(self, href: str, data: Any = None) -> str:
+        """Return a readable URL for ``href`` (hook for AOI streaming).
+
+        Default: unchanged. Providers whose asset URLs need a short-lived
+        token (e.g. Planetary Computer SAS) override this.
+        """
+        return href
+
     def __repr__(self) -> str:
         auth_status = "authenticated" if self.is_authenticated else "unauthenticated"
         return f"<{self.__class__.__name__} provider_id={self.PROVIDER_ID!r} {auth_status}>"

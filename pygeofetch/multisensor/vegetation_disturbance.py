@@ -56,6 +56,8 @@ def vegetation_disturbance_pipeline(
     ndvi_drop_threshold: float = 0.15,
     coherence_threshold: float = 0.3,
     coherence_window: int = 7,
+    optical_offset: float = 0.0,
+    optical_scale: float = 1.0,
 ) -> PipelineResult:
     """
     Real, combined optical NDVI + SAR coherence disturbance
@@ -91,12 +93,26 @@ def vegetation_disturbance_pipeline(
         `coherence_disturbance_pipeline`.
     coherence_window : int
         Passed to the real, shared coherence estimator.
+    optical_offset, optical_scale : float
+        Applied as ``(DN + optical_offset) * optical_scale`` to every optical
+        band before NDVI. Sentinel-2 L2A at processing baseline >= 04.00
+        stores ``DN = reflectance * 10000 + 1000``; NDVI on those raw DNs is
+        compressed toward zero and so is the pre-minus-post difference, which
+        makes ``ndvi_drop_threshold`` fire less often than intended. Pass
+        ``optical_offset=-1000, optical_scale=1e-4`` for such data.
+
+    Pixels without usable optical data (declared nodata, both bands 0, or a
+    non-finite NDVI) are never labelled "no disturbance" or "sub-canopy":
+    sub-canopy disturbance is *defined* as coherence loss with no NDVI drop,
+    and without optical data there is no evidence that NDVI did not drop.
+    They are written as 255 (unclassified); SAR-only nodata (zero SLC pixels)
+    is handled the same way for the classes that need coherence.
 
     Returns
     -------
     PipelineResult
         `final_output` is a real classification raster with three
-        real classes (see `CLASS_NO_DISTURBANCE`,
+        real classes plus 255 = unclassified (no usable data) (see `CLASS_NO_DISTURBANCE`,
         `CLASS_VISIBLE_DISTURBANCE`, `CLASS_SUBCANOPY_DISTURBANCE`
         module constants). `metadata` includes real per-class pixel
         counts and the real NDVI-difference and coherence rasters'
@@ -111,30 +127,47 @@ def vegetation_disturbance_pipeline(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    with rasterio.open(optical_red_pre_path) as src:
-        red_pre = src.read(1).astype("float64")
-        profile = src.profile.copy()
-        optical_shape = (src.height, src.width)
-    with rasterio.open(optical_nir_pre_path) as src:
-        nir_pre = src.read(1).astype("float64")
-    with rasterio.open(optical_red_post_path) as src:
-        red_post = src.read(1).astype("float64")
-        if (src.height, src.width) != optical_shape:
-            return PipelineResult(
-                success=False,
-                error=(
-                    f"vegetation_disturbance_pipeline: optical post shape "
-                    f"{(src.height, src.width)} doesn't match pre "
-                    f"{optical_shape} -- co-register first."
-                ),
-            )
-    with rasterio.open(optical_nir_post_path) as src:
-        nir_post = src.read(1).astype("float64")
+    def _read(path, label, shape=None):
+        with rasterio.open(path) as src:
+            if shape is not None and (src.height, src.width) != shape:
+                return None, None, None, (
+                    f"vegetation_disturbance_pipeline: {label} shape "
+                    f"{(src.height, src.width)} doesn't match {shape} -- "
+                    f"co-register first."
+                )
+            return src.read(1), src.nodata, src.profile.copy(), None
+
+    red_pre, nd_rp, profile, err = _read(optical_red_pre_path, "optical red (pre)")
+    if err:
+        return PipelineResult(success=False, error=err)
+    optical_shape = red_pre.shape
+    bands = {"red_pre": (red_pre, nd_rp)}
+    for key, path in (
+        ("nir_pre", optical_nir_pre_path),
+        ("red_post", optical_red_post_path),
+        ("nir_post", optical_nir_post_path),
+    ):
+        arr, nd, _, err = _read(path, f"optical {key.replace('_', ' ')}", optical_shape)
+        if err:
+            return PipelineResult(success=False, error=err)
+        bands[key] = (arr, nd)
+
+    optical_ok = np.ones(optical_shape, dtype=bool)
+    for arr, nd in bands.values():
+        if nd is not None:
+            optical_ok &= arr != nd
+    optical_ok &= ~((bands["red_pre"][0] == 0) & (bands["nir_pre"][0] == 0))
+    optical_ok &= ~((bands["red_post"][0] == 0) & (bands["nir_post"][0] == 0))
+
+    def _refl(key):
+        return (bands[key][0].astype("float64") + optical_offset) * optical_scale
 
     si = SpectralIndex()
-    ndvi_pre = si.compute("NDVI", RED=red_pre, NIR=nir_pre)
-    ndvi_post = si.compute("NDVI", RED=red_post, NIR=nir_post)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        ndvi_pre = si.compute("NDVI", RED=_refl("red_pre"), NIR=_refl("nir_pre"))
+        ndvi_post = si.compute("NDVI", RED=_refl("red_post"), NIR=_refl("nir_post"))
     ndvi_diff = ndvi_pre - ndvi_post  # positive = real vegetation loss
+    optical_ok &= np.isfinite(ndvi_diff)
 
     with rasterio.open(sar_slc_pre_path) as src:
         slc_pre = src.read(1)
@@ -168,11 +201,17 @@ def vegetation_disturbance_pipeline(
             ),
         )
 
-    visible_disturbance = ndvi_diff > ndvi_drop_threshold
-    ground_disturbance = coherence < coherence_threshold
-    subcanopy_disturbance = ground_disturbance & ~visible_disturbance
+    # SAR validity: zero-valued SLC pixels (outside the footprint) carry no
+    # phase; coherence there is meaningless and must not read as "disturbed".
+    sar_ok = (slc_pre != 0) & (slc_post != 0) & np.isfinite(coherence)
 
-    classification = np.full(ndvi_diff.shape, CLASS_NO_DISTURBANCE, dtype="uint8")
+    visible_disturbance = optical_ok & (np.nan_to_num(ndvi_diff) > ndvi_drop_threshold)
+    ground_disturbance = sar_ok & (np.nan_to_num(coherence, nan=1.0) < coherence_threshold)
+    subcanopy_disturbance = optical_ok & ground_disturbance & ~visible_disturbance
+
+    CLASS_UNCLASSIFIED = 255
+    classification = np.full(ndvi_diff.shape, CLASS_UNCLASSIFIED, dtype="uint8")
+    classification[optical_ok & sar_ok] = CLASS_NO_DISTURBANCE
     classification[subcanopy_disturbance] = CLASS_SUBCANOPY_DISTURBANCE
     classification[visible_disturbance] = CLASS_VISIBLE_DISTURBANCE
 
@@ -195,6 +234,7 @@ def vegetation_disturbance_pipeline(
     n_visible = int(visible_disturbance.sum())
     n_subcanopy = int(subcanopy_disturbance.sum())
     n_total = classification.size
+    n_unclassified = int((classification == CLASS_UNCLASSIFIED).sum())
     logger.info(
         "vegetation_disturbance_pipeline: visible=%d (%.1f%%), sub-canopy=%d (%.1f%%)",
         n_visible,
@@ -214,6 +254,7 @@ def vegetation_disturbance_pipeline(
             "n_no_disturbance_pixels": int(
                 (classification == CLASS_NO_DISTURBANCE).sum()
             ),
+            "n_unclassified_pixels": n_unclassified,
             "pct_visible_disturbance": round(100 * n_visible / n_total, 2),
             "pct_subcanopy_disturbance": round(100 * n_subcanopy / n_total, 2),
         },

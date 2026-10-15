@@ -56,7 +56,7 @@ directly — no round-trip through disk needed.
 | `plot_3d_terrain()` | Fast, static hillshade-draped 3D surface, no extra dependency |
 | `plot_3d_terrain_interactive()` | Real interactive mesh (PyVista), rotate/zoom/pan in-browser |
 
-## Terrain summary — a real, purpose-built 2x2 figure
+## Terrain summary — a purpose-built 2x2 figure
 
 ```python
 pl.plot_terrain_summary(
@@ -71,7 +71,7 @@ pl.plot_terrain_summary(
 )
 ```
 
-Lays out a real, purpose-built figure:
+Lays out a purpose-built figure:
 
 ```
 [ Hillshade      | Elevation      ]
@@ -79,12 +79,12 @@ Lays out a real, purpose-built figure:
 ```
 
 Pass `hillshade`/`slope` directly if you've already computed them via
-[Terrain Analysis (DEM / DSM / DTM)](../processing/terrain.md)'s `terrain_derivatives()`; omit either and
+[Terrain Analysis (DEM / DSM / DTM)](../processing/optical/terrain.md)'s `terrain_derivatives()`; omit either and
 this method generates it from the DEM itself. `diffs` accepts one or
 more `{label: raster}` pairs — e.g. comparing two different DEM
 sources over the same AOI — rendered with a diverging colormap
 (`vmin_diff`/`vmax_diff`, default ±20). `summit_points` overlays
-labeled markers at real `(lon, lat)` coordinates. `steep_threshold`
+labeled markers at `(lon, lat)` coordinates. `steep_threshold`
 (degrees) controls the "% steep terrain" statistic shown alongside the
 slope panel.
 
@@ -106,8 +106,8 @@ pl.plot_3d_terrain_interactive(
 
 :::{note}
 
-Both are hardened against a real failure mode: a near-uniform
-elevation field (e.g. an AOI that barely overlaps real terrain)
+Both are hardened against a failure mode: a near-uniform
+elevation field (e.g. an AOI that barely overlaps terrain)
 previously rendered as a flat, confusingly "empty" plot with no
 explanation. Now raises a clear warning identifying the actual cause.
 :::

@@ -41,6 +41,8 @@ def multi_sensor_flood_pipeline(
     cloud_mask_path: "str | Path | None" = None,
     cloud_mask_scl_classes: "list[int] | None" = None,
     fusion_mode: str = "cloud_aware",
+    optical_offset: float = 0.0,
+    optical_scale: float = 1.0,
 ) -> PipelineResult:
     """
     Real, end-to-end SAR + optical flood/water extent mapping.
@@ -86,6 +88,19 @@ def multi_sensor_flood_pipeline(
           Higher-confidence, fewer false positives, less complete
           coverage.
 
+    optical_offset, optical_scale : float
+        Applied as ``(DN + optical_offset) * optical_scale`` before NDWI.
+        Defaults leave the DNs unchanged. NDWI is only scale-invariant, not
+        offset-invariant: Sentinel-2 L2A at processing baseline >= 04.00
+        stores ``DN = reflectance * 10000 + 1000``, and computing
+        ``(G - N) / (G + N)`` on those raw DNs biases NDWI toward 0 and moves
+        pixels across the threshold. For such data pass
+        ``optical_offset=-1000, optical_scale=1e-4``.
+
+    Optical pixels that are nodata (the raster's nodata value, or both bands
+    exactly 0, or a non-finite NDWI) are treated like cloud: excluded from
+    the optical side and filled from SAR, never counted as "land".
+
     Returns
     -------
     PipelineResult
@@ -129,30 +144,47 @@ def multi_sensor_flood_pipeline(
         profile = src.profile.copy()
         sar_shape = (src.height, src.width)
 
-    with rasterio.open(optical_green_path) as src:
-        green = src.read(1).astype("float64")
-        if (src.height, src.width) != sar_shape:
-            return PipelineResult(
-                success=False,
-                stages=stages,
-                error=(
-                    f"multi_sensor_flood_pipeline: optical shape "
+    def _read_on_sar_grid(path, label):
+        with rasterio.open(path) as src:
+            if (src.height, src.width) != sar_shape:
+                return None, None, (
+                    f"multi_sensor_flood_pipeline: {label} shape "
                     f"{(src.height, src.width)} doesn't match the real SAR "
-                    f"grid {sar_shape} -- reproject the optical bands onto "
-                    f"the SAR raster's real grid first."
-                ),
-            )
-    with rasterio.open(optical_nir_path) as src:
-        nir = src.read(1).astype("float64")
+                    f"grid {sar_shape} -- reproject it onto the SAR "
+                    f"raster's real grid first."
+                )
+            return src.read(1), src.nodata, None
+
+    green_raw, green_nodata, err = _read_on_sar_grid(optical_green_path, "optical green")
+    if err is None:
+        nir_raw, nir_nodata, err = _read_on_sar_grid(optical_nir_path, "optical NIR")
+    if err is None and cloud_mask_path is not None:
+        scl_raw, _, err = _read_on_sar_grid(cloud_mask_path, "cloud mask")
+    if err is not None:
+        return PipelineResult(success=False, stages=stages, error=err)
+
+    # Optical nodata: declared nodata, or both bands exactly 0 (outside the
+    # swath / tile). Must be excluded like cloud: NDWI there is 0/0 = NaN,
+    # and `NaN > threshold` is False, which would silently read as "land".
+    optical_nodata = np.zeros(sar_shape, dtype=bool)
+    if green_nodata is not None:
+        optical_nodata |= green_raw == green_nodata
+    if nir_nodata is not None:
+        optical_nodata |= nir_raw == nir_nodata
+    optical_nodata |= (green_raw == 0) & (nir_raw == 0)
+
+    green = (green_raw.astype("float64") + optical_offset) * optical_scale
+    nir = (nir_raw.astype("float64") + optical_offset) * optical_scale
 
     si = SpectralIndex()
-    ndwi = si.compute("NDWI", GREEN=green, NIR=nir)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        ndwi = si.compute("NDWI", GREEN=green, NIR=nir)
+    optical_nodata |= ~np.isfinite(ndwi)
     optical_water = (ndwi > optical_ndwi_threshold).astype("uint8")
 
     cloud_mask = np.zeros(sar_shape, dtype=bool)
     if cloud_mask_path is not None:
-        with rasterio.open(cloud_mask_path) as src:
-            scl = src.read(1)
+        scl = scl_raw
         classes = cloud_mask_scl_classes or [
             3,
             8,
@@ -161,7 +193,8 @@ def multi_sensor_flood_pipeline(
         ]  # real Sentinel-2 SCL cloud/shadow classes
         cloud_mask = np.isin(scl, classes)
 
-    optical_valid = ~cloud_mask
+    optical_valid = ~(cloud_mask | optical_nodata)
+    optical_water = np.where(optical_valid, optical_water, 0).astype("uint8")
 
     if fusion_mode == "cloud_aware":
         fused = np.where(optical_valid, optical_water, sar_water)
@@ -210,6 +243,7 @@ def multi_sensor_flood_pipeline(
             "n_optical_water_pixels": n_optical,
             "n_fused_water_pixels": n_fused,
             "n_cloud_masked_pixels": n_cloud,
+            "n_optical_nodata_pixels": int(optical_nodata.sum()),
             "pct_cloud_masked": round(100 * n_cloud / sar_water.size, 2),
         },
     )

@@ -21,9 +21,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "myst_parser",
+    "sphinx_design",
+    "sphinx_reredirects",
 ]
 
 myst_enable_extensions = [
@@ -66,11 +67,14 @@ source_suffix = {
 
 master_doc = "index"
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_theme_options = {
-    "collapse_navigation": False,
-    "navigation_depth": 3,
-    "titles_only": False,
+    "source_repository": "https://github.com/EOCoreINT/pygeofetch",
+    "source_branch": "main",
+    "source_directory": "docs/",
+    "navigation_with_keys": True,
+    "light_css_variables": {"color-brand-primary": "#0b6e4f", "color-brand-content": "#0b6e4f"},
+    "dark_css_variables": {"color-brand-primary": "#4cc38a", "color-brand-content": "#4cc38a"},
 }
 html_static_path = (
     ["_static"]
@@ -81,6 +85,31 @@ html_css_files = ["custom.css"] if html_static_path else []
 
 html_title = "pygeofetch"
 
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
+
+# Pages that moved when the documentation was reorganised. Old URLs keep
+# working: each old document name redirects to its new location.
+redirects = {
+    "core-features/authentication": "../data-access/authentication.html",
+    "core-features/search": "../data-access/search.html",
+    "core-features/download": "../data-access/download.html",
+    "core-features/providers": "../data-access/providers.html",
+    "core-features/optical-validation": "../data-access/optical-validation.html",
+    "core-features/data-organizer": "../data-access/data-organizer.html",
+    "core-features/geocoding": "../data-access/geocoding.html",
+    "processing/spectral-indices": "../processing/optical/spectral-indices.html",
+    "processing/preprocessing": "../processing/optical/preprocessing.html",
+    "processing/classification": "../processing/optical/classification.html",
+    "processing/terrain": "../processing/optical/terrain.html",
+    "processing/landsat": "../processing/optical/landsat.html",
+    "processing/timeseries": "../processing/optical/timeseries.html",
+    "processing/postprocessing": "../processing/optical/postprocessing.html",
+    "processing/sar": "../processing/sar-insar/sar.html",
+    "processing/insar": "../processing/sar-insar/insar.html",
+    "processing/insar-mexico-city-tutorial": "../processing/sar-insar/insar-mexico-city-tutorial.html",
+    "processing/optical-offset-tracking": "../processing/sar-insar/optical-offset-tracking.html",
+    "processing/multi-sensor-pipelines": "../processing/multisensor.html",
+    "processing/upgrades": "../processing/sar-insar/advanced-modules.html",
+    "reference/pipelines": "../workflows/pipelines.html",
+    "reference/roadmap": "../project/roadmap.html",
+    "contributing": "project/contributing.html",
 }

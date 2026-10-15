@@ -1,20 +1,42 @@
-# Configuration Reference
+# Configuration
 
-pygeofetch uses a layered config system. Settings are merged from
-lowest to highest precedence:
+:::{important}
+**Scope.** pygeofetch has a layered settings model (`pygeofetch.config.settings.Settings`),
+but in the current release only the `pygeofetch config` commands and `pygeofetch cache ttl`
+read it. The search, download and processing code does **not** consult it. Changing
+`download.parallel` in `config.yaml` or through `PYGEOFETCH_DOWNLOAD__PARALLEL` does not
+change how many downloads run.
 
-1. **Bundled defaults** (`pygeofetch/config/defaults.yaml`)
-2. **`~/.pygeofetch/config.yaml`** — user-level config
-3. **Environment variables** — `PYGEOFETCH_*`, case-insensitive, `__` for nesting
-4. **CLI arguments** — highest priority
-
-:::{note}
-
-This page is generated directly from `pygeofetch/config/settings.py`
-and its bundled `defaults.yaml`, not from a hand-maintained example —
-so the field names and defaults below are exact.
+Behaviour is controlled by the [options that actually take effect](#what-controls-behaviour)
+below. See [Known issues](known-issues.md#settings-layer-is-not-applied-at-runtime).
 :::
-## Real bundled defaults
+
+## What controls behaviour
+
+| You want to change | Set it with |
+|---|---|
+| Parallelism, retries, checksum, bandwidth, bands, post-processing | CLI flags on `download run`, or [`DownloadOptions`](python-api.md#downloadoptions) in Python |
+| Search limits, sorting, cloud cover | CLI flags on `search run`, or [`SearchQuery`](python-api.md#searchquery) in Python |
+| Search-cache lifetime | `PyGeoFetch(cache_ttl=...)`, or `CacheManager(ttl_seconds=...)` |
+| Search workers, credential backend, optical validation | `PyGeoFetch(max_search_workers=..., auth_backend=..., validate_optical=...)` |
+| Log level, file and format | Global CLI options `--log-level`, `--log-file`, `--log-format`; or `PyGeoFetch(log_level=..., log_json=...)` |
+| Where `snaphu` is found | Environment variable `PYGEOFETCH_SNAPHU_DIR` |
+| Path of an external atmospheric-correction binary | Environment variable `PYGEOFETCH_<METHOD>_BIN` (for example `PYGEOFETCH_FLAASH_BIN`) |
+| Log level for the CLI | Environment variable `PYGEOFETCH_LOG_LEVEL` |
+
+`PyGeoFetch(config_path="my.yaml")` loads the file into `client.config`, a plain dictionary.
+Nothing in the engine currently reads it.
+
+## Credentials
+
+Credentials are **not** read from environment variables. Pass them explicitly with
+`add_credentials()` or `pygeofetch auth add`. See [Authentication](../data-access/authentication.md)
+and [Security](security.md).
+
+## The settings model
+
+The `Settings` model and `pygeofetch config` commands provide a structured place to store
+preferences. The schema and bundled defaults (`pygeofetch/config/defaults.yaml`) are:
 
 ```yaml
 general:
@@ -30,41 +52,19 @@ download:
   retry_strategy: "exponential_jitter"
   retry_delay_seconds: 1.0
   verify_checksum: true
-  checksum_algorithm: "md5"     # declared here, but see the warning below
-  bandwidth_limit_mbps: 0       # 0 = unlimited; a float, not "10MB"
+  checksum_algorithm: "md5"
+  bandwidth_limit_mbps: 0       # 0 = unlimited
   timeout_seconds: 300
   overwrite: false
   keep_original: false
-```
 
-:::{danger}
-**Real, confirmed bug, the same pattern as `security.credential_storage`
-below**: `download.checksum_algorithm` above is declared in
-`defaults.yaml`, but `client.download()` never actually reads it.
-Confirmed directly: `Downloader.download_many()`'s real implementation
-is `options = options or DownloadOptions()` — a bare pydantic model
-construction that uses `DownloadOptions`' own independent default
-(`ChecksumAlgorithm.SHA256`), completely bypassing the `Settings`/YAML
-config layer shown here.
-
-**The real, effective default when you call `client.download(...)`
-without an explicit `options=` is `SHA256`, not `"md5"`.** If you want
-`md5` (or any other algorithm), you must pass it explicitly:
-`DownloadOptions(checksum_algorithm=ChecksumAlgorithm.MD5)` — setting
-`download.checksum_algorithm` in config, via `pygeofetch config set`,
-or via `PYGEOFETCH_DOWNLOAD__CHECKSUM_ALGORITHM` currently has no
-effect on this. See [Python API Reference](python-api.md) for
-`DownloadOptions`' real, effective defaults.
-:::
-
-```yaml
 search:
   max_results: 100
   page_size: 100
   cache_ttl_seconds: 3600
   deduplicate: true
   sort_by: "datetime"
-  sort_ascending: false         # bool, not sort_order: "asc"/"desc"
+  sort_ascending: false
 
 cache:
   enabled: true
@@ -84,7 +84,7 @@ providers:
     base_url: "https://catalogue.dataspace.copernicus.eu/odata/v1"
     auth_url: "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
     timeout: 60
-  # ... one block per provider with a non-default base_url/timeout
+  # ... one block per provider with a non-default base_url or timeout
 
 notifications:
   webhook: null
@@ -98,61 +98,51 @@ proxy:
 
 security:
   verify_ssl: true
-  credential_storage: "keyring"   # keyring | encrypted_file | plain_file — see the warning below
+  credential_storage: "keyring"
   credential_file: "~/.pygeofetch/credentials.enc"
 ```
 
-:::{danger}
-**Real, confirmed bug**: `security.credential_storage` (shown above,
-settable via config file, `pygeofetch config set`, or
-`PYGEOFETCH_SECURITY__CREDENTIAL_STORAGE`) is declared with a real
-default in both `defaults.yaml` and the `Settings` pydantic model —
-but is **never read anywhere else in the codebase**. Confirmed by
-searching the entire real source tree for any other reference to it:
-there is none. Changing this setting currently has **zero effect** on
-which credential backend is actually used.
+Note the differences from the values that apply at runtime. `DownloadOptions()` defaults to
+`parallel=4`, `verify_checksum=False` and `SHA256`, not the values above.
 
-The setting that actually controls this is `PyGeoFetch()`'s own
-`auth_backend` constructor parameter, which has its own real,
-independent, hardcoded default of `"file"` — completely disconnected
-from the config value above. See
-[Security Model](../reference/security.md) for what `auth_backend`
-actually does and its own real default.
+### Precedence
 
-If you need a specific credential backend, pass it explicitly:
-`PyGeoFetch(auth_backend="keyring")` — do not rely on setting
-`security.credential_storage` in config, which this documentation
-would otherwise (incorrectly) suggest works.
-:::
+When `Settings` is loaded, later sources override earlier ones:
 
-## Environment variables
+1. Bundled defaults (`pygeofetch/config/defaults.yaml`)
+2. `~/.pygeofetch/config.yaml`
+3. Environment variables `PYGEOFETCH_<SECTION>__<FIELD>` (case-insensitive, double underscore for nesting)
 
 ```bash
-# Format: PYGEOFETCH_{SECTION}__{FIELD} — double underscore for nesting.
-# The prefix is case-insensitive, so lowercase also works.
 export PYGEOFETCH_DOWNLOAD__PARALLEL=4
 export PYGEOFETCH_GENERAL__LOG_LEVEL=DEBUG
-export PYGEOFETCH_GENERAL__OUTPUT_DIR=/data/satellite
 export PYGEOFETCH_CACHE__TTL_SECONDS=7200
 ```
 
-## Config CLI commands
+## Configuration commands
 
 ```bash
-pygeofetch config show                                  # merged effective config
+pygeofetch config show                    # merged settings
 pygeofetch config get download.parallel
 pygeofetch config set download.parallel 8
-pygeofetch config set search.default_providers "aws_earth,planetary_computer"
-pygeofetch config path                                    # show config file path
-pygeofetch config reset                                    # reset to defaults
+pygeofetch config path                    # location of config.yaml
+pygeofetch config reset                   # remove user overrides
 ```
+
+`config set` writes to `~/.pygeofetch/config.yaml`. As described above, the value is stored
+and shown by `config show`, but search and download do not read it.
+
+:::{note}
+`pygeofetch cache ttl show` reads a field that does not exist on `Settings` and always
+prints `3600`. `pygeofetch cache ttl set N` does store `cache.ttl_seconds`. See
+[Known issues](known-issues.md).
+:::
 
 ## In Python
 
 ```python
 from pygeofetch.config.settings import Settings
 
-settings = Settings()                       # defaults + env vars
-settings = Settings.from_yaml("my_config.yaml")
+settings = Settings()                         # defaults, user file and environment
 print(settings.download.parallel)
 ```

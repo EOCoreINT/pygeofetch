@@ -200,6 +200,23 @@ class PlanetaryComputerProvider(AbstractBaseProvider):
         sep = "&" if "?" in href else "?"
         return f"{href}{sep}{token}"
 
+    def sign_href(self, href: str, data: Any = None) -> str:
+        """Sign an asset URL with a cached per-collection SAS token.
+
+        Tokens are fetched once per collection and reused for 30 minutes
+        (they are valid for about an hour), so streaming many bands does
+        not make one token request per band.
+        """
+        import time as _time
+
+        collection = (getattr(data, "collection", None) or "sentinel-2-l2a")
+        cache = self.__dict__.setdefault("_sas_cache", {})
+        hit = cache.get(collection)
+        if hit is None or _time.time() - hit[1] > 1800:
+            hit = (self._get_sas_token(collection), _time.time())
+            cache[collection] = hit
+        return self._sign_url(href, hit[0])
+
     def download(
         self,
         data: SatelliteData,

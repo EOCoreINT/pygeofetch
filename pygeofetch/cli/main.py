@@ -28,6 +28,7 @@ from pygeofetch.cli.download_commands import download
 from pygeofetch.cli.index_commands import index
 from pygeofetch.cli.multisensor_commands import multisensor
 from pygeofetch.cli.classify_commands import classify
+from pygeofetch.cli.scale_commands import stream
 from pygeofetch.cli.optical_commands import optical
 from pygeofetch.cli.pipeline_process_commands import proc_pipeline
 from pygeofetch.cli.postprocess_commands import post
@@ -109,6 +110,7 @@ cli.add_command(proc_pipeline)
 cli.add_command(optical)
 cli.add_command(multisensor)
 cli.add_command(classify)
+cli.add_command(stream)
 
 
 # ---------------------------------------------------------------------------

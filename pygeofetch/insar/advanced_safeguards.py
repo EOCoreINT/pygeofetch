@@ -135,28 +135,43 @@ def prepare_custom_dem(
     return output_path
 
 
-def slope_aspect_degrees(dem: "np.ndarray", pixel_size_m: float):
+def slope_aspect_degrees(
+    dem: "np.ndarray", pixel_size_m: float, pixel_size_y_m: "float | None" = None
+):
     """
-    Real slope (degrees from horizontal) and aspect (degrees,
-    clockwise from north, direction the slope FACES -- i.e. the
-    downhill direction) from a DEM, via central-difference gradients.
+    Slope (degrees from horizontal) and aspect (degrees, clockwise from
+    north, the direction the slope FACES -- i.e. the downhill direction)
+    from a north-up DEM, via central-difference gradients.
 
-    Real, standard convention used throughout: aspect 0 deg = the
-    slope faces north (downhill points north), 90 deg = east, etc.
+    Convention: aspect 0 = faces north (downhill points north), 90 = east,
+    180 = south, 270 = west. Verified against ground-truth planes in this
+    package's tests (a surface falling toward the east returns 90).
+
+    Parameters
+    ----------
+    dem : np.ndarray
+        Elevations in metres.
+    pixel_size_m : float
+        Ground size of a pixel along x (columns), metres.
+    pixel_size_y_m : float, optional
+        Ground size along y (rows), metres. Defaults to ``pixel_size_m``.
+        Pass it for rasters whose pixels are not square on the ground, e.g.
+        a geographic (degrees) grid converted to metres at its latitude.
+
+    History: earlier versions returned the *uphill* bearing (180 deg off
+    this documented contract). ``generate_insar_mask`` was written against
+    that behaviour and has been updated so its output is unchanged.
     """
     np = _require_numpy()
-    dzdy, dzdx = np.gradient(dem.astype("float64"), pixel_size_m)
-    # Real, standard formula: slope magnitude from the horizontal-plane
-    # gradient magnitude.
+    py = pixel_size_m if pixel_size_y_m is None else pixel_size_y_m
+    dzdy, dzdx = np.gradient(dem.astype("float64"), py, pixel_size_m)
     slope_rad = np.arctan(np.sqrt(dzdx**2 + dzdy**2))
     slope_deg = np.degrees(slope_rad)
-    # Real, standard aspect convention: atan2(dzdx, -dzdy) measured
-    # clockwise from north gives the real downhill-facing direction
-    # (dzdy is defined here as d(elevation)/d(row), and row increases
-    # southward for a north-up raster, so -dzdy is the real
-    # south-to-north elevation gradient needed for a north-referenced
-    # bearing).
-    aspect_rad = np.arctan2(dzdx, -dzdy)
+    # Downhill vector in (east, north): east = -dz/dx; north = +dz/drow
+    # (rows increase southward in a north-up raster, so d/dnorth = -d/drow
+    # and the downhill north component is -(-dzdy) = +dzdy). The compass
+    # bearing of that vector is atan2(east, north).
+    aspect_rad = np.arctan2(-dzdx, dzdy)
     aspect_deg = (np.degrees(aspect_rad) + 360) % 360
     return slope_deg, aspect_deg
 
@@ -243,14 +258,16 @@ def generate_insar_mask(
     )
     look_azimuth = look_azimuth % 360
 
-    # Real, signed ground-range slope component: positive when the
-    # slope faces toward the radar (reduces local incidence, risking
-    # layover), negative when it faces away (increases local
-    # incidence, risking shadow).
+    # Signed ground-range slope component along the look direction.
+    # `aspect_deg` is the DOWNHILL bearing. A slope facing the radar has its
+    # downhill direction pointing back toward the sensor, i.e. at
+    # look_azimuth + 180, so cos(aspect - look) = -1 there: local incidence
+    # = incidence - slope (reduced -> layover risk). A back-slope (facing
+    # away, aspect == look) gives incidence + slope (increased -> shadow risk).
     aspect_diff_rad = np.radians(aspect_deg - look_azimuth)
     ground_range_component = slope_deg * np.cos(aspect_diff_rad)
 
-    local_incidence = incidence_angle_deg - ground_range_component
+    local_incidence = incidence_angle_deg + ground_range_component
     safe_mask = (local_incidence > 0) & (local_incidence < 90)
     return safe_mask
 

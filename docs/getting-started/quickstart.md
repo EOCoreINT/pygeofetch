@@ -1,6 +1,6 @@
 # Quick Start (5 Minutes)
 
-The full path from nothing installed to a real file on disk, using a
+The full path from nothing installed to a file on disk, using a
 free, no-account provider — no login, no API key, no waiting on an
 approval email.
 
@@ -42,7 +42,7 @@ Reads that same file and downloads the top-ranked scene.
 ls -la ./data/
 ```
 
-A real Sentinel-2 scene, on disk, ready to open in QGIS or load with
+A Sentinel-2 scene, on disk, ready to open in QGIS or load with
 rasterio.
 
 ## The same thing in Python
@@ -78,17 +78,17 @@ free, no-account provider, same as the CLI example above.
 ## What's next
 
 - **See it on a map first** — before committing to a download, view
-  real footprints and hover for scene details. See
-  [MapViewer](../visualization/mapviewer.md).
+ footprints and hover for scene details. See
+ [MapViewer](../visualization/mapviewer.md).
 - **Compute something** — NDVI, water indices, burn severity, and more,
-  one line each. See [Spectral Indices](../processing/spectral-indices.md).
+ one line each. See [Spectral Indices](../processing/optical/spectral-indices.md).
 - **Skip cloudy/off-target scenes automatically** — a configurable
-  pre-download quality gate for optical imagery. See
-  [Optical Data Validation & Preflight](../core-features/optical-validation.md).
+ pre-download quality gate for optical imagery. See
+ [Optical Data Validation & Preflight](../data-access/optical-validation.md).
 - **Working with SAR/Sentinel-1?** Despeckling, calibration, and the
-  full InSAR chain are genuinely different from optical workflows. See
-  [SAR Processing](../processing/sar.md) or [InSAR Processing](../processing/insar.md).
+ full InSAR chain are different from optical workflows. See
+ [SAR Processing](../processing/sar-insar/sar.md) or [InSAR Processing](../processing/sar-insar/insar.md).
 - **Doing this on a schedule?** Turn a one-off search into a repeatable
-  pipeline. See [Pipelines & Batch Processing](../reference/pipelines.md).
+ pipeline. See [Pipelines & Batch Processing](../workflows/pipelines.md).
 - **Something went wrong?** Auth errors, timeouts, zero results,
-  keyring issues on Docker/SSH. See [Error Handling & Resilience](../reference/error-handling.md).
+ keyring issues on Docker/SSH. See [Error Handling & Resilience](../reference/error-handling.md).

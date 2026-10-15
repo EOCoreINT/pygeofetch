@@ -1,111 +1,192 @@
-# pygeofetch documentation
+# pygeofetch
 
-**A universal satellite data pipeline.** One CLI, one Python API, 22
-provider integrations — federated search, authenticated downloads,
-InSAR/SAR processing, and pipeline orchestration, in pure Python.
+**One CLI and one Python API for finding, downloading and processing satellite data.**
+pygeofetch searches 22 data providers through a single query model, downloads or
+streams only what you need, and provides optical, SAR, InSAR and multi-sensor
+processing in Python.
 
-:::{note}
+```bash
+pip install pygeofetch
+pygeofetch doctor
+```
 
-This documentation is being rebuilt from source. A handful of examples
-on the previous docs site didn't match the actual installed package
-(e.g. the Python API examples referenced a lowercase `pygeofetch()`
-constructor and plain-tuple `bbox` values that don't match the real
-`PyGeoFetch` class and `SearchQuery`/`BoundingBox` models). Pages here
-are checked against `pygeofetch`'s source directly; see each page's
-examples for the corrected, working forms.
+::::{grid} 1 1 2 3
+:gutter: 3
+
+:::{grid-item-card} Get started
+:link: getting-started/quickstart
+:link-type: doc
+
+Install, run a first search and download a scene in five minutes, with no account.
 :::
-## Who this is for
 
-- Geospatial researchers who need data from multiple providers without
-  learning 22 different APIs
-- Engineers automating satellite data pipelines that need to run
-  unattended, on a schedule
-- Teams that need open-source Earth observation tooling without a
-  commercial platform lock-in
+:::{grid-item-card} Find and download data
+:link: data-access/search
+:link-type: doc
 
-## Quick links
+Federated search across providers, authenticated downloads, resume, checksums and caching.
+:::
 
-- [Quick Start (5 Minutes)](getting-started/quickstart.md) — install to first download in five minutes
-- [Python API Reference](reference/python-api.md) — the `PyGeoFetch` class, `SearchQuery`, `DownloadOptions`
-- [Providers](core-features/providers.md) — all 22 providers, honest per-provider status
-- [Organizing Downloaded Data](core-features/data-organizer.md) — structured hierarchies and InSAR stack prep from a flat download directory
-- [Optical Data Validation & Preflight](core-features/optical-validation.md) — pre-download quality gates for optical imagery
-- [InSAR Processing](processing/insar.md) — the pure-Python InSAR chain (no SNAP/ISCE required)
-- [Optical Pixel Offset Tracking](processing/optical-offset-tracking.md) — measuring large ground displacement where InSAR structurally cannot
-- [Multi-Sensor Pipelines](processing/multi-sensor-pipelines.md) — 5 real pipelines combining InSAR, optical, SAR, and DEM data
-- [Complete Worked Example: Mexico City Subsidence](processing/insar-mexico-city-tutorial.md) — a complete, real, cell-by-cell InSAR run (search to validated subsidence map)
-- [Classification](processing/classification.md) — unsupervised K-means and supervised Random Forest/SVM land-cover classification
-- [Geocoding](core-features/geocoding.md) — place name to coordinates and back, no API key required
-- [Full CLI Reference](reference/cli.md) — full command reference
+:::{grid-item-card} Analyse an area without downloading scenes
+:link: data-access/streaming
+:link-type: doc
 
+Read only your area of interest from Cloud-Optimized GeoTIFFs over HTTP range requests.
+:::
+
+:::{grid-item-card} Optical processing
+:link: processing/optical/spectral-indices
+:link-type: doc
+
+Spectral indices, classification, terrain, Landsat extraction and time series.
+:::
+
+:::{grid-item-card} SAR and InSAR
+:link: processing/sar-insar/insar
+:link-type: doc
+
+Despeckling, calibration, flood mapping and a pure-Python InSAR chain through to SBAS.
+:::
+
+:::{grid-item-card} Multi-sensor pipelines
+:link: processing/multisensor
+:link-type: doc
+
+Flood mapping, DEM differencing, vegetation disturbance, terrain-corrected change and InSAR-optical fusion.
+:::
+
+:::{grid-item-card} Command-line reference
+:link: reference/cli
+:link-type: doc
+
+Every command and option, generated from the installed package.
+:::
+
+:::{grid-item-card} Python API reference
+:link: reference/python-api
+:link-type: doc
+
+`PyGeoFetch`, `SearchQuery`, `DownloadOptions`, `DownloadResult`.
+:::
+
+:::{grid-item-card} Known issues
+:link: reference/known-issues
+:link-type: doc
+
+Documented limitations and behaviours that differ from what you might expect.
+:::
+::::
+
+## Who it is for
+
+- **Researchers** who need data from several archives without learning each provider's API.
+- **Engineers** who run acquisition and processing unattended, on a schedule.
+- **Teams** that want open, scriptable Earth observation tooling without a commercial platform.
+
+## How the documentation is organised
+
+| Section | Use it to |
+|---|---|
+| **Getting started** | Install pygeofetch, run a first workflow, understand the core concepts. |
+| **Data access** | Authenticate, search, download or stream, validate optical quality, and organise files. |
+| **Processing** | Compute indices, classify, correct terrain, process SAR and InSAR, and combine sensors. |
+| **Workflows** | Chain steps into YAML pipelines and follow end-to-end examples. |
+| **Visualization** | Plot results and browse footprints on a map. |
+| **Reference** | Look up exact commands, parameters, settings, errors and known issues. |
+| **Project** | Contribute, read the changelog and see what is planned. |
 
 :::{toctree}
 :hidden:
-:caption: Getting Started
+:caption: Getting started
 
-getting-started/installation.md
-getting-started/quickstart.md
-getting-started/diagnostics.md
+getting-started/installation
+getting-started/quickstart
+getting-started/concepts
+getting-started/diagnostics
 :::
 
 :::{toctree}
 :hidden:
-:caption: Core Features
+:caption: Data access
 
-core-features/authentication.md
-core-features/search.md
-core-features/download.md
-core-features/data-organizer.md
-core-features/providers.md
-core-features/optical-validation.md
-core-features/geocoding.md
+data-access/providers
+data-access/authentication
+data-access/search
+data-access/download
+data-access/streaming
+data-access/optical-validation
+data-access/data-organizer
+data-access/geocoding
 :::
 
 :::{toctree}
 :hidden:
-:caption: Processing & Analysis
+:caption: Optical processing
 
-processing/insar.md
-processing/insar-mexico-city-tutorial.md
-processing/optical-offset-tracking.md
-processing/multi-sensor-pipelines.md
-processing/sar.md
-processing/spectral-indices.md
-processing/classification.md
-processing/landsat.md
-processing/timeseries.md
-processing/preprocessing.md
-processing/terrain.md
-processing/postprocessing.md
-processing/upgrades.md
+processing/optical/preprocessing
+processing/optical/spectral-indices
+processing/optical/classification
+processing/optical/terrain
+processing/optical/landsat
+processing/optical/timeseries
+processing/optical/postprocessing
+:::
+
+:::{toctree}
+:hidden:
+:caption: SAR and InSAR
+
+processing/sar-insar/sar
+processing/sar-insar/insar
+processing/sar-insar/insar-mexico-city-tutorial
+processing/sar-insar/optical-offset-tracking
+processing/sar-insar/advanced-modules
+:::
+
+:::{toctree}
+:hidden:
+:caption: Multi-sensor
+
+processing/multisensor
+:::
+
+:::{toctree}
+:hidden:
+:caption: Workflows
+
+workflows/pipelines
+workflows/case-studies
 :::
 
 :::{toctree}
 :hidden:
 :caption: Visualization
 
-visualization/plotter.md
-visualization/mapviewer.md
+visualization/plotter
+visualization/mapviewer
 :::
 
 :::{toctree}
 :hidden:
 :caption: Reference
 
-reference/python-api.md
-reference/cli.md
-reference/pipelines.md
-reference/configuration.md
-reference/security.md
-reference/error-handling.md
-reference/docker.md
-reference/testing.md
-reference/roadmap.md
+reference/cli
+reference/cli-commands
+reference/python-api
+reference/configuration
+reference/security
+reference/error-handling
+reference/known-issues
+reference/docker
+reference/testing
+reference/glossary
 :::
 
 :::{toctree}
 :hidden:
 :caption: Project
 
-contributing.md
+project/changelog
+project/roadmap
+project/contributing
 :::

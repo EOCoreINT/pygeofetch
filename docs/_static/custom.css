@@ -1,21 +1,6 @@
-/* Widen the content column beyond the theme's default 800px cap,
-   and keep it visually centered in the space to the right of the
-   fixed sidebar (rather than left-hugging with a big empty gap). */
-
-.wy-nav-content {
-  max-width: 1200px;
-}
-
-/* On very wide screens, cap how far it stretches so lines don't get
-   uncomfortably long, but still leave both margins even. */
-@media screen and (min-width: 1600px) {
-  .wy-nav-content {
-    max-width: 1400px;
-  }
-}
-
-/* Tables and code blocks were designed for the narrow column;
-   let them use the newly available width. */
-.wy-nav-content .rst-content table.docutils {
-  width: 100%;
-}
+/* Wider content column and tidier tables. */
+.page { max-width: 90em; }
+.content { max-width: 62em; }
+article table.docutils { width: 100%; display: table; }
+article table.docutils td, article table.docutils th { vertical-align: top; }
+.sd-card { box-shadow: none; border: 1px solid var(--color-background-border); }

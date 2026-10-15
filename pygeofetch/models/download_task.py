@@ -103,6 +103,9 @@ class DownloadResult(BaseModel):
     post_process_completed: List[str] = Field(default_factory=list)
     from_cache: bool = False
     attempt_number: int = 1
+    # Set by AOI streaming (client.stream): share of the requested AOI the
+    # streamed raster covers (1.0 = whole AOI; lower = AOI runs past scene edge).
+    aoi_coverage: Optional[float] = None
 
     @property
     def success(self) -> bool:
