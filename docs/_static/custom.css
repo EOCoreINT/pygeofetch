@@ -1,47 +1,116 @@
-/* Fonts: Inter for text, JetBrains Mono for code. Falls back to system fonts offline. */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+/* Docusaurus / Infima-style look (the layout family used by the GAMA wiki):
+   system UI font stack, 16px base, 1.65 line height, 300px left sidebar with
+   rounded active item, right-hand "On this page" with a left rule, centred
+   content column, subtle bordered cards. */
 
 html { font-size: 100%; }
 body {
-  --font-stack: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-stack--headings: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-stack--monospace: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
-  /* Slightly smaller type than Furo's default. */
-  --font-size--normal: 93%;
-  --font-size--small: 84%;
-  --font-size--small--2: 78%;
-  --font-size--small--3: 72%;
-  --font-size--small--4: 60%;
-  --code-font-size: 80%;
-  --admonition-font-size: 84%;
+  --font-stack: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-stack--headings: var(--font-stack);
+  --font-stack--monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-size--normal: 100%;
+  --font-size--small: 87.5%;
+  --font-size--small--2: 81%;
+  --font-size--small--3: 75%;
+  --font-size--small--4: 65%;
+  --code-font-size: 90%;
+  --admonition-font-size: 0.95rem;
+  --sidebar-item-font-size: 0.9rem;
+  --toc-font-size: 0.8rem;
+  --sidebar-item-spacing-vertical: 0.4rem;
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 
-body { font-size: 0.93rem; font-feature-settings: "cv11", "ss01"; -webkit-font-smoothing: antialiased; line-height: 1.62; }
-h1, h2, h3, h4 { font-weight: 650; letter-spacing: -0.015em; }
-h1 { font-size: 1.9em; }
-h2 { font-size: 1.45em; }
-h3 { font-size: 1.15em; }
+/* Brand: Docusaurus classic green. */
+body {
+  --color-brand-primary: #2e8555;
+  --color-brand-content: #2e8555;
+  --color-brand-visited: #2e8555;
+  --color-sidebar-background: var(--color-background-primary);
+  --color-sidebar-background-border: rgba(0,0,0,.1);
+  --color-sidebar-item-background--hover: rgba(0,0,0,.05);
+  --color-sidebar-link-text: var(--color-foreground-primary);
+  --color-sidebar-link-text--top-level: var(--color-foreground-primary);
+  --color-inline-code-background: rgba(27,31,35,.05);
+  --color-table-header-background: transparent;
+  --color-link-underline: transparent;
+  --color-link-underline--hover: var(--color-brand-content);
+}
+body[data-theme="dark"] {
+  --color-brand-primary: #25c2a0;
+  --color-brand-content: #25c2a0;
+  --color-brand-visited: #25c2a0;
+  --color-background-primary: #1b1b1d;
+  --color-background-secondary: #242526;
+  --color-sidebar-background: #1b1b1d;
+  --color-sidebar-background-border: rgba(255,255,255,.1);
+  --color-sidebar-item-background--hover: rgba(255,255,255,.08);
+  --color-inline-code-background: rgba(255,255,255,.08);
+}
+@media (prefers-color-scheme: dark) {
+  body:not([data-theme="light"]) {
+    --color-brand-primary: #25c2a0;
+    --color-brand-content: #25c2a0;
+    --color-brand-visited: #25c2a0;
+    --color-background-primary: #1b1b1d;
+    --color-background-secondary: #242526;
+    --color-sidebar-background: #1b1b1d;
+    --color-sidebar-background-border: rgba(255,255,255,.1);
+    --color-sidebar-item-background--hover: rgba(255,255,255,.08);
+    --color-inline-code-background: rgba(255,255,255,.08);
+  }
+}
 
-/* Wider page: lift Furo's fixed content width and let it use the screen. */
+/* Headings */
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: 0; line-height: 1.25; }
+article h1 { font-size: 2rem; margin-bottom: 1.5rem; }
+article h2 { font-size: 1.5rem; margin-top: 2rem; padding-bottom: 0; border: 0; }
+article h3 { font-size: 1.25rem; }
+a { text-decoration: none; }
+article a:hover { text-decoration: underline; }
+
+/* Layout: 300px sidebar, centred content, right TOC. */
 .page { max-width: none; }
-.content { width: auto; max-width: 100rem; padding: 0 3em; }
-.main { flex: 1 1 auto; }
-@media (max-width: 82em) { .content { padding: 0 1.5em; } }
-
-/* Tables and code */
-article table.docutils { width: 100%; display: table; font-size: 0.93em; }
-article table.docutils td, article table.docutils th { vertical-align: top; padding: 0.45em 0.7em; }
-div[class*="highlight"] pre { line-height: 1.5; }
-code.literal { padding: 0.1em 0.3em; }
-.sd-card { box-shadow: none; border: 1px solid var(--color-background-border); }
-
-/* Fixed-width side columns; the content column takes the remaining width. */
+.main { min-width: 0; }
+.content { width: auto; max-width: 62rem; padding: 2rem 2rem 3rem; margin: 0 auto; }
 @media (min-width: 67em) {
-  .sidebar-drawer { width: 17rem; flex: none; }
-  .sidebar-container { width: 17rem; }
+  .sidebar-drawer { width: 300px; flex: none; border-right: 1px solid var(--color-sidebar-background-border); }
+  .sidebar-container { width: 300px; }
 }
 @media (min-width: 82em) {
-  .toc-drawer { width: 16rem; flex: none; }
-  .toc-sticky { width: 16rem; }
+  .toc-drawer { width: 17rem; flex: none; }
+  .toc-sticky { width: 17rem; }
+  .toc-tree { border-left: 1px solid var(--color-sidebar-background-border); }
 }
-.main { min-width: 0; }
+@media (max-width: 82em) { .content { padding: 1.5rem 1.25rem 2.5rem; } }
+
+/* Sidebar: rounded items, active item tinted, small-caps group labels. */
+.sidebar-tree .reference { border-radius: 0.25rem; padding-top: .35rem; padding-bottom: .35rem; }
+.sidebar-tree .current-page > .reference {
+  font-weight: 600; color: var(--color-brand-primary);
+  background: rgba(46,133,85,.10);
+}
+.sidebar-tree .caption, .sidebar-tree :not(.caption) > .caption-text {
+  font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .72rem;
+}
+.sidebar-brand-text { font-weight: 700; }
+
+/* TOC */
+.toc-title { font-weight: 700; text-transform: none; letter-spacing: 0; font-size: .8rem; }
+.toc-tree li.scroll-current > .reference { font-weight: 600; }
+
+/* Content components */
+article table.docutils { width: 100%; display: table; border-collapse: collapse; font-size: .95em; }
+article table.docutils th, article table.docutils td {
+  vertical-align: top; padding: .5rem .75rem; border: 1px solid var(--color-background-border);
+}
+article table.docutils tr:nth-child(2n) td { background: rgba(0,0,0,.03); }
+code.literal { border: 1px solid rgba(0,0,0,.1); border-radius: .25rem; padding: .1rem .35rem; }
+div[class*="highlight"] { border-radius: .4rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,.1); }
+div[class*="highlight"] pre { line-height: 1.5; }
+.admonition { border-radius: .4rem; border-left-width: 5px; box-shadow: 0 1px 2px 0 rgba(0,0,0,.1); }
+.sd-card { border: 1px solid var(--color-background-border); border-radius: .5rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,.1); transition: box-shadow .2s, transform .2s; }
+.sd-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+footer { border-top: 1px solid var(--color-background-border); }

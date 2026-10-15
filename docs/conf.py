@@ -73,9 +73,7 @@ html_theme_options = {
     "source_branch": "main",
     "source_directory": "docs/",
     "navigation_with_keys": True,
-    "light_css_variables": {"color-brand-primary": "#0b6e4f", "color-brand-content": "#0b6e4f"},
-    "dark_css_variables": {"color-brand-primary": "#4cc38a", "color-brand-content": "#4cc38a"},
-}
+    }
 html_static_path = (
     ["_static"]
     if os.path.isdir(os.path.join(os.path.dirname(__file__), "_static"))
