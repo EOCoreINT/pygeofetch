@@ -14,7 +14,7 @@ try:
 
     release = _pkg_version("pygeofetch")
 except Exception:
-    release = "0.0.0"
+    release = "2.6.3"
 version = release
 
 extensions = [
@@ -73,6 +73,7 @@ html_theme_options = {
     "source_branch": "main",
     "source_directory": "docs/",
     "navigation_with_keys": True,
+    "announcement": "x",
     }
 html_static_path = (
     ["_static"]
