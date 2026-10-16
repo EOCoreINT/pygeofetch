@@ -4,17 +4,10 @@ A short tour of the ideas the rest of the documentation assumes.
 
 ## The big picture
 
-```text
-          SearchQuery                        SatelliteData (scene records)
- you ───────────────────►  PyGeoFetch  ───────────────────────────────────►  you
-                          │   client   │
-                          │            │  search()   one query, many providers, in parallel
-                          │            │  download() whole files, with retry and post-processing
-                          │            │  stream()   only your AOI from Cloud-Optimized GeoTIFFs
-                          └─────┬──────┘
-                                │ provider adapters (22 registered)
-          ┌──────────┬──────────┼───────────┬────────────┐
-       Copernicus  USGS   Planetary Computer  ASF  …  OpenTopography
+```{image} ../_static/img/concepts-flow.svg
+:alt: You send a SearchQuery to the PyGeoFetch client, which searches, downloads or streams through 22 provider adapters and returns SatelliteData records and files.
+:class: gf-flow
+:width: 100%
 ```
 
 pygeofetch has three layers:
