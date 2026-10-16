@@ -1,10 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 440" role="img" aria-label="How pygeofetch works: you send a SearchQuery to the PyGeoFetch client, which searches, downloads or streams through provider adapters to 22 data sources, and returns SatelliteData records and files">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 840" role="img" aria-label="How pygeofetch works end to end: you send a SearchQuery to the PyGeoFetch client, which searches, downloads or streams through provider adapters from 22 data sources; the results feed optical, SAR, InSAR and multi-sensor processing, which produce GeoTIFF, GeoParquet, plots, maps and cloud-storage outputs; YAML pipelines can chain all of it on a schedule">
   <style>
     .box{fill:var(--gf-svg-box,#fff);stroke:#2a6fb0;stroke-width:1.6}
     .client{fill:#eaf2fb;stroke:#2a6fb0;stroke-width:1.8}
     .row{fill:var(--gf-svg-box,#fff);stroke:#b9d3ee;stroke-width:1.2}
     .chip{fill:var(--gf-svg-box,#fff);stroke:#1fa37a;stroke-width:1.5}
     .adapter{fill:#e8f6f0;stroke:#1fa37a;stroke-width:1.6}
+    .proc{fill:#f1ecfb;stroke:#7a5cc7;stroke-width:1.8}
+    .card{fill:var(--gf-svg-box,#fff);stroke:#c7b8ee;stroke-width:1.3}
+    .out{fill:var(--gf-svg-box,#fff);stroke:#2a6fb0;stroke-width:1.5}
+    .orch{fill:#fff6e6;stroke:#d98a1f;stroke-width:1.6;stroke-dasharray:7 5}
+    .flow3{stroke:#7a5cc7;stroke-width:2;fill:none;stroke-dasharray:6 6;animation:dash 1.2s linear infinite}
+    .head3{fill:#7a5cc7}
+    .pt{font:600 14px Ubuntu,system-ui,sans-serif;fill:#6a49b8}
+    .ot{font:600 12.5px Ubuntu,system-ui,sans-serif;fill:#b36f0f}
     .t{font:600 15px Ubuntu,system-ui,sans-serif;fill:var(--gf-svg-text,#1c1e21)}
     .m{font:600 13.5px "Ubuntu Mono",ui-monospace,monospace;fill:#2a6fb0}
     .s{font:400 12px Ubuntu,system-ui,sans-serif;fill:var(--gf-svg-sub,#5a5c63)}
@@ -15,9 +23,9 @@
     @keyframes dash{to{stroke-dashoffset:-12}}
     @media (prefers-color-scheme:dark){
       .box,.row,.chip{fill:#242526}.client{fill:#1e2a38;stroke:#4a8fd0}.row{stroke:#3b4f66}
-      .adapter{fill:#1c2d27}.t{fill:#e3e3e3}.s{fill:#b0b3b8}.m,.lab{fill:#6cb0f0}
+      .adapter{fill:#1c2d27}.proc{fill:#221c36;stroke:#9a83e0}.card{fill:#242526;stroke:#4a3f70}.out{fill:#242526}.orch{fill:#2e2517;stroke:#e0a040}.pt{fill:#b7a2ff}.ot{fill:#f0b860}.t{fill:#e3e3e3}.s{fill:#b0b3b8}.m,.lab{fill:#6cb0f0}
     }
-    @media (prefers-reduced-motion:reduce){.flow,.flow2{animation:none}}
+    @media (prefers-reduced-motion:reduce){.flow,.flow2,.flow3{animation:none}}
   </style>
 
   <!-- left: you -->
@@ -52,14 +60,49 @@
   <text class="t" x="480" y="291" text-anchor="middle">Provider adapters · 22 registered</text>
 
   <!-- adapters to providers -->
-  <path class="flow2" d="M480 306 C480 330 100 325 100 352"/>
-  <path class="flow2" d="M480 306 C480 330 290 325 290 352"/>
-  <path class="flow2" d="M480 306 V352"/>
-  <path class="flow2" d="M480 306 C480 330 670 325 670 352"/>
-  <path class="flow2" d="M480 306 C480 330 860 325 860 352"/>
-  <rect class="chip" x="30" y="354" width="140" height="56" rx="10"/><text class="t" x="100" y="378" text-anchor="middle">Copernicus</text><text class="s" x="100" y="396" text-anchor="middle">Sentinel</text>
-  <rect class="chip" x="220" y="354" width="140" height="56" rx="10"/><text class="t" x="290" y="378" text-anchor="middle">USGS</text><text class="s" x="290" y="396" text-anchor="middle">Landsat</text>
-  <rect class="chip" x="400" y="354" width="160" height="56" rx="10"/><text class="t" x="480" y="378" text-anchor="middle">Planetary Computer</text><text class="s" x="480" y="396" text-anchor="middle">STAC, no account</text>
-  <rect class="chip" x="610" y="354" width="120" height="56" rx="10"/><text class="t" x="670" y="378" text-anchor="middle">ASF</text><text class="s" x="670" y="396" text-anchor="middle">SAR</text>
-  <rect class="chip" x="780" y="354" width="160" height="56" rx="10"/><text class="t" x="860" y="378" text-anchor="middle">… OpenTopography</text><text class="s" x="860" y="396" text-anchor="middle">and 17 more</text>
+  <path class="flow2" d="M480 306 C480 330 95 322 95 352"/>
+  <path class="flow2" d="M480 306 C480 330 255 322 255 352"/>
+  <path class="flow2" d="M480 306 C480 330 415 322 415 352"/>
+  <path class="flow2" d="M480 306 C480 330 575 322 575 352"/>
+  <path class="flow2" d="M480 306 C480 330 735 322 735 352"/>
+  <rect class="chip" x="20" y="354" width="150" height="56" rx="10"/><text class="t" x="95" y="378" text-anchor="middle">Copernicus</text><text class="s" x="95" y="396" text-anchor="middle">Sentinel</text>
+  <rect class="chip" x="180" y="354" width="150" height="56" rx="10"/><text class="t" x="255" y="378" text-anchor="middle">USGS</text><text class="s" x="255" y="396" text-anchor="middle">Landsat</text>
+  <rect class="chip" x="340" y="354" width="150" height="56" rx="10"/><text class="t" x="415" y="378" text-anchor="middle" style="font-size:13.5px">Planetary Computer</text><text class="s" x="415" y="396" text-anchor="middle">STAC, no account</text>
+  <rect class="chip" x="500" y="354" width="150" height="56" rx="10"/><text class="t" x="575" y="378" text-anchor="middle">ASF</text><text class="s" x="575" y="396" text-anchor="middle">SAR</text>
+  <rect class="chip" x="660" y="354" width="150" height="56" rx="10"/><text class="t" x="735" y="378" text-anchor="middle" style="font-size:13.5px">… OpenTopography</text><text class="s" x="735" y="396" text-anchor="middle">and 17 more</text>
+  <text class="s" x="415" y="432" text-anchor="middle">data flows back up as scene records, files and clipped rasters</text>
+
+  <!-- results down to processing -->
+  <path class="flow3" d="M890 170 V455"/><path class="head3" d="M890 468 l-6 -12 h12z"/>
+  <text class="lab" x="878" y="300" text-anchor="end" style="fill:#7a5cc7">files on disk</text>
+
+  <!-- processing layer -->
+  <rect class="proc" x="10" y="470" width="940" height="180" rx="14"/>
+  <text class="pt" x="30" y="496">Processing — works on the files you retrieved</text>
+  <rect class="card" x="25" y="510" width="215" height="125" rx="10"/>
+  <text class="t" x="132" y="534" text-anchor="middle">Optical</text>
+  <text class="s" x="132" y="556" text-anchor="middle">preprocessing</text><text class="s" x="132" y="572" text-anchor="middle">spectral indices</text><text class="s" x="132" y="588" text-anchor="middle">classification, terrain</text><text class="s" x="132" y="604" text-anchor="middle">time series, Landsat</text>
+  <rect class="card" x="252" y="510" width="215" height="125" rx="10"/>
+  <text class="t" x="359" y="534" text-anchor="middle">SAR</text>
+  <text class="s" x="359" y="556" text-anchor="middle">speckle filtering</text><text class="s" x="359" y="572" text-anchor="middle">calibration</text><text class="s" x="359" y="588" text-anchor="middle">flood mapping</text><text class="s" x="359" y="604" text-anchor="middle">coherence</text>
+  <rect class="card" x="479" y="510" width="215" height="125" rx="10"/>
+  <text class="t" x="586" y="534" text-anchor="middle">InSAR</text>
+  <text class="s" x="586" y="556" text-anchor="middle">SLC extraction</text><text class="s" x="586" y="572" text-anchor="middle">interferograms</text><text class="s" x="586" y="588" text-anchor="middle">phase unwrapping</text><text class="s" x="586" y="604" text-anchor="middle">SBAS time series</text>
+  <rect class="card" x="706" y="510" width="230" height="125" rx="10"/>
+  <text class="t" x="821" y="534" text-anchor="middle">Multi-sensor</text>
+  <text class="s" x="821" y="556" text-anchor="middle">SAR + optical flood maps</text><text class="s" x="821" y="572" text-anchor="middle">DEM difference</text><text class="s" x="821" y="588" text-anchor="middle">vegetation disturbance</text><text class="s" x="821" y="604" text-anchor="middle">InSAR–optical fusion</text>
+
+  <!-- processing to outputs -->
+  <path class="flow3" d="M480 650 V676"/><path class="head3" d="M480 688 l-6 -12 h12z"/>
+  <text class="pt" x="30" y="690">Outputs</text>
+  <rect class="out" x="20" y="702" width="170" height="52" rx="10"/><text class="t" x="105" y="725" text-anchor="middle">GeoTIFF / COG</text><text class="s" x="105" y="742" text-anchor="middle">rasters</text>
+  <rect class="out" x="200" y="702" width="170" height="52" rx="10"/><text class="t" x="285" y="725" text-anchor="middle">GeoParquet</text><text class="s" x="285" y="742" text-anchor="middle">cloud-native vector</text>
+  <rect class="out" x="380" y="702" width="170" height="52" rx="10"/><text class="t" x="465" y="725" text-anchor="middle">Plots</text><text class="s" x="465" y="742" text-anchor="middle">Plotter</text>
+  <rect class="out" x="560" y="702" width="170" height="52" rx="10"/><text class="t" x="645" y="725" text-anchor="middle">Interactive maps</text><text class="s" x="645" y="742" text-anchor="middle">MapViewer</text>
+  <rect class="out" x="740" y="702" width="200" height="52" rx="10"/><text class="t" x="840" y="725" text-anchor="middle">Cloud storage</text><text class="s" x="840" y="742" text-anchor="middle">S3 / GCS</text>
+
+  <!-- orchestration -->
+  <rect class="orch" x="10" y="774" width="940" height="52" rx="12"/>
+  <text class="ot" x="30" y="796">PIPELINES (YAML)</text>
+  <text class="s" x="30" y="814">Chain search → download → process → export in one file, run on demand or on a schedule, in batch</text>
 </svg>
