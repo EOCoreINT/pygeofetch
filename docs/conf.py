@@ -120,6 +120,7 @@ redirects = {
 # back to English, so every language build is complete. Build all languages
 # with tools/build_all.sh.
 import os as _os
+
 language = _os.environ.get("DOCS_LANG", "en")
 locale_dirs = ["locale/"]
 gettext_compact = False
@@ -149,7 +150,9 @@ def setup(app):
     # site root and then builds every other language into <outdir>/<lang>/ so the language
     # switcher works without any custom CI. Set DOCS_SUBBUILD=1 to skip (used internally).
     def _all_langs(app, exc):
-        import subprocess, sys, tempfile
+        import subprocess
+        import sys
+        import tempfile
         if exc or app.builder.name != "html" or language != "en":
             return
         if _os.environ.get("DOCS_SUBBUILD") or _os.environ.get("DOCS_SKIP_OTHER_LANGS"):

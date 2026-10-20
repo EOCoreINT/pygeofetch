@@ -68,9 +68,10 @@ def geocode(query: str, limit: int = 1, timeout: float = 10.0) -> list[dict[str,
         bbox = results[0]["bbox"]  # ready for SearchQuery(bbox=bbox, ...)
     """
     _throttle()
+    params: dict[str, Any] = {"q": query, "format": "jsonv2", "limit": limit}
     resp = requests.get(
         f"{NOMINATIM_BASE_URL}/search",
-        params={"q": query, "format": "jsonv2", "limit": limit},
+        params=params,
         headers={"User-Agent": _USER_AGENT},
         timeout=timeout,
     )
@@ -80,20 +81,24 @@ def geocode(query: str, limit: int = 1, timeout: float = 10.0) -> list[dict[str,
     results = []
     for r in raw_results:
         south, north, west, east = (float(x) for x in r["boundingbox"])
-        results.append({
-            "lat": float(r["lat"]),
-            "lon": float(r["lon"]),
-            "bbox": (west, south, east, north),
-            "display_name": r["display_name"],
-            "place_type": r.get("type"),
-        })
+        results.append(
+            {
+                "lat": float(r["lat"]),
+                "lon": float(r["lon"]),
+                "bbox": (west, south, east, north),
+                "display_name": r["display_name"],
+                "place_type": r.get("type"),
+            }
+        )
 
     if not results:
         logger.warning("geocode: no real results found for query %r", query)
     return results
 
 
-def reverse_geocode(lat: float, lon: float, timeout: float = 10.0) -> dict[str, Any] | None:
+def reverse_geocode(
+    lat: float, lon: float, timeout: float = 10.0
+) -> dict[str, Any] | None:
     """
     Real, reverse geocoding: coordinates -> the real place name at
     that location.
@@ -116,9 +121,10 @@ def reverse_geocode(lat: float, lon: float, timeout: float = 10.0) -> dict[str, 
         print(place["display_name"])  # -> a real Nairobi address
     """
     _throttle()
+    params: dict[str, Any] = {"lat": lat, "lon": lon, "format": "jsonv2"}
     resp = requests.get(
         f"{NOMINATIM_BASE_URL}/reverse",
-        params={"lat": lat, "lon": lon, "format": "jsonv2"},
+        params=params,
         headers={"User-Agent": _USER_AGENT},
         timeout=timeout,
     )

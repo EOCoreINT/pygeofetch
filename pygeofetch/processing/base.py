@@ -398,7 +398,9 @@ def chunked_index_compute(
     # tuple -- needed for the real case of one shared multi-band file
     # supplying more than one role (e.g. red edge and NIR both coming
     # from the same drone orthomosaic).
-    parsed_inputs = [(p, 1) if isinstance(p, (str, Path)) else (p[0], p[1]) for p in inputs]
+    parsed_inputs = [
+        (p, 1) if isinstance(p, (str, Path)) else (p[0], p[1]) for p in inputs
+    ]
     srcs = [rasterio.open(p) for p, _ in parsed_inputs]
     band_indices = [b for _, b in parsed_inputs]
     try:
@@ -451,7 +453,8 @@ def chunked_index_compute(
             for row_off in range(0, height, tile_size):
                 for col_off in range(0, width, tile_size):
                     win = Window(
-                        col_off, row_off,
+                        col_off,
+                        row_off,
                         min(tile_size, width - col_off),
                         min(tile_size, height - row_off),
                     )
@@ -577,8 +580,12 @@ def clip_output_if_requested(
     tmp_path = output_path.with_suffix(output_path.suffix + ".clip_tmp")
 
     result = Preprocessor().clip(
-        input=output_path, bbox=bbox, geometry=geometry,
-        output=str(tmp_path), all_touched=all_touched, geometry_crs=geometry_crs,
+        input=output_path,
+        bbox=bbox,
+        geometry=geometry,
+        output=str(tmp_path),
+        all_touched=all_touched,
+        geometry_crs=geometry_crs,
     )
     if not result.success:
         tmp_path.unlink(missing_ok=True)
@@ -617,7 +624,9 @@ def _estimate_memory_need_mb(file_paths, n_arrays_in_flight: int = 4) -> float:
     return (total_bytes * 2 * n_arrays_in_flight) / (1024 * 1024)
 
 
-def should_chunk(file_paths, safety_factor: float = 0.5, n_arrays_in_flight: int = 4) -> bool:
+def should_chunk(
+    file_paths, safety_factor: float = 0.5, n_arrays_in_flight: int = 4
+) -> bool:
     """
     Real, automatic decision on whether an operation should chunk,
     based on the real, actual on-disk size of the given files compared
@@ -647,5 +656,7 @@ def should_chunk(file_paths, safety_factor: float = 0.5, n_arrays_in_flight: int
         available_mb = psutil.virtual_memory().available / (1024 * 1024)
         return estimated_mb > (available_mb * safety_factor)
     except ImportError:
-        total_input_mb = estimated_mb / (2 * n_arrays_in_flight)  # back out to real raw size
+        total_input_mb = estimated_mb / (
+            2 * n_arrays_in_flight
+        )  # back out to real raw size
         return total_input_mb > 500.0

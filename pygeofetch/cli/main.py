@@ -23,17 +23,17 @@ from rich.console import Console
 
 from pygeofetch import __version__
 from pygeofetch.cli.auth_commands import auth
+from pygeofetch.cli.classify_commands import classify
 from pygeofetch.cli.config_commands import config
 from pygeofetch.cli.download_commands import download
 from pygeofetch.cli.index_commands import index
 from pygeofetch.cli.multisensor_commands import multisensor
-from pygeofetch.cli.classify_commands import classify
-from pygeofetch.cli.scale_commands import stream
 from pygeofetch.cli.optical_commands import optical
 from pygeofetch.cli.pipeline_process_commands import proc_pipeline
 from pygeofetch.cli.postprocess_commands import post
 from pygeofetch.cli.preprocess_commands import preprocess
 from pygeofetch.cli.sar_commands import sar
+from pygeofetch.cli.scale_commands import stream
 from pygeofetch.cli.search_commands import search
 from pygeofetch.utils.logging_setup import setup_logging
 
@@ -223,7 +223,9 @@ def version(as_json: bool) -> None:
 
 @cli.command()
 @click.argument("query")
-@click.option("--limit", default=1, show_default=True, type=int, help="Max results to return.")
+@click.option(
+    "--limit", default=1, show_default=True, type=int, help="Max results to return."
+)
 def geocode(query: str, limit: int) -> None:
     """Look up a place name and get its coordinates and bounding box.
 
@@ -281,8 +283,14 @@ def reverse_geocode_cmd(lat: float, lon: float) -> None:
 @click.option("--start-date", required=True)
 @click.option("--end-date", required=True)
 @click.option("--max-temporal-baseline", default=72, show_default=True, type=int)
-@click.option("--deep-check", is_flag=True, help="Also run real, live burst-sync screening on the best track (costs real network calls).")
-def assess_feasibility_cmd(bbox, start_date, end_date, max_temporal_baseline, deep_check) -> None:
+@click.option(
+    "--deep-check",
+    is_flag=True,
+    help="Also run real, live burst-sync screening on the best track (costs real network calls).",
+)
+def assess_feasibility_cmd(
+    bbox, start_date, end_date, max_temporal_baseline, deep_check
+) -> None:
     """Assess InSAR feasibility for an AOI before downloading anything.
 
     Example: pygeofetch assess-feasibility --bbox 18.85,50.15,19.15,50.35 \\
@@ -302,8 +310,12 @@ def assess_feasibility_cmd(bbox, start_date, end_date, max_temporal_baseline, de
 
     client = PyGeoFetch(log_level="WARNING")
     report = assess_insar_feasibility(
-        client, bbox_tuple, start_date, end_date,
-        max_temporal_baseline_days=max_temporal_baseline, deep_check=deep_check,
+        client,
+        bbox_tuple,
+        start_date,
+        end_date,
+        max_temporal_baseline_days=max_temporal_baseline,
+        deep_check=deep_check,
     )
     report.print_summary()
 

@@ -54,10 +54,11 @@ class TestRealPerItemTypeAssetSelection:
         provider = _authed_provider()
         scene = _scene("SkySatCollect")
 
-        with patch.object(
-            provider, "_activate_asset", return_value=True
-        ) as mock_activate, patch.object(
-            provider, "_wait_for_activation", return_value=None
+        with (
+            patch.object(
+                provider, "_activate_asset", return_value=True
+            ) as mock_activate,
+            patch.object(provider, "_wait_for_activation", return_value=None),
         ):
             provider.download(scene, tmp_path, DownloadOptions())
 
@@ -69,10 +70,11 @@ class TestRealPerItemTypeAssetSelection:
         provider = _authed_provider()
         scene = _scene("PSScene")
 
-        with patch.object(
-            provider, "_activate_asset", return_value=True
-        ) as mock_activate, patch.object(
-            provider, "_wait_for_activation", return_value=None
+        with (
+            patch.object(
+                provider, "_activate_asset", return_value=True
+            ) as mock_activate,
+            patch.object(provider, "_wait_for_activation", return_value=None),
         ):
             provider.download(scene, tmp_path, DownloadOptions())
 
@@ -84,10 +86,11 @@ class TestRealPerItemTypeAssetSelection:
         provider.config = {"asset_type": "ortho_udm2"}
         scene = _scene("PSScene")
 
-        with patch.object(
-            provider, "_activate_asset", return_value=True
-        ) as mock_activate, patch.object(
-            provider, "_wait_for_activation", return_value=None
+        with (
+            patch.object(
+                provider, "_activate_asset", return_value=True
+            ) as mock_activate,
+            patch.object(provider, "_wait_for_activation", return_value=None),
         ):
             provider.download(scene, tmp_path, DownloadOptions())
 
@@ -98,10 +101,11 @@ class TestRealPerItemTypeAssetSelection:
         provider = _authed_provider()
         scene = _scene("REOrthoTile")
 
-        with patch.object(
-            provider, "_activate_asset", return_value=True
-        ) as mock_activate, patch.object(
-            provider, "_wait_for_activation", return_value=None
+        with (
+            patch.object(
+                provider, "_activate_asset", return_value=True
+            ) as mock_activate,
+            patch.object(provider, "_wait_for_activation", return_value=None),
         ):
             provider.download(scene, tmp_path, DownloadOptions())
 

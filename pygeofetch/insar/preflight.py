@@ -33,6 +33,10 @@ allow, and is explicit about the one real risk it cannot resolve early.
 from __future__ import annotations
 
 import logging
+import threading
+import time
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from contextlib import nullcontext
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -42,6 +46,27 @@ logger = logging.getLogger("pygeofetch.insar.preflight")
 # ─────────────────────────────────────────────────────────────────────────────
 # Report data model
 # ────────────────────────────────────────────────────────────────────────────
+
+
+def _fmt_list(items: Any, limit: int = 6) -> str:
+    """Render a list for a message, e.g. ``[a, b, c, ... +219 more]``.
+
+    Preflight messages used to embed every date of a 200-scene stack, which
+    produced multi-thousand-character lines.  The full data stays available in
+    ``report.issues`` / ``report.manifest``; messages show a short preview.
+    """
+    items = list(items)
+    if len(items) <= limit:
+        return str(items)
+    head = ", ".join(repr(x) for x in items[:limit])
+    return f"[{head}, ... +{len(items) - limit} more]"
+
+
+def _clip(text: str, limit: int) -> str:
+    if limit and len(text) > limit:
+        return text[: limit - 1].rstrip() + "…"
+    return text
+
 
 SEVERITY_GREEN = "GREEN"  # safe to proceed
 SEVERITY_YELLOW = "YELLOW"  # proceed, but with logged caveats
@@ -76,9 +101,22 @@ class PreflightReport:
     original_count: int = (
         0  # how many scenes came IN, before any filtering -- see summary()'s own real-bug note
     )
+    log_file: Optional[str] = None  # full, uncondensed log of this run (quiet mode)
+    elapsed_s: float = 0.0
 
-    def summary(self) -> str:
-        lines = [f"PREFLIGHT {self.severity} — {'PROCEED' if self.go else 'BLOCKED'}"]
+    def summary(self, full: bool = False) -> str:
+        """Human-readable report.
+
+        By default long messages are shortened so the report stays readable in
+        a notebook cell; pass ``full=True`` for the complete text.
+        """
+        msg_limit = 0 if full else 700
+        fix_limit = 0 if full else 300
+        head = f"PREFLIGHT {self.severity} — {'PROCEED' if self.go else 'BLOCKED'}"
+        if self.original_count:
+            head += f"  ({len(self.selected)}/{self.original_count} scenes kept"
+            head += f", {self.elapsed_s:.0f}s)" if self.elapsed_s else ")"
+        lines = [head]
 
         # Print Bandwidth Manifest if available
         if "bandwidth_and_manifest" in self.manifest:
@@ -89,9 +127,12 @@ class PreflightReport:
 
         for issue in self.issues:
             fixed = " [AUTO-FIXED]" if issue.auto_fixed else ""
-            lines.append(f"  [{issue.severity}] {issue.code}{fixed}: {issue.message}")
+            lines.append(
+                f"  [{issue.severity}] {issue.code}{fixed}: "
+                f"{_clip(issue.message, msg_limit)}"
+            )
             if issue.auto_fixed and issue.fix_detail:
-                lines.append(f"        -> {issue.fix_detail}")
+                lines.append(f"        -> {_clip(issue.fix_detail, fix_limit)}")
 
         # REAL BUG FOUND AND GUARDED AGAINST HERE: a real notebook
         # called gate.run(selected, search_report) and printed
@@ -115,7 +156,16 @@ class PreflightReport:
                 f"processing). Passing the original list silently re-includes "
                 f"exactly what this gate just excluded."
             )
+        if self.log_file:
+            lines.append(f"  [LOG] Full details of this run: {self.log_file}")
         return "\n".join(lines)
+
+    def __repr__(self) -> str:  # keeps accidental `report` display short
+        return (
+            f"PreflightReport(go={self.go}, severity={self.severity!r}, "
+            f"selected={len(self.selected)}/{self.original_count}, "
+            f"issues={len(self.issues)})"
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -128,8 +178,7 @@ class PreflightGate:
     Orchestrates every pre-download check and auto-heals what it can.
     Usage:
         gate = PreflightGate(client, aoi_bbox, start_date, end_date)
-        report = gate.run(selected, search_report)
-        print(report.summary())
+        report = gate.run(selected, search_report)   # prints a short summary
         if not report.go:
             raise RuntimeError("Preflight blocked the stack. See report.")
         download_results = client.download(report.selected, ...)
@@ -156,7 +205,39 @@ class PreflightGate:
         min_workable_family_dates: int = 3,
         attempt_real_burst_check: bool = True,
         max_perpendicular_baseline_m: float = 200.0,
+        # Notebook-friendly behaviour:
+        verbose: bool = False,
+        show_progress: bool = True,
+        max_workers: int = 6,
+        max_runtime_s: Optional[float] = 900.0,
+        log_file: Optional[Any] = None,
+        print_summary: bool = True,
     ) -> None:
+        """
+        Notebook-friendly options (all optional):
+
+        verbose:       False (default) keeps the console to one progress line
+                       plus a short summary; every detail goes to ``log_file``.
+                       True prints every log line, as older versions did.
+        show_progress: show a single self-updating progress line during the
+                       network-heavy burst check.
+        max_workers:   annotation/orbit fetches run this many at a time
+                       (1 = sequential).  Sequential fetching of ~60 dates used
+                       to take many minutes with no feedback.
+        max_runtime_s: time budget for the burst check; when it runs out the
+                       gate stops fetching and reports the check as
+                       "unassessed" instead of hanging.  None = no limit.
+        log_file:      where quiet mode writes the full log (default: a
+                       per-day file in the system temp folder; the path is
+                       shown in the summary and on ``report.log_file``).
+        print_summary: print ``report.summary()`` when ``run()`` finishes.
+        """
+        self.verbose = verbose
+        self.show_progress = show_progress
+        self.max_workers = max(1, int(max_workers))
+        self.max_runtime_s = max_runtime_s
+        self.log_file = log_file
+        self.print_summary = print_summary
         self.client = client
         self.aoi_bbox = aoi_bbox
         self.start_date = start_date
@@ -208,6 +289,34 @@ class PreflightGate:
     def run(
         self, selected: List[Any], search_report: Dict[str, Any]
     ) -> PreflightReport:
+        """Run every pre-download check and return a :class:`PreflightReport`.
+
+        Unless ``verbose=True`` the console shows a single progress line and a
+        short summary; the full log is written to a file (path on the report).
+        """
+        from pygeofetch.core.logging import quiet_logs
+
+        started = time.monotonic()
+        ctx = (
+            nullcontext(None)
+            if self.verbose
+            else quiet_logs(log_file=self.log_file, announce=True)
+        )
+        try:
+            with ctx as log_path:
+                report = self._run(selected, search_report)
+        except KeyboardInterrupt:
+            print("Preflight interrupted -- nothing was downloaded.")
+            raise
+        report.elapsed_s = time.monotonic() - started
+        report.log_file = str(log_path) if log_path else None
+        if self.print_summary:
+            print(report.summary())
+        return report
+
+    def _run(
+        self, selected: List[Any], search_report: Dict[str, Any]
+    ) -> PreflightReport:
         issues: List[PreflightIssue] = []
         selected = list(selected)  # work on a copy
 
@@ -254,17 +363,24 @@ class PreflightGate:
             manifest=manifest,
             original_count=original_count,
         )
-        logger.info("\n%s", report.summary())
+        logger.info("\n%s", report.summary(full=True))
         return report
 
     # ── Check 1: truncation ───────────────────────────────────────────────
     def _check_truncation(
         self, selected: List[Any], search_report: Dict[str, Any], max_retries: int = 3
     ) -> Tuple[List[Any], Dict[str, Any], Optional[PreflightIssue]]:
+        from pygeofetch.core.logging import suppress_tables
         from pygeofetch.insar.stack_selection import search_and_select_consistent_stack
 
         retries = 0
-        current_max = self.max_results
+        # BUG FIXED: the re-search used to start from this gate's own
+        # ``max_results`` (default 3000, but 20 in a notebook that passed a
+        # small value) -- so a stack found with max_results=250 was re-searched
+        # with 60, a NARROWER search that returned fewer scenes.  Always widen
+        # from the cap that was actually hit.
+        hit = int(search_report.get("raw_result_count") or 0)
+        current_max = max(self.max_results, hit)
         while search_report.get("hit_max_results") and retries < max_retries:
             current_max *= 3
             logger.warning(
@@ -272,19 +388,20 @@ class PreflightGate:
                 search_report["raw_result_count"],
                 current_max,
             )
-            selected, search_report = search_and_select_consistent_stack(
-                self.client,
-                self.aoi_bbox,
-                self.start_date,
-                self.end_date,
-                satellites=self.satellites,
-                providers=self.providers,
-                preferred_track=self.preferred_track,
-                max_scenes=self.max_scenes,
-                max_results=current_max,
-                min_coverage_fraction=self.min_coverage_fraction,
-                product_type=self.product_type,
-            )
+            with suppress_tables():  # never re-print the full result table
+                selected, search_report = search_and_select_consistent_stack(
+                    self.client,
+                    self.aoi_bbox,
+                    self.start_date,
+                    self.end_date,
+                    satellites=self.satellites,
+                    providers=self.providers,
+                    preferred_track=self.preferred_track,
+                    max_scenes=self.max_scenes,
+                    max_results=current_max,
+                    min_coverage_fraction=self.min_coverage_fraction,
+                    product_type=self.product_type,
+                )
             retries += 1
 
         if search_report.get("hit_max_results"):
@@ -353,7 +470,8 @@ class PreflightGate:
                     severity=SEVERITY_YELLOW,
                     message=(
                         f"{len(dropped)} scene(s) below {self.min_coverage_fraction:.0%} "
-                        f"AOI coverage dropped: {dropped}"
+                        f"AOI coverage dropped: "
+                        f"{_fmt_list(sorted(dropped.items()), 5)}"
                     ),
                     auto_fixed=True,
                     fix_detail="Genuine coverage gaps removed from the stack.",
@@ -411,7 +529,7 @@ class PreflightGate:
                     severity=SEVERITY_RED,
                     message=(
                         f"{len(unconnected)} date(s) unreachable within "
-                        f"{self.max_temporal_baseline_days}d baseline: {sorted(unconnected)}. "
+                        f"{self.max_temporal_baseline_days}d baseline: {_fmt_list(sorted(unconnected))}. "
                         "Widen the temporal baseline or the date range."
                     ),
                 )
@@ -427,7 +545,7 @@ class PreflightGate:
                     severity=SEVERITY_YELLOW,
                     message=(
                         f"{len(low_redundancy)} date(s) have < {self.min_network_redundancy} "
-                        f"neighbours within {self.max_temporal_baseline_days}d: {low_redundancy}. "
+                        f"neighbours within {self.max_temporal_baseline_days}d: {_fmt_list(low_redundancy)}. "
                         "The network is fragile — a single bad pair could disconnect it."
                     ),
                 )
@@ -599,7 +717,7 @@ class PreflightGate:
             internal_bridge_msg = (
                 f" Note: the majority family itself still needed "
                 f"{len(internal_bridges)} internal bridge(s) to stay "
-                f"connected: {internal_bridges} -- real same-family drift, "
+                f"connected: {_fmt_list(internal_bridges, 4)} -- real same-family drift, "
                 f"unrelated to the excluded minority date(s); expect these "
                 f"specific pairs to correlate poorly too."
                 if internal_bridges
@@ -637,10 +755,10 @@ class PreflightGate:
                     ),
                     auto_fixed=resolved,
                     fix_detail=(
-                        f"Applied date selection: {chosen_dates}"
+                        f"Applied date selection: {len(chosen_dates)} date(s) kept {_fmt_list(chosen_dates, 4)}"
                         if resolved
                         else f"No dates excluded -- majority family not usable on "
-                        f"its own (see message). Full stack kept: {chosen_dates}."
+                        f"its own (see message). Full stack kept: {len(chosen_dates)} date(s) {_fmt_list(chosen_dates, 4)}."
                     ),
                 )
             )
@@ -658,7 +776,7 @@ class PreflightGate:
                             f"no extra network cost): {len(high_pairs)} "
                             f"consecutive-date pair(s) exceed "
                             f"{self.max_perpendicular_baseline_m:.0f}m -- "
-                            f"{[(p['date1'], p['date2'], p['perpendicular_baseline_m']) for p in high_pairs]}. "
+                            f"{_fmt_list([(p['date1'], p['date2'], p['perpendicular_baseline_m']) for p in high_pairs], 4)}. "
                             f"Expect these specific pairs to show real, physical "
                             f"geometric decorrelation independent of burst-sync "
                             f"or coregistration quality -- not fixable by "
@@ -807,28 +925,44 @@ class PreflightGate:
         safe_zips: Dict[str, Any] = {}
         orbit_files: Dict[str, Any] = {}
 
-        for s in selected:
-            date = str(s.datetime)[:10]
+        from pygeofetch.core.progress import ProgressLine
+
+        scenes = list(selected)
+        stop = threading.Event()  # set on timeout / Ctrl-C so workers stop early
+        deadline = time.monotonic() + self.max_runtime_s if self.max_runtime_s else None
+
+        def _fetch_one(scene: Any):
+            """Fetch one date's annotation mini-zip and orbit file.
+
+            Returns (date, zip_or_None, orbit_or_None, orbit_type_used).
+            """
+            date = str(scene.datetime)[:10]
+            if stop.is_set():
+                return date, None, None, None
+            zip_path = None
             try:
-                safe_zips[date] = fetch_annotation_zip(self.client, s, work_dir)
+                zip_path = fetch_annotation_zip(self.client, scene, work_dir)
             except Exception as exc:
                 logger.info(
                     "Real pre-download burst check: no annotation for %s (%s).",
                     date,
                     exc,
                 )
-                continue
+                return date, None, None, None
+            if stop.is_set():
+                return date, zip_path, None, None
 
             try:
-                name = s.properties.get("name") if hasattr(s, "properties") else None
+                name = (
+                    scene.properties.get("name")
+                    if hasattr(scene, "properties")
+                    else None
+                )
                 if not name:
-                    continue
+                    return date, zip_path, None, None
 
-                # ── FIX: ORBIT CASCADING ──
-                # Previously, this only tried "precise". If precise wasn't
-                # available (e.g., recent acquisitions), the date was dropped.
-                # Now it cascades: Precise -> Restituted -> Predicted.
-                orbit_file = None
+                # ORBIT CASCADING: Precise -> Restituted -> Predicted, so
+                # recent acquisitions without a precise orbit are not dropped.
                 for orbit_type in ["precise", "restituted", "predicted"]:
                     try:
                         orbit_file = fetch_orbit_file(
@@ -837,14 +971,7 @@ class PreflightGate:
                             orbit_type=orbit_type,
                         )
                         if orbit_file is not None:
-                            if orbit_type != "precise":
-                                logger.warning(
-                                    "Orbit cascading: fell back to '%s' orbit for %s "
-                                    "(precise not available).",
-                                    orbit_type,
-                                    date,
-                                )
-                            break
+                            return date, zip_path, orbit_file, orbit_type
                     except Exception as exc:
                         logger.debug(
                             "Orbit cascade: '%s' failed for %s (%s).",
@@ -852,23 +979,109 @@ class PreflightGate:
                             date,
                             exc,
                         )
-                        continue
-
-                if orbit_file is None:
-                    logger.info(
-                        "Real pre-download burst check: no orbit file (any type) for %s.",
-                        date,
-                    )
-                    continue
-
-                orbit_files[date] = orbit_file
+                logger.info(
+                    "Real pre-download burst check: no orbit file (any type) for %s.",
+                    date,
+                )
+                return date, zip_path, None, None
             except Exception as exc:
                 logger.info(
                     "Real pre-download burst check: orbit cascade failed for %s (%s).",
                     date,
                     exc,
                 )
-                continue
+                return date, zip_path, None, None
+
+        results: Dict[int, Any] = {}
+        timed_out = False
+        n_workers = min(self.max_workers, max(1, len(scenes)))
+        bar = ProgressLine(
+            total=len(scenes),
+            desc="Preflight: annotation + orbit files",
+            enabled=self.show_progress,
+        )
+        executor = ThreadPoolExecutor(max_workers=n_workers)
+        try:
+            with bar:
+                futures = {
+                    executor.submit(_fetch_one, sc): i for i, sc in enumerate(scenes)
+                }
+                pending = set(futures)
+                try:
+                    while pending:
+                        remaining = (
+                            deadline - time.monotonic()
+                            if deadline is not None
+                            else None
+                        )
+                        if remaining is not None and remaining <= 0:
+                            timed_out = True
+                            break
+                        # Short polls keep Ctrl-C / the notebook's Interrupt
+                        # button responsive.
+                        poll = 1.0 if remaining is None else min(1.0, remaining)
+                        done, pending = wait(
+                            pending, timeout=poll, return_when=FIRST_COMPLETED
+                        )
+                        for fut in done:
+                            i = futures[fut]
+                            try:
+                                results[i] = fut.result()
+                            except Exception as exc:  # never crash the gate
+                                logger.info("Preflight fetch failed: %s", exc)
+                                results[i] = (
+                                    str(scenes[i].datetime)[:10],
+                                    None,
+                                    None,
+                                    None,
+                                )
+                            bar.update(note=results[i][0])
+                finally:
+                    if pending:
+                        stop.set()
+        except KeyboardInterrupt:
+            stop.set()
+            raise
+        finally:
+            # Do not block on workers that are still inside a network call.
+            executor.shutdown(wait=False, cancel_futures=True)
+
+        if timed_out:
+            logger.warning(
+                "Pre-download burst check stopped after %.0fs (max_runtime_s); "
+                "%d of %d dates were fetched. Reporting the check as unassessed "
+                "instead of waiting longer. Raise max_runtime_s or max_workers, "
+                "or set attempt_real_burst_check=False.",
+                self.max_runtime_s,
+                len(results),
+                len(scenes),
+            )
+            return None
+
+        # Assemble in the ORIGINAL scene order, so the result is deterministic
+        # no matter which worker finished first (later scenes of the same date
+        # overwrite earlier ones, exactly as the sequential loop did).
+        fallback_counts: Dict[str, int] = {}
+        for i in range(len(scenes)):
+            date, zip_path, orbit_file, orbit_type = results[i]
+            if zip_path is not None:
+                safe_zips[date] = zip_path
+            if orbit_file is not None:
+                orbit_files[date] = orbit_file
+                if orbit_type and orbit_type != "precise":
+                    fallback_counts[orbit_type] = fallback_counts.get(orbit_type, 0) + 1
+        if fallback_counts:
+            # ONE summary line instead of one warning per date.
+            parts = ", ".join(
+                f"{n} on '{t}'" for t, n in sorted(fallback_counts.items())
+            )
+            logger.warning(
+                "Orbit cascading: precise orbit not available for %d of %d date(s) "
+                "-- used %s instead.",
+                sum(fallback_counts.values()),
+                len(scenes),
+                parts,
+            )
 
         usable_dates = sorted(set(safe_zips) & set(orbit_files))
         if len(usable_dates) < 2:

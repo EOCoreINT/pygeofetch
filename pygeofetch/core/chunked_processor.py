@@ -115,7 +115,9 @@ class ChunkedProcessor:
         from rasterio.windows import Window
 
         output = Path(output)
-        parsed_inputs = [(p, 1) if isinstance(p, (str, Path)) else (p[0], p[1]) for p in inputs]
+        parsed_inputs = [
+            (p, 1) if isinstance(p, (str, Path)) else (p[0], p[1]) for p in inputs
+        ]
         srcs = [rasterio.open(p) for p, _ in parsed_inputs]
         band_indices = [b for _, b in parsed_inputs]
 
@@ -124,8 +126,30 @@ class ChunkedProcessor:
             height, width = ref.height, ref.width
 
             if self.output_format == "cog":
-                return self._process_to_cog(srcs, band_indices, height, width, formula, output, nodata, np, rasterio, Window)
-            return self._process_to_zarr(srcs, band_indices, height, width, formula, output, nodata, np, Window, ref)
+                return self._process_to_cog(
+                    srcs,
+                    band_indices,
+                    height,
+                    width,
+                    formula,
+                    output,
+                    nodata,
+                    np,
+                    rasterio,
+                    Window,
+                )
+            return self._process_to_zarr(
+                srcs,
+                band_indices,
+                height,
+                width,
+                formula,
+                output,
+                nodata,
+                np,
+                Window,
+                ref,
+            )
         finally:
             for s in srcs:
                 s.close()
@@ -157,36 +181,85 @@ class ChunkedProcessor:
                 trim_left = col_off - read_col_off
 
                 yield {
-                    "read": (read_row_off, read_col_off, read_row_end - read_row_off, read_col_end - read_col_off),
+                    "read": (
+                        read_row_off,
+                        read_col_off,
+                        read_row_end - read_row_off,
+                        read_col_end - read_col_off,
+                    ),
                     "write_offset": (row_off, col_off),
                     "write_shape": (out_h, out_w),
                     "trim": (trim_top, trim_left),
                 }
 
-    def _process_to_cog(self, srcs, band_indices, height, width, formula, output, nodata, np, rasterio, Window):
+    def _process_to_cog(
+        self,
+        srcs,
+        band_indices,
+        height,
+        width,
+        formula,
+        output,
+        nodata,
+        np,
+        rasterio,
+        Window,
+    ):
         ref = srcs[0]
         profile = {
-            "driver": "GTiff", "dtype": "float32", "count": 1,
-            "height": height, "width": width, "nodata": nodata,
-            "crs": ref.crs, "transform": ref.transform,
-            "compress": "deflate", "predictor": 2, "tiled": True,
-            "blockxsize": self._valid_block_size(width), "blockysize": self._valid_block_size(height),
+            "driver": "GTiff",
+            "dtype": "float32",
+            "count": 1,
+            "height": height,
+            "width": width,
+            "nodata": nodata,
+            "crs": ref.crs,
+            "transform": ref.transform,
+            "compress": "deflate",
+            "predictor": 2,
+            "tiled": True,
+            "blockxsize": self._valid_block_size(width),
+            "blockysize": self._valid_block_size(height),
             "BIGTIFF": "YES",
         }
         output.parent.mkdir(parents=True, exist_ok=True)
 
         with rasterio.open(output, "w", **profile) as dst:
             for tile in self._iter_tiles(height, width):
-                result = self._compute_tile(tile, srcs, band_indices, formula, Window, np)
+                result = self._compute_tile(
+                    tile, srcs, band_indices, formula, Window, np
+                )
                 out_h, out_w = tile["write_shape"]
                 row_off, col_off = tile["write_offset"]
-                dst.write(result[:out_h, :out_w], 1, window=Window(col_off, row_off, out_w, out_h))
+                dst.write(
+                    result[:out_h, :out_w],
+                    1,
+                    window=Window(col_off, row_off, out_w, out_h),
+                )
 
-        logger.info("ChunkedProcessor: wrote real COG %s (%dx%d, tile_size=%d, overlap=%d)",
-                    output, height, width, self.tile_size, self.overlap)
+        logger.info(
+            "ChunkedProcessor: wrote real COG %s (%dx%d, tile_size=%d, overlap=%d)",
+            output,
+            height,
+            width,
+            self.tile_size,
+            self.overlap,
+        )
         return output
 
-    def _process_to_zarr(self, srcs, band_indices, height, width, formula, output, nodata, np, Window, ref):
+    def _process_to_zarr(
+        self,
+        srcs,
+        band_indices,
+        height,
+        width,
+        formula,
+        output,
+        nodata,
+        np,
+        Window,
+        ref,
+    ):
         from pygeofetch.core.data_formats.zarr_io import _require_zarr
 
         zarr = _require_zarr()
@@ -194,15 +267,21 @@ class ChunkedProcessor:
 
         if zarr_major_version >= 3:
             arr = zarr.create_array(
-                str(output), shape=(height, width), chunks=(self.tile_size, self.tile_size),
-                dtype="float32", overwrite=True,
+                str(output),
+                shape=(height, width),
+                chunks=(self.tile_size, self.tile_size),
+                dtype="float32",
+                overwrite=True,
             )
         else:
             # Real v2 API -- confirmed directly against a live, isolated
             # v2.18.7 install; v2 has no zarr.create_array at all.
             arr = zarr.open(
-                str(output), mode="w", shape=(height, width),
-                chunks=(self.tile_size, self.tile_size), dtype="float32",
+                str(output),
+                mode="w",
+                shape=(height, width),
+                chunks=(self.tile_size, self.tile_size),
+                dtype="float32",
             )
         arr.attrs["pygeofetch_transform"] = list(ref.transform)[:6]
         arr.attrs["pygeofetch_crs"] = str(ref.crs)
@@ -212,21 +291,31 @@ class ChunkedProcessor:
             result = self._compute_tile(tile, srcs, band_indices, formula, Window, np)
             out_h, out_w = tile["write_shape"]
             row_off, col_off = tile["write_offset"]
-            arr[row_off:row_off + out_h, col_off:col_off + out_w] = result[:out_h, :out_w]
+            arr[row_off : row_off + out_h, col_off : col_off + out_w] = result[
+                :out_h, :out_w
+            ]
 
-        logger.info("ChunkedProcessor: wrote real Zarr %s (%dx%d, tile_size=%d, overlap=%d)",
-                    output, height, width, self.tile_size, self.overlap)
+        logger.info(
+            "ChunkedProcessor: wrote real Zarr %s (%dx%d, tile_size=%d, overlap=%d)",
+            output,
+            height,
+            width,
+            self.tile_size,
+            self.overlap,
+        )
         return output
 
     def _compute_tile(self, tile, srcs, band_indices, formula, Window, np):
         r_row, r_col, r_h, r_w = tile["read"]
         win = Window(r_col, r_row, r_w, r_h)
-        tiles_data = [s.read(b, window=win).astype(np.float32) for s, b in zip(srcs, band_indices)]
+        tiles_data = [
+            s.read(b, window=win).astype(np.float32) for s, b in zip(srcs, band_indices)
+        ]
         result = np.asarray(formula(tiles_data)).astype(np.float32)
 
         trim_top, trim_left = tile["trim"]
         out_h, out_w = tile["write_shape"]
-        return result[trim_top:trim_top + out_h, trim_left:trim_left + out_w]
+        return result[trim_top : trim_top + out_h, trim_left : trim_left + out_w]
 
     @staticmethod
     def _valid_block_size(n: int) -> int:

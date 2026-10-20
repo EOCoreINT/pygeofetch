@@ -280,7 +280,9 @@ def terrain_corrected_change_pipeline(
 
     change = post_corrected - pre_corrected
     valid = np.isfinite(change)
-    change_mask = np.where(valid & (np.abs(np.nan_to_num(change)) > change_threshold), 1, 0).astype("uint8")
+    change_mask = np.where(
+        valid & (np.abs(np.nan_to_num(change)) > change_threshold), 1, 0
+    ).astype("uint8")
     change_mask[~valid] = 255  # unusable: optical nodata or no slope from the DEM
 
     change_path = output_dir / "terrain_corrected_change.tif"

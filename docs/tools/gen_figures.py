@@ -49,7 +49,8 @@ def landscape():
     """Return (green, red, nir) reflectances for a river + fields + forest + town."""
     yy, xx = np.mgrid[0:N, 0:N]
     land = np.zeros((N, N), int)                         # 0 bare/field
-    z = lambda sg: (lambda a: (a - a.mean()) / a.std())(gaussian_filter(RNG.normal(size=(N, N)), sg))
+    def z(sg):
+        return (lambda a: (a - a.mean()) / a.std())(gaussian_filter(RNG.normal(size=(N, N)), sg))
     forest = z(45) > 0.25
     land[forest] = 1
     river = np.abs(yy - (0.55 * N + 40 * np.sin(xx / 55.0))) < 9
@@ -107,7 +108,8 @@ def fig_sar(tmp):
     sp = SARProcessor()
     sp.despeckle(input=tmp / "sar_lin.tif", filter="lee", window=7, output=str(tmp / "lee.tif"))
     lee = read(tmp / "lee.tif")
-    to_db = lambda a: 10 * np.log10(np.clip(a, 1e-6, None))
+    def to_db(a):
+        return 10 * np.log10(np.clip(a, 1e-6, None))
     noisy_db, lee_db = to_db(noisy), to_db(lee)
     write(tmp / "lee_db.tif", lee_db)
     sp.flood_map(input=tmp / "lee_db.tif", threshold=-15.0, output=str(tmp / "flood.tif"))

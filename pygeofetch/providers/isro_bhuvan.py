@@ -191,7 +191,7 @@ class IsroBhuvanProvider(AbstractBaseProvider):
             # the collection prefix instead of guessing a full ID.
             pass  # applied as a post-filter below, not sent as a param
 
-        headers = {"Authorization": f"Bearer {self._session.access_token}"}
+        headers = {"Authorization": f"Bearer {self._active_session().access_token}"}
         try:
             resp = httpx.get(
                 self.SEARCH_URL,
@@ -209,8 +209,8 @@ class IsroBhuvanProvider(AbstractBaseProvider):
                 return []
             data = resp.json()
             items = data.get("features", [])
-            results = [self._parse_item(item) for item in items]
-            results = [r for r in results if r is not None]
+            parsed = [self._parse_item(item) for item in items]
+            results = [r for r in parsed if r is not None]
             if query.satellites:
                 prefixes = tuple(s.replace(" ", "").lower() for s in query.satellites)
                 results = [
@@ -264,7 +264,7 @@ class IsroBhuvanProvider(AbstractBaseProvider):
         destination.mkdir(parents=True, exist_ok=True)
         start = time.time()
         output_paths, total_bytes = [], 0
-        headers = {"Authorization": f"Bearer {self._session.access_token}"}
+        headers = {"Authorization": f"Bearer {self._active_session().access_token}"}
 
         for key, asset in (data.data_assets or data.assets).items():
             if not asset.href or not asset.href.startswith("http"):

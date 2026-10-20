@@ -209,7 +209,7 @@ class PlanetaryComputerProvider(AbstractBaseProvider):
         """
         import time as _time
 
-        collection = (getattr(data, "collection", None) or "sentinel-2-l2a")
+        collection = getattr(data, "collection", None) or "sentinel-2-l2a"
         cache = self.__dict__.setdefault("_sas_cache", {})
         hit = cache.get(collection)
         if hit is None or _time.time() - hit[1] > 1800:

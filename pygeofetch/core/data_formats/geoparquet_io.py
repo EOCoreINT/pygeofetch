@@ -82,7 +82,9 @@ def satellite_data_to_geoparquet(
     from shapely.geometry import box, shape
 
     if not results:
-        msg = "satellite_data_to_geoparquet: results is empty -- nothing real to export."
+        msg = (
+            "satellite_data_to_geoparquet: results is empty -- nothing real to export."
+        )
         raise ValueError(msg)
 
     rows = []
@@ -99,13 +101,21 @@ def satellite_data_to_geoparquet(
             )
             raise ValueError(msg)
 
-        rows.append({
-            "id": r.id, "provider": r.provider, "collection": r.collection,
-            "satellite": r.satellite, "sensor": r.sensor,
-            "datetime": r.datetime, "cloud_cover": r.cloud_cover,
-            "processing_level": str(r.processing_level) if r.processing_level else None,
-            "geometry": geom,
-        })
+        rows.append(
+            {
+                "id": r.id,
+                "provider": r.provider,
+                "collection": r.collection,
+                "satellite": r.satellite,
+                "sensor": r.sensor,
+                "datetime": r.datetime,
+                "cloud_cover": r.cloud_cover,
+                "processing_level": (
+                    str(r.processing_level) if r.processing_level else None
+                ),
+                "geometry": geom,
+            }
+        )
 
     gdf = gpd.GeoDataFrame(rows, geometry="geometry", crs="EPSG:4326")
 
@@ -119,7 +129,11 @@ def satellite_data_to_geoparquet(
             part_dir = output / f"{partition_by}={value}"
             part_dir.mkdir(parents=True, exist_ok=True)
             group.to_parquet(part_dir / "part-0.parquet")
-        logger.info("Wrote real, partitioned GeoParquet (%d partitions) to %s", gdf[partition_by].nunique(), output)
+        logger.info(
+            "Wrote real, partitioned GeoParquet (%d partitions) to %s",
+            gdf[partition_by].nunique(),
+            output,
+        )
         return output
 
     output.parent.mkdir(parents=True, exist_ok=True)

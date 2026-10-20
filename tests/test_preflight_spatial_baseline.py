@@ -56,16 +56,21 @@ class TestSpatialBaselineComputation:
             "2023-01-13": (7000050.0, 30.0, 0.0),  # close by
         }
 
-        with patch(
-            "pygeofetch.insar.geolocation.parse_orbit_file", return_value=([], [], [])
-        ), patch(
-            "pygeofetch.insar.geolocation.find_zero_doppler_time",
-            side_effect=lambda *a, **k: a[-1],
-        ), patch(
-            "pygeofetch.insar.geolocation.interpolate_orbit_state",
-            side_effect=lambda times, pos, vel, t: (
-                positions[_date_for(t, selected)],
-                None,
+        with (
+            patch(
+                "pygeofetch.insar.geolocation.parse_orbit_file",
+                return_value=([], [], []),
+            ),
+            patch(
+                "pygeofetch.insar.geolocation.find_zero_doppler_time",
+                side_effect=lambda *a, **k: a[-1],
+            ),
+            patch(
+                "pygeofetch.insar.geolocation.interpolate_orbit_state",
+                side_effect=lambda times, pos, vel, t: (
+                    positions[_date_for(t, selected)],
+                    None,
+                ),
             ),
         ):
             report = gate._compute_spatial_baselines(
@@ -88,16 +93,21 @@ class TestSpatialBaselineComputation:
             "2023-01-13": (7000000.0, 5000.0, 0.0),  # far off-track
         }
 
-        with patch(
-            "pygeofetch.insar.geolocation.parse_orbit_file", return_value=([], [], [])
-        ), patch(
-            "pygeofetch.insar.geolocation.find_zero_doppler_time",
-            side_effect=lambda *a, **k: a[-1],
-        ), patch(
-            "pygeofetch.insar.geolocation.interpolate_orbit_state",
-            side_effect=lambda times, pos, vel, t: (
-                positions[_date_for(t, selected)],
-                None,
+        with (
+            patch(
+                "pygeofetch.insar.geolocation.parse_orbit_file",
+                return_value=([], [], []),
+            ),
+            patch(
+                "pygeofetch.insar.geolocation.find_zero_doppler_time",
+                side_effect=lambda *a, **k: a[-1],
+            ),
+            patch(
+                "pygeofetch.insar.geolocation.interpolate_orbit_state",
+                side_effect=lambda times, pos, vel, t: (
+                    positions[_date_for(t, selected)],
+                    None,
+                ),
             ),
         ):
             report = gate._compute_spatial_baselines(

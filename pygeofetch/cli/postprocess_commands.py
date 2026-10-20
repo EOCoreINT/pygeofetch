@@ -189,8 +189,14 @@ def cog_cmd(input, compress, blocksize, output):
 @click.argument("left", type=click.Path(exists=True))
 @click.argument("right", type=click.Path(exists=True))
 @click.option("--output", "-o", required=True)
-@click.option("--how", default="intersection", show_default=True,
-              type=click.Choice(["intersection", "union", "difference", "symmetric_difference", "identity"]))
+@click.option(
+    "--how",
+    default="intersection",
+    show_default=True,
+    type=click.Choice(
+        ["intersection", "union", "difference", "symmetric_difference", "identity"]
+    ),
+)
 def overlay_cmd(left, right, output, how):
     """Real polygon overlay between two vector layers.
 
@@ -204,8 +210,15 @@ def overlay_cmd(left, right, output, how):
 @post.command("dissolve")
 @click.argument("input", type=click.Path(exists=True))
 @click.option("--output", "-o", required=True)
-@click.option("--by", default=None, help="Attribute column to group by before dissolving.")
-@click.option("--aggfunc", default="first", show_default=True, help="How to aggregate other columns within each group.")
+@click.option(
+    "--by", default=None, help="Attribute column to group by before dissolving."
+)
+@click.option(
+    "--aggfunc",
+    default="first",
+    show_default=True,
+    help="How to aggregate other columns within each group.",
+)
 def dissolve_cmd(input, output, by, aggfunc):
     """Merge polygons sharing the same attribute value into single geometries.
 
@@ -220,9 +233,20 @@ def dissolve_cmd(input, output, by, aggfunc):
 @click.argument("left", type=click.Path(exists=True))
 @click.argument("right", type=click.Path(exists=True))
 @click.option("--output", "-o", required=True)
-@click.option("--how", default="inner", show_default=True, type=click.Choice(["inner", "left", "right"]))
-@click.option("--predicate", default="intersects", show_default=True,
-              type=click.Choice(["intersects", "contains", "within", "touches", "crosses", "overlaps"]))
+@click.option(
+    "--how",
+    default="inner",
+    show_default=True,
+    type=click.Choice(["inner", "left", "right"]),
+)
+@click.option(
+    "--predicate",
+    default="intersects",
+    show_default=True,
+    type=click.Choice(
+        ["intersects", "contains", "within", "touches", "crosses", "overlaps"]
+    ),
+)
 def spatial_join_cmd(left, right, output, how, predicate):
     """Attach attributes from one vector layer to another by real spatial relationship.
 

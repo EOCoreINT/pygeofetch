@@ -171,14 +171,14 @@ class GeoserverGenericProvider(AbstractBaseProvider):
         if mode == "basic":
             return {
                 "auth": (
-                    self._session.session_data["username"],
-                    self._session.session_data["password"],
+                    self._active_session().session_data["username"],
+                    self._active_session().session_data["password"],
                 )
             }
         if mode == "bearer_token":
             return {
                 "headers": {
-                    "Authorization": f"Bearer {self._session.session_data['token']}"
+                    "Authorization": f"Bearer {self._active_session().session_data['token']}"
                 }
             }
         return {}
@@ -243,8 +243,8 @@ class GeoserverGenericProvider(AbstractBaseProvider):
                 )
                 return []
             items = data.get("features", [])
-            results = [self._parse_item(item) for item in items]
-            results = [r for r in results if r is not None]
+            parsed = [self._parse_item(item) for item in items]
+            results = [r for r in parsed if r is not None]
             if query.cloud_cover_max is not None:
                 # Real, honest best-effort only -- a generic WFS layer
                 # has no guaranteed cloud-cover concept at all.

@@ -51,6 +51,10 @@ __all__ = [
 GroupCriterion = Literal["date", "orbit", "satellite", "processing_level"]
 
 
+def _default_group_by() -> list[GroupCriterion]:
+    return ["date"]
+
+
 class OrganizerConfig(BaseModel):
     """
     Configuration for `DataOrganizer`.
@@ -75,7 +79,7 @@ class OrganizerConfig(BaseModel):
         Real manifest file written to `output_dir` after organizing.
     """
 
-    group_by: list[GroupCriterion] = Field(default_factory=lambda: ["date"])
+    group_by: list[GroupCriterion] = Field(default_factory=_default_group_by)
     file_operation: Literal["copy", "symlink", "move"] = "copy"
     manifest_filename: str = "manifest.json"
 

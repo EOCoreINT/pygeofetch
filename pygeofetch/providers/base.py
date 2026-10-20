@@ -220,6 +220,19 @@ class AbstractBaseProvider(abc.ABC):
         """Return the current auth session, or None."""
         return self._session
 
+    def _active_session(self) -> AuthSession:
+        """Return the current session, or raise if not authenticated.
+
+        Narrows ``AuthSession | None`` to ``AuthSession`` for callers that need
+        the token or session data, with a clear error instead of an
+        ``AttributeError: 'NoneType' ...`` when ``authenticate()`` was skipped.
+        """
+        if self._session is None:
+            raise AuthenticationError(
+                f"{self.PROVIDER_ID}: not authenticated -- call authenticate() first."
+            )
+        return self._session
+
     def set_session(self, session: AuthSession) -> None:
         """Manually set an auth session (e.g. from cached credentials)."""
         self._session = session

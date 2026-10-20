@@ -94,7 +94,7 @@ ODATA_BASE = "https://download.dataspace.copernicus.eu/odata/v1"
 #       sub-swath (iw1/iw2/iw3) happened to land first in the mini-zip,
 #       which depended on live server response order.
 MODULE_VERSION = "v5-sorted-annotation-members"  # bumped whenever request/parsing behavior changes; see the comment block above
-logger.info(
+logger.debug(
     "copernicus_nodes module loaded (%s) -- node-name quoting: unquoted "
     "only; annotation members sorted deterministically before use. If a "
     'real run\'s log shows "quoted... got a real 400... retrying" for '
@@ -523,7 +523,7 @@ def fetch_annotation_zip(
             )
             arcname = "/".join(path_segments + [filename])
             zf.writestr(arcname, content)
-            logger.info(
+            logger.debug(
                 "Fetched real annotation member %s (%d bytes)", arcname, len(content)
             )
 

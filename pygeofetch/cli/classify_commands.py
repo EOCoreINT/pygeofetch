@@ -45,7 +45,14 @@ def classify() -> None:
 
 @classify.command("kmeans")
 @click.argument("inputs", nargs=-1, type=click.Path(exists=True))
-@click.option("--clusters", "-k", default=5, show_default=True, type=int, help="Number of clusters.")
+@click.option(
+    "--clusters",
+    "-k",
+    default=5,
+    show_default=True,
+    type=int,
+    help="Number of clusters.",
+)
 @click.option("--output", "-o", default=None)
 @click.option("--random-state", default=42, show_default=True, type=int)
 # @clip_options
@@ -59,21 +66,62 @@ def kmeans_cmd(inputs, clusters, output, random_state, bbox, geometry, geometry_
         sys.exit(1)
     e = _engine()
     r = e.classify.kmeans(
-        inputs=list(inputs), n_clusters=clusters, output=output, random_state=random_state,
-        bbox=bbox, geometry=geometry, geometry_crs=geometry_crs,
+        inputs=list(inputs),
+        n_clusters=clusters,
+        output=output,
+        random_state=random_state,
+        bbox=bbox,
+        geometry=geometry,
+        geometry_crs=geometry_crs,
     )
     _pr(r, f"K-means ({clusters} clusters)")
 
 
 @classify.command("train")
 @click.argument("inputs", nargs=-1, type=click.Path(exists=True))
-@click.option("--training-data", required=True, type=click.Path(exists=True), help="Vector file (GeoJSON/Shapefile) with labeled training geometries.")
-@click.option("--class-field", required=True, help="Attribute column holding the real class label.")
-@click.option("--output-model", "-o", required=True, help="Where to save the trained model.")
-@click.option("--model-type", default="random_forest", type=click.Choice(["random_forest", "svm"]), show_default=True)
-@click.option("--n-estimators", default=100, show_default=True, type=int, help="Random Forest tree count.")
-@click.option("--test-size", default=0.2, show_default=True, type=float, help="Fraction of samples held out for real accuracy reporting.")
-def train_cmd(inputs, training_data, class_field, output_model, model_type, n_estimators, test_size):
+@click.option(
+    "--training-data",
+    required=True,
+    type=click.Path(exists=True),
+    help="Vector file (GeoJSON/Shapefile) with labeled training geometries.",
+)
+@click.option(
+    "--class-field",
+    required=True,
+    help="Attribute column holding the real class label.",
+)
+@click.option(
+    "--output-model", "-o", required=True, help="Where to save the trained model."
+)
+@click.option(
+    "--model-type",
+    default="random_forest",
+    type=click.Choice(["random_forest", "svm"]),
+    show_default=True,
+)
+@click.option(
+    "--n-estimators",
+    default=100,
+    show_default=True,
+    type=int,
+    help="Random Forest tree count.",
+)
+@click.option(
+    "--test-size",
+    default=0.2,
+    show_default=True,
+    type=float,
+    help="Fraction of samples held out for real accuracy reporting.",
+)
+def train_cmd(
+    inputs,
+    training_data,
+    class_field,
+    output_model,
+    model_type,
+    n_estimators,
+    test_size,
+):
     """Train a supervised classifier from labeled vector training samples.
 
     Example: pygeofetch classify train B02.tif B03.tif B04.tif B08.tif
@@ -84,8 +132,12 @@ def train_cmd(inputs, training_data, class_field, output_model, model_type, n_es
         sys.exit(1)
     e = _engine()
     r = e.classify.train(
-        inputs=list(inputs), training_data=training_data, class_field=class_field,
-        output_model=output_model, model_type=model_type, n_estimators=n_estimators,
+        inputs=list(inputs),
+        training_data=training_data,
+        class_field=class_field,
+        output_model=output_model,
+        model_type=model_type,
+        n_estimators=n_estimators,
         test_size=test_size,
     )
     _pr(r, f"train ({model_type})")
@@ -93,7 +145,13 @@ def train_cmd(inputs, training_data, class_field, output_model, model_type, n_es
 
 @classify.command("predict")
 @click.argument("inputs", nargs=-1, type=click.Path(exists=True))
-@click.option("--model", "-m", required=True, type=click.Path(exists=True), help="A model trained via 'classify train'.")
+@click.option(
+    "--model",
+    "-m",
+    required=True,
+    type=click.Path(exists=True),
+    help="A model trained via 'classify train'.",
+)
 @click.option("--output", "-o", default=None)
 # @clip_options
 def predict_cmd(inputs, model, output, bbox, geometry, geometry_crs):
@@ -106,7 +164,11 @@ def predict_cmd(inputs, model, output, bbox, geometry, geometry_crs):
         sys.exit(1)
     e = _engine()
     r = e.classify.predict(
-        inputs=list(inputs), model=model, output=output,
-        bbox=bbox, geometry=geometry, geometry_crs=geometry_crs,
+        inputs=list(inputs),
+        model=model,
+        output=output,
+        bbox=bbox,
+        geometry=geometry,
+        geometry_crs=geometry_crs,
     )
     _pr(r, "predict")

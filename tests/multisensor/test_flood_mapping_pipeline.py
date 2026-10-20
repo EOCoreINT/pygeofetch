@@ -247,11 +247,15 @@ class TestOpticalNodataAndScaling:
         nir[10:20, 10:20] = 0.0
         g = _write_raster(tmp_path / "g.tif", green)
         n = _write_raster(tmp_path / "n.tif", nir)
-        res = multi_sensor_flood_pipeline(processor, sar_path, g, n, output_dir=tmp_path)
+        res = multi_sensor_flood_pipeline(
+            processor, sar_path, g, n, output_dir=tmp_path
+        )
         assert res.success, res.error
         with rasterio.open(res.final_output) as src:
             fused = src.read(1)
-        assert fused[10:20, 10:20].mean() > 0.8, "SAR flood must survive where optical has no data"
+        assert (
+            fused[10:20, 10:20].mean() > 0.8
+        ), "SAR flood must survive where optical has no data"
         assert res.metadata["n_optical_nodata_pixels"] == 100
 
     def test_declared_nodata_value_is_honoured(self, processor, tmp_path):
@@ -262,7 +266,9 @@ class TestOpticalNodataAndScaling:
         nir[10:20, 10:20] = -9999.0
         g = _write_raster(tmp_path / "g.tif", green, nodata=-9999.0)
         n = _write_raster(tmp_path / "n.tif", nir, nodata=-9999.0)
-        res = multi_sensor_flood_pipeline(processor, sar_path, g, n, output_dir=tmp_path)
+        res = multi_sensor_flood_pipeline(
+            processor, sar_path, g, n, output_dir=tmp_path
+        )
         assert res.success, res.error
         assert res.metadata["n_optical_nodata_pixels"] == 100
         with rasterio.open(res.final_output) as src:
@@ -272,42 +278,58 @@ class TestOpticalNodataAndScaling:
         """S2 L2A baseline>=04: DN = refl*10000 + 1000. Water (G=.06, N=.015)
         is NDWI=+0.6 in reflectance, but on raw DNs it is (1600-1150)/(2750)=0.16,
         and a weakly-water pixel (G=.03, N=.025) flips sign on raw DN."""
-        sar_dn = np.full((30, 30), 0.56, dtype="float32")        # SAR: all land
+        sar_dn = np.full((30, 30), 0.56, dtype="float32")  # SAR: all land
         sar_path = _write_raster(tmp_path / "sar.tif", sar_dn)
         green = np.full((30, 30), 0.08 * 10000 + 1000, dtype="float32")
         nir = np.full((30, 30), 0.35 * 10000 + 1000, dtype="float32")
-        green[10:20, 10:20] = 0.04 * 10000 + 1000   # reflectance NDWI = +0.14 -> water
+        green[10:20, 10:20] = 0.04 * 10000 + 1000  # reflectance NDWI = +0.14 -> water
         nir[10:20, 10:20] = 0.03 * 10000 + 1000
         # raw-DN NDWI for that block = (1400-1300)/(2700) = +0.037: still >0, so make the
         # opposite case too: a land block whose raw-DN NDWI is wrongly positive.
-        green[0:10, 0:10] = 0.02 * 10000 + 1000     # reflectance NDWI = -0.23 -> land
-        nir[0:10, 0:10] = 0.03 * 10000 + 1000       # raw DN: (1200-1300)/2500 = -0.04
+        green[0:10, 0:10] = 0.02 * 10000 + 1000  # reflectance NDWI = -0.23 -> land
+        nir[0:10, 0:10] = 0.03 * 10000 + 1000  # raw DN: (1200-1300)/2500 = -0.04
         g = _write_raster(tmp_path / "g.tif", green)
         n = _write_raster(tmp_path / "n.tif", nir)
-        out = tmp_path / "o"; out.mkdir()
+        out = tmp_path / "o"
+        out.mkdir()
         res = multi_sensor_flood_pipeline(
-            processor, sar_path, g, n, output_dir=out,
-            optical_offset=-1000.0, optical_scale=1e-4, fusion_mode="cloud_aware",
+            processor,
+            sar_path,
+            g,
+            n,
+            output_dir=out,
+            optical_offset=-1000.0,
+            optical_scale=1e-4,
+            fusion_mode="cloud_aware",
         )
         assert res.success, res.error
         with rasterio.open(res.final_output) as src:
             fused = src.read(1)
-        assert fused[10:20, 10:20].mean() == 1.0          # water with correct reflectance
-        assert fused[0:10, 0:10].mean() == 0.0            # land stays land
+        assert fused[10:20, 10:20].mean() == 1.0  # water with correct reflectance
+        assert fused[0:10, 0:10].mean() == 0.0  # land stays land
         # And the DN offset really matters: without it a moderately-wet pixel's
         # NDWI is compressed toward zero (documented in the docstring).
-        raw = (green - 0.0) , nir
+        raw = (green - 0.0), nir
         ndwi_raw = (raw[0] - raw[1]) / (raw[0] + raw[1])
         ndwi_ref = ((green - 1000) - (nir - 1000)) / ((green - 1000) + (nir - 1000))
         assert abs(ndwi_raw[10, 10]) < abs(ndwi_ref[10, 10]) / 2
 
-    def test_mismatched_nir_and_cloud_mask_shapes_fail_clearly(self, processor, tmp_path):
+    def test_mismatched_nir_and_cloud_mask_shapes_fail_clearly(
+        self, processor, tmp_path
+    ):
         sar_path = self._sar(tmp_path, np.random.default_rng(13))
         ok = _write_raster(tmp_path / "ok.tif", np.full((30, 30), 0.1, dtype="float32"))
-        small = _write_raster(tmp_path / "small.tif", np.full((20, 20), 0.1, dtype="float32"))
-        r1 = multi_sensor_flood_pipeline(processor, sar_path, ok, small, output_dir=tmp_path)
+        small = _write_raster(
+            tmp_path / "small.tif", np.full((20, 20), 0.1, dtype="float32")
+        )
+        r1 = multi_sensor_flood_pipeline(
+            processor, sar_path, ok, small, output_dir=tmp_path
+        )
         assert not r1.success and "optical NIR" in r1.error
-        scl = _write_raster(tmp_path / "scl.tif", np.zeros((20, 20), dtype="uint8"), dtype="uint8")
-        r2 = multi_sensor_flood_pipeline(processor, sar_path, ok, ok, output_dir=tmp_path,
-                                         cloud_mask_path=scl)
+        scl = _write_raster(
+            tmp_path / "scl.tif", np.zeros((20, 20), dtype="uint8"), dtype="uint8"
+        )
+        r2 = multi_sensor_flood_pipeline(
+            processor, sar_path, ok, ok, output_dir=tmp_path, cloud_mask_path=scl
+        )
         assert not r2.success and "cloud mask" in r2.error

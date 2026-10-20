@@ -111,17 +111,28 @@ class TestTotalInsarFailureWithEmptyPairs:
     def test_empty_pairs_with_nan_velocity_falls_back_cleanly(self, tmp_path):
         rng = np.random.default_rng(3)
         shape = (20, 20)
-        velocity = np.full(shape, np.nan)  # real, honest "InSAR produced nothing" placeholder
+        velocity = np.full(
+            shape, np.nan
+        )  # real, honest "InSAR produced nothing" placeholder
         transform = from_origin(*GROUND_ORIGIN, 10, 10)
 
-        ref_path = _write_raster(tmp_path / "ref.tif", rng.normal(1000, 50, (40, 40)), transform)
-        sec_path = _write_raster(tmp_path / "sec.tif", rng.normal(1000, 50, (40, 40)), transform)
+        ref_path = _write_raster(
+            tmp_path / "ref.tif", rng.normal(1000, 50, (40, 40)), transform
+        )
+        sec_path = _write_raster(
+            tmp_path / "sec.tif", rng.normal(1000, 50, (40, 40)), transform
+        )
 
         result = run_multi_modal_deformation(
-            velocity, pairs=[],  # genuinely empty -- not just low-coherence pairs
-            optical_reference_path=ref_path, optical_secondary_path=sec_path,
-            reference_transform=transform, insar_transform=transform, insar_crs=REAL_CRS,
-            window_size=16, step_size=8,
+            velocity,
+            pairs=[],  # genuinely empty -- not just low-coherence pairs
+            optical_reference_path=ref_path,
+            optical_secondary_path=sec_path,
+            reference_transform=transform,
+            insar_transform=transform,
+            insar_crs=REAL_CRS,
+            window_size=16,
+            step_size=8,
         )
         assert result.success, result.error
         assert result.used_optical_fallback
@@ -136,7 +147,10 @@ class TestTotalInsarFailureWithEmptyPairs:
         # blended/transition label by that function's own existing
         # convention, not a new behavior introduced by this fix.
         has_real_optical_coverage = np.isfinite(result.optical_displacement_magnitude)
-        assert (result.processing_source_mask[has_real_optical_coverage] == SOURCE_OPTICAL_FALLBACK).all()
+        assert (
+            result.processing_source_mask[has_real_optical_coverage]
+            == SOURCE_OPTICAL_FALLBACK
+        ).all()
         assert not (result.processing_source_mask == SOURCE_INSAR_VALID).any()
 
 

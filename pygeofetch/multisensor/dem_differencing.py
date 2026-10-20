@@ -46,7 +46,9 @@ def _pixel_areas_m2(crs, transform, shape):
     if crs is not None and crs.is_geographic:
         lat = np.radians(transform.f + (np.arange(h) + 0.5) * transform.e)
         m_lat = 111132.92 - 559.82 * np.cos(2 * lat) + 1.175 * np.cos(4 * lat)
-        m_lon = 111412.84 * np.cos(lat) - 93.5 * np.cos(3 * lat) + 0.118 * np.cos(5 * lat)
+        m_lon = (
+            111412.84 * np.cos(lat) - 93.5 * np.cos(3 * lat) + 0.118 * np.cos(5 * lat)
+        )
         return ((abs(transform.a) * m_lon) * (abs(transform.e) * m_lat))[:, None]
     factor = 1.0
     if crs is not None:
@@ -137,7 +139,9 @@ def dem_differencing_pipeline(
         old_shape = (src.height, src.width)
         old_nodata = src.nodata
         profile = src.profile.copy()
-        pixel_areas_m2 = _pixel_areas_m2(src.crs, src.transform, (src.height, src.width))
+        pixel_areas_m2 = _pixel_areas_m2(
+            src.crs, src.transform, (src.height, src.width)
+        )
 
     with rasterio.open(dem_new_path) as src:
         new_transform = src.transform
@@ -204,7 +208,9 @@ def dem_differencing_pipeline(
     # real LoD threshold -- not the raw, unfiltered difference, which
     # would include real DEM noise as if it were real change.
     significant_diff = np.where(significant, diff, 0.0)
-    volume_m3 = significant_diff * pixel_areas_m2  # broadcasts (H,1) areas on geographic grids
+    volume_m3 = (
+        significant_diff * pixel_areas_m2
+    )  # broadcasts (H,1) areas on geographic grids
     erosion_volume_m3 = float(-volume_m3[volume_m3 < 0].sum())
     deposition_volume_m3 = float(volume_m3[volume_m3 > 0].sum())
     net_volume_change_m3 = deposition_volume_m3 - erosion_volume_m3

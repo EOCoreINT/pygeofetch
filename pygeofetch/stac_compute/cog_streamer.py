@@ -42,7 +42,9 @@ _REMOTE_READ_GDAL_ENV = {
 class RemoteReadResult:
     """Real result of a remote, windowed COG read."""
 
-    data: Any  # numpy array, shape (bands, height, width) or (height, width) for one band
+    data: (
+        Any  # numpy array, shape (bands, height, width) or (height, width) for one band
+    )
     window: PixelWindow
     transform: Any  # the real, windowed affine transform for the returned data
     crs: Any
@@ -139,9 +141,14 @@ def read_remote_window(
 
     with rasterio.Env(**_REMOTE_READ_GDAL_ENV), rasterio.open(url) as src:
         if window is None:
+            assert bbox is not None  # guaranteed by the either/or check above
             window = bbox_to_pixel_window(
-                bbox, src.transform, src.width, src.height,
-                bbox_crs=bbox_crs, raster_crs=src.crs,
+                bbox,
+                src.transform,
+                src.width,
+                src.height,
+                bbox_crs=bbox_crs,
+                raster_crs=src.crs,
             )
 
         rio_window = window.to_rasterio_window()
@@ -156,16 +163,24 @@ def read_remote_window(
         # would have cost -- for logging/comparison, not a guess
         # dressed up as a measurement: full real dimensions x real
         # dtype size x real band count.
-        full_file_bytes = src.width * src.height * src.count * np.dtype(src.dtypes[0]).itemsize
+        full_file_bytes = (
+            src.width * src.height * src.count * np.dtype(src.dtypes[0]).itemsize
+        )
 
         logger.info(
             "Streamed real window %dx%d (%d bands) from %s -- %.1f%% of the real full raster's pixel area.",
-            window.width, window.height, len(indexes), url,
+            window.width,
+            window.height,
+            len(indexes),
+            url,
             100 * (window.width * window.height) / (src.width * src.height),
         )
 
         return RemoteReadResult(
-            data=data, window=window, transform=windowed_transform, crs=src.crs,
+            data=data,
+            window=window,
+            transform=windowed_transform,
+            crs=src.crs,
             bytes_would_have_downloaded_full_file=full_file_bytes,
             real_window_pixel_count=window.width * window.height,
         )

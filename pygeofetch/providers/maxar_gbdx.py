@@ -156,7 +156,7 @@ class MaxarGbdxProvider(AbstractBaseProvider):
             # --data-urlencode "filter=eo:cloud_cover < 10"
             params["filter"] = f"eo:cloud_cover < {query.cloud_cover_max}"
 
-        headers = {"Authorization": f"Bearer {self._session.access_token}"}
+        headers = {"Authorization": f"Bearer {self._active_session().access_token}"}
         try:
             resp = httpx.get(
                 f"{self.BASE_URL}/search",
@@ -177,9 +177,9 @@ class MaxarGbdxProvider(AbstractBaseProvider):
             data = resp.json()
             items = data.get("features", [])
             return [
-                self._parse_item(item)
+                parsed
                 for item in items
-                if self._parse_item(item) is not None
+                if (parsed := self._parse_item(item)) is not None
             ]
         except Exception as exc:
             self._logger.warning(f"{self.DISPLAY_NAME} search: {exc}")
@@ -222,7 +222,7 @@ class MaxarGbdxProvider(AbstractBaseProvider):
         destination.mkdir(parents=True, exist_ok=True)
         start = time.time()
         output_paths, total_bytes = [], 0
-        headers = {"Authorization": f"Bearer {self._session.access_token}"}
+        headers = {"Authorization": f"Bearer {self._active_session().access_token}"}
 
         for key, asset in (data.data_assets or data.assets).items():
             if not asset.href or not asset.href.startswith("http"):

@@ -77,8 +77,12 @@ def _build_offset_grid_transform(
 
     # == Affine.translation(tx, ty) * Affine.scale(sx, -sy), written out.
     return Affine(
-        grid_pixel_size_x, 0.0, x0 - grid_pixel_size_x / 2,
-        0.0, -grid_pixel_size_y, y0 + grid_pixel_size_y / 2,
+        grid_pixel_size_x,
+        0.0,
+        x0 - grid_pixel_size_x / 2,
+        0.0,
+        -grid_pixel_size_y,
+        y0 + grid_pixel_size_y / 2,
     )
 
 

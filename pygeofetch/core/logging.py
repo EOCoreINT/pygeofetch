@@ -12,12 +12,17 @@ Usage::
 
 from __future__ import annotations
 
+import contextlib
+import contextvars
 import logging
+import os
 import re
 import sys
+import tempfile
 import threading
 import time
-from typing import Any
+from pathlib import Path
+from typing import Any, Iterator
 
 # ── ANSI codes ────────────────────────────────────────────────────────────────
 
@@ -216,6 +221,16 @@ def configure_logging(
 
     ch = logging.StreamHandler(sys.stdout)
     ch.setFormatter(_PGFFormatter(use_colour=use_colour, show_module=show_module))
+    if _JUPYTER:
+        # A notebook shows every line in the page; identical messages repeated
+        # hundreds of times (one per scene) freeze the browser.  Show each
+        # message template a handful of times; the rest still reach log_file.
+        try:
+            _limit = int(os.environ.get("PYGEOFETCH_LOG_REPEAT_LIMIT", "5"))
+        except ValueError:
+            _limit = 5
+        if _limit > 0:
+            ch.addFilter(_RepeatLimiter(_limit))
     root.addHandler(ch)
 
     if log_file:
@@ -247,6 +262,178 @@ def get_logger(name: str) -> logging.Logger:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+#  NOTEBOOK-SAFE OUTPUT: quiet mode, repeat limiter, table suppression
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# Long-running steps (a Sentinel-1 preflight fetches annotation and orbit files
+# for every candidate date) used to emit hundreds of near-identical INFO lines
+# and re-print the full search table several times.  In a Jupyter notebook that
+# much output makes the browser tab lag or freeze, and it buries the few lines
+# the user actually needs.  The helpers below keep the console short while
+# still writing the complete detail to a log file.
+
+_TABLES_SUPPRESSED: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "pygeofetch_tables_suppressed", default=False
+)
+
+
+def tables_enabled() -> bool:
+    """False while search tables/headers should not be printed.
+
+    Tables are hidden inside :func:`suppress_tables` / :func:`quiet_logs`, or
+    globally when the environment variable ``PYGEOFETCH_QUIET=1`` is set.
+    """
+    if _TABLES_SUPPRESSED.get():
+        return False
+    return os.environ.get("PYGEOFETCH_QUIET", "").strip() not in ("1", "true", "True")
+
+
+@contextlib.contextmanager
+def suppress_tables() -> Iterator[None]:
+    """Temporarily stop search headers / result tables from being printed."""
+    token = _TABLES_SUPPRESSED.set(True)
+    try:
+        yield
+    finally:
+        _TABLES_SUPPRESSED.reset(token)
+
+
+def default_log_path(prefix: str = "pygeofetch") -> Path:
+    """Path of the per-day log file used by quiet mode (created on demand)."""
+    base = Path(
+        os.environ.get("PYGEOFETCH_LOG_DIR", "")
+        or Path(tempfile.gettempdir()) / "pygeofetch_logs"
+    )
+    base.mkdir(parents=True, exist_ok=True)
+    return base / f"{prefix}-{time.strftime('%Y%m%d')}.log"
+
+
+class _RepeatLimiter(logging.Filter):
+    """Let the first *limit* records of each message template through.
+
+    Records are keyed by (logger name, level, message template), so
+    ``"Orbit file saved: %s"`` is shown a few times and then counted instead of
+    printed 60 times.  :meth:`suppressed` returns how many were hidden.
+    """
+
+    def __init__(self, limit: int = 3, reset_after_s: float = 30.0) -> None:
+        super().__init__()
+        self.limit = limit
+        # A template that has been quiet for this long starts counting again,
+        # so a message in a later cell of a long notebook session is not
+        # hidden just because it appeared often earlier.
+        self.reset_after_s = reset_after_s
+        self._counts: dict[tuple, int] = {}
+        self._last: dict[tuple, float] = {}
+        self._hidden = 0
+        self._lock = threading.Lock()
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        # Errors are never hidden.
+        if record.levelno >= logging.ERROR:
+            return True
+        key = (record.name, record.levelno, str(record.msg))
+        now = time.monotonic()
+        with self._lock:
+            if now - self._last.get(key, now) > self.reset_after_s:
+                self._counts[key] = 0
+            self._last[key] = now
+            n = self._counts.get(key, 0) + 1
+            self._counts[key] = n
+            if n > self.limit:
+                self._hidden += 1
+                return False
+        return True
+
+    def suppressed(self) -> int:
+        with self._lock:
+            return self._hidden
+
+
+def _console_handlers(root: logging.Logger) -> list[logging.Handler]:
+    return [
+        h
+        for h in root.handlers
+        if isinstance(h, logging.StreamHandler)
+        and not isinstance(h, logging.FileHandler)
+    ]
+
+
+@contextlib.contextmanager
+def quiet_logs(
+    console_level: str | int = "WARNING",
+    log_file: str | os.PathLike | None = None,
+    repeat_limit: int = 3,
+    hide_tables: bool = True,
+    announce: bool = True,
+) -> Iterator[Path]:
+    """Keep the console short and write the full detail to a log file.
+
+    Inside the ``with`` block:
+
+    * the PyGeoFetch console handler only shows *console_level* and above
+      (warnings and errors by default);
+    * every message (INFO and above) is written to *log_file*;
+    * a repeated message is shown at most *repeat_limit* times on the console;
+    * search headers and result tables are not printed.
+
+    Yields the path of the log file.  Nothing is changed outside the block, and
+    the previous handler levels are restored even if the block raises or is
+    interrupted.
+
+    Example::
+
+        with quiet_logs() as log_path:
+            report = gate.run(selected, search_report)
+        print("details:", log_path)
+    """
+    root = logging.getLogger("pygeofetch")
+    level = (
+        getattr(logging, console_level.upper(), logging.WARNING)
+        if isinstance(console_level, str)
+        else int(console_level)
+    )
+    path = Path(log_file) if log_file else default_log_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    saved_root_level = root.level
+    saved = [(h, h.level) for h in _console_handlers(root)]
+    limiter = _RepeatLimiter(repeat_limit)
+    fh: logging.Handler | None = None
+    tables_token = _TABLES_SUPPRESSED.set(True) if hide_tables else None
+    try:
+        fh = logging.FileHandler(path, mode="a", encoding="utf-8")
+        fh.setFormatter(
+            logging.Formatter(
+                "%(asctime)s %(levelname)-8s [%(name)s] %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        )
+        root.addHandler(fh)
+        if root.level == logging.NOTSET or root.level > logging.INFO:
+            root.setLevel(logging.INFO)
+        for h, _old in saved:
+            h.setLevel(level)
+            h.addFilter(limiter)
+        yield path
+    finally:
+        for h, old in saved:
+            h.setLevel(old)
+            h.removeFilter(limiter)
+        if fh is not None:
+            root.removeHandler(fh)
+            fh.close()
+        root.setLevel(saved_root_level)
+        if tables_token is not None:
+            _TABLES_SUPPRESSED.reset(tables_token)
+        if announce and limiter.suppressed():
+            print(
+                f"  ({limiter.suppressed()} repeated log line(s) hidden; "
+                f"full log: {path})"
+            )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 #  SEARCH RESULTS TABLE
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -262,6 +449,8 @@ def print_search_header(
     product: str = "any",
 ) -> None:
     """Print a clean, bordered search-parameters header box."""
+    if not tables_enabled():
+        return
     w = _BOX_WIDTH
     inner = w - 4  # content width inside "│ " ... " │"
 
@@ -294,6 +483,8 @@ def print_provider_progress(
     provider: str, status: str, count: int = 0, duration: float = 0.0, error: str = ""
 ) -> None:
     """Print a single provider search result line."""
+    if not tables_enabled():
+        return
     provider_str = _pad(_cb(provider), 28)
 
     if error:
@@ -313,6 +504,8 @@ def print_provider_progress(
 
 def print_search_results(results: list[Any], elapsed: float = 0.0) -> None:
     """Print a perfectly aligned, bordered table of search results."""
+    if not tables_enabled():
+        return
     if not results:
         print(_cy("  ○  No scenes matched the search criteria."))
         return

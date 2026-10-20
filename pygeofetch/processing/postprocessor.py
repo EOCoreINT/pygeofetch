@@ -674,9 +674,17 @@ class PostProcessor:
         """
         gpd = _require_geopandas()
 
-        valid_how = {"intersection", "union", "difference", "symmetric_difference", "identity"}
+        valid_how = {
+            "intersection",
+            "union",
+            "difference",
+            "symmetric_difference",
+            "identity",
+        }
         if how not in valid_how:
-            msg = f"overlay: how={how!r} not recognized -- use one of {sorted(valid_how)}"
+            msg = (
+                f"overlay: how={how!r} not recognized -- use one of {sorted(valid_how)}"
+            )
             raise ValueError(msg)
 
         left_gdf = gpd.read_file(left)
@@ -686,7 +694,11 @@ class PostProcessor:
         if right_crs:
             right_gdf = right_gdf.set_crs(right_crs, allow_override=True)
 
-        if left_gdf.crs is not None and right_gdf.crs is not None and left_gdf.crs != right_gdf.crs:
+        if (
+            left_gdf.crs is not None
+            and right_gdf.crs is not None
+            and left_gdf.crs != right_gdf.crs
+        ):
             right_gdf = right_gdf.to_crs(left_gdf.crs)
 
         result_gdf = gpd.overlay(left_gdf, right_gdf, how=how)
@@ -695,10 +707,24 @@ class PostProcessor:
         out_path.parent.mkdir(parents=True, exist_ok=True)
         result_gdf.to_file(out_path)
 
-        logger.info("overlay (%s): %d → %s features → %s", how, len(left_gdf), len(result_gdf), out_path.name)
+        logger.info(
+            "overlay (%s): %d → %s features → %s",
+            how,
+            len(left_gdf),
+            len(result_gdf),
+            out_path.name,
+        )
         return ProcessingResult(
-            success=True, operation="overlay", output_path=out_path, input_path=Path(left),
-            metadata={"how": how, "n_input_left": len(left_gdf), "n_input_right": len(right_gdf), "n_output": len(result_gdf)},
+            success=True,
+            operation="overlay",
+            output_path=out_path,
+            input_path=Path(left),
+            metadata={
+                "how": how,
+                "n_input_left": len(left_gdf),
+                "n_input_right": len(right_gdf),
+                "n_output": len(result_gdf),
+            },
         )
 
     @_timed
@@ -733,16 +759,29 @@ class PostProcessor:
 
         gdf = gpd.read_file(input)
         n_before = len(gdf)
-        result_gdf = gdf.dissolve(by=by, aggfunc=aggfunc) if by else gdf.dissolve(aggfunc=aggfunc)
+        result_gdf = (
+            gdf.dissolve(by=by, aggfunc=aggfunc)
+            if by
+            else gdf.dissolve(aggfunc=aggfunc)
+        )
         result_gdf = result_gdf.reset_index()
 
         out_path = Path(output)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         result_gdf.to_file(out_path)
 
-        logger.info("dissolve (by=%s): %d → %d features → %s", by, n_before, len(result_gdf), out_path.name)
+        logger.info(
+            "dissolve (by=%s): %d → %d features → %s",
+            by,
+            n_before,
+            len(result_gdf),
+            out_path.name,
+        )
         return ProcessingResult(
-            success=True, operation="dissolve", output_path=out_path, input_path=Path(input),
+            success=True,
+            operation="dissolve",
+            output_path=out_path,
+            input_path=Path(input),
             metadata={"by": by, "n_input": n_before, "n_output": len(result_gdf)},
         )
 
@@ -790,7 +829,11 @@ class PostProcessor:
         if right_crs:
             right_gdf = right_gdf.set_crs(right_crs, allow_override=True)
 
-        if left_gdf.crs is not None and right_gdf.crs is not None and left_gdf.crs != right_gdf.crs:
+        if (
+            left_gdf.crs is not None
+            and right_gdf.crs is not None
+            and left_gdf.crs != right_gdf.crs
+        ):
             right_gdf = right_gdf.to_crs(left_gdf.crs)
 
         result_gdf = gpd.sjoin(left_gdf, right_gdf, how=how, predicate=predicate)
@@ -799,8 +842,23 @@ class PostProcessor:
         out_path.parent.mkdir(parents=True, exist_ok=True)
         result_gdf.to_file(out_path)
 
-        logger.info("spatial_join (%s, %s): %d → %d features → %s", how, predicate, len(left_gdf), len(result_gdf), out_path.name)
+        logger.info(
+            "spatial_join (%s, %s): %d → %d features → %s",
+            how,
+            predicate,
+            len(left_gdf),
+            len(result_gdf),
+            out_path.name,
+        )
         return ProcessingResult(
-            success=True, operation="spatial_join", output_path=out_path, input_path=Path(left),
-            metadata={"how": how, "predicate": predicate, "n_input_left": len(left_gdf), "n_output": len(result_gdf)},
+            success=True,
+            operation="spatial_join",
+            output_path=out_path,
+            input_path=Path(left),
+            metadata={
+                "how": how,
+                "predicate": predicate,
+                "n_input_left": len(left_gdf),
+                "n_output": len(result_gdf),
+            },
         )

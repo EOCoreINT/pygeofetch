@@ -307,7 +307,9 @@ def run_multi_modal_deformation(
     # fuse_insar_optical's fusion logic runs correctly and correctly
     # concludes optical-only, rather than crashing before it can.
     if pairs:
-        mean_coherence_raster = np.mean([np.asarray(p.coherence) for p in pairs], axis=0)
+        mean_coherence_raster = np.mean(
+            [np.asarray(p.coherence) for p in pairs], axis=0
+        )
     else:
         mean_coherence_raster = np.full(np.asarray(velocity).shape, np.nan)
 

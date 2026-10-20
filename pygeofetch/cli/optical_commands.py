@@ -18,18 +18,85 @@ def optical() -> None:
 
 
 @optical.command("offset-track")
-@click.option("--ref", "reference_path", required=True, type=click.Path(exists=True), help="Reference-date raster.")
-@click.option("--sec", "secondary_path", required=True, type=click.Path(exists=True), help="Secondary-date raster.")
-@click.option("--output", "-o", required=True, type=click.Path(), help="Output GeoTIFF (dx/dy/snr, 3 bands).")
-@click.option("--band", default=1, show_default=True, type=int, help="1-based band index to correlate.")
-@click.option("--window-size", default=64, show_default=True, type=int, help="Search window size, pixels.")
-@click.option("--step-size", default=16, show_default=True, type=int, help="Spacing between window centers, pixels.")
-@click.option("--chip-size", default=None, type=int, help="Reference template size, pixels. Default: window-size // 2.")
-@click.option("--snr-threshold", default=3.0, show_default=True, type=float, help="Minimum SNR to mark a window reliable.")
-@click.option("--cloud-mask", default=None, type=click.Path(exists=True), help="Real Sentinel-2 SCL raster, already aligned to --ref.")
-@click.option("--water-mask-threshold", default=None, type=float, help="Mask pixels where NDWI exceeds this value (needs --green-band/--nir-band).")
-@click.option("--green-band", default=None, type=int, help="1-based green band index, for --water-mask-threshold.")
-@click.option("--nir-band", default=None, type=int, help="1-based NIR band index, for --water-mask-threshold.")
+@click.option(
+    "--ref",
+    "reference_path",
+    required=True,
+    type=click.Path(exists=True),
+    help="Reference-date raster.",
+)
+@click.option(
+    "--sec",
+    "secondary_path",
+    required=True,
+    type=click.Path(exists=True),
+    help="Secondary-date raster.",
+)
+@click.option(
+    "--output",
+    "-o",
+    required=True,
+    type=click.Path(),
+    help="Output GeoTIFF (dx/dy/snr, 3 bands).",
+)
+@click.option(
+    "--band",
+    default=1,
+    show_default=True,
+    type=int,
+    help="1-based band index to correlate.",
+)
+@click.option(
+    "--window-size",
+    default=64,
+    show_default=True,
+    type=int,
+    help="Search window size, pixels.",
+)
+@click.option(
+    "--step-size",
+    default=16,
+    show_default=True,
+    type=int,
+    help="Spacing between window centers, pixels.",
+)
+@click.option(
+    "--chip-size",
+    default=None,
+    type=int,
+    help="Reference template size, pixels. Default: window-size // 2.",
+)
+@click.option(
+    "--snr-threshold",
+    default=3.0,
+    show_default=True,
+    type=float,
+    help="Minimum SNR to mark a window reliable.",
+)
+@click.option(
+    "--cloud-mask",
+    default=None,
+    type=click.Path(exists=True),
+    help="Real Sentinel-2 SCL raster, already aligned to --ref.",
+)
+@click.option(
+    "--water-mask-threshold",
+    default=None,
+    type=float,
+    help="Mask pixels where NDWI exceeds this value (needs --green-band/--nir-band).",
+)
+@click.option(
+    "--green-band",
+    default=None,
+    type=int,
+    help="1-based green band index, for --water-mask-threshold.",
+)
+@click.option(
+    "--nir-band",
+    default=None,
+    type=int,
+    help="1-based NIR band index, for --water-mask-threshold.",
+)
 def offset_track_cmd(
     reference_path,
     secondary_path,
@@ -62,7 +129,10 @@ def offset_track_cmd(
           --window-size 96 --step-size 24 \\
           --output mine_displacement.tif
     """
-    from pygeofetch.optical.offset_tracking import compute_pixel_offsets, prepare_optical_pair
+    from pygeofetch.optical.offset_tracking import (
+        compute_pixel_offsets,
+        prepare_optical_pair,
+    )
 
     try:
         ref_arr, sec_arr, ref_profile = prepare_optical_pair(
@@ -89,7 +159,9 @@ def offset_track_cmd(
         snr_threshold=snr_threshold,
     )
 
-    out_transform = ref_profile["transform"] * ref_profile["transform"].scale(step_size, step_size)
+    out_transform = ref_profile["transform"] * ref_profile["transform"].scale(
+        step_size, step_size
+    )
     out_profile = dict(ref_profile)
     out_profile.update(
         height=result.dx.shape[0],
@@ -101,5 +173,9 @@ def offset_track_cmd(
     n_reliable = int(result.reliable.sum())
     n_total = int(result.reliable.size)
     console.print(f"[green]✓[/] offset-track → {written}")
-    console.print(f"  {n_reliable}/{n_total} windows reliable ({100 * n_reliable / n_total:.1f}%)")
-    console.print(f"  window={window_size}px  step={step_size}px  pixel_size={pixel_size_m:.2f}m")
+    console.print(
+        f"  {n_reliable}/{n_total} windows reliable ({100 * n_reliable / n_total:.1f}%)"
+    )
+    console.print(
+        f"  window={window_size}px  step={step_size}px  pixel_size={pixel_size_m:.2f}m"
+    )

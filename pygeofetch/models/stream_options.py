@@ -39,7 +39,8 @@ class StreamOptions(BaseModel):
         description="Real CRS the requested bbox's coordinates are in, if different from the remote COG's own CRS.",
     )
     bands: list[int] | None = Field(
-        default=None, description="Real 1-based band indices to read. None reads every real band.",
+        default=None,
+        description="Real 1-based band indices to read. None reads every real band.",
     )
     gdal_disable_readdir_on_open: bool = Field(
         default=True,
@@ -63,9 +64,12 @@ class ChunkConfig(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    tile_size: int = Field(default=1024, gt=0, description="Real tile edge length in pixels.")
+    tile_size: int = Field(
+        default=1024, gt=0, description="Real tile edge length in pixels."
+    )
     overlap: int = Field(
-        default=0, ge=0,
+        default=0,
+        ge=0,
         description=(
             "Real pixel margin read beyond tile_size on every side, then "
             "trimmed before writing. 0 for pixel-independent operations "
@@ -75,11 +79,15 @@ class ChunkConfig(BaseModel):
         ),
     )
     output_format: Literal["cog", "zarr"] = Field(
-        default="cog", description="Real output backend -- a properly tiled, BigTIFF-safe GeoTIFF, or a chunked Zarr store.",
+        default="cog",
+        description="Real output backend -- a properly tiled, BigTIFF-safe GeoTIFF, or a chunked Zarr store.",
     )
-    nodata: float = Field(default=-9999.0, description="Real nodata value for the output.")
+    nodata: float = Field(
+        default=-9999.0, description="Real nodata value for the output."
+    )
     zarr_compressor: Literal["zstd", "lz4", "gzip", "zlib", "none"] = Field(
-        default="zstd", description="Real Zarr compressor -- only used when output_format='zarr'.",
+        default="zstd",
+        description="Real Zarr compressor -- only used when output_format='zarr'.",
     )
 
     @model_validator(mode="after")
@@ -106,7 +114,8 @@ class GeoParquetExportOptions(BaseModel):
         description="Real column name to Hive-partition the output by, instead of writing one flat file.",
     )
     compression: Literal["snappy", "zstd", "gzip", "none"] = Field(
-        default="snappy", description="Real Parquet-level compression codec.",
+        default="snappy",
+        description="Real Parquet-level compression codec.",
     )
 
 
@@ -123,7 +132,9 @@ class ZarrExportOptions(BaseModel):
 
     @field_validator("chunks")
     @classmethod
-    def _chunks_must_be_positive(cls, v: tuple[int, ...] | None) -> tuple[int, ...] | None:
+    def _chunks_must_be_positive(
+        cls, v: tuple[int, ...] | None
+    ) -> tuple[int, ...] | None:
         if v is not None and any(c <= 0 for c in v):
             msg = "ZarrExportOptions.chunks: every real chunk dimension must be > 0."
             raise ValueError(msg)

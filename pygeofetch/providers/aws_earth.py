@@ -122,9 +122,11 @@ class AWSEarthProvider(AbstractBaseProvider):
         stac_params["collections"] = collections
 
         # FIX: Use the native STAC 'query' extension for cloud cover.
-        # Earth Search reliably respects "eo:cloud_cover": {"lte": X}, 
+        # Earth Search reliably respects "eo:cloud_cover": {"lte": X},
         # whereas generic CQL2 filters are sometimes misinterpreted for this field.
-        cloud_limit = getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", None))
+        cloud_limit = getattr(
+            query, "cloud_cover_max", getattr(query, "cloud_cover", None)
+        )
         if cloud_limit is not None:
             if "query" not in stac_params:
                 stac_params["query"] = {}
@@ -290,7 +292,7 @@ class AWSEarthProvider(AbstractBaseProvider):
         )
 
     def get_capabilities(self) -> ProviderCapabilities:
-        
+
         return ProviderCapabilities(
             provider_id="aws_earth",
             name="AWS Earth Search",

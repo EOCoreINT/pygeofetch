@@ -227,9 +227,9 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
             data = resp.json()
             items = data.get("features", [])
             return [
-                self._parse_item(item)
+                parsed
                 for item in items
-                if self._parse_item(item) is not None
+                if (parsed := self._parse_item(item)) is not None
             ]
         except Exception as exc:
             self._logger.warning(f"{self.DISPLAY_NAME} search: {exc}")
@@ -275,15 +275,17 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
         start = time.time()
         output_paths, total_bytes = [], 0
 
-        auth_mode = (self._session.session_data or {}).get("auth_mode")
+        auth_mode = (self._active_session().session_data or {}).get("auth_mode")
         headers: dict[str, str] = {}
         auth: tuple[str, str] | None = None
         if auth_mode == "bearer_token":
-            headers["Authorization"] = f"Bearer {self._session.session_data['token']}"
+            headers["Authorization"] = (
+                f"Bearer {self._active_session().session_data['token']}"
+            )
         elif auth_mode == "basic":
             auth = (
-                self._session.session_data["username"],
-                self._session.session_data["password"],
+                self._active_session().session_data["username"],
+                self._active_session().session_data["password"],
             )
 
         for key, asset in (data.data_assets or data.assets).items():

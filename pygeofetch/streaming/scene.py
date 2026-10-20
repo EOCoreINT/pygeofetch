@@ -45,7 +45,11 @@ def streamed_band_paths(
     not have are omitted. Lets callers find files by the band name they asked
     for (``B04``) even when the provider calls the asset ``red``.
     """
-    pool = {k: a for k, a in (data.data_assets or data.assets).items() if _is_raster_asset(a)}
+    pool = {
+        k: a
+        for k, a in (data.data_assets or data.assets).items()
+        if _is_raster_asset(a)
+    }
     out: dict[str, Path] = {}
     for band in bands:
         hit = _strict_band_match(band, list(pool.keys()))
@@ -169,8 +173,12 @@ def read_scene_bands(
     for key, asset in select_streamable_assets(data, bands).items():
         href = _signed_href(prov, data, asset.href)
         out[key] = read_window(
-            href, bbox, bbox_crs=bbox_crs, decimation=decimation,
-            max_pixels=max_pixels, gdal_options=gdal_options,
+            href,
+            bbox,
+            bbox_crs=bbox_crs,
+            decimation=decimation,
+            max_pixels=max_pixels,
+            gdal_options=gdal_options,
         )
     return out
 
@@ -198,8 +206,11 @@ def stream_scene(
         prov = _get_provider(data, provider)
     except (StreamingUnsupportedError, ValueError) as exc:
         return DownloadResult(
-            status=DownloadStatus.FAILED, data_id=data.id, provider=data.provider,
-            error=str(exc), error_type="streaming_unsupported",
+            status=DownloadStatus.FAILED,
+            data_id=data.id,
+            provider=data.provider,
+            error=str(exc),
+            error_type="streaming_unsupported",
         )
 
     (Path(destination) / data.provider).mkdir(parents=True, exist_ok=True)
@@ -218,7 +229,11 @@ def stream_scene(
             assert_streamable(asset.href)
             href = _signed_href(prov, data, asset.href)
             info = stream_window_to_geotiff(
-                href, bbox, out_file, bbox_crs=bbox_crs, block_size=block_size,
+                href,
+                bbox,
+                out_file,
+                bbox_crs=bbox_crs,
+                block_size=block_size,
                 gdal_options=gdal_options,
             )
             paths.append(info["path"])
@@ -230,20 +245,29 @@ def stream_scene(
 
     if not paths:
         return DownloadResult(
-            status=DownloadStatus.FAILED, data_id=data.id, provider=data.provider,
-            error="; ".join(errors) or "no assets streamed", error_type="streaming",
+            status=DownloadStatus.FAILED,
+            data_id=data.id,
+            provider=data.provider,
+            error="; ".join(errors) or "no assets streamed",
+            error_type="streaming",
             duration_seconds=time.time() - t0,
         )
     res = DownloadResult(
-        status=DownloadStatus.COMPLETED, data_id=data.id, provider=data.provider,
-        output_path=paths[0], output_paths=paths, bytes_downloaded=total,
+        status=DownloadStatus.COMPLETED,
+        data_id=data.id,
+        provider=data.provider,
+        output_path=paths[0],
+        output_paths=paths,
+        bytes_downloaded=total,
         duration_seconds=time.time() - t0,
         aoi_coverage=min(coverages) if coverages else None,
     )
     if res.aoi_coverage is not None and res.aoi_coverage < 0.99:
         logger.warning(
             "%s covers only %.0f%% of the AOI (it runs past the scene edge); "
-            "stream an adjacent scene too or pick another.", data.id, 100 * res.aoi_coverage,
+            "stream an adjacent scene too or pick another.",
+            data.id,
+            100 * res.aoi_coverage,
         )
     if errors:
         res.error = "partial: " + "; ".join(errors)
@@ -264,5 +288,8 @@ def stream_many(
     if not items:
         return []
     with ThreadPoolExecutor(max_workers=max(1, int(parallel))) as pool:
-        futs = [pool.submit(stream_scene, d, bbox, destination, bands, **kwargs) for d in items]
+        futs = [
+            pool.submit(stream_scene, d, bbox, destination, bands, **kwargs)
+            for d in items
+        ]
         return [f.result() for f in futs]

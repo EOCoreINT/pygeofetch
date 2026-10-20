@@ -45,7 +45,9 @@ def _real_element84_item(
         "bbox": list(bbox),
         "geometry": {
             "type": "Polygon",
-            "coordinates": [[[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy], [minx, miny]]],
+            "coordinates": [
+                [[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy], [minx, miny]]
+            ],
         },
         "properties": {
             "datetime": "2024-06-15T15:39:41Z",
@@ -71,7 +73,9 @@ def _real_eo_bands_item(
         "bbox": list(bbox),
         "geometry": {
             "type": "Polygon",
-            "coordinates": [[[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy], [minx, miny]]],
+            "coordinates": [
+                [[minx, miny], [maxx, miny], [maxx, maxy], [minx, maxy], [minx, miny]]
+            ],
         },
         "properties": {
             "datetime": "2024-06-15T15:39:41Z",
@@ -80,7 +84,10 @@ def _real_eo_bands_item(
         },
         "assets": {
             "B02": {"href": "https://x/B02.tif", "eo:bands": [{"common_name": "blue"}]},
-            "B03": {"href": "https://x/B03.tif", "eo:bands": [{"common_name": "green"}]},
+            "B03": {
+                "href": "https://x/B03.tif",
+                "eo:bands": [{"common_name": "green"}],
+            },
             "B04": {"href": "https://x/B04.tif", "eo:bands": [{"common_name": "red"}]},
             "B08": {"href": "https://x/B08.tif", "eo:bands": [{"common_name": "nir"}]},
             "SCL": {"href": "https://x/SCL.tif"},
@@ -109,7 +116,8 @@ class TestBug1BandNamingAgainstRealSTAC:
 
     def test_genuinely_missing_band_still_rejected(self, validator):
         scene = SatelliteData.from_stac_item(
-            _real_element84_item(bands=("red", "green", "blue")), "aws_earth"  # no nir, no scl
+            _real_element84_item(bands=("red", "green", "blue")),
+            "aws_earth",  # no nir, no scl
         )
         report = validator.validate_scene(scene, AOI_SINGLE_TILE)
         assert report.passed is False
@@ -121,12 +129,16 @@ class TestBug2ProcessingBaselineVsLevel:
         """The specific real failure mode: a scene with
         s2:processing_baseline='05.10' and no processing:level field
         must not have '05.10' mistaken for the processing level."""
-        scene = SatelliteData.from_stac_item(_real_element84_item(processing_baseline="05.10"), "aws_earth")
+        scene = SatelliteData.from_stac_item(
+            _real_element84_item(processing_baseline="05.10"), "aws_earth"
+        )
         report = validator.validate_scene(scene, AOI_SINGLE_TILE)
         assert report.passed, f"unexpected issues: {report.issues}"
 
     def test_processing_baseline_value_never_appears_as_the_level(self, validator):
-        scene = SatelliteData.from_stac_item(_real_element84_item(processing_baseline="05.11"), "aws_earth")
+        scene = SatelliteData.from_stac_item(
+            _real_element84_item(processing_baseline="05.11"), "aws_earth"
+        )
         report = validator.validate_scene(scene, AOI_SINGLE_TILE)
         for issue in report.issues:
             assert "05.11" not in issue.message
@@ -155,7 +167,9 @@ class TestBug3AoiCoverageIsRealGeometryNotABug:
         assert report.metrics["aoi_coverage"] == pytest.approx(1.0)
         assert report.passed is True
 
-    def test_partial_coverage_from_a_real_multi_tile_aoi_correctly_flagged(self, validator):
+    def test_partial_coverage_from_a_real_multi_tile_aoi_correctly_flagged(
+        self, validator
+    ):
         # A scene footprint covering only the western quarter of a
         # wider AOI -- the real situation when an AOI spans more than
         # one MGRS tile.
@@ -181,12 +195,16 @@ class TestBug3AoiCoverageIsRealGeometryNotABug:
         )
         wide_aoi = box(-74.1, 40.6, -73.7, 40.9)
         report = validator.validate_scene(scene, wide_aoi)
-        assert report.passed is True  # same low coverage, now within the configured threshold
+        assert (
+            report.passed is True
+        )  # same low coverage, now within the configured threshold
 
 
 class TestBug4CloudCoverHardFailureDefault:
     def test_high_cloud_cover_warns_but_keeps_scene_by_default(self, validator):
-        scene = SatelliteData.from_stac_item(_real_element84_item(cloud_cover=45.0), "aws_earth")
+        scene = SatelliteData.from_stac_item(
+            _real_element84_item(cloud_cover=45.0), "aws_earth"
+        )
         report = validator.validate_scene(scene, AOI_SINGLE_TILE)
         assert report.passed is True
         assert report.errors == []
@@ -194,14 +212,18 @@ class TestBug4CloudCoverHardFailureDefault:
         assert report.warnings[0].severity == "WARNING"
 
     def test_run_preflight_keeps_high_cloud_cover_scene_in_results(self, validator):
-        scene = SatelliteData.from_stac_item(_real_element84_item(cloud_cover=99.0), "aws_earth")
+        scene = SatelliteData.from_stac_item(
+            _real_element84_item(cloud_cover=99.0), "aws_earth"
+        )
         safe = validator.run_preflight([scene], AOI_SINGLE_TILE)
         assert len(safe) == 1
 
     def test_explicit_hard_failure_opt_in_still_rejects(self):
         cfg = OpticalValidationConfig(cloud_cover_is_hard_failure=True)
         validator = OpticalPreflightValidator(cfg)
-        scene = SatelliteData.from_stac_item(_real_element84_item(cloud_cover=45.0), "aws_earth")
+        scene = SatelliteData.from_stac_item(
+            _real_element84_item(cloud_cover=45.0), "aws_earth"
+        )
         report = validator.validate_scene(scene, AOI_SINGLE_TILE)
         assert report.passed is False
         assert report.errors[0].code == "CLOUD_COVER_EXCEEDED"
@@ -214,8 +236,12 @@ class TestFullRealCatalogSceneEndToEnd:
 
     def test_realistic_batch_from_element84_mostly_passes(self, validator):
         scenes = [
-            SatelliteData.from_stac_item(_real_element84_item(scene_id=f"scene_{i}", cloud_cover=c), "aws_earth")
-            for i, c in enumerate([0.0, 5.0, 12.0, 30.0, 60.0])  # varied, realistic cloud cover
+            SatelliteData.from_stac_item(
+                _real_element84_item(scene_id=f"scene_{i}", cloud_cover=c), "aws_earth"
+            )
+            for i, c in enumerate(
+                [0.0, 5.0, 12.0, 30.0, 60.0]
+            )  # varied, realistic cloud cover
         ]
         safe = validator.run_preflight(scenes, AOI_SINGLE_TILE)
         # Cloud cover alone never rejects by default (warning, not hard

@@ -19,7 +19,6 @@ travels with the array rather than needing a separate sidecar file.
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 from typing import Any
@@ -101,11 +100,18 @@ def write_raster_to_zarr(
         if compressor != "none":
             from zarr.codecs import BloscCodec
 
-            codec = BloscCodec(cname=compressor if compressor in ("zstd", "lz4", "gzip", "zlib") else "zstd")
+            cname: Any = (
+                compressor if compressor in ("zstd", "lz4", "gzip", "zlib") else "zstd"
+            )
+            codec = BloscCodec(cname=cname)
 
         arr = zarr.create_array(
-            str(output), shape=data.shape, chunks=chunks if chunks else "auto",
-            dtype=data.dtype, compressors=[codec] if codec else None, overwrite=True,
+            str(output),
+            shape=data.shape,
+            chunks=chunks if chunks else "auto",
+            dtype=data.dtype,
+            compressors=[codec] if codec else None,
+            overwrite=True,
         )
         arr[:] = data
     else:
@@ -120,11 +126,16 @@ def write_raster_to_zarr(
         # in both real versions.
         v2_compressor = None
         if compressor != "none":
-            v2_compressor = zarr.Blosc(cname=compressor if compressor in ("zstd", "lz4", "zlib") else "zstd")
+            v2_compressor = zarr.Blosc(
+                cname=compressor if compressor in ("zstd", "lz4", "zlib") else "zstd"
+            )
 
         arr = zarr.open(
-            str(output), mode="w", shape=data.shape,
-            chunks=chunks if chunks else True, dtype=data.dtype,
+            str(output),
+            mode="w",
+            shape=data.shape,
+            chunks=chunks if chunks else True,
+            dtype=data.dtype,
             compressor=v2_compressor,
         )
         arr[:] = data
@@ -138,7 +149,10 @@ def write_raster_to_zarr(
 
     logger.info(
         "Wrote real Zarr array %s, shape=%s, chunks=%s, compressor=%s",
-        output, data.shape, arr.chunks, compressor,
+        output,
+        data.shape,
+        arr.chunks,
+        compressor,
     )
     return output
 
@@ -212,10 +226,14 @@ def zarr_to_geotiff(path: str | Path, output: str | Path) -> Path:
 
     data = read_zarr_window(path)
     profile = {
-        "driver": "GTiff", "height": data.shape[-2], "width": data.shape[-1],
+        "driver": "GTiff",
+        "height": data.shape[-2],
+        "width": data.shape[-1],
         "count": 1 if data.ndim == 2 else data.shape[0],
-        "dtype": str(data.dtype), "transform": Affine(*meta["transform"]),
-        "crs": meta["crs"], "BIGTIFF": "YES",
+        "dtype": str(data.dtype),
+        "transform": Affine(*meta["transform"]),
+        "crs": meta["crs"],
+        "BIGTIFF": "YES",
     }
     if meta["nodata"] is not None:
         profile["nodata"] = meta["nodata"]

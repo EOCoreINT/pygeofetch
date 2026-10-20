@@ -135,13 +135,19 @@ def find_overlapping_bursts(
         ground_point = geodetic_to_ecef(lat, lon, 0.0)
         try:
             zero_doppler_time = find_zero_doppler_time(
-                orbit_times, orbit_positions, orbit_velocities, ground_point,
+                orbit_times,
+                orbit_positions,
+                orbit_velocities,
+                ground_point,
                 initial_time_guess=approx_time_guess,
             )
         except Exception as exc:
             logger.warning(
                 "find_overlapping_bursts: could not solve real zero-Doppler time "
-                "for AOI point (%s, %s) -- skipped (%s).", lon, lat, exc,
+                "for AOI point (%s, %s) -- skipped (%s).",
+                lon,
+                lat,
+                exc,
             )
             continue
 
@@ -228,14 +234,20 @@ def read_burst_rows_remote(
 
     vsi_path = f"/vsizip/vsicurl/{safe_zip_url}/{measurement_member_path}"
 
-    with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR"), rasterio.open(vsi_path) as src:
+    with (
+        rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR"),
+        rasterio.open(vsi_path) as src,
+    ):
         window = Window(0, row_start, src.width, row_end - row_start)
         data = src.read(1, window=window)
 
     logger.info(
         "read_burst_rows_remote: fetched real rows %d-%d (bursts %s) from %s -- "
         "%.2f%% of the real full scene's real row count never touched.",
-        row_start, row_end, burst_indices, measurement_member_path,
+        row_start,
+        row_end,
+        burst_indices,
+        measurement_member_path,
         100 * (1 - (row_end - row_start) / max(row_end, 1)),
     )
     return data

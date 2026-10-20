@@ -59,6 +59,7 @@ def _display_name(safe_zip_path: Any) -> str:
     name = getattr(safe_zip_path, "name", None)
     return Path(str(name)).name if name else "<remote-stream>"
 
+
 logger = logging.getLogger("pygeofetch.insar.annotation")
 
 SPEED_OF_LIGHT = 299792458.0

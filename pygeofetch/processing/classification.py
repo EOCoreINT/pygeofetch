@@ -36,7 +36,9 @@ def _require_sklearn():
 
         return sklearn
     except ImportError:
-        msg = 'scikit-learn is required for classification: pip install "pygeofetch[ml]"'
+        msg = (
+            'scikit-learn is required for classification: pip install "pygeofetch[ml]"'
+        )
         raise ImportError(msg) from None
 
 
@@ -138,7 +140,7 @@ class Classifier:
             bbox, geometry, geometry_crs: Optional post-clip, same
                         handling as Preprocessor.clip().
         """
-        sklearn = _require_sklearn()
+        _require_sklearn()
         np = _require_numpy()
         from sklearn.cluster import KMeans
 
@@ -156,17 +158,26 @@ class Classifier:
         result_arr = labels.reshape(height, width).astype(np.float32)
         result_arr[result_arr == -1] = np.nan
 
-        out_path = Path(output) if output else Path(inputs[0]).with_name(
-            Path(inputs[0]).stem + "_kmeans.tif"
+        out_path = (
+            Path(output)
+            if output
+            else Path(inputs[0]).with_name(Path(inputs[0]).stem + "_kmeans.tif")
         )
         _safe_write_band(result_arr, profile, out_path, nodata=-9999.0)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
 
         logger.info("K-means (%d clusters) → %s", n_clusters, out_path.name)
         return ProcessingResult(
-            success=True, operation="kmeans", output_path=out_path,
+            success=True,
+            operation="kmeans",
+            output_path=out_path,
             input_path=Path(inputs[0]),
-            metadata={"n_clusters": n_clusters, "valid_pixel_fraction": float(valid_mask.mean())},
+            metadata={
+                "n_clusters": n_clusters,
+                "valid_pixel_fraction": float(valid_mask.mean()),
+            },
         )
 
     @_timed
@@ -205,15 +216,15 @@ class Classifier:
         ``.metadata`` (never hidden or assumed -- computed on the
         held-out test split every time).
         """
-        sklearn = _require_sklearn()
+        _require_sklearn()
         np = _require_numpy()
         gpd = _require_geopandas()
         joblib = _require_joblib()
-        rasterio = _require_rasterio()
+        _require_rasterio()
         from sklearn.ensemble import RandomForestClassifier
-        from sklearn.svm import SVC
-        from sklearn.model_selection import train_test_split
         from sklearn.metrics import accuracy_score, classification_report
+        from sklearn.model_selection import train_test_split
+        from sklearn.svm import SVC
 
         stack, profile = _read_stack(inputs)
         n_bands, height, width = stack.shape
@@ -229,7 +240,11 @@ class Classifier:
             raise ValueError(msg)
 
         raster_crs = profile.get("crs")
-        if raster_crs is not None and samples_gdf.crs is not None and str(samples_gdf.crs) != str(raster_crs):
+        if (
+            raster_crs is not None
+            and samples_gdf.crs is not None
+            and str(samples_gdf.crs) != str(raster_crs)
+        ):
             samples_gdf = samples_gdf.to_crs(raster_crs)
 
         X, y = [], []
@@ -248,8 +263,13 @@ class Classifier:
                 # Real, direct approach: rasterize this one polygon onto
                 # the stack's own real grid, then take every pixel it covers.
                 from rasterio.features import geometry_mask
-                poly_mask = ~geometry_mask([geom.__geo_interface__], out_shape=(height, width),
-                                            transform=transform, invert=False)
+
+                poly_mask = ~geometry_mask(
+                    [geom.__geo_interface__],
+                    out_shape=(height, width),
+                    transform=transform,
+                    invert=False,
+                )
                 rows_idx, cols_idx = np.where(poly_mask)
                 for r_i, c_i in zip(rows_idx, cols_idx):
                     pixel = stack[:, r_i, c_i]
@@ -268,11 +288,17 @@ class Classifier:
 
         X, y = np.array(X), np.array(y)
         X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=test_size, random_state=random_state, stratify=y if len(set(y)) > 1 else None,
+            X,
+            y,
+            test_size=test_size,
+            random_state=random_state,
+            stratify=y if len(set(y)) > 1 else None,
         )
 
         if model_type == "random_forest":
-            model = RandomForestClassifier(n_estimators=n_estimators, random_state=random_state, **model_kwargs)
+            model = RandomForestClassifier(
+                n_estimators=n_estimators, random_state=random_state, **model_kwargs
+            )
         elif model_type == "svm":
             model = SVC(**model_kwargs)
         else:
@@ -282,22 +308,33 @@ class Classifier:
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         accuracy = float(accuracy_score(y_test, y_pred))
-        report = classification_report(y_test, y_pred, output_dict=True, zero_division=0)
+        report = classification_report(
+            y_test, y_pred, output_dict=True, zero_division=0
+        )
 
         output_model = Path(output_model)
         output_model.parent.mkdir(parents=True, exist_ok=True)
-        joblib.dump({"model": model, "n_bands": n_bands, "model_type": model_type}, output_model)
+        joblib.dump(
+            {"model": model, "n_bands": n_bands, "model_type": model_type}, output_model
+        )
 
         logger.info(
             "Trained %s on %d real samples (%d held out) -- accuracy=%.3f",
-            model_type, len(X_train), len(X_test), accuracy,
+            model_type,
+            len(X_train),
+            len(X_test),
+            accuracy,
         )
         return ProcessingResult(
-            success=True, operation="train", output_path=output_model,
+            success=True,
+            operation="train",
+            output_path=output_model,
             input_path=Path(training_data),
             metadata={
-                "model_type": model_type, "n_train_samples": len(X_train),
-                "n_test_samples": len(X_test), "test_accuracy": accuracy,
+                "model_type": model_type,
+                "n_train_samples": len(X_train),
+                "n_test_samples": len(X_test),
+                "test_accuracy": accuracy,
                 "classification_report": report,
             },
         )
@@ -349,19 +386,27 @@ class Classifier:
                 # codes rather than silently failing to write a float raster.
                 classes = sorted(set(preds))
                 code_map = {c: i for i, c in enumerate(classes)}
-                predictions[valid_mask] = np.array([code_map[p] for p in preds], dtype=np.float32)
+                predictions[valid_mask] = np.array(
+                    [code_map[p] for p in preds], dtype=np.float32
+                )
 
         result_arr = predictions.reshape(height, width)
 
-        out_path = Path(output) if output else Path(inputs[0]).with_name(
-            Path(inputs[0]).stem + "_classified.tif"
+        out_path = (
+            Path(output)
+            if output
+            else Path(inputs[0]).with_name(Path(inputs[0]).stem + "_classified.tif")
         )
         _safe_write_band(result_arr, profile, out_path, nodata=-9999.0)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
 
         logger.info("Prediction → %s", out_path.name)
         return ProcessingResult(
-            success=True, operation="predict", output_path=out_path,
+            success=True,
+            operation="predict",
+            output_path=out_path,
             input_path=Path(inputs[0]),
             metadata={"valid_pixel_fraction": float(valid_mask.mean())},
         )

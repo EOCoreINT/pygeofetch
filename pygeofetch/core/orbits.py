@@ -22,13 +22,55 @@ Typical usage::
 from __future__ import annotations
 
 import logging
+import os
 import re
+import threading
+import time
 from datetime import datetime
 from pathlib import Path
 
 import requests
 
 logger = logging.getLogger("pygeofetch.orbits")
+
+# ── directory-listing cache ────────────────────────────────────────────────
+# ESA serves one HTML directory listing per satellite and month.  A stack of
+# 60 dates spread over a few years only needs a few dozen distinct listings,
+# but the code used to download the same listing again for every single date.
+# Listings are cached in memory for a short time and fetched once even when
+# several threads ask for the same one at the same moment.
+_LISTING_TTL_S = 900.0
+_LISTING_CACHE: dict[str, tuple[float, str]] = {}
+_LISTING_LOCKS: dict[str, threading.Lock] = {}
+_LISTING_GUARD = threading.Lock()
+
+
+def clear_orbit_listing_cache() -> None:
+    """Forget all cached directory listings (mainly for tests)."""
+    with _LISTING_GUARD:
+        _LISTING_CACHE.clear()
+        _LISTING_LOCKS.clear()
+
+
+def _get_listing(url: str, timeout: int) -> str:
+    """Return the HTML listing at *url*, using a short-lived in-memory cache."""
+    with _LISTING_GUARD:
+        hit = _LISTING_CACHE.get(url)
+        if hit and time.monotonic() - hit[0] < _LISTING_TTL_S:
+            return hit[1]
+        lock = _LISTING_LOCKS.setdefault(url, threading.Lock())
+    with lock:
+        with _LISTING_GUARD:
+            hit = _LISTING_CACHE.get(url)
+            if hit and time.monotonic() - hit[0] < _LISTING_TTL_S:
+                return hit[1]
+        resp = requests.get(url, timeout=timeout)
+        resp.raise_for_status()
+        text = resp.text
+        with _LISTING_GUARD:
+            _LISTING_CACHE[url] = (time.monotonic(), text)
+        return text
+
 
 POEORB_BASE_URL = "https://step.esa.int/auxdata/orbits/Sentinel-1/POEORB"
 RESORB_BASE_URL = "https://step.esa.int/auxdata/orbits/Sentinel-1/RESORB"
@@ -103,19 +145,18 @@ def fetch_orbit_file(
     # Check cache first
     cached = _find_cached_orbit(out_dir, sat, acq_dt, orbit_type)
     if cached:
-        logger.info("Using cached orbit file: %s", cached.name)
+        logger.debug("Using cached orbit file: %s", cached.name)
         return str(cached)
 
     base_url = POEORB_BASE_URL if orbit_type == "precise" else RESORB_BASE_URL
     year_month = acq_dt.strftime("%Y/%m")
     listing_url = f"{base_url}/{_SAT_DIR.get(sat, sat)}/{year_month}/"
 
-    logger.info("Searching orbit files at: %s", listing_url)
+    logger.debug("Searching orbit files at: %s", listing_url)
 
     try:
-        resp = requests.get(listing_url, timeout=timeout)
-        resp.raise_for_status()
-        orbit_filename = _find_matching_orbit_file(resp.text, acq_dt)
+        listing_html = _get_listing(listing_url, timeout)
+        orbit_filename = _find_matching_orbit_file(listing_html, acq_dt)
         if not orbit_filename:
             logger.warning(
                 "No %s orbit file found for %s on %s. "
@@ -132,9 +173,9 @@ def fetch_orbit_file(
         download_url = f"{listing_url}{orbit_filename}.zip"
         output_path = out_dir / orbit_filename
 
-        logger.info("Downloading orbit file: %s", orbit_filename)
+        logger.debug("Downloading orbit file: %s", orbit_filename)
         _download_file(download_url, output_path, timeout=timeout)
-        logger.info(
+        logger.debug(
             "Orbit file saved: %s (%.1f KB)",
             output_path,
             output_path.stat().st_size / 1024,
@@ -268,7 +309,11 @@ def _download_file(url: str, output_path: Path, timeout: int = 60) -> None:
     """
     import zipfile
 
-    zip_path = output_path.with_suffix(output_path.suffix + ".zip")
+    # Unique per call, so two threads fetching the same orbit never write to
+    # the same partial file.
+    zip_path = output_path.with_suffix(
+        output_path.suffix + f".{os.getpid()}.{threading.get_ident()}.part.zip"
+    )
 
     with requests.get(url, stream=True, timeout=timeout) as r:
         r.raise_for_status()
@@ -285,12 +330,16 @@ def _download_file(url: str, output_path: Path, timeout: int = 60) -> None:
             if not members:
                 # Not actually a zip, or doesn't contain an .EOF — treat
                 # the downloaded content as the orbit file directly
-                zip_path.rename(output_path)
+                os.replace(zip_path, output_path)
                 return
-            with zf.open(members[0]) as src, open(output_path, "wb") as dst:
+            tmp_out = output_path.with_name(
+                f"{output_path.name}.{os.getpid()}.{threading.get_ident()}.tmp"
+            )
+            with zf.open(members[0]) as src, open(tmp_out, "wb") as dst:
                 dst.write(src.read())
+            os.replace(tmp_out, output_path)
         zip_path.unlink(missing_ok=True)
     except zipfile.BadZipFile:
         # Server returned a non-zip response (e.g. plain .EOF, or an
         # error page) — use it as-is rather than failing outright
-        zip_path.rename(output_path)
+        os.replace(zip_path, output_path)

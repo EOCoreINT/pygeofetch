@@ -314,7 +314,9 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
             )
             return {}
 
-        cache = self._session.session_data.setdefault("s3_credentials_by_daac", {})
+        cache = self._active_session().session_data.setdefault(
+            "s3_credentials_by_daac", {}
+        )
         cached = cache.get(data_center)
         if cached:
             expiration = cached.get("_expires_at")
@@ -324,7 +326,9 @@ class NASAEarthdataCloudProvider(AbstractBaseProvider):
         try:
             resp = httpx.get(
                 endpoint,
-                headers={"Authorization": f"Bearer {self._session.access_token}"},
+                headers={
+                    "Authorization": f"Bearer {self._active_session().access_token}"
+                },
                 timeout=30,
             )
             if resp.status_code != 200:

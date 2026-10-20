@@ -81,10 +81,16 @@ def bbox_to_pixel_window(
 
     min_x, min_y, max_x, max_y = bbox
 
-    if bbox_crs is not None and raster_crs is not None and str(bbox_crs) != str(raster_crs):
+    if (
+        bbox_crs is not None
+        and raster_crs is not None
+        and str(bbox_crs) != str(raster_crs)
+    ):
         from rasterio.warp import transform_bounds
 
-        min_x, min_y, max_x, max_y = transform_bounds(bbox_crs, raster_crs, min_x, min_y, max_x, max_y)
+        min_x, min_y, max_x, max_y = transform_bounds(
+            bbox_crs, raster_crs, min_x, min_y, max_x, max_y
+        )
 
     row_start, col_start = rasterio.transform.rowcol(transform, min_x, max_y)
     row_stop, col_stop = rasterio.transform.rowcol(transform, max_x, min_y)
@@ -105,10 +111,14 @@ def bbox_to_pixel_window(
         )
         raise ValueError(msg)
 
-    return PixelWindow(col_off=int(col_off), row_off=int(row_off), width=int(width), height=int(height))
+    return PixelWindow(
+        col_off=int(col_off), row_off=int(row_off), width=int(width), height=int(height)
+    )
 
 
-def pixel_window_to_bounds(window: PixelWindow, transform: Any) -> tuple[float, float, float, float]:
+def pixel_window_to_bounds(
+    window: PixelWindow, transform: Any
+) -> tuple[float, float, float, float]:
     """
     Real, inverse translation -- a pixel window back to its real
     geographic bounds in the raster's own CRS. Useful for confirming
@@ -117,4 +127,8 @@ def pixel_window_to_bounds(window: PixelWindow, transform: Any) -> tuple[float, 
     """
     from rasterio.transform import array_bounds
 
-    return array_bounds(window.height, window.width, transform * transform.translation(window.col_off, window.row_off))
+    return array_bounds(
+        window.height,
+        window.width,
+        transform * transform.translation(window.col_off, window.row_off),
+    )

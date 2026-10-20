@@ -152,8 +152,8 @@ class InpeCbersProvider(AbstractBaseProvider):
                 return []
             data = resp.json()
             items = data.get("features", [])
-            results = [self._parse_item(item) for item in items]
-            results = [r for r in results if r is not None]
+            parsed = [self._parse_item(item) for item in items]
+            results = [r for r in parsed if r is not None]
             if query.cloud_cover_max is not None:
                 results = [
                     r

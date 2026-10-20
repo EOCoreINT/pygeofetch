@@ -24,7 +24,6 @@ Example::
     geojson = searcher.to_geojson(results)
 """
 
-
 from __future__ import annotations
 
 import json
@@ -59,10 +58,12 @@ class SearchCache:
         """Generate cache key from query and provider."""
         import hashlib
 
-        # FIX: Check for both 'cloud_cover_max' and 'cloud_cover' to ensure 
+        # FIX: Check for both 'cloud_cover_max' and 'cloud_cover' to ensure
         # the cache key is consistent regardless of the model's exact field name.
-        cloud_limit = getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
-        
+        cloud_limit = (
+            getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
+        )
+
         data = json.dumps(
             {
                 "provider": provider,
@@ -146,12 +147,14 @@ class FederatedSearcher:
         _bbox = query.bbox or None
         _sd = getattr(query, "start_date", "—")
         _ed = getattr(query, "end_date", "—")
-        
-        # FIX: Robustly fetch the cloud cover limit, checking both possible 
+
+        # FIX: Robustly fetch the cloud cover limit, checking both possible
         # attribute names used in different versions of the SearchQuery model.
-        _cc = getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
+        _cc = (
+            getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
+        )
         _pt = getattr(query, "product_type", None) or "any"
-        
+
         print_search_header(providers, _bbox, _sd, _ed, _cc, _pt)
 
         all_results: list[SatelliteData] = []
@@ -189,13 +192,16 @@ class FederatedSearcher:
         # FIX: STRICT CLIENT-SIDE ENFORCEMENT
         # Some providers (like aws_earth) may ignore server-side cloud cover filters.
         # We must enforce the limit locally to guarantee the user's constraint is met.
-        cloud_limit = getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
+        cloud_limit = (
+            getattr(query, "cloud_cover_max", getattr(query, "cloud_cover", 100)) or 100
+        )
         if cloud_limit < 100:
             filtered_results = [
-                item for item in sorted_results 
+                item
+                for item in sorted_results
                 if item.cloud_cover is None or item.cloud_cover <= cloud_limit
             ]
-            # Note: We slice after filtering to ensure we return up to max_results 
+            # Note: We slice after filtering to ensure we return up to max_results
             # of VALID scenes, rather than padding with cloudy scenes.
             final = filtered_results[: query.max_results]
         else:

@@ -35,8 +35,11 @@ __author__ = "PyGeoFetch Contributors"
 __license__ = "MIT"
 
 from pygeofetch.core.engine import PyGeoFetch  # noqa: F401
+from pygeofetch.core.logging import (
+    quiet_logs,  # noqa: F401  (notebook-friendly logging)
+)
 
-__all__ = ["PyGeoFetch", "__version__"]
+__all__ = ["PyGeoFetch", "quiet_logs", "__version__"]
 
 
 # Optional modules — lazy imported to avoid hard dependency errors

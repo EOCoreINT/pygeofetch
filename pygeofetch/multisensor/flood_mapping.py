@@ -147,15 +147,21 @@ def multi_sensor_flood_pipeline(
     def _read_on_sar_grid(path, label):
         with rasterio.open(path) as src:
             if (src.height, src.width) != sar_shape:
-                return None, None, (
-                    f"multi_sensor_flood_pipeline: {label} shape "
-                    f"{(src.height, src.width)} doesn't match the real SAR "
-                    f"grid {sar_shape} -- reproject it onto the SAR "
-                    f"raster's real grid first."
+                return (
+                    None,
+                    None,
+                    (
+                        f"multi_sensor_flood_pipeline: {label} shape "
+                        f"{(src.height, src.width)} doesn't match the real SAR "
+                        f"grid {sar_shape} -- reproject it onto the SAR "
+                        f"raster's real grid first."
+                    ),
                 )
             return src.read(1), src.nodata, None
 
-    green_raw, green_nodata, err = _read_on_sar_grid(optical_green_path, "optical green")
+    green_raw, green_nodata, err = _read_on_sar_grid(
+        optical_green_path, "optical green"
+    )
     if err is None:
         nir_raw, nir_nodata, err = _read_on_sar_grid(optical_nir_path, "optical NIR")
     if err is None and cloud_mask_path is not None:

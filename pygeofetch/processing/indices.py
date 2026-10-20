@@ -18,7 +18,6 @@ from pygeofetch.processing.base import (
     _timed,
     chunked_index_compute,
     clip_output_if_requested,
-    detect_band_roles,
     resolve_shared_bands,
     should_chunk,
 )
@@ -51,9 +50,8 @@ class SpectralIndices:
         nbr  = client.indices.nbr(nir="B08.tif", swir2="B12.tif")
     """
 
-
     # ── internal helpers ──────────────────────────────────────────────────
-    
+
     @staticmethod
     def _read(path: str | Path, ref_shape=None, band: int = 1):
         """
@@ -64,7 +62,7 @@ class SpectralIndices:
         Returns (data_float32, profile, nodata).
         """
         return _safe_read_band(path, band=band, out_shape=ref_shape)
-    
+
     @staticmethod
     def _norm_diff(a, b):
         """(a - b) / (a + b) with safe division → NaN where denominator=0."""
@@ -125,7 +123,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[red_ref, nir_ref],
                 formula=lambda B: (B[1] - B[0]) / (B[1] + B[0]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             red_band = red_ref[1] if isinstance(red_ref, tuple) else 1
@@ -134,7 +133,9 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=red_d.shape, band=nir_band)
             result = self._norm_diff(nir_d, red_d)
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         logger.info("NDVI → %s", out_path.name)
         return ProcessingResult(
             success=True, operation="ndvi", output_path=out_path, input_path=Path(red)
@@ -189,7 +190,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[rededge_ref, nir_ref],
                 formula=lambda B: (B[1] - B[0]) / (B[1] + B[0]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             re_band = rededge_ref[1] if isinstance(rededge_ref, tuple) else 1
@@ -199,9 +201,14 @@ class SpectralIndices:
             result = self._norm_diff(nir_d, rededge_d)
             self._save(result, profile, out_path)
         logger.info("NDRE → %s", out_path.name)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
-            success=True, operation="ndre", output_path=out_path, input_path=Path(rededge)
+            success=True,
+            operation="ndre",
+            output_path=out_path,
+            input_path=Path(rededge),
         )
 
     # ── E2: EVI ──────────────────────────────────────────────────────────
@@ -238,7 +245,11 @@ class SpectralIndices:
         blue_ref, red_ref, nir_ref = blue, red, nir
         if str(blue) == str(red) == str(nir):
             resolved = resolve_shared_bands(blue, ["blue", "red", "nir"])
-            blue_ref, red_ref, nir_ref = resolved["blue"], resolved["red"], resolved["nir"]
+            blue_ref, red_ref, nir_ref = (
+                resolved["blue"],
+                resolved["red"],
+                resolved["nir"],
+            )
 
         out_path = _resolve_output(Path(red), output, "evi")
 
@@ -254,7 +265,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[blue_ref, red_ref, nir_ref],
                 formula=_evi_formula,
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             blue_band = blue_ref[1] if isinstance(blue_ref, tuple) else 1
@@ -266,7 +278,9 @@ class SpectralIndices:
             result = _evi_formula([blue_d, red_d, nir_d])
             self._save(result, profile, out_path)
         logger.info("EVI → %s", out_path.name)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True, operation="evi", output_path=out_path, input_path=Path(red)
         )
@@ -308,7 +322,9 @@ class SpectralIndices:
             red_d, nir_d = B
             denom = nir_d + red_d + L
             with np.errstate(divide="ignore", invalid="ignore"):
-                return np.where(denom != 0, (nir_d - red_d) / denom * (1 + L), float("nan"))
+                return np.where(
+                    denom != 0, (nir_d - red_d) / denom * (1 + L), float("nan")
+                )
 
         if chunked == "auto":
             chunked = should_chunk([red_ref, nir_ref])
@@ -316,7 +332,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[red_ref, nir_ref],
                 formula=_savi_formula,
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             red_band = red_ref[1] if isinstance(red_ref, tuple) else 1
@@ -325,7 +342,9 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=red_d.shape, band=nir_band)
             result = _savi_formula([red_d, nir_d])
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True, operation="savi", output_path=out_path, input_path=Path(red)
         )
@@ -366,7 +385,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[green_ref, nir_ref],
                 formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             green_band = green_ref[1] if isinstance(green_ref, tuple) else 1
@@ -375,7 +395,9 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=green_d.shape, band=nir_band)
             result = self._norm_diff(green_d, nir_d)
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True, operation="ndwi", output_path=out_path, input_path=Path(green)
         )
@@ -417,7 +439,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[green_ref, swir_ref],
                 formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             green_band = green_ref[1] if isinstance(green_ref, tuple) else 1
@@ -426,7 +449,9 @@ class SpectralIndices:
             swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape, band=swir_band)
             result = self._norm_diff(green_d, swir_d)
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True,
             operation="mndwi",
@@ -470,7 +495,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[nir_ref, swir_ref],
                 formula=lambda B: (B[1] - B[0]) / (B[1] + B[0]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
@@ -479,7 +505,9 @@ class SpectralIndices:
             nir_d, _, _ = self._read(nir, ref_shape=swir_d.shape, band=nir_band)
             result = self._norm_diff(swir_d, nir_d)
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True, operation="ndbi", output_path=out_path, input_path=Path(nir)
         )
@@ -520,7 +548,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[green_ref, swir_ref],
                 formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             green_band = green_ref[1] if isinstance(green_ref, tuple) else 1
@@ -529,7 +558,9 @@ class SpectralIndices:
             swir_d, _, _ = self._read(swir1, ref_shape=green_d.shape, band=swir_band)
             result = self._norm_diff(green_d, swir_d)
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True, operation="ndsi", output_path=out_path, input_path=Path(green)
         )
@@ -571,7 +602,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[nir_ref, swir_ref],
                 formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
@@ -580,7 +612,9 @@ class SpectralIndices:
             swir_d, _, _ = self._read(swir1, ref_shape=nir_d.shape, band=swir_band)
             result = self._norm_diff(nir_d, swir_d)
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True, operation="ndmi", output_path=out_path, input_path=Path(nir)
         )
@@ -622,7 +656,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=[nir_ref, swir_ref],
                 formula=lambda B: (B[0] - B[1]) / (B[0] + B[1]),
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             nir_band = nir_ref[1] if isinstance(nir_ref, tuple) else 1
@@ -631,7 +666,9 @@ class SpectralIndices:
             swir2_d, _, _ = self._read(swir2, ref_shape=nir_d.shape, band=swir_band)
             result = self._norm_diff(nir_d, swir2_d)
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True, operation="nbr", output_path=out_path, input_path=Path(nir)
         )
@@ -1086,7 +1123,8 @@ class SpectralIndices:
             chunked_index_compute(
                 inputs=inputs,
                 formula=lambda B: eval(expression, {"B": B, "np": np}),  # noqa: S307
-                output=out_path, tile_size=tile_size,
+                output=out_path,
+                tile_size=tile_size,
             )
         else:
             B, profile, ref_shape = [], None, None
@@ -1100,7 +1138,9 @@ class SpectralIndices:
 
             result = eval(expression, {"B": B, "np": np})  # noqa: S307
             self._save(result, profile, out_path)
-        clip_output_if_requested(out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs)
+        clip_output_if_requested(
+            out_path, bbox=bbox, geometry=geometry, geometry_crs=geometry_crs
+        )
         return ProcessingResult(
             success=True,
             operation="band_math",

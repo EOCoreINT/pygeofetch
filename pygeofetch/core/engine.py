@@ -38,9 +38,9 @@ from pygeofetch.core.logging import configure_logging, get_logger
 from pygeofetch.core.searcher import FederatedSearcher
 from pygeofetch.models.satellite_data import SatelliteData
 from pygeofetch.processing.batch import BatchProcessor
+from pygeofetch.processing.classification import Classifier
 from pygeofetch.processing.indices import SpectralIndices
 from pygeofetch.processing.postprocessor import PostProcessor
-from pygeofetch.processing.classification import Classifier
 from pygeofetch.processing.preprocessor import Preprocessor
 from pygeofetch.processing.sar import SARProcessor
 from pygeofetch.utils.geo_utils import _normalise_satellite_name
@@ -528,8 +528,14 @@ class PyGeoFetch:
         if isinstance(data, SatelliteData):
             data = [data]
         return stream_many(
-            data, bbox, Path(destination), bands, parallel=parallel,
-            overwrite=overwrite, bbox_crs=bbox_crs, block_size=block_size,
+            data,
+            bbox,
+            Path(destination),
+            bands,
+            parallel=parallel,
+            overwrite=overwrite,
+            bbox_crs=bbox_crs,
+            block_size=block_size,
         )
 
     def _download_with_optical_preflight(

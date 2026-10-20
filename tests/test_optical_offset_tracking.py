@@ -40,10 +40,17 @@ class TestSyntheticSubpixelShift:
         not a number invented ahead of time."""
         base = _realistic_texture()
         true_dx_px, true_dy_px = 2.5, -1.3
-        secondary = nd_shift(base, shift=(-true_dy_px, true_dx_px), order=3, mode="reflect")
+        secondary = nd_shift(
+            base, shift=(-true_dy_px, true_dx_px), order=3, mode="reflect"
+        )
 
         result = compute_pixel_offsets(
-            base, secondary, pixel_size_m=PIXEL_SIZE_M, window_size=64, step_size=32, snr_threshold=3.0
+            base,
+            secondary,
+            pixel_size_m=PIXEL_SIZE_M,
+            window_size=64,
+            step_size=32,
+            snr_threshold=3.0,
         )
 
         valid = result.reliable
@@ -57,9 +64,13 @@ class TestSyntheticSubpixelShift:
 
     def test_zero_shift_recovers_approximately_zero(self):
         base = _realistic_texture()
-        result = compute_pixel_offsets(base, base.copy(), pixel_size_m=PIXEL_SIZE_M, window_size=64, step_size=32)
+        result = compute_pixel_offsets(
+            base, base.copy(), pixel_size_m=PIXEL_SIZE_M, window_size=64, step_size=32
+        )
         valid = result.reliable
-        assert np.nanmean(np.abs(result.dx[valid])) < 1.0  # metres, well under one pixel
+        assert (
+            np.nanmean(np.abs(result.dx[valid])) < 1.0
+        )  # metres, well under one pixel
         assert np.nanmean(np.abs(result.dy[valid])) < 1.0
 
     def test_larger_known_shift_also_recovered(self):
@@ -68,9 +79,16 @@ class TestSyntheticSubpixelShift:
         specific small shift value."""
         base = _realistic_texture(seed=7)
         true_dx_px, true_dy_px = 8.0, 4.0
-        secondary = nd_shift(base, shift=(-true_dy_px, true_dx_px), order=3, mode="reflect")
+        secondary = nd_shift(
+            base, shift=(-true_dy_px, true_dx_px), order=3, mode="reflect"
+        )
         result = compute_pixel_offsets(
-            base, secondary, pixel_size_m=PIXEL_SIZE_M, window_size=64, step_size=32, snr_threshold=3.0
+            base,
+            secondary,
+            pixel_size_m=PIXEL_SIZE_M,
+            window_size=64,
+            step_size=32,
+            snr_threshold=3.0,
         )
         valid = result.reliable
         dx_px = np.nanmean(result.dx[valid]) / PIXEL_SIZE_M
@@ -92,10 +110,16 @@ class TestNoDataHandling:
         ref_with_nan = ref.copy()
         ref_with_nan[50:90, 50:90] = np.nan
 
-        result = compute_pixel_offsets(ref_with_nan, sec, pixel_size_m=PIXEL_SIZE_M, window_size=32, step_size=16)
+        result = compute_pixel_offsets(
+            ref_with_nan, sec, pixel_size_m=PIXEL_SIZE_M, window_size=32, step_size=16
+        )
 
-        assert np.isnan(result.dx).any(), "windows touching the masked block should be NaN"
-        assert not np.isnan(result.dx).all(), "windows away from the masked block must still compute"
+        assert np.isnan(
+            result.dx
+        ).any(), "windows touching the masked block should be NaN"
+        assert not np.isnan(
+            result.dx
+        ).all(), "windows away from the masked block must still compute"
 
     def test_all_nan_reference_raises_a_clear_error_not_a_silent_garbage_result(self):
         size = 100
@@ -103,16 +127,26 @@ class TestNoDataHandling:
         sec = np.random.default_rng(1).random((size, size))
         # Not required to raise -- but if it doesn't raise, every
         # window must be marked unreliable, never silently "confident."
-        result = compute_pixel_offsets(ref, sec, pixel_size_m=PIXEL_SIZE_M, window_size=32, step_size=16)
+        result = compute_pixel_offsets(
+            ref, sec, pixel_size_m=PIXEL_SIZE_M, window_size=32, step_size=16
+        )
         assert not result.reliable.any()
 
     def test_mismatched_shapes_raises_clear_error(self):
         with pytest.raises(ValueError, match="same shape"):
-            compute_pixel_offsets(np.zeros((10, 10)), np.zeros((20, 20)), pixel_size_m=10.0)
+            compute_pixel_offsets(
+                np.zeros((10, 10)), np.zeros((20, 20)), pixel_size_m=10.0
+            )
 
     def test_non_positive_pixel_size_raises_clear_error(self):
         with pytest.raises(ValueError, match="pixel_size_m must be positive"):
-            compute_pixel_offsets(np.zeros((50, 50)), np.zeros((50, 50)), pixel_size_m=0.0, window_size=16, step_size=8)
+            compute_pixel_offsets(
+                np.zeros((50, 50)),
+                np.zeros((50, 50)),
+                pixel_size_m=0.0,
+                window_size=16,
+                step_size=8,
+            )
 
 
 class TestSnrFiltering:
@@ -141,15 +175,31 @@ class TestSnrFiltering:
         matched_secondary = nd_shift(base, shift=(0.5, 0.5), order=3, mode="reflect")
         different_texture = _realistic_texture(seed=99)
 
-        matched_result = compute_pixel_offsets(base, matched_secondary, pixel_size_m=PIXEL_SIZE_M, window_size=64, step_size=32)
-        mismatch_result = compute_pixel_offsets(base, different_texture, pixel_size_m=PIXEL_SIZE_M, window_size=64, step_size=32)
+        matched_result = compute_pixel_offsets(
+            base,
+            matched_secondary,
+            pixel_size_m=PIXEL_SIZE_M,
+            window_size=64,
+            step_size=32,
+        )
+        mismatch_result = compute_pixel_offsets(
+            base,
+            different_texture,
+            pixel_size_m=PIXEL_SIZE_M,
+            window_size=64,
+            step_size=32,
+        )
 
         matched_fraction = matched_result.reliable.mean()
         mismatch_fraction = mismatch_result.reliable.mean()
 
         assert matched_fraction > mismatch_fraction
-        assert matched_fraction > 0.9  # a real match should be reliable almost everywhere
-        assert mismatch_fraction < 0.5  # a real mismatch should be reliable much less often
+        assert (
+            matched_fraction > 0.9
+        )  # a real match should be reliable almost everywhere
+        assert (
+            mismatch_fraction < 0.5
+        )  # a real mismatch should be reliable much less often
 
     def test_unreliable_windows_still_carry_real_computed_values_not_zeroed(self):
         """Matches this project's 'fail loudly, never silently
@@ -159,9 +209,17 @@ class TestSnrFiltering:
         motion' rather than 'we don't trust this measurement')."""
         base = _realistic_texture(seed=5)
         different_texture = _realistic_texture(seed=123)
-        result = compute_pixel_offsets(base, different_texture, pixel_size_m=PIXEL_SIZE_M, window_size=64, step_size=32)
+        result = compute_pixel_offsets(
+            base,
+            different_texture,
+            pixel_size_m=PIXEL_SIZE_M,
+            window_size=64,
+            step_size=32,
+        )
         unreliable = ~result.reliable
-        assert unreliable.any(), "test setup should produce at least some unreliable windows"
+        assert (
+            unreliable.any()
+        ), "test setup should produce at least some unreliable windows"
         finite_unreliable_dx = result.dx[unreliable][~np.isnan(result.dx[unreliable])]
         assert finite_unreliable_dx.size > 0
         assert not np.allclose(finite_unreliable_dx, 0.0)
@@ -170,7 +228,14 @@ class TestSnrFiltering:
 class TestMetadataAndResultShape:
     def test_metadata_records_real_processing_parameters(self):
         base = _realistic_texture(seed=2)
-        result = compute_pixel_offsets(base, base.copy(), pixel_size_m=10.0, window_size=64, step_size=32, snr_threshold=2.5)
+        result = compute_pixel_offsets(
+            base,
+            base.copy(),
+            pixel_size_m=10.0,
+            window_size=64,
+            step_size=32,
+            snr_threshold=2.5,
+        )
         assert result.metadata["window_size"] == 64
         assert result.metadata["step_size"] == 32
         assert result.metadata["pixel_size_m"] == 10.0
@@ -178,6 +243,13 @@ class TestMetadataAndResultShape:
 
     def test_result_is_the_documented_dataclass(self):
         base = _realistic_texture(seed=9)
-        result = compute_pixel_offsets(base, base.copy(), pixel_size_m=10.0, window_size=32, step_size=16)
+        result = compute_pixel_offsets(
+            base, base.copy(), pixel_size_m=10.0, window_size=32, step_size=16
+        )
         assert isinstance(result, OpticalOffsetResult)
-        assert result.dx.shape == result.dy.shape == result.snr.shape == result.reliable.shape
+        assert (
+            result.dx.shape
+            == result.dy.shape
+            == result.snr.shape
+            == result.reliable.shape
+        )

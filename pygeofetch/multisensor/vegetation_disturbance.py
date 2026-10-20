@@ -130,10 +130,15 @@ def vegetation_disturbance_pipeline(
     def _read(path, label, shape=None):
         with rasterio.open(path) as src:
             if shape is not None and (src.height, src.width) != shape:
-                return None, None, None, (
-                    f"vegetation_disturbance_pipeline: {label} shape "
-                    f"{(src.height, src.width)} doesn't match {shape} -- "
-                    f"co-register first."
+                return (
+                    None,
+                    None,
+                    None,
+                    (
+                        f"vegetation_disturbance_pipeline: {label} shape "
+                        f"{(src.height, src.width)} doesn't match {shape} -- "
+                        f"co-register first."
+                    ),
                 )
             return src.read(1), src.nodata, src.profile.copy(), None
 
@@ -206,7 +211,9 @@ def vegetation_disturbance_pipeline(
     sar_ok = (slc_pre != 0) & (slc_post != 0) & np.isfinite(coherence)
 
     visible_disturbance = optical_ok & (np.nan_to_num(ndvi_diff) > ndvi_drop_threshold)
-    ground_disturbance = sar_ok & (np.nan_to_num(coherence, nan=1.0) < coherence_threshold)
+    ground_disturbance = sar_ok & (
+        np.nan_to_num(coherence, nan=1.0) < coherence_threshold
+    )
     subcanopy_disturbance = optical_ok & ground_disturbance & ~visible_disturbance
 
     CLASS_UNCLASSIFIED = 255

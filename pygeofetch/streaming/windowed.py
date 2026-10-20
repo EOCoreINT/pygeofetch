@@ -154,7 +154,9 @@ def _bbox_bounds(bbox: Any) -> tuple[float, float, float, float]:
         b = bbox
     b = tuple(float(v) for v in b)
     if len(b) != 4 or not (b[0] < b[2] and b[1] < b[3]):
-        raise ValueError(f"bbox must be (minx, miny, maxx, maxy) with min < max, got {b!r}")
+        raise ValueError(
+            f"bbox must be (minx, miny, maxx, maxy) with min < max, got {b!r}"
+        )
     return b  # type: ignore[return-value]
 
 
@@ -176,7 +178,9 @@ def compute_window_and_coverage(
         raise ValueError(f"{src.name!r} has no CRS; cannot place an AOI on it.")
     t = src.transform
     if t.b != 0 or t.d != 0:
-        raise NotImplementedError("Rotated/sheared rasters are not supported for windowed reads.")
+        raise NotImplementedError(
+            "Rotated/sheared rasters are not supported for windowed reads."
+        )
 
     minx, miny, maxx, maxy = _bbox_bounds(bbox)
     if str(bbox_crs).upper() != str(src.crs).upper():
@@ -216,7 +220,11 @@ def _resolve_decimation(
             "AOI window %dx%d (x%d bands) exceeds max_pixels=%d; decimating by %d "
             "(coarser pixels). Raise max_pixels or use stream_window_to_geotiff() "
             "for a full-resolution, low-memory copy.",
-            width, height, bands, max_pixels, need,
+            width,
+            height,
+            bands,
+            max_pixels,
+            need,
         )
         d = max(d, need)
     return d
@@ -266,7 +274,9 @@ def read_window(
                 idx = [indexes]
             else:
                 idx = list(indexes)
-            d = _resolve_decimation(int(win.width), int(win.height), decimation, max_pixels, len(idx))
+            d = _resolve_decimation(
+                int(win.width), int(win.height), decimation, max_pixels, len(idx)
+            )
             out_h = max(1, math.ceil(win.height / d))
             out_w = max(1, math.ceil(win.width / d))
             data = src.read(
@@ -277,8 +287,12 @@ def read_window(
             )
             wt = src.window_transform(win)
             transform = Affine(
-                wt.a * (win.width / out_w), wt.b, wt.c,
-                wt.d, wt.e * (win.height / out_h), wt.f,
+                wt.a * (win.width / out_w),
+                wt.b,
+                wt.c,
+                wt.d,
+                wt.e * (win.height / out_h),
+                wt.f,
             )
             return WindowedRaster(
                 data=data,
@@ -293,7 +307,9 @@ def read_window(
             )
 
 
-def iter_blocks(width: int, height: int, block: int) -> Iterator[tuple[int, int, int, int]]:
+def iter_blocks(
+    width: int, height: int, block: int
+) -> Iterator[tuple[int, int, int, int]]:
     """Yield (col_off, row_off, w, h) tiles covering a width x height area."""
     for r in range(0, height, block):
         for c in range(0, width, block):
@@ -356,7 +372,10 @@ def stream_window_to_geotiff(
             if w >= 256 and h >= 256:
                 profile.update(tiled=True, blockxsize=256, blockysize=256)
             transform, crs, nodata, dtype = (
-                profile["transform"], src.crs, src.nodata, profile["dtype"]
+                profile["transform"],
+                src.crs,
+                src.nodata,
+                profile["dtype"],
             )
             try:
                 with rasterio.open(tmp_path, "w", **profile) as dst:

@@ -1,0 +1,31 @@
+--- /tmp/claude-0/-home-claude/0a64ab0d-0aa5-5d95-9ba3-1bc84951951b/scratchpad/pg/orig/pygeofetch/processing/classification.py	2026-09-16 00:58:16.000000000 +0200
++++ classification.py	2026-10-20 20:09:07.208187159 +0200
+@@ -138,7 +138,7 @@
+             bbox, geometry, geometry_crs: Optional post-clip, same
+                         handling as Preprocessor.clip().
+         """
+-        sklearn = _require_sklearn()
++        _require_sklearn()
+         np = _require_numpy()
+         from sklearn.cluster import KMeans
+ 
+@@ -205,15 +205,15 @@
+         ``.metadata`` (never hidden or assumed -- computed on the
+         held-out test split every time).
+         """
+-        sklearn = _require_sklearn()
++        _require_sklearn()
+         np = _require_numpy()
+         gpd = _require_geopandas()
+         joblib = _require_joblib()
+-        rasterio = _require_rasterio()
++        _require_rasterio()
+         from sklearn.ensemble import RandomForestClassifier
+-        from sklearn.svm import SVC
+-        from sklearn.model_selection import train_test_split
+         from sklearn.metrics import accuracy_score, classification_report
++        from sklearn.model_selection import train_test_split
++        from sklearn.svm import SVC
+ 
+         stack, profile = _read_stack(inputs)
+         n_bands, height, width = stack.shape

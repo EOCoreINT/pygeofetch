@@ -91,10 +91,14 @@ class FeasibilityReport:
     def print_summary(self) -> None:
         """Real, human-readable report -- the direct output of this
         whole tool's purpose: an honest answer before any download."""
-        print(f"InSAR feasibility for {self.aoi_bbox}, {self.start_date} to {self.end_date}")
+        print(
+            f"InSAR feasibility for {self.aoi_bbox}, {self.start_date} to {self.end_date}"
+        )
         print(f"Verdict: {self.insar_verdict}")
         print(f"{self.summary}\n")
-        print(f"{'Track':<8}{'Dir':<12}{'Dates':<8}{'MaxGap':<10}{'LargestComp':<14}{'Verdict':<10}")
+        print(
+            f"{'Track':<8}{'Dir':<12}{'Dates':<8}{'MaxGap':<10}{'LargestComp':<14}{'Verdict':<10}"
+        )
         for t in sorted(self.tracks, key=lambda x: -x.largest_component_fraction):
             print(
                 f"{str(t.track):<8}{t.orbit_direction:<12}{t.n_dates:<8}"
@@ -119,7 +123,9 @@ def _find_largest_connected_component(
     if len(dates) < 2:
         return len(dates), list(dates)
 
-    pairs = generate_candidate_pairs(dates, max_temporal_baseline_days=max_temporal_baseline_days)
+    pairs = generate_candidate_pairs(
+        dates, max_temporal_baseline_days=max_temporal_baseline_days
+    )
 
     parent = {d: d for d in dates}
 
@@ -163,14 +169,20 @@ def analyze_track_dates(
     max_gap = max(gaps) if gaps else 0
 
     largest_size, largest_dates = _find_largest_connected_component(
-        dates_sorted, max_temporal_baseline_days,
+        dates_sorted,
+        max_temporal_baseline_days,
     )
 
     return TrackFeasibility(
-        track=track, orbit_direction=orbit_direction, n_dates=len(dates_sorted),
+        track=track,
+        orbit_direction=orbit_direction,
+        n_dates=len(dates_sorted),
         date_range=(dates_sorted[0], dates_sorted[-1]) if dates_sorted else ("", ""),
-        max_gap_days=max_gap, largest_component_size=largest_size,
-        largest_component_fraction=largest_size / len(dates_sorted) if dates_sorted else 0.0,
+        max_gap_days=max_gap,
+        largest_component_size=largest_size,
+        largest_component_fraction=(
+            largest_size / len(dates_sorted) if dates_sorted else 0.0
+        ),
         largest_component_dates=largest_dates,
     )
 
@@ -213,12 +225,21 @@ def assess_insar_feasibility(
 
     satellites = satellites or ["Sentinel-1A", "Sentinel-1B"]
 
-    query = SearchQuery(bbox=aoi_bbox, start_date=start_date, end_date=end_date).set_product_type("SLC")
+    query = SearchQuery(
+        bbox=aoi_bbox, start_date=start_date, end_date=end_date
+    ).set_product_type("SLC")
     all_results = client.search(query, providers=["copernicus"])
-    all_results = [r for r in all_results if r.properties.get("platformName", r.properties.get("satellite", "")) in satellites
-                   or any(sat in str(r.properties) for sat in satellites)]
+    all_results = [
+        r
+        for r in all_results
+        if r.properties.get("platformName", r.properties.get("satellite", ""))
+        in satellites
+        or any(sat in str(r.properties) for sat in satellites)
+    ]
 
-    by_track: dict[Any, dict[str, list[str]]] = defaultdict(lambda: {"dates": [], "direction": "unknown"})
+    by_track: dict[Any, dict[str, Any]] = defaultdict(
+        lambda: {"dates": [], "direction": "unknown"}
+    )
     for r in all_results:
         track = r.properties.get("relativeOrbitNumber")
         direction = r.properties.get("orbitDirection", "unknown")
@@ -227,14 +248,20 @@ def assess_insar_feasibility(
 
     if not by_track:
         return FeasibilityReport(
-            aoi_bbox=aoi_bbox, start_date=start_date, end_date=end_date, tracks=[],
-            recommended_track=None, insar_verdict="not_viable_no_usable_track",
+            aoi_bbox=aoi_bbox,
+            start_date=start_date,
+            end_date=end_date,
+            tracks=[],
+            recommended_track=None,
+            insar_verdict="not_viable_no_usable_track",
             summary="No real Sentinel-1 scenes found for this AOI and date range at all.",
         )
 
     tracks = [
         analyze_track_dates(
-            info["dates"], orbit_direction=info["direction"], track=track,
+            info["dates"],
+            orbit_direction=info["direction"],
+            track=track,
             max_temporal_baseline_days=max_temporal_baseline_days,
         )
         for track, info in by_track.items()
@@ -281,15 +308,28 @@ def assess_insar_feasibility(
         from pygeofetch.insar.stack_selection import search_and_select_consistent_stack
 
         selected, search_report = search_and_select_consistent_stack(
-            client, aoi_bbox, start_date=start_date, end_date=end_date,
-            satellites=satellites, preferred_track=best.track, max_results=max_results,
+            client,
+            aoi_bbox,
+            start_date=start_date,
+            end_date=end_date,
+            satellites=satellites,
+            preferred_track=best.track,
+            max_results=max_results,
         )
         gate = PreflightGate(
-            client, aoi_bbox, start_date, end_date, satellites=satellites,
-            max_results=max_results, max_temporal_baseline_days=max_temporal_baseline_days,
+            client,
+            aoi_bbox,
+            start_date,
+            end_date,
+            satellites=satellites,
+            max_results=max_results,
+            max_temporal_baseline_days=max_temporal_baseline_days,
         )
         deep_report = gate.run(selected, search_report)
-        logger.info("Deep check (real, live burst-sync screening) complete for track %s.", best.track)
+        logger.info(
+            "Deep check (real, live burst-sync screening) complete for track %s.",
+            best.track,
+        )
     elif verdict == "temporally_plausible":
         logger.warning(
             "Verdict is 'temporally_plausible' from Tier-1 (temporal-only) analysis. "
@@ -300,7 +340,12 @@ def assess_insar_feasibility(
         )
 
     return FeasibilityReport(
-        aoi_bbox=aoi_bbox, start_date=start_date, end_date=end_date, tracks=tracks,
-        recommended_track=best.track, insar_verdict=verdict, summary=summary,
+        aoi_bbox=aoi_bbox,
+        start_date=start_date,
+        end_date=end_date,
+        tracks=tracks,
+        recommended_track=best.track,
+        insar_verdict=verdict,
+        summary=summary,
         deep_check=deep_report,
     )
