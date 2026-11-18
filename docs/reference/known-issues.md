@@ -129,7 +129,7 @@ command".
 **Packaging and code**
 
 - `pygeofetch/multisensor/_init.py` is a stale copy of `__init__.py` left beside it. It is unused and can be deleted.
-- Version strings disagree: `pygeofetch.__version__` and the conda recipe say `2.6.3.0.4`, `pyproject.toml` says `2.6.3.0`, and the package docstring and CLI banner refer to `v2.4.0`. The documentation and conda metadata also point to different documentation URLs (GitHub Pages versus Read the Docs).
+- Version strings disagree: `pygeofetch.__version__` and the conda recipe say `2.7.2.0.4`, `pyproject.toml` says `2.7.2.0`, and the package docstring and CLI banner refer to `v2.4.0`. The documentation and conda metadata also point to different documentation URLs (GitHub Pages versus Read the Docs).
 - `Affine * tuple` arithmetic (deprecated in the `affine` library) remains in `insar/flatearth.py`, `insar/coregister.py`, `insar/extraction.py` and `processing/classification.py`. The multi-sensor modules no longer use it.
 - Two overlapping streaming implementations exist: `pygeofetch.stac_compute` (single-URL windowed reads and Sentinel-1 burst reads) and `pygeofetch.streaming` (scene-level). See [Streaming](../data-access/streaming.md#other-streaming-tools).
 - Importing `pygeofetch.insar` prints a "snaphu not found" message when `snaphu` is not installed, even if you do not unwrap.

@@ -229,6 +229,11 @@ class AdaptiveDownloader:
                 # network truncation is typically transient. Route through
                 # the same backoff-and-retry path a raised exception would
                 # take, instead of returning early.
+                # A refused login does not get better by retrying (and repeated
+                # failed logins can lock an account), so stop at once.
+                if getattr(result, "error_type", None) == "AuthenticationError":
+                    logger.error(f"Download failed (authentication): {result.error}")
+                    return result
                 if attempt < options.retry_attempts:
                     delay = self._backoff(attempt, options)
                     logger.warning(
@@ -245,6 +250,18 @@ class AdaptiveDownloader:
                     )
                     return result
             except Exception as exc:
+                from pygeofetch.providers.base import AuthenticationError as _AuthErr
+
+                if isinstance(exc, _AuthErr):
+                    logger.error(f"Download failed (authentication): {exc}")
+                    return DownloadResult(
+                        status=DownloadStatus.FAILED,
+                        data_id=data.id,
+                        provider=data.provider,
+                        error=str(exc),
+                        error_type="AuthenticationError",
+                        retries_used=attempt,
+                    )
                 if attempt < options.retry_attempts:
                     delay = self._backoff(attempt, options)
                     logger.warning(

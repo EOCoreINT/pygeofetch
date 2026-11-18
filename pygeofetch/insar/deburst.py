@@ -115,11 +115,67 @@ def compute_burst_row_ranges(
     return ranges
 
 
+def plan_deburst(
+    n_rows: int,
+    swath_timing: SwathTiming,
+    azimuth_time_interval_s: float,
+    row_offset: int = 0,
+) -> Tuple[List[Tuple[int, int]], int]:
+    """Which array rows deburst keeps, without touching any data.
+
+    Returns ([(start, stop), ...] in array rows, first_kept_full_scene_row). Raises the same errors as
+    deburst_array, so a caller can validate both images before changing either one.
+    """
+    if not isinstance(swath_timing, SwathTiming):
+        raise TypeError(
+            f"deburst_array expects a SwathTiming object, got "
+            f"{type(swath_timing).__name__}. Pass the result of "
+            f"parse_burst_info(), not a raw bursts list."
+        )
+
+    ranges = compute_burst_row_ranges(swath_timing, azimuth_time_interval_s)
+    lines_per_burst = swath_timing.lines_per_burst
+
+    spans: List[Tuple[int, int]] = []
+    first_kept_full_scene_row = None
+
+    for i, (keep_start, keep_end) in enumerate(ranges):
+        if keep_start > keep_end:
+            continue
+
+        burst_full_scene_start = i * lines_per_burst - row_offset
+        chunk_start = burst_full_scene_start + keep_start
+        chunk_end = burst_full_scene_start + keep_end + 1
+
+        clipped_start = max(0, chunk_start)
+        clipped_end = min(n_rows, chunk_end)
+
+        if clipped_start >= clipped_end:
+            continue
+
+        if first_kept_full_scene_row is None:
+            first_kept_full_scene_row = clipped_start + row_offset
+
+        spans.append((clipped_start, clipped_end))
+
+    if not spans:
+        raise ValueError(
+            "deburst_array: no real data remained after debursting — "
+            "check that row_offset correctly reflects data's real "
+            "position within the full-scene burst stack."
+        )
+    assert first_kept_full_scene_row is not None
+    return spans, first_kept_full_scene_row
+
+
 def deburst_array(
     data: np.ndarray,
     swath_timing: SwathTiming,
     azimuth_time_interval_s: float,
     row_offset: int = 0,
+    inplace: bool = False,
+    spans: Optional[List[Tuple[int, int]]] = None,
+    first_kept_row: Optional[int] = None,
 ) -> Tuple[np.ndarray, int]:
     """
     Apply real deburst to an array: remove each burst's redundant
@@ -132,55 +188,31 @@ def deburst_array(
         azimuth_time_interval_s: Real per-line time spacing.
         row_offset: If `data` is an already-cropped extract, the real
             row offset of `data`'s row 0 within the full-scene burst stack.
+        inplace: Compact the kept rows toward the top of `data` and return a view of the first rows, instead
+            of allocating a second full-size array. The input array is overwritten, so only use it when
+            nothing else needs the original. Same values as the copying version. Ignored (falls back to a
+            copy) when `data` is read-only.
+        spans, first_kept_row: A plan from plan_deburst(), to skip recomputing it.
 
     Returns:
         (debursted_data, first_kept_full_scene_row)
     """
-    if not isinstance(swath_timing, SwathTiming):
-        raise TypeError(
-            f"deburst_array expects a SwathTiming object, got "
-            f"{type(swath_timing).__name__}. Pass the result of "
-            f"parse_burst_info(), not a raw bursts list."
-        )
+    if spans is None or first_kept_row is None:
+        spans, first_kept_row = plan_deburst(data.shape[0], swath_timing, azimuth_time_interval_s, row_offset)
 
-    ranges = compute_burst_row_ranges(swath_timing, azimuth_time_interval_s)
-    lines_per_burst = swath_timing.lines_per_burst
-
-    chunks = []
-    first_kept_full_scene_row = None
-
-    for i, (keep_start, keep_end) in enumerate(ranges):
-        if keep_start > keep_end:
-            continue
-
-        burst_full_scene_start = i * lines_per_burst - row_offset
-        chunk_start = burst_full_scene_start + keep_start
-        chunk_end = burst_full_scene_start + keep_end + 1
-
-        clipped_start = max(0, chunk_start)
-        clipped_end = min(data.shape[0], chunk_end)
-
-        if clipped_start >= clipped_end:
-            continue
-
-        if first_kept_full_scene_row is None:
-            first_kept_full_scene_row = clipped_start + row_offset
-
-        chunks.append(data[clipped_start:clipped_end])
-
-    if not chunks:
-        raise ValueError(
-            "deburst_array: no real data remained after debursting — "
-            "check that row_offset correctly reflects data's real "
-            "position within the full-scene burst stack."
-        )
-
-    debursted = np.concatenate(chunks, axis=0)
-
-    assert first_kept_full_scene_row is not None, (
-        "first_kept_full_scene_row must be set whenever chunks is "
-        "non-empty (set on the first appended chunk above)."
-    )
+    if inplace and data.flags.writeable:
+        # Kept spans are in increasing order and each destination is at or above its source row, so
+        # moving them in order never overwrites a row that is still to be read. numpy copes with the
+        # overlap inside one span.
+        dst = 0
+        for a, b in spans:
+            n = b - a
+            if dst != a:
+                data[dst:dst + n] = data[a:b]
+            dst += n
+        debursted = data[:dst]
+    else:
+        debursted = np.concatenate([data[a:b] for a, b in spans], axis=0)
 
     logger.info(
         "Deburst: %d bursts -> %d output rows (input was %d rows)",
@@ -189,4 +221,4 @@ def deburst_array(
         data.shape[0],
     )
 
-    return debursted, first_kept_full_scene_row
+    return debursted, first_kept_row

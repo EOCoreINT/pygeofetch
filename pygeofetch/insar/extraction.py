@@ -714,13 +714,21 @@ class SLCExtractor:
 
                 # Clamp to the actual raster extent -- the padded window
                 # can legitimately extend past the real data bounds.
-                col_off_clamped = max(0, col_off)
-                row_off_clamped = max(0, row_off)
+                # Whole pixels only: rasterio reads a window with fractional
+                # offsets starting at the NEAREST whole pixel, so a fractional
+                # offset recorded in the tags (as before 2026-11-09) put the
+                # crop's true origin up to half a pixel away from where the
+                # orbit geometry assumed it, differently for every date. That
+                # misregistered pairs by up to ~0.5 px in azimuth and range.
+                import math
+
+                col_off_clamped = max(0, int(math.floor(col_off)))
+                row_off_clamped = max(0, int(math.floor(row_off)))
                 width_clamped = min(
-                    width - (col_off_clamped - col_off), src.width - col_off_clamped
+                    int(math.ceil(col_off + width)) - col_off_clamped, src.width - col_off_clamped
                 )
                 height_clamped = min(
-                    height - (row_off_clamped - row_off), src.height - row_off_clamped
+                    int(math.ceil(row_off + height)) - row_off_clamped, src.height - row_off_clamped
                 )
 
                 if width_clamped <= 0 or height_clamped <= 0:

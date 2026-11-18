@@ -339,7 +339,7 @@ class CopernicusProvider(AbstractBaseProvider):
     @staticmethod
     def _product_unit(result: "SatelliteData") -> "str | None":
         """
-        Real satellite unit ("S1A", "S1B", ...) read directly from the
+        Real satellite unit ("S1A", "S1B","S2A", "S2B", "S3A", "S3B", "S4A", "S4B", ...) read directly from the
         result's own real product name/id, by Sentinel's own, standard
         naming convention (first 3 characters). Returns None if the
         real name doesn't start with a recognisable unit code, so a

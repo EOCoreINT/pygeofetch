@@ -2,7 +2,7 @@
 Amplitude-based offset tracking ("speckle tracking") for pygeofetch.
 
 Conventional phase-based InSAR fails once deformation gradients exceed
-the phase ambiguity limit — roughly half a wavelength of LOS motion
+the phase ambiguity limit(Nyquist Limit) — roughly half a wavelength of LOS motion
 between acquisitions, about 2.8cm for Sentinel-1's real C-band
 wavelength. Active mining subsidence, fast landslides, and large
 co-seismic or volcanic deformation routinely exceed this. Offset

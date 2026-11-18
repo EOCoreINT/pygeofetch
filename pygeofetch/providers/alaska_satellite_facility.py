@@ -85,20 +85,55 @@ def _bbox_to_wkt_polygon(
     )
 
 
+class _EarthdataSession:
+    """``requests.Session`` that keeps credentials only for the Earthdata login host across redirects.
+
+    Based on NASA's recipe for Earthdata downloads in Python: requests drops
+    the Authorization header whenever a redirect changes host, which would
+    strip it on the way to urs.earthdata.nasa.gov. Here it is kept only when a
+    redirect goes to the login host, and dropped on every other change of host
+    (the way back carries a one-time code and cookies; the final signed S3 URL
+    must not receive credentials).
+    """
+
+    AUTH_HOST = "urs.earthdata.nasa.gov"
+
+    def __new__(cls):  # build lazily so importing this module never needs requests
+        import requests
+        from requests.utils import urlparse
+
+        auth_host = cls.AUTH_HOST
+
+        class _Session(requests.Session):
+            def rebuild_auth(self, prepared_request, response):
+                headers = prepared_request.headers
+                if "Authorization" in headers:
+                    original = urlparse(response.request.url).hostname
+                    redirect = urlparse(prepared_request.url).hostname
+                    if original != redirect and redirect != auth_host:
+                        del headers["Authorization"]
+
+        return _Session()
+
+
 class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
     PROVIDER_ID = "alaska_satellite_facility"
     DISPLAY_NAME = "Alaska Satellite Facility (ASF) DAAC"
     # Real, verified: the search endpoint itself needs no authentication.
     # Only download() requires a real NASA Earthdata Login account.
     REQUIRES_AUTH = False
+    # ...but downloads do: the downloader authenticates before calling download().
+    REQUIRES_AUTH_FOR_DOWNLOAD = True
     DESCRIPTION = (
-        "SAR data from Sentinel-1, ALOS PALSAR, ERS, JERS via ASF's real "
+        "SAR data from Sentinel-1, NISAR, ALOS PALSAR, ERS, JERS via ASF's real "
         "Search API. Search is public; downloading requires a free NASA "
         "Earthdata Login account (the same login used by nasa_earthdata)."
     )
     SATELLITES = [
         "Sentinel-1A",
         "Sentinel-1B",
+        "Sentinel-1C",
+        "NISAR",
         "ALOS PALSAR",
         "ERS-1",
         "ERS-2",
@@ -113,7 +148,7 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
         # Auth against a real EDL endpoint to confirm the credentials
         # are genuinely valid), since ASF uses the identical EDL system
         # -- not a second, independent implementation of the same check.
-        token = _plain(credentials.api_key or credentials.access_key)
+        token = _plain(credentials.api_key or credentials.access_key or getattr(credentials, "token", None))
         password = _plain(credentials.get_password())
 
         if token:
@@ -147,9 +182,19 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
                 auth=(credentials.username, password),
                 timeout=30,
             )
-            if resp.status_code not in (200, 404):
+            if resp.status_code in (401, 403):
+                # This pre-check calls an Earthdata endpoint that is documented for
+                # tokens; it can answer 401 even when the same login works for a
+                # real download. Do not block here: the download itself
+                # (redirect through urs.earthdata.nasa.gov) is the authoritative test
+                # and reports precisely why it was refused.
+                self._logger.warning(
+                    f"{self.DISPLAY_NAME}: Earthdata pre-check answered HTTP {resp.status_code}; "
+                    "continuing, the download will confirm whether the login is accepted"
+                )
+            elif resp.status_code not in (200, 404):
                 raise AuthenticationError(
-                    f"{self.DISPLAY_NAME}: NASA Earthdata login failed (HTTP {resp.status_code})"
+                    f"{self.DISPLAY_NAME}: NASA Earthdata login check failed (HTTP {resp.status_code})"
                 )
         except AuthenticationError:
             raise
@@ -173,6 +218,58 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
             f"{self.DISPLAY_NAME}: authenticated as {credentials.username!r} (NASA Earthdata Login)"
         )
         return session
+
+    def _authenticate_from_stored_credentials(self) -> None:
+        """Authenticate with an Earthdata login found in pygeofetch's credential store or the environment.
+
+        Looks, in order, for credentials stored for this provider, then for
+        ``nasa_earthdata`` / ``nasa_earthdata_cloud`` (the same Earthdata Login), in
+        both storage backends, then for ``EARTHDATA_TOKEN`` or
+        ``EARTHDATA_USERNAME`` + ``EARTHDATA_PASSWORD``. Raises with a clear
+        message when none is found.
+        """
+        import os
+
+        tried = []
+        try:
+            from pygeofetch.core.authenticator import AuthManager
+        except Exception:  # pragma: no cover
+            AuthManager = None  # noqa: N806
+        if AuthManager is not None:
+            for backend in ("file", "keyring"):
+                try:
+                    store = AuthManager(storage_backend=backend)
+                except Exception:
+                    continue
+                for pid in (self.PROVIDER_ID, "nasa_earthdata", "nasa_earthdata_cloud"):
+                    tried.append(f"{pid} ({backend})")
+                    try:
+                        creds = store.get_credentials(pid)
+                    except Exception:
+                        creds = None
+                    if creds is not None and self.validate_credentials(creds):
+                        self.authenticate(creds)
+                        self._logger.info(f"{self.DISPLAY_NAME}: using Earthdata login stored for {pid!r} ({backend})")
+                        return
+        token = os.environ.get("EARTHDATA_TOKEN")
+        user, password = os.environ.get("EARTHDATA_USERNAME"), os.environ.get("EARTHDATA_PASSWORD")
+        if token or (user and password):
+            from pydantic import SecretStr
+
+            creds = Credentials(
+                provider=self.PROVIDER_ID,
+                username=user,
+                password=SecretStr(password) if password else None,
+                api_key=SecretStr(token) if token else None,
+            )
+            self.authenticate(creds)
+            self._logger.info(f"{self.DISPLAY_NAME}: using the Earthdata login from environment variables")
+            return
+        raise AuthenticationError(
+            f"{self.DISPLAY_NAME}: no NASA Earthdata login found (looked in: {', '.join(tried) or 'credential store'}, "
+            "EARTHDATA_TOKEN, EARTHDATA_USERNAME/EARTHDATA_PASSWORD). Add one with: "
+            f"pygeofetch auth add {self.PROVIDER_ID} --username USER --password PASSWORD"
+        )
 
     def validate_credentials(self, credentials: Credentials) -> bool:
         has_token = bool(credentials.api_key or credentials.access_key)
@@ -210,6 +307,20 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
             params["start"] = f"{query.start_date}T00:00:00UTC"
         if query.end_date:
             params["end"] = f"{query.end_date}T23:59:59UTC"
+        # Raw ASF Search API keywords, passed through unchanged, for products the
+        # generic SearchQuery fields do not describe. NISAR, for example, is
+        # searched by dataset and product level (ASF NISAR documentation):
+        #
+        #   SearchQuery(..., provider_filters={"alaska_satellite_facility": {"api_params": {
+        #       "dataset": "NISAR", "processingLevel": "GUNW", "productionConfiguration": "PR"}}})
+        #
+        # Lists become comma-separated values; these keys override the ones above.
+        raw = (query.provider_filters or {}).get(self.PROVIDER_ID, {}).get("api_params", {})
+        for key, value in raw.items():
+            params[key] = ",".join(map(str, value)) if isinstance(value, (list, tuple)) else value
+        if raw.get("dataset") and "platform" in params and not raw.get("platform"):
+            # ASF treats dataset and platform as alternative ways to select a mission.
+            params.pop("platform")
         # Real, deliberate omission: no cloud-cover parameter -- ASF
         # serves SAR data, which cloud cover doesn't apply to, and the
         # real Search API has no such keyword (confirmed against ASF's
@@ -225,28 +336,42 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
                 self._logger.warning(f"{self.DISPLAY_NAME}: HTTP {resp.status_code}")
                 return []
             data = resp.json()
-            items = data.get("features", [])
-            return [
-                parsed
-                for item in items
-                if (parsed := self._parse_item(item)) is not None
-            ]
+            items = (data or {}).get("features") or []
         except Exception as exc:
             self._logger.warning(f"{self.DISPLAY_NAME} search: {exc}")
             return []
+        # One malformed feature must not discard the whole result list: parse each on its own.
+        results: list[SatelliteData] = []
+        skipped = 0
+        for item in items:
+            try:
+                parsed = self._parse_item(item)
+            except Exception as exc:  # noqa: BLE001 - log and keep the other results
+                skipped += 1
+                self._logger.debug(f"{self.DISPLAY_NAME}: skipped a feature ({exc!r})")
+                continue
+            if parsed is not None:
+                results.append(parsed)
+        if skipped:
+            self._logger.warning(f"{self.DISPLAY_NAME}: skipped {skipped} unparseable feature(s)")
+        return results
 
     def _parse_item(self, item: dict[str, Any]) -> SatelliteData | None:
-        props = item.get("properties", {})
-        item_id = props.get("sceneName") or item.get("id")
+        props = item.get("properties") or {}
+        item_id = props.get("sceneName") or props.get("fileID") or item.get("id")
         if not item_id:
             return None
-        geometry = item.get("geometry")
+        geometry = item.get("geometry") or None
         bbox = None
-        if geometry and geometry.get("type") == "Polygon":
-            coords = geometry["coordinates"][0]
-            lons = [c[0] for c in coords]
-            lats = [c[1] for c in coords]
-            bbox = (min(lons), min(lats), max(lons), max(lats))
+        coordinates = (geometry or {}).get("coordinates")
+        if coordinates:
+            # Polygon: [ring, ...]; MultiPolygon: [[ring, ...], ...]. Collect every vertex.
+            rings = coordinates if geometry.get("type") == "Polygon" else [r for poly in coordinates for r in poly]
+            points = [c for ring in rings if ring for c in ring if c and len(c) >= 2]
+            if points:
+                lons = [c[0] for c in points]
+                lats = [c[1] for c in points]
+                bbox = (min(lons), min(lats), max(lons), max(lats))
 
         return SatelliteData(
             id=item_id,
@@ -267,50 +392,69 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
     def download(
         self, data: SatelliteData, destination: Path, options: DownloadOptions
     ) -> DownloadResult:
-        self.require_auth()
-        import httpx
+        """Stream every http asset of ``data`` to ``destination`` with NASA Earthdata Login.
 
+        Earthdata downloads redirect through urs.earthdata.nasa.gov (login) and
+        then to a signed S3 URL. A plain HTTP client drops the credentials at the
+        first cross-host redirect, so the login never reaches Earthdata. This uses
+        the redirect handling NASA documents for Python clients: credentials are
+        kept for the Earthdata login host only, and dropped everywhere else (S3).
+        A bearer token (``api_key``) works the same way. Files are written to
+        ``<name>.part`` and renamed when complete; finished files are skipped.
+        """
+        self.require_auth()
+        if self._session is None:
+            # The downloader normally authenticates first; if it did not (older downloader, or the
+            # provider used directly), find the Earthdata login ourselves.
+            self._authenticate_from_stored_credentials()
         destination = Path(destination)
         destination.mkdir(parents=True, exist_ok=True)
         start = time.time()
         output_paths, total_bytes = [], 0
+        session_data = self._active_session().session_data or {}
+        http = _EarthdataSession()
+        if session_data.get("auth_mode") == "bearer_token":
+            http.headers["Authorization"] = f"Bearer {session_data['token']}"
+        elif session_data.get("auth_mode") == "basic":
+            http.auth = (session_data["username"], session_data["password"])
 
-        auth_mode = (self._active_session().session_data or {}).get("auth_mode")
-        headers: dict[str, str] = {}
-        auth: tuple[str, str] | None = None
-        if auth_mode == "bearer_token":
-            headers["Authorization"] = (
-                f"Bearer {self._active_session().session_data['token']}"
-            )
-        elif auth_mode == "basic":
-            auth = (
-                self._active_session().session_data["username"],
-                self._active_session().session_data["password"],
-            )
-
+        errors = []
         for key, asset in (data.data_assets or data.assets).items():
             if not asset.href or not asset.href.startswith("http"):
                 continue
             out_file = destination / (asset.href.split("/")[-1] or f"{data.id}_{key}")
+            if out_file.exists() and out_file.stat().st_size > 0 and getattr(options, "resume", True):
+                output_paths.append(out_file)
+                total_bytes += out_file.stat().st_size
+                continue
+            part = out_file.with_name(out_file.name + ".part")
             try:
-                with httpx.stream(
-                    "GET",
-                    asset.href,
-                    headers=headers,
-                    auth=auth,
-                    timeout=options.timeout_seconds,
-                    follow_redirects=True,
-                ) as resp:
-                    self._handle_http_error(resp)
-                    with open(out_file, "wb") as f:
-                        f.writelines(
-                            resp.iter_bytes(
-                                chunk_size=int(options.chunk_size_mb * 1024 * 1024)
-                            )
+                with http.get(asset.href, stream=True, timeout=options.timeout_seconds, allow_redirects=True) as resp:
+                    if resp.status_code in (401, 403):
+                        raise AuthenticationError(
+                            f"{self.DISPLAY_NAME}: Earthdata refused the download (HTTP {resp.status_code}). Likely causes: "
+                            "(1) wrong username/password (log in at https://urs.earthdata.nasa.gov to test; a password "
+                            "with special characters can be mangled when typed at a shell, so quote it or use a token); "
+                            "(2) the ASF / NISAR applications are not approved in your Earthdata profile "
+                            "(Applications > Authorized Apps > Approve More Applications, then accept the EULA); "
+                            "(3) use a token instead: create one under 'Generate Token' on your Earthdata profile and run "
+                            "`pygeofetch auth add alaska_satellite_facility --api-key TOKEN`."
                         )
+                    resp.raise_for_status()
+                    if "text/html" in resp.headers.get("Content-Type", ""):
+                        raise AuthenticationError(
+                            f"{self.DISPLAY_NAME}: received an HTML page instead of data (Earthdata login page?)"
+                        )
+                    with open(part, "wb") as f:
+                        for chunk in resp.iter_content(chunk_size=int(options.chunk_size_mb * 1024 * 1024)):
+                            if chunk:
+                                f.write(chunk)
+                part.replace(out_file)
                 output_paths.append(out_file)
                 total_bytes += out_file.stat().st_size
             except Exception as exc:
+                part.unlink(missing_ok=True)
+                errors.append(f"{key}: {exc}")
                 self._logger.warning(f"Asset {key} failed: {exc}")
 
         if not output_paths:
@@ -318,7 +462,8 @@ class AlaskaSatelliteFacilityProvider(AbstractBaseProvider):
                 status=DownloadStatus.FAILED,
                 data_id=data.id,
                 provider=self.PROVIDER_ID,
-                error="No assets downloaded",
+                error="; ".join(errors) or "No assets downloaded",
+                error_type="AuthenticationError" if any("refused the download" in e for e in errors) else None,
             )
         return DownloadResult(
             status=DownloadStatus.COMPLETED,

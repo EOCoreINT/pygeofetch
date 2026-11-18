@@ -113,7 +113,24 @@ from pygeofetch.insar.annotation import (
     parse_burst_info,
     parse_slc_geometry,
 )
-from pygeofetch.insar.atmosphere import AtmosphericCorrector
+from pygeofetch.insar.atmosphere import (
+    AtmosphericCorrector,
+)
+from pygeofetch.insar.atmosphere_core import (
+    estimate_height_slopes_per_date,
+    fit_height_dependence,
+    structure_function,
+    variance_reduction,
+)
+from pygeofetch.insar.radar_geometry import (
+    GeometryNodes,
+    PixelFrame,
+    compute_geometry_nodes,
+)
+from pygeofetch.insar.topo import (
+    apply_geometric_phase,
+    heights_on_output_grid,
+)
 from pygeofetch.insar.coregister import (
     CoregistrationQuality,
     collocate_by_geocoding,
@@ -123,14 +140,21 @@ from pygeofetch.insar.coregister import (
     refine_offsets_by_coherence,
     resample_with_offset_field,
 )
-from pygeofetch.insar.deburst import compute_burst_row_ranges, deburst_array
+from pygeofetch.insar.deburst import (
+    compute_burst_row_ranges,
+    deburst_array,
+)
 from pygeofetch.insar.esd import (
     SENTINEL1_IW_DELTA_F_OVL_HZ,
     compute_overlap_row_ranges,
     estimate_esd_shift_per_burst_overlap,
 )
-from pygeofetch.insar.extraction import SLCExtractor
-from pygeofetch.insar.flatearth import compute_flat_earth_phase
+from pygeofetch.insar.extraction import (
+    SLCExtractor,
+)
+from pygeofetch.insar.flatearth import (
+    compute_flat_earth_phase,
+)
 from pygeofetch.insar.geolocation import (
     find_zero_doppler_time,
     geodetic_to_ecef,
@@ -139,9 +163,52 @@ from pygeofetch.insar.geolocation import (
     parse_orbit_file,
     range_offset_to_vertical_displacement,
 )
-from pygeofetch.insar.gpu import gpu_available
-from pygeofetch.insar.interferogram import InterferogramGenerator, InterferogramResult
-from pygeofetch.insar.ionosphere import IonosphericCorrector, parse_ionex
+from pygeofetch.insar.gpu import (
+    gpu_available,
+    gpu_info,
+)
+from pygeofetch.insar.logs import (
+    set_verbosity,
+    current_verbosity,
+)
+from pygeofetch.insar.errors import (
+    BurstProcessingError,
+    CoregistrationError,
+    CropError,
+    FlatEarthError,
+    InputError,
+    ProcessingError,
+    QualityRecord,
+    TopographicPhaseError,
+    AtmosphereError,
+    GeometryProcessingError,
+    UnwrapError,
+    ModelLoadError,
+    UnwrapDependencyError,
+)
+from pygeofetch.insar.hybrid_unwrap import (
+    HybridConfig,
+    HybridUnwrapper,
+    HybridUnwrapResult,
+    tie_components,
+)
+from pygeofetch.insar.learned_unwrap import (
+    LearnedUnwrapConfig,
+    LearnedUnwrapper,
+    LearnedUnwrapResult,
+    UnwrapModel,
+    load_unwrap_model,
+    unwrap_diagnostics,
+    unwrap_interferograms,
+)
+from pygeofetch.insar.interferogram import (
+    InterferogramGenerator,
+    InterferogramResult,
+)
+from pygeofetch.insar.ionosphere import (
+    IonosphericCorrector,
+    parse_ionex,
+)
 
 # Range/azimuth pixel offsets to ground East/North/Up displacement. The
 # math is verified (solve_enu_displacement agrees with
@@ -168,8 +235,14 @@ from pygeofetch.insar.offset_tracking import (
     normalized_cross_correlation,
     subpixel_peak_offset,
 )
-from pygeofetch.insar.preflight import PreflightGate, PreflightIssue, PreflightReport
-from pygeofetch.insar.provenance import write_provenance_manifest
+from pygeofetch.insar.preflight import (
+    PreflightGate,
+    PreflightIssue,
+    PreflightReport,
+)
+from pygeofetch.insar.provenance import (
+    write_provenance_manifest,
+)
 
 # Persistent Scatterer InSAR (Ferretti, Prati & Rocca 2001). Real, tested
 # against synthetic data with known ground truth at every stage (ADI
@@ -184,6 +257,24 @@ from pygeofetch.insar.ps_selection import (
     refine_ps_mask_with_temporal_coherence,
     select_persistent_scatterers,
     temporal_coherence,
+)
+from pygeofetch.insar.ps_eval import (
+    boost_coherence_with_ps,
+    compare_velocity_maps,
+)
+from pygeofetch.insar.ps_stack import (
+    ADISelector,
+    PSSelection,
+    PSSelector,
+    PSStack,
+    build_ps_stack,
+    build_stack,
+    choose_master,
+    compare_selections,
+    holdout_stability,
+    residual_phase_coherence,
+    select_ps,
+    stability_weights,
 )
 from pygeofetch.insar.stack_selection import (
     bbox_to_geojson_path,
@@ -228,9 +319,33 @@ from pygeofetch.insar.visualize import (
     visualize_timeseries,
     visualize_unwrapped,
 )
-from pygeofetch.insar.workflow import InSARProject
+from pygeofetch.insar.workflow import (
+    InSARProject,
+)
 
 __all__ = [
+    "ProcessingError",
+    "InputError",
+    "CoregistrationError",
+    "BurstProcessingError",
+    "FlatEarthError",
+    "TopographicPhaseError",
+    "CropError",
+    "QualityRecord",
+    "PSStack",
+    "PSSelection",
+    "PSSelector",
+    "ADISelector",
+    "build_ps_stack",
+    "build_stack",
+    "select_ps",
+    "compare_selections",
+    "holdout_stability",
+    "residual_phase_coherence",
+    "stability_weights",
+    "choose_master",
+    "boost_coherence_with_ps",
+    "compare_velocity_maps",
     "InterferogramGenerator",
     "InterferogramResult",
     "PhaseUnwrapper",
@@ -254,11 +369,39 @@ __all__ = [
     "InterferogramPair",
     "TimeSeriesResult",
     "AtmosphericCorrector",
+    "estimate_height_slopes_per_date",
+    "fit_height_dependence",
+    "structure_function",
+    "variance_reduction",
+    "GeometryNodes",
+    "PixelFrame",
+    "compute_geometry_nodes",
+    "apply_geometric_phase",
+    "heights_on_output_grid",
+    "AtmosphereError",
+    "GeometryProcessingError",
+    "UnwrapError",
+    "ModelLoadError",
+    "UnwrapDependencyError",
+    "LearnedUnwrapConfig",
+    "LearnedUnwrapper",
+    "LearnedUnwrapResult",
+    "UnwrapModel",
+    "load_unwrap_model",
+    "unwrap_diagnostics",
+    "unwrap_interferograms",
+    "HybridConfig",
+    "HybridUnwrapper",
+    "HybridUnwrapResult",
+    "tie_components",
     "SLCExtractor",
     "DataValidator",
     "ValidationResult",
     "PairClassification",
     "gpu_available",
+    "gpu_info",
+    "set_verbosity",
+    "current_verbosity",
     "visualize_interferogram",
     "visualize_unwrapped",
     "visualize_timeseries",

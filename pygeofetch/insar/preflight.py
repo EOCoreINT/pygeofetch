@@ -212,6 +212,10 @@ class PreflightGate:
         max_runtime_s: Optional[float] = 900.0,
         log_file: Optional[Any] = None,
         print_summary: bool = True,
+        # Download budget:
+        thin_to_days: Optional[int] = None,
+        max_download_gb: Optional[float] = None,
+        gb_per_scene: float = 7.5,
     ) -> None:
         """
         Notebook-friendly options (all optional):
@@ -231,7 +235,24 @@ class PreflightGate:
                        per-day file in the system temp folder; the path is
                        shown in the summary and on ``report.log_file``).
         print_summary: print ``report.summary()`` when ``run()`` finishes.
+
+        Download budget (both off by default; nothing changes unless set):
+
+        thin_to_days:    keep roughly one acquisition per this many days
+                         (e.g. 12 or 24) instead of every one.
+        max_download_gb: upper limit for the estimated download; the cadence
+                         is coarsened until the estimate fits.
+        gb_per_scene:    size used for that estimate (Sentinel-1 SLC ~7.5 GB).
+
+        Thinning always keeps the interferometric network connected (see
+        :mod:`pygeofetch.insar.network_thinning`).  If a budget cannot be met
+        without disconnecting it, the network wins and the report says so.
+        It runs BEFORE the burst/orbit check, so fewer scenes also means far
+        fewer network requests.
         """
+        self.thin_to_days = thin_to_days
+        self.max_download_gb = max_download_gb
+        self.gb_per_scene = float(gb_per_scene)
         self.verbose = verbose
         self.show_progress = show_progress
         self.max_workers = max(1, int(max_workers))
@@ -340,6 +361,10 @@ class PreflightGate:
         selected, cov_issues = self._check_coverage(selected)
         issues.extend(cov_issues)
 
+        # Check 2b: optional download budget (thin dates, keep network connected)
+        selected, thin_issues, thinning = self._apply_download_budget(selected)
+        issues.extend(thin_issues)
+
         # Check 3: temporal sampling / predicted SBAS connectivity
         issues.extend(self._check_temporal_network(selected))
 
@@ -348,8 +373,21 @@ class PreflightGate:
         selected, burst_issues = self._screen_burst_families(selected, geometry_report)
         issues.extend(burst_issues)
 
+        issues.extend(self._recheck_network_after_screening(selected, thinning))
+
         # Build the provenance manifest from everything we now know
         manifest = self._build_manifest(selected, search_report, issues)
+        if thinning is not None:
+            manifest["thinning"] = {
+                "requested_days": thinning.requested_days,
+                "effective_days": thinning.effective_days,
+                "max_download_gb": thinning.max_gb,
+                "gb_before": thinning.gb_before,
+                "gb_after": thinning.gb_after,
+                "budget_met": thinning.budget_met,
+                "dropped_dates": thinning.dropped,
+                "notes": thinning.notes,
+            }
 
         # Decide go/no-go
         severity = self._overall_severity(issues)
@@ -478,6 +516,97 @@ class PreflightGate:
                 )
             )
         return kept, issues
+
+    # ── Check 2b: download budget ─────────────────────────────────────────
+    def _apply_download_budget(
+        self, selected: List[Any]
+    ) -> Tuple[List[Any], List[PreflightIssue], Optional[Any]]:
+        if self.thin_to_days is None and self.max_download_gb is None:
+            return selected, [], None
+        from pygeofetch.insar.network_thinning import thin_dates
+
+        dates = [str(s.datetime)[:10] for s in selected]
+        res = thin_dates(
+            dates,
+            max_temporal_baseline_days=self.max_temporal_baseline_days,
+            thin_to_days=self.thin_to_days,
+            max_download_gb=self.max_download_gb,
+            gb_per_scene=self.gb_per_scene,
+            min_redundancy=self.min_network_redundancy,
+        )
+        if not res.changed and not res.notes:
+            return selected, [], res
+        keep = set(res.kept)
+        new_sel = [s for s in selected if str(s.datetime)[:10] in keep]
+        a, b = res.stats_after, res.stats_before
+        detail = (
+            f"{len(res.kept)} of {len(set(dates))} dates kept "
+            f"(~{res.effective_days} d cadence), "
+            f"{res.gb_before:.0f} -> {res.gb_after:.0f} GB; network: "
+            f"{a.n_components} component(s) (was {b.n_components}), every "
+            f"date has >= {a.min_redundancy} partner(s) within "
+            f"{self.max_temporal_baseline_days} d."
+        )
+        issues = [
+            PreflightIssue(
+                code="DOWNLOAD_BUDGET_APPLIED",
+                severity=SEVERITY_GREEN,
+                message="Download size reduced by thinning acquisition dates.",
+                auto_fixed=True,
+                fix_detail=detail,
+            )
+        ]
+        if not res.budget_met or res.notes:
+            issues.append(
+                PreflightIssue(
+                    code="DOWNLOAD_BUDGET_NOTE",
+                    severity=SEVERITY_YELLOW if not res.budget_met else SEVERITY_GREEN,
+                    message=" ".join(res.notes),
+                )
+            )
+        if a.weak_dates and a.n_components <= b.n_components:
+            issues.append(
+                PreflightIssue(
+                    code="THINNED_NETWORK_REDUNDANCY",
+                    severity=SEVERITY_YELLOW,
+                    message=(
+                        f"{len(a.weak_dates)} date(s) have fewer than "
+                        f"{self.min_network_redundancy} partners after thinning. "
+                        f"The network is connected but thin; raise "
+                        f"max_temporal_baseline_days or max_download_gb for "
+                        f"more redundancy."
+                    ),
+                )
+            )
+        return new_sel, issues, res
+
+    def _recheck_network_after_screening(
+        self, selected: List[Any], thinning: Optional[Any]
+    ) -> List[PreflightIssue]:
+        """The burst check can drop dates after thinning; confirm the final
+        set is still as connected as the full archive was."""
+        if thinning is None:
+            return []
+        from pygeofetch.insar.network_thinning import network_stats
+
+        dates = sorted({str(s.datetime)[:10] for s in selected})
+        st = network_stats(
+            dates, self.max_temporal_baseline_days, self.min_network_redundancy
+        )
+        if st.n_components > thinning.stats_before.n_components:
+            return [
+                PreflightIssue(
+                    code="NETWORK_DISCONNECTED_AFTER_SCREEN",
+                    severity=SEVERITY_RED,
+                    message=(
+                        f"After burst/orbit screening the thinned network has "
+                        f"{st.n_components} disconnected parts (full archive: "
+                        f"{thinning.stats_before.n_components}). Use a finer "
+                        f"thin_to_days or a larger max_download_gb."
+                    ),
+                )
+            ]
+        return []
 
     # ── Check 3: temporal network prediction ──────────────────────────────
     def _check_temporal_network(self, selected: List[Any]) -> List[PreflightIssue]:
@@ -1210,7 +1339,7 @@ class PreflightGate:
         # ── FIX: BANDWIDTH & DOWNLOAD MANIFEST ──
         # Calculate estimated bandwidth and build a concrete manifest of
         # what will actually be downloaded, preventing surprise disk fills.
-        ESTIMATED_GB_PER_SLC_SCENE = 7.5  # Sentinel-1 IW SLC average size
+        ESTIMATED_GB_PER_SLC_SCENE = self.gb_per_scene  # Sentinel-1 IW SLC ~7.5
         estimated_bandwidth_gb = len(selected) * ESTIMATED_GB_PER_SLC_SCENE
 
         download_manifest = []

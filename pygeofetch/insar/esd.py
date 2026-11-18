@@ -583,3 +583,170 @@ def estimate_esd_shift_per_burst_overlap(
         combined / dt,
     )
     return combined, per_overlap_shifts
+
+
+def _overlap_rows(swath_timing, dt: float, row_offset: int, n_rows: int):
+    """Yield (i, backward_rows, forward_rows) for each burst overlap i/i+1 inside an array of ``n_rows`` rows.
+
+    Same row arithmetic as estimate_esd_shift_per_burst_overlap: both images are on the reference's grid, so the
+    reference's own overlap windows locate the overlap rows of both.
+    """
+    import numpy as np
+
+    L = swath_timing.lines_per_burst
+    for i, r_start, r_end in overlap_time_windows(swath_timing, dt):
+        n_lines = int(round((r_end - r_start).total_seconds() / dt)) + 1
+        if n_lines < 3:
+            continue
+        bw, fw = [], []
+        for k in range(n_lines):
+            tt = r_start + timedelta(seconds=k * dt)
+            b = i * L + round((tt - swath_timing.bursts[i].azimuth_time).total_seconds() / dt) - row_offset
+            f = (i + 1) * L + round((tt - swath_timing.bursts[i + 1].azimuth_time).total_seconds() / dt) - row_offset
+            if 0 <= b < n_rows and 0 <= f < n_rows:
+                bw.append(b)
+                fw.append(f)
+        if len(bw) >= 3:
+            yield i, np.array(bw), np.array(fw)
+
+
+def estimate_esd_blocks(
+    ref_complex,
+    sec_complex,
+    swath_timing,
+    azimuth_time_interval_s: float,
+    row_offset: int = 0,
+    delta_f_ovl_hz: float = SENTINEL1_IW_DELTA_F_OVL_HZ,
+    n_col_blocks: int = 8,
+    coherence_threshold: float = 0.2,
+    min_pixels: int = 200,
+):
+    """ESD per burst overlap AND per block of range columns: where in the image the misregistration is measured.
+
+    estimate_esd_shift_per_burst_overlap gives one number per pair. A residual misregistration that varies across
+    the scene (in range, or from one overlap to the next) leaves, after a constant correction, TOPS phase steps at
+    the burst seams of up to 2 pi * delta_f_ovl * dt * delta (about 55 rad per pixel for IW) and ramps inside the
+    bursts; 0.04 px is already a 2 rad step. Each block gives its own estimate, at the overlap's mean row and the
+    block's mean column (local array coordinates). Returns a list of dicts with keys overlap, row, col, shift_px,
+    coherence, n, weight (Fisher information of the mean double-difference phase, n * g^2 / (1 - g^2)).
+    """
+    import numpy as np
+    from scipy.ndimage import uniform_filter
+
+    dt = azimuth_time_interval_s
+    h, w = ref_complex.shape
+    edges = np.linspace(0, w, max(1, int(n_col_blocks)) + 1).astype(int)
+    out = []
+    for i, bw, fw in _overlap_rows(swath_timing, dt, int(row_offset), h):
+        ref_bw, sec_bw = ref_complex[bw].astype(np.complex64), sec_complex[bw].astype(np.complex64)
+        igram_bw = ref_bw * np.conj(sec_bw)
+        igram_fw = ref_complex[fw].astype(np.complex64) * np.conj(sec_complex[fw].astype(np.complex64))
+        win = min(5, len(bw))
+        num = np.abs(uniform_filter(igram_bw.real, size=win) + 1j * uniform_filter(igram_bw.imag, size=win))
+        den = np.sqrt(uniform_filter(np.abs(ref_bw) ** 2, size=win) * uniform_filter(np.abs(sec_bw) ** 2, size=win)) + 1e-10
+        coh = num / den
+        dd = igram_fw * np.conj(igram_bw)
+        for c0, c1 in zip(edges[:-1], edges[1:]):
+            if c1 - c0 < 2:
+                continue
+            ok = np.isfinite(coh[:, c0:c1]) & (coh[:, c0:c1] >= coherence_threshold)
+            n = int(ok.sum())
+            if n < min(min_pixels, ok.size // 2) or ok.mean() < 0.3:
+                continue
+            z = dd[:, c0:c1][ok]
+            g = float(np.clip(np.mean(coh[:, c0:c1][ok]), 0.0, 0.99))
+            phase = float(np.angle(np.mean(z)))
+            out.append({"overlap": int(i), "row": float(np.mean(bw)), "col": float(0.5 * (c0 + c1 - 1)),
+                        "shift_px": phase / (2 * np.pi * delta_f_ovl_hz) / dt, "coherence": g, "n": n,
+                        "weight": n * g * g / (1.0 - g * g)})
+    return out
+
+
+def fit_esd_field(blocks, ambiguity_px: float, shape, min_blocks: int = 3, n_iter: int = 3):
+    """Fit a smooth residual misregistration field, delta = a + b col' (+ b2 (col'^2 - 1/12)) (+ c row'), to block ESD.
+
+    Each block's ESD is known only modulo ``ambiguity_px``; the blocks of one overlap are unwrapped along range
+    (the field is smooth) and each overlap is moved by whole ambiguities to the overall weighted median. Terms:
+    the constant always; range when the blocks span at least a quarter of the width (and a quadratic range term
+    with six or more blocks over half the width); azimuth when at least two overlaps contribute. Weighted least squares with outlier rejection (3 x MAD, at least 0.005 px).
+    Coordinates are normalised (col' = col / width - 0.5, row' = row / height - 0.5). Returns None when there are
+    too few blocks, else a dict with the terms, coefficients (px), an ``fn(rows, cols)`` evaluating the field in
+    local array coordinates, and the weighted RMS of the blocks about their mean (before) and about the field
+    (after).
+    """
+    import numpy as np
+
+    if len(blocks) < min_blocks or not (ambiguity_px > 0):
+        return None
+    h, w = shape
+    amb = float(ambiguity_px)
+    b = sorted(blocks, key=lambda d: (d["overlap"], d["col"]))
+    shift = np.array([d["shift_px"] for d in b], dtype=float)
+    ov = np.array([d["overlap"] for d in b])
+    for o in np.unique(ov):
+        m = ov == o
+        shift[m] = np.unwrap(shift[m] * 2 * np.pi / amb) * amb / (2 * np.pi)
+    wts = np.array([d["weight"] for d in b], dtype=float)
+
+    def wmedian(x, wt):
+        order = np.argsort(x)
+        cw = np.cumsum(wt[order])
+        return float(x[order][np.searchsorted(cw, 0.5 * cw[-1])])
+
+    ref_level = wmedian(shift, wts)
+    for o in np.unique(ov):
+        m = ov == o
+        shift[m] -= amb * np.round((wmedian(shift[m], wts[m]) - ref_level) / amb)
+    col_n = np.array([d["col"] for d in b], dtype=float) / max(w, 1) - 0.5
+    row_n = np.array([d["row"] for d in b], dtype=float) / max(h, 1) - 0.5
+    terms = ["const"]
+    cols = [np.ones_like(col_n)]
+    n_cols_distinct = len(np.unique(np.round(col_n, 3)))
+    if np.ptp(col_n) >= 0.25 and n_cols_distinct >= 3:
+        terms.append("range")
+        cols.append(col_n)
+    if np.ptp(col_n) >= 0.5 and n_cols_distinct >= 6:
+        terms.append("range2")                       # gentle curvature across the swath
+        cols.append(col_n ** 2 - 1.0 / 12.0)
+    if len(np.unique(ov)) >= 2:
+        terms.append("azimuth")
+        cols.append(row_n)
+    A = np.stack(cols, axis=1)
+    keep = np.ones(len(shift), bool)
+    coef = np.zeros(A.shape[1])
+    for _ in range(n_iter):
+        if keep.sum() < max(min_blocks, A.shape[1] + 1):
+            break
+        sw = np.sqrt(wts[keep])
+        coef = np.linalg.lstsq(A[keep] * sw[:, None], shift[keep] * sw, rcond=None)[0]
+        res = shift - A @ coef
+        mad = 1.4826 * np.median(np.abs(res[keep] - np.median(res[keep])))
+        new_keep = np.abs(res) <= max(3 * mad, 0.005)
+        if np.array_equal(new_keep, keep):
+            break
+        keep = new_keep
+    if keep.sum() < min_blocks:
+        return None
+    wk = wts[keep]
+    mean_k = float(np.sum(wk * shift[keep]) / wk.sum())
+    rms_before = float(np.sqrt(np.sum(wk * (shift[keep] - mean_k) ** 2) / wk.sum()))
+    res = shift - A @ coef
+    rms_after = float(np.sqrt(np.sum(wk * res[keep] ** 2) / wk.sum()))
+    coefs = dict(zip(terms, (float(c) for c in coef)))
+
+    def fn(rows, cols_):
+        rows = np.asarray(rows, dtype=np.float64)
+        cols_ = np.asarray(cols_, dtype=np.float64)
+        out = coefs["const"] + 0.0 * (rows + cols_)
+        if "range" in coefs:
+            out = out + coefs["range"] * (cols_ / max(w, 1) - 0.5)
+        if "range2" in coefs:
+            out = out + coefs["range2"] * ((cols_ / max(w, 1) - 0.5) ** 2 - 1.0 / 12.0)
+        if "azimuth" in coefs:
+            out = out + coefs["azimuth"] * (rows / max(h, 1) - 0.5)
+        return out
+
+    corners = fn(np.array([0.0, 0.0, h - 1.0, h - 1.0]), np.array([0.0, w - 1.0, 0.0, w - 1.0]))
+    return {"terms": terms, "coef_px": coefs, "fn": fn, "n_blocks": int(len(b)), "n_used": int(keep.sum()),
+            "n_overlaps": int(len(np.unique(ov))), "rms_before_px": rms_before, "rms_after_px": rms_after,
+            "ptp_px": float(np.ptp(corners))}

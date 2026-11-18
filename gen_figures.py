@@ -19,10 +19,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
-from pygeofetch.processing.indices import SpectralIndices
-from pygeofetch.processing.sar import SARProcessor
 from rasterio.transform import from_origin
 from scipy.ndimage import gaussian_filter
+
+from pygeofetch.processing.indices import SpectralIndices
+from pygeofetch.processing.sar import SARProcessor
 
 OUT = Path(__file__).resolve().parent.parent / "_static" / "img"
 OUT.mkdir(parents=True, exist_ok=True)

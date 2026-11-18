@@ -17,5 +17,6 @@ Usage::
 
 from pygeofetch.viz.map import MapViewer
 from pygeofetch.viz.plot import Plotter
+from pygeofetch.viz.insar import InSARFigures, SarGeometry
 
-__all__ = ["MapViewer", "Plotter"]
+__all__ = ["MapViewer", "Plotter", "InSARFigures", "SarGeometry"]

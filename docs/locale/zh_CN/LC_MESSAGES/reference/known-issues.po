@@ -434,12 +434,12 @@ msgstr ""
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:132
 msgid ""
 "Version strings disagree: `pygeofetch.__version__` and the conda recipe say "
-"`2.6.3.0.4`, `pyproject.toml` says `2.6.3.0`, and the package docstring and "
+"`2.7.2.0.4`, `pyproject.toml` says `2.7.2.0`, and the package docstring and "
 "CLI banner refer to `v2.4.0`. The documentation and conda metadata also "
 "point to different documentation URLs (GitHub Pages versus Read the Docs)."
 msgstr ""
-"版本字符串不一致：`pygeofetch.__version__` 和 conda 配方为 `2.6.3.0.4`，`pyproject.toml` 为"
-" `2.6.3.0`，而包的文档字符串和 CLI 横幅则提到 `v2.4.0`。文档和 conda 元数据所指向的文档 URL 也不同（GitHub "
+"版本字符串不一致：`pygeofetch.__version__` 和 conda 配方为 `2.7.2.0.4`，`pyproject.toml` 为"
+" `2.7.2.0`，而包的文档字符串和 CLI 横幅则提到 `v2.4.0`。文档和 conda 元数据所指向的文档 URL 也不同（GitHub "
 "Pages 与 Read the Docs）。"
 
 #: ../../home/claude/work/docs_audit/docs_out/reference/known-issues.md:133

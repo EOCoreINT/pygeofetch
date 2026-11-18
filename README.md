@@ -129,21 +129,21 @@ Results carry real footprint geometry and drop straight onto a map via `MapViewe
 
 Real orbit state vectors then pre-filter the candidate pair list against Sentinel-1's own mission thresholds, rejecting pairs for excess burst-sync error, temporal baseline, or spatial baseline before any interferogram is attempted.
 
-<p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/pre-filter-for-interferogram.png" width="85%" /></p>
+<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/pre-filter-for-interferogram.png" width="85%" /></p> -->
 
 **4. Interferogram formation.** Of 2,211 theoretically possible pairs across 67 downloaded scenes, real orbit-based coregistration, per-burst Enhanced Spectral Diversity, deburst, and flat-earth/topographic phase removal reduce that to 78 valid pairs — the dense urban fringe pattern below is raw wrapped phase, before any correction.
 
-<p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/wrapped_phase.png" width="85%" /></p>
+<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/wrapped_phase.png" width="85%" /></p> -->
 
 **5. Coherence.** Amplitude and coherence are estimated together for every pair; the urban core holds noticeably higher coherence (0.614) than the scene-wide average (0.508) — exactly the contrast expected between stable built structures and vegetated or agricultural surrounds.
 
-<p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/comparism.png" width="85%" /></p>
+<!-- <p align="center"><img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/comparism.png" width="85%" /></p> -->
 
 **6. Phase unwrapping.** SNAPHU (Chen & Zebker, 2001) resolves each wrapped interferogram into continuous phase, both as a raw array and reprojected onto the real city footprint. Reliable coverage is intentionally sparse (~0.1–0.2%) — dense vegetation cover means most of the scene decorrelates between 18–24 day passes, so the pipeline marks those pixels NaN rather than interpolating across them.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/unwrapped_phase.png" width="48%" />
-  <img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/unwrap.png" width="48%" />
+  <!-- <img src="https://raw.githubusercontent.com/EOCoreINT/mexico-subsidence-project/main/analysis/unwrap.png" width="48%" /> -->
 </p>
 
 **7. SBAS time-series inversion.** The full 58-date descending stack, once low-coherence and unreliable-reference-pixel pairs are excluded, fractures into 17 disconnected network "islands" — a genuine finding about this AOI's data quality, not a bug. The largest connected island (10 dates, 11 pairs) carries the final inversion, referenced near Cerro de la Estrella.
@@ -229,7 +229,7 @@ If you use PyGeoFetch in your research or operational work, please cite it using
   title        = {PyGeoFetch: A Unified Python Framework for Multi-Provider Satellite Data Acquisition, Pre-download Quality Control, and Geospatial Processing},
   year         = {2026},
   publisher    = {Zenodo},
-  version      = {2.6.3.0.1},
+  version      = {2.7.2.0.1},
   doi          = {10.5281/zenodo.22087230},
   url          = {https://doi.org/10.5281/zenodo.22087230}
 }

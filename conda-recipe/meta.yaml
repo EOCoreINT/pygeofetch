@@ -1,5 +1,5 @@
 {% set name = "pygeofetch" %}
-{% set version = "2.6.3.0.4" %}
+{% set version = "2.7.2.0.4" %}
 
 package:
   name: {{ name|lower }}

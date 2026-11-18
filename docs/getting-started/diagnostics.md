@@ -92,7 +92,7 @@ The `--json` output schema:
 
 ```json
 {
-  "version": "2.6.3.0",
+  "version": "2.7.2.0",
   "python": "3.12.1",
   "platform": "Linux",
   "providers_authenticated": ["copernicus", "usgs"],
